@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OU Web — UX 전체 설계 문서</title>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #1a1a24;
+    --border: rgba(255,255,255,0.08);
+    --text: #e0e0ee;
+    --muted: #606070;
+    --accent: #7b6ef6;
+    --accent2: #4fc3a1;
+    --warn: #f0a050;
+    --danger: #e05555;
+    --guest: #3a2a5e;
+    --user: #1a3a2e;
+    --admin: #3d2a0d;
+    --font: -apple-system, 'Segoe UI', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 13px; line-height: 1.6; }
+
+  /* NAV */
+  .top-nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,10,15,0.95); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex; align-items: center; gap: 8px; height: 52px;
+  }
+  .top-nav .logo { font-size: 15px; font-weight: 700; color: var(--accent); margin-right: 16px; }
+  .top-nav a { color: var(--muted); text-decoration: none; padding: 6px 10px; border-radius: 6px; font-size: 12px; }
+  .top-nav a:hover { color: var(--text); background: var(--surface2); }
+
+  /* HERO */
+  .hero {
+    text-align: center; padding: 64px 24px 48px;
+    background: radial-gradient(ellipse at 50% 0%, rgba(123,110,246,0.15) 0%, transparent 70%);
+  }
+  .hero h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+  .hero p { color: var(--muted); font-size: 14px; }
+  .badge-row { display: flex; gap: 8px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }
+  .badge { padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; border: 1px solid; }
+  .badge.guest { color: #a88fe0; border-color: #7b6ef630; background: #7b6ef610; }
+  .badge.user { color: #4fc3a1; border-color: #4fc3a130; background: #4fc3a110; }
+  .badge.admin { color: var(--warn); border-color: #f0a05030; background: #f0a05010; }
+
+  /* LEGEND */
+  .legend {
+    display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;
+    padding: 16px 24px; border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--muted); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; }
+
+  /* MAIN LAYOUT */
+  .main { max-width: 1400px; margin: 0 auto; padding: 32px 24px; }
+  .section { margin-bottom: 48px; }
+  .section-title {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+    color: var(--muted); text-transform: uppercase;
+    margin-bottom: 20px; padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* PAGE GRID */
+  .page-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; }
+
+  /* PAGE CARD */
+  .page-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: border-color 0.15s;
+  }
+  .page-card:hover { border-color: rgba(255,255,255,0.15); }
+
+  .page-card .card-header {
+    padding: 14px 16px 12px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .page-card .route {
+    font-size: 13px; font-weight: 700; color: var(--accent); font-family: monospace;
+    flex: 1;
+  }
+  .page-card .page-name { font-size: 11px; color: var(--muted); }
+
+  .access-badges { display: flex; gap: 4px; }
+  .ab {
+    font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 999px;
+  }
+  .ab.g { background: #7b6ef620; color: #a88fe0; }
+  .ab.u { background: #4fc3a120; color: #4fc3a1; }
+  .ab.a { background: #f0a05020; color: var(--warn); }
+
+  .card-body { padding: 14px 16px; }
+
+  /* COMPONENT LIST */
+  .comp-section { margin-bottom: 12px; }
+  .comp-label { font-size: 10px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+  .comp-list { display: flex; flex-direction: column; gap: 3px; }
+  .comp-item {
+    display: flex; align-items: flex-start; gap: 8px;
+    padding: 5px 8px; border-radius: 6px;
+    background: var(--surface2);
+    font-size: 12px;
+  }
+  .comp-icon { font-size: 13px; flex-shrink: 0; line-height: 1.4; }
+  .comp-name { font-weight: 500; color: var(--text); }
+  .comp-desc { color: var(--muted); font-size: 11px; margin-top: 1px; }
+
+  /* INTERACTION LIST */
+  .ia-list { display: flex; flex-direction: column; gap: 3px; }
+  .ia-item {
+    display: flex; gap: 8px; align-items: flex-start;
+    padding: 5px 8px; border-radius: 6px;
+    background: rgba(255,255,255,0.02);
+    border-left: 2px solid transparent;
+    font-size: 11px;
+  }
+  .ia-item.click { border-left-color: var(--accent); }
+  .ia-item.hover { border-left-color: #60b0ff; }
+  .ia-item.input { border-left-color: var(--accent2); }
+  .ia-item.nav { border-left-color: var(--warn); }
+  .ia-item.cond { border-left-color: var(--danger); }
+  .ia-trigger { color: var(--muted); flex-shrink: 0; font-weight: 500; min-width: 38px; }
+  .ia-action { color: var(--text); }
+  .ia-result { color: var(--accent2); font-size: 10px; margin-top: 1px; }
+
+  /* STATE BADGES */
+  .state-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .state-tag {
+    font-size: 10px; padding: 2px 8px; border-radius: 4px;
+    background: var(--surface2); color: var(--muted); border: 1px solid var(--border);
+  }
+  .state-tag.active { background: #4fc3a115; color: var(--accent2); border-color: #4fc3a130; }
+
+  /* FLOW ARROWS */
+  .flows { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+  .flow-item { display: flex; align-items: center; gap: 6px; font-size: 11px; margin-bottom: 3px; color: var(--muted); }
+  .flow-item .arrow { color: var(--warn); font-size: 12px; }
+  .flow-item .dest { color: var(--text); font-family: monospace; font-size: 11px; }
+
+  /* LAYOUT DIAGRAM */
+  .layout-diagram {
+    border: 1px solid var(--border); border-radius: 8px;
+    overflow: hidden; margin-bottom: 10px;
+    font-size: 10px;
+  }
+  .layout-row { display: flex; min-height: 30px; }
+  .layout-cell {
+    padding: 6px 10px; display: flex; align-items: center; justify-content: center;
+    border-right: 1px solid var(--border); border-bottom: 1px solid var(--border);
+    color: var(--muted); text-align: center; font-size: 10px;
+  }
+  .layout-cell:last-child { border-right: none; }
+  .layout-row:last-child .layout-cell { border-bottom: none; }
+  .layout-cell.header { background: var(--surface2); font-weight: 600; color: var(--text); }
+  .layout-cell.sidebar { background: rgba(123,110,246,0.06); min-width: 52px; max-width: 52px; }
+  .layout-cell.main { flex: 1; }
+  .layout-cell.panel { background: rgba(79,195,161,0.06); min-width: 120px; max-width: 120px; }
+  .layout-cell.full { flex: 1; background: rgba(123,110,246,0.04); }
+
+  /* UX NOTES */
+  .ux-note {
+    margin-top: 8px; padding: 8px 10px; border-radius: 6px;
+    background: rgba(240,160,80,0.06); border-left: 2px solid var(--warn);
+    font-size: 11px; color: #c08840;
+  }
+
+  /* DIVIDER */
+  hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+  /* FLOW MAP */
+  .flow-map {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px; margin-bottom: 16px;
+  }
+  .flow-map h3 { font-size: 12px; font-weight: 700; margin-bottom: 12px; }
+  .flow-map.guest h3 { color: #a88fe0; }
+  .flow-map.user h3 { color: var(--accent2); }
+  .flow-map.admin-map h3 { color: var(--warn); }
+
+  .journey { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .step {
+    padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 500;
+    background: var(--surface2); border: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  .step.current { background: rgba(123,110,246,0.15); border-color: var(--accent); color: var(--accent); }
+  .step-arrow { color: var(--muted); font-size: 14px; }
+
+  /* TABLE */
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th { text-align: left; padding: 8px 12px; background: var(--surface2); color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid var(--border); }
+  td { padding: 8px 12px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  td code { font-family: monospace; color: var(--accent); font-size: 11px; background: rgba(123,110,246,0.1); padding: 1px 5px; border-radius: 3px; }
+
+  /* SCROLL OFFSET */
+  [id] { scroll-margin-top: 64px; }
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <span class="logo">OU</span>
+  <a href="#overview">개요</a>
+  <a href="#flows">사용자 여정</a>
+  <a href="#pages">페이지 상세</a>
+  <a href="#nav">네비게이션</a>
+  <a href="#interactions">인터랙션 원칙</a>
+  <a href="#components">컴포넌트 목록</a>
+</nav>
+
+<div class="hero">
+  <h1>OWN UNIVERSE — UX 전체 설계</h1>
+  <p>한의대생을 위한 학습 솔루션 · 랜딩부터 관리자까지 전 페이지 설계</p>
+  <div class="badge-row">
+    <span class="badge guest">비로그인</span>
+    <span class="badge user">로그인</span>
+    <span class="badge admin">관리자 (admin)</span>
+  </div>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="dot" style="background:#7b6ef6"></div> 클릭 인터랙션</div>
+  <div class="legend-item"><div class="dot" style="background:#60b0ff"></div> 호버 인터랙션</div>
+  <div class="legend-item"><div class="dot" style="background:#4fc3a1"></div> 입력/검색</div>
+  <div class="legend-item"><div class="dot" style="background:#f0a050"></div> 페이지 이동</div>
+  <div class="legend-item"><div class="dot" style="background:#e05555"></div> 조건부 동작</div>
+</div>
+
+<!-- ============================== OVERVIEW ============================== -->
+<div class="main">
+<section class="section" id="overview">
+  <div class="section-title">개요 — 사이트맵</div>
+  <table>
+    <thead>
+      <tr><th>라우트</th><th>페이지 이름</th><th>접근</th><th>핵심 목적</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>/</code></td><td>랜딩</td><td><span class="ab g">비로그인</span></td><td>서비스 소개 + 진입점</td></tr>
+      <tr><td><code>/login</code></td><td>로그인 / 회원가입</td><td><span class="ab g">비로그인</span></td><td>인증</td></tr>
+      <tr><td><code>/auth/callback</code></td><td>OAuth 콜백</td><td><span class="ab g">비로그인</span></td><td>Google OAuth 코드 교환</td></tr>
+      <tr><td><code>/universe</code></td><td>전체 그래프 우주</td><td><span class="ab g">비로그인</span> <span class="ab u">로그인</span></td><td>공개 지식 그래프 탐색</td></tr>
+      <tr><td><code>/my</code></td><td>마이유니버스</td><td><span class="ab u">로그인</span></td><td>내 학습 그래프 홈</td></tr>
+      <tr><td><code>/explore</code></td><td>탐색 허브</td><td><span class="ab u">로그인</span></td><td>워크스페이스 메인</td></tr>
+      <tr><td><code>/explore/browse</code></td><td>데이터셋 브라우저</td><td><span class="ab u">로그인</span></td><td>데이터셋 선택</td></tr>
+      <tr><td><code>/boncho</code></td><td>본초학</td><td><span class="ab u">로그인</span></td><td>한약재 사전</td></tr>
+      <tr><td><code>/acupoint</code></td><td>경혈학</td><td><span class="ab u">로그인</span></td><td>경혈 사전</td></tr>
+      <tr><td><code>/prescription</code></td><td>방제학</td><td><span class="ab u">로그인</span></td><td>처방 사전</td></tr>
+      <tr><td><code>/flashcard</code></td><td>플래시카드</td><td><span class="ab u">로그인</span></td><td>암기 학습</td></tr>
+      <tr><td><code>/quiz</code></td><td>퀴즈</td><td><span class="ab u">로그인</span></td><td>이해도 평가</td></tr>
+      <tr><td><code>/stats</code></td><td>학습 통계</td><td><span class="ab u">로그인</span></td><td>진도 추적</td></tr>
+      <tr><td><code>/settings</code></td><td>설정</td><td><span class="ab u">로그인</span></td><td>계정 관리</td></tr>
+      <tr><td><code>/admin</code></td><td>관리자 패널</td><td><span class="ab a">관리자</span></td><td>콘텐츠/유저 관리</td></tr>
+      <tr><td><code>/terms</code></td><td>약관</td><td><span class="ab g">비로그인</span> <span class="ab u">로그인</span></td><td>이용약관 / 개인정보</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============================== USER JOURNEYS ============================== -->
+<section class="section" id="flows">
+  <div class="section-title">사용자 여정</div>
+
+  <div class="flow-map guest">
+    <h3>비로그인 사용자 여정</h3>
+    <div class="journey">
+      <span class="step current">/</span>
+      <span class="step-arrow">→</span>
+      <span class="step">EXPLORE 클릭</span>
+      <span class="step-arrow">→</span>
+      <span class="step current">/universe</span>
+      <span class="step-arrow">→</span>
+      <span class="step">노드 탐색</span>
+      <span class="step-arrow">→</span>
+      <span class="step">추가 시도</span>
+      <span class="step-arrow">→</span>
+      <span class="step current">/login</span>
+    </div>
+    <div class="journey" style="margin-top:8px">
+      <span class="step current">/</span>
+      <span class="step-arrow">→</span>
+      <span class="step">Log in 클릭</span>
+      <span class="step-arrow">→</span>
+      <span class="step current">/login</span>
+      <span class="step-arrow">→</span>
+      <span class="step">로그인 성공</span>
+      <span class="step-arrow">→</span>
+      <span class="step current">/my</span>
+    </div>
+  </div>
+
+  <div class="flow-map user">
+    <h3>로그인 사용자 핵심 여정</h3>
+    <div class="journey">
+      <span class="step current">/my</span>
+      <span class="step-arrow">→</span>
+      <span class="step">사이드바 본초</span>
+      <span class="step-arrow">→</span>
+      <span class="step current">/boncho</span>
+      <span class="step-arrow">→</span>
+      <span class="step">카드 클릭 → 상세</span>
+      <span class="step-arrow">→</span>
+      <span class="step">내 우주 추가</span>
+      <span class="step-arrow">→</span>
+      <span class="step current">/my</span>
+    </div>
+    <div class="journey" style="margin-top:8px">
+      <span class="step current">/my</span>
+      <span class="step-arrow">→</span>
+      <span class="step">사이드바 플래시카드</span>
+      <span class="step-arrow">→</span>
+      <span class="step current">/flashcard</span>
+      <span class="step-arrow">→</span>
+      <span class="step">세션 완료</span>
+      <span class="step-arrow">→</span>
+      <span class="step current">/stats</span>
+    </div>
+  </div>
+
+  <div class="flow-map admin-map">
+    <h3>관리자 여정</h3>
+    <div class="journey">
+      <span class="step current">/my</span>
+      <span class="step-arrow">→</span>
+      <span class="step">사이드바 관리자</span>
+      <span class="step-arrow">→</span>
+      <span class="step current">/admin</span>
+      <span class="step-arrow">→</span>
+      <span class="step">콘텐츠 탭</span>
+      <span class="step-arrow">→</span>
+      <span class="step">CRUD 작업</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== PAGES DETAIL ============================== -->
+<section class="section" id="pages">
+  <div class="section-title">페이지 상세 — 컴포넌트 & 인터랙션</div>
+  <div class="page-grid">
+
+    <!-- LANDING -->
+    <div class="page-card" id="page-landing">
+      <div class="card-header">
+        <div>
+          <div class="route">/ 랜딩페이지</div>
+          <div class="page-name">서비스 진입점</div>
+        </div>
+        <div class="access-badges"><span class="ab g">비로그인</span></div>
+      </div>
+      <div class="card-body">
+        <div class="layout-diagram">
+          <div class="layout-row">
+            <div class="layout-cell full header" style="min-height:60px">전체화면 3D 그래프 배경 (GraphCanvas)</div>
+          </div>
+          <div class="layout-row">
+            <div class="layout-cell full" style="min-height:80px">브랜드 섹션 — OWN UNIVERSE + Korean Medicine 배지 + 카피라이트</div>
+          </div>
+          <div class="layout-row">
+            <div class="layout-cell full">CTA — EXPLORE 버튼 | Log in 버튼 | Sign up 버튼</div>
+          </div>
+        </div>
+
+        <div class="comp-section">
+          <div class="comp-label">컴포넌트</div>
+          <div class="comp-list">
+            <div class="comp-item"><span class="comp-icon">🌌</span><div><div class="comp-name">GraphCanvas</div><div class="comp-desc">Three.js 3D 그래프, 배경 애니메이션</div></div></div>
+            <div class="comp-item"><span class="comp-icon">🏷️</span><div><div class="comp-name">Korean Medicine 배지</div><div class="comp-desc">pill 형태 라운드 배지</div></div></div>
+            <div class="comp-item"><span class="comp-icon">📝</span><div><div class="comp-name">OWN UNIVERSE 헤드라인</div><div class="comp-desc">대형 브랜드 타이포</div></div></div>
+            <div class="comp-item"><span class="comp-icon">▶️</span><div><div class="comp-name">EXPLORE 버튼</div><div class="comp-desc">Primary CTA, ArrowRight 아이콘</div></div></div>
+            <div class="comp-item"><span class="comp-icon">🔑</span><div><div class="comp-name">Log in / Sign up 버튼</div><div class="comp-desc">Secondary ghost 버튼</div></div></div>
+          </div>
+        </div>
+
+        <div class="comp-section">
+          <div class="comp-label">인터랙션</div>
+          <div class="ia-list">
+            <div class="ia-item click"><span class="ia-trigger">클릭</span><div><div class="ia-action">EXPLORE 버튼</div><div class="ia-result">→ /universe</div></div></div>
+            <div class="ia-item click"><span class="ia-trigger">클릭</span><div><div class="ia-action">Log in 버튼</div><div class="ia-result">→ /login</div></div></div>
+            <div class="ia-item click"><span class="ia-trigger">클릭</span><div><div class="ia-action">Sign up 버튼</div><div class="ia-result">→ /login (회원가입 탭)</div></div></div>
+            <div class="ia-item cond"><span class="ia-trigger">조건</span><div><div class="ia-action">이미 로그인 상태</div><div class="ia-result">→ /my 자동 리디렉트</div></div></div>
+          </div>
+        </div>
+        <div class="ux-note">그래프 배경은 인터랙티브하지 않음 (장식용). 마우스 움직임에 따라 시차 효과만 적용.</div>
+      </div>
+    </div>
+
+    <!-- LOGIN -->
+    <div class="page-card" id="page-login">
+      <div class="card-header">
+        <div>
+          <div class="route">/login</div>
+          <div class="page-name">로그인 / 회원가입</div>
+        </div>
+        <div class="access-badges"><span class="ab g">비로그인</span></div>
+      </div>
+      <div class="card-body">
+        <div class="layout-diagram">
+          <div class="layout-row">
+            <div class="layout-cell full header" style="min-height:40px">우주 배경 (전체화면)</div>
+          </div>
+          <div class="layout-row">
+            <div class="layout-cell full" style="min-height:100px">중앙 카드 — 탭(로그인/회원가입) + 폼 + OAuth</div>
+          </div>
+        </div>
+
+        <div class="comp-section">
+          <div class="comp-label">컴포넌트</div>
+          <div class="comp-list">
+            <div class="comp-item"><span class="comp-icon">🔀</span><div><div class="comp-name">탭 스위처</div><div class="comp-desc">로그인 / 회원가입 전환</div></div></div>
+            <div class="comp-item"><span class="comp-icon">✉️</span><div><div class="comp-name">이메일 인풋</div><div class="comp-desc">type=email, 유효성 검사</div></div></div>
+            <div class="comp-item"><span class="comp-icon">🔒</span><div><div class="comp-name">비밀번호 인풋</div><div class="comp-desc">보이기/숨기기 토글</div></div></div>
+            <div class="comp-item"><span class="comp-icon">👤</span><div><div class="comp-name">이름 인풋</div><div class="comp-desc">회원가입 탭에서만 표시</div></div></div>
+            <div class="comp-item"><span class="comp-icon">☑️</span><div><div class="comp-name">약관 동의 체크박스</div><div class="comp-desc">회원가입 탭 필수</div></div></div>
+            <div class="comp-item"><span class="comp-icon">🅶</span><div><div class="comp-name">Google OAuth 버튼</div><div class="comp-desc">Google 로고 + 텍스트</div></div></div>
+            <div class="comp-item"><span class="comp-icon">⚠️</span><div><div class="comp-name">에러 메시지</div><div class="comp-desc">인라인 에러 표시</div></div></div>
+          </div>
+        </div>
+
+        <div class="comp-section">
+          <div class="comp-label">인터랙션</div>
+          <div class="ia-list">
+            <div class="ia-item click"><span class="ia-trigger">클릭</span><div><div class="ia-action">로그인 버튼 (이메일+비번)</div><div class="ia-result">성공 → /my, 실패 → 에러 인라인</div></div></div>
+            <div class="ia-item click"><span class="ia-trigger">클릭</span><div><div class="ia-action">Google로 계속하기</div><div class="ia-result">→ Google OAuth → /auth/callback → /my</div></div></div>
+            <div class="ia-item click"><span class="ia-trigger">클릭</span><div><div class="ia-action">회원가입 버튼</div><div class="ia-result">성공 → 이메일 확인 안내 메시지</div></div></div>
+            <div class="ia-item click"><span class="ia-trigger">클릭</span><div><div class="ia-action">약관 링크</div><div class="ia-result">→ /terms (새 탭)</div></div></div>
+            <div class="ia-item input"><span class="ia-trigger">입력</span><div><div class="ia-action">폼 필드 포커스</div><div class="ia-result">border highlight + label float</div></div></div>
+          </div>
+        </div>
+        <div class="state-row">
+          <span class="state-tag">idle</span>
+          <span class="state-tag active">loading</span>
+          <span class="state-tag">error</span>
+          <span class="state-tag">success</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- UNIVERSE -->
+    <div class="page-card" id="page-universe">
+      <div class="card-header">
+        <div>
+          <div class="route">/universe</div>
+          <div class="page-name">전체 그래프 우주</div>
+        </div>
+        <div class="access-badges"><span class="ab g">비로그인</span><span class="ab u">로그인</span></div>
+      </div>
+      <div class="card-body">
+        <div class="layout-diagram">
+          <div class="layout-row">
+            <div class="layout-cell" style="min-width:160px; background:rgba(123,110,246,0.06)">좌측 패널<br>DB 바로가기 + 검색</div>
+            <div class="layout-cell main header">KnowledgeGraph (Three.js 전체화면)</div>
+            <div class="layout-cell panel">우측 패널<br>노드 상세</div>
+          </div>
+          <div class="layout-row">
+            <div class="layout-cell full" style="min-height:24px; font-size:10px">우상단: 다크모드 토글 | 그래프 설정 버튼</div>
+          </div>
+        </div>
+
+        <div class="comp-section">
+          <div class="comp-label">컴포넌트</div>
+          <div class="comp-list">
+            <div class="comp-item"><span class="comp-icon">🌐</span><div><div class="comp-name">KnowledgeGraph</div><div class="comp-desc">Three.js 3D 인터랙티브 그래프, 수만 노드</div></div></div>
+            <div class="comp-item"><span class="comp-icon">🔍</span><div><div class="comp-name">플로팅 검색 패널</div><div class="comp-desc">좌상단, rounded rect, 검색어 입력</div></div></div>
+            <div class="comp-item"><span class="comp-icon">📚</span><div><div class="comp-name">DB 바로가기 버튼들</div><div class="comp-desc">한자/본초/경혈/방제 카드</div></div></div>
+            <div class="comp-item"><span class="comp-icon">📋</span><div><div class="comp-name">노드 상세 패널</div><div class="comp-desc">우측, 선택된 노드 정보 + 추가 버튼</div></div></div>
+            <div class="comp-item"><span class="comp-icon">⚙️</span><div><div class="comp-name">그래프 설정 패널</div><div class="comp-desc">물리 파라미터, 시각화 옵션</div></div></div>
+            <div class="comp-item"><span class="comp-icon">🌙</span><div><div class="comp-name">다크모드 토글</div><div class="comp-desc">우상단 플로팅</div></div></div>
+          </div>
+        </div>
+
+        <div class="comp-section">
+          <div class="comp-label">인터랙션</div>
+          <div class="ia-list">
+            <div class="ia-item click"><span class="ia-trigger">클릭</span><div><div class="ia-action">그래프 노드</div><div class="ia-result">우측 상세 패널 열림 + 노드 하이라이트</div></div></div>
+            <div class="ia-item hover"><span class="ia-trigger">호버</span><div><div class="ia-action">그래프 노드</div><div class="ia-result">툴팁 (이름, 발음) + 연결 엣지 강조</div></div></div>
+            <div class="ia-item input"><span class="ia-trigger">검색</span><div><div class="ia-action">검색 패널 입력</div><div class="ia-result">매칭 노드 강조, 비매칭 페이드아웃</div></div></div>
+            <div class="ia-item click"><span class="ia-trigger">드래그</span><div><div class="ia-action">그래프 배경</div><div class="ia-result">카메라 팬/회전</div></div></div>
+            <div class="ia-item click"><span class="ia-trigger">스크롤</span><div><div class="ia-action">마우스 휠</div><div class="ia-result">줌 인/아웃</div></div></div>
+            <div class="ia-item cond"><span class="ia-trigger">조건</span><div><div class="ia-action">내 우주에 추가 (비로그인)</div><div class="ia-result">→ /login 리디렉트</div></div></div>
+            <div class="ia-item cond"><span class="ia-trigger">조건</span><div><div class="ia-action">내 우주에 추가 (로그인)</div><div class="ia-result">추가 완료 토스트 + /my 이동 옵션</div></div></div>
+            <div class="ia-item click"><span class="ia-trigger">클릭</span><div><div class="ia-action">DB 바로가기 (비로그인)</div><div class="ia-result">→ /login</div></div></div>
+            <div class="ia-item click"><span class="ia-trigger">클릭</span><div><div class="ia-action">DB 바로가기 (로그인)</div><div class="ia-result">→ /boncho, /acupoint 등</div></div></div>
+          </div>
+        </div>
+        <div class="ux-note">게임 수준 60fps 목표. d3-force Web Worker로 물리 연산 오프로드. LOD(Level of Detail) 적용.</div>
+      </div>
+    </div>
+
+    <!-- MY UNIVERSE -->
+    <div class="page-card" id="page-my">
+      <div class="card-header">
+        <div>
+          <div class="route">/my</div>
+          <div class="page-name">마이유니버스</div>
+        </div>
+        <div class="access-badges"><span class="ab u">로그인</span></div>
+      </div>
+      <div class="card-body">
+        <div class="layout-diagram">
+          <div class="layout-row">
+            <div class="layout-cell sidebar">사이드바<br>60px</div>
+            <div class="layout-cell" style="min-width:220px; background:rgba(79,195,161,0.05)">검색 패널<br>220px</div>
+            <div class="layout-cell main header">데이터 뷰 (그래프 or 리스트)</div>
+            <div class="layout-cell panel">뷰 사이드바<br>상세</div>
+          </div>
+        </div>
+
+        <div class="comp-section">
+          <div class="comp-label">컴포넌트</div>
+          <div class="comp-list">
+            <div class="comp-item"><span class="comp-icon">🔍</span><div><div class="comp-name">SearchPanel</div><div class="comp-desc">내 항목 검색 + 필터 (태그, 카테고리)</div></div></div>
+            <div class="comp-item"><span class="comp-icon">🌌</span><div><div class="comp-name">DataViewBlock</div><div class="comp-desc">그래프 뷰 or 리스트 뷰 전환</div></div></div>
+            <div class="comp-item"><span class="comp-icon">📌</span><div><div class="comp-name">ViewSidebar</div><div class="comp-desc">선택 항목 상세 + 태그 편집</div></div></div>
+            <div class="comp-item"><span class="comp-icon">🏷️</span><div><div class="comp-name">TagSection</div><div class="comp-desc">사용자 태그 추가/삭제</div></div></div>
+            <div class="comp-item"><span class="comp-icon">📭</span><div><div class="comp-name">Empty State</div><div class="comp-desc">첫 방문 시 가이드 UI</div></div></div>
+          </div>
+        </div>
+
+        <div class="comp-section">
+          <div class="comp-label">인터랙션</div>
+          <div class="ia-list">
+            <div class="ia-item click"><span class="ia-trigger">클릭</span><div><div class="ia-action">항목 카드</div><div class="ia-result">ViewSidebar에 상세 정보 표시</div></div></div>
+            <div class="ia-item input"><span class="ia-trigger">검색</span><div><div class="ia-action">SearchPanel 입력</div><div class="ia-result">리스트/그래프 실시간 필터</div></div></div>
+            <div class="ia-item click"><span class="ia-trigger">클릭</span><div><div class="ia-action">뷰 전환 버튼</div><div class="ia-result">그래프 ↔ 리스트 전환</div></div></div>
+            <div class="ia-item click"><span class="ia-trigger">클릭</span><div><div class="ia-action">태그 추가</div><div class="ia-result">인라인 입력 → 저장</div></div></div>
+            <div class="ia-item click"><span class="ia-trigger">클릭</span><div><div class="ia-action">항목 제거</div><div class="ia-result">내 우주에서 삭제 + 확인 모달</div></div></div>
+          </div>
+        </div>
+
+        <div class="ux-note">Empty State: 항목 0개일 때 "첫 한자를 추가하세요" 가이드 + /universe 이동 버튼 표시. 이탈 방지 핵심 UX.</div>
+      </div>
+    </div>
+
+    <!-- BONCHO -->
+    <div class="page-card" id="page-boncho">
+      <div class="card-header">
+        <div>
+          <div class="route">/boncho</div>
+          <div class="page-name">본초학 사전</div>
+        </div>
+        <div class="access-badges"><span class="ab u">로그인</span></div>
+      </div>
+      <div class="card-body">
+        <div class="layout-diagram">
+          <div class="layout-row">
+            <div class="layout-cell sidebar">사이드바</div>
+            <div class="layout-cell main">
+              <div style="width:100%">
+                <div style="border-bottom:1px solid rgba(255,255,255,0.06); padding:6px">검색바 + 필터 + 정렬</div>
+                <div style="padding:6px">5열 카드 그리드</div>
+              </div>
+            </div>
+            <div class="layout-cell panel">상세 패널</div>
+          </div>
+        </div>
+
+        <div class="comp-section">
+          <div class="comp-label">컴포넌트</div>
+          <div class="comp-list">
+            <div class="comp-item"><span class="comp-icon">🔍</span><div><div class="comp-name">SearchInput</div><div class="comp-desc">이름/한자명/효능/주치 검색</div></div></div>
+            <div class="comp-item"><span class="comp-icon">🏷️</span><div><div class="comp-name">FilterChips</div><div class="comp-desc">카테고리 필터 (드롭다운)</div></div></div>
+            <div class="comp-item"><span class="comp-icon">↕️</span><div><div class="comp-name">정렬 선택기</div><div class="comp-desc">카테고리코드 / 이름순 / 중요도</div></div></div>
+            <div class="comp-item"><span class="comp-icon">🌿</span><div><div class="comp-name">BonchoCard</div><div class="comp-desc">이름 + 한자명 + 중요도별</div></div></div>
+            <div class="comp-item"><span class="comp-icon">📋</span><div><div class="comp-name">BonchoDetailPanel</div><div class="comp-desc">성미귀경, 효능, 주치, 용량 등 전체</div></div></div>
+          </div>
+        </div>
+
+        <div class="comp-section">
+          <div class="comp-label">인터랙션</div>
+          <div class="ia-list">
+            <div class="ia-item click"><span class="ia-trigger">클릭</span><div><div class="ia-action">카드</div><div class="ia-result">우측 상세 패널 열림 + 카드 selected 스타일</div></div></div>
+            <div class="ia-item hover"><span class="ia-trigger">호버</span><div><div class="ia-action">카드</div><div class="ia-result">border 밝아짐 + 미세 scale up</div></div></div>
+            <div class="ia-item input"><span class="ia-trigger">검색</span><div><div class="ia-action">검색 입력</div><div class="ia-result">디바운스 300ms 후 실시간 필터</div></div></div>
+            <div class="ia-item click"><span class="ia-trigger">클릭</span><div><div class="ia-action">내 우주에 추가</div><div class="ia-result">토스트 + /my에 추가됨</div></div></div>
+            <div class="ia-item click"><span class="ia-trigger">클릭</span><div><div class="ia-action">한자명 개별 글자</div><div class="ia-result">한자 팝업 (발음, 뜻, 획수)</div></div></div>
+            <div class="ia-item click"><span class="ia-trigger">클릭</span><div><div class="ia-action">관련 처방 링크</div><div class="ia-result">→ /prescription 해당 처방 선택 상태</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACUPOINT -->
+    <div class="page-card" id="page-acupoint">
+      <div class="card-header">
+        <div>
+          <div class="route">/acupoint</div>
+          <div class="page-name">경혈학 사전</div>
+        </div>
+        <div class="access-badges"><span class="ab u">로그인</span></div>
+      </div>
+      <div class="card-body">
+        <div class="comp-section">
+          <div class="comp-label">컴포넌트</div>
+          <div class="comp-list">
+            <div class="comp-item"><span class="comp-icon">🔍</span><div><div class="comp-name">SearchInput</div><div class="comp-desc">코드/이름/한자/부위 검색</div></div></div>
+            <div class="comp-item"><span class="comp-icon">🫀</span><div><div class="comp-name">경락 필터</div><div class="comp-desc">14경락 탭 (LU, LI, HT, SI…)</div></div></div>
+            <div class="comp-item"><span class="comp-icon">📍</span><div><div class="comp-name">부위 필터</div><div class="comp-desc">두면/경항/흉복/등/팔/다리</div></div></div>
+            <div class="comp-item"><span class="comp-icon">🔵</span><div><div class="comp-name">AcupointCard</div><div class="comp-desc">코드 + 이름 + 경락 배지</div></div></div>
+            <div class="comp-item"><span class="comp-icon">📋</span><div><div class="comp-name">AcupointSidePanel</div><div class="comp-desc">위치, 취혈법, 주치, 특성혈</div></div></div>
+          </div>
+        </div>
+        <div class="comp-section">
+          <div class="comp-label">인터랙션</div>
+          <div class="ia-list">
+            <div class="ia-item click"><span class="ia-trigger">클릭</span><div><div class="ia-action">경락 필터 탭</div><div class="ia-result">해당 경락 경혈만 표시</div></div></div>
+            <div class="ia-item click"><span class="ia-trigger">클릭</span><div><div class="ia-action">카드</div><div class="ia-result">우측 상세 패널 열림</div></div></div>
+            <div class="ia-item click"><span class="ia-trigger">클릭</span><div><div class="ia-action">내 우주에 추가</div><div class="ia-result">토스트 + /my 추가</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRESCRIPTION -->
+    <div class="page-card" id="page-prescription">
+      <div class="card-header">
+        <div>
+          <div class="route">/prescription</div>
+          <div class="page-name">방제학 사전</div>
+        </div>
+        <div class="access-badges"><span class="ab u">로그인</span></div>
+      </div>
+      <div class="card-body">
+        <div class="comp-section">
+          <div class="comp-label">컴포넌트</div>
+          <div class="comp-list">
+            <div class="comp-item"><span class="comp-icon">🔍</span><div><div class="comp-name">SearchInput</div><div class="comp-desc">처방명/한자/효능/구성약재 검색</div></div></div>
+            <div class="comp-item"><span class="comp-icon">📂</span><div><div class="comp-name">카테고리 필터</div><div class="comp-desc">해표제/청열제/보익제 등</div></div></div>
+            <div class="comp-item"><span class="comp-icon">🧪</span><div><div class="comp-name">PrescriptionCard</div><div class="comp-desc">처방명 + 구성 약재 수 + 카테고리</div></div></div>
+            <div class="comp-item"><span class="comp-icon">📋</span><div><div class="comp-name">PrescriptionSidePanel</div><div class="comp-desc">구성, 효능, 주치, 출처, 용량</div></div></div>
+          </div>
+        </div>
+        <div class="comp-section">
+          <div class="comp-label">인터랙션</div>
+          <div class="ia-list">
+            <div class="ia-item click"><span class="ia-trigger">클릭</span><div><div class="ia-action">카드</div><div class="ia-result">상세 패널 열림</div></div></div>
+            <div class="ia-item click"><span class="ia-trigger">클릭</span><div><div class="ia-action">구성 약재 이름</div><div class="ia-result">→ /boncho 해당 약재 선택 상태</div></div></div>
+            <div class="ia-item click"><span class="ia-trigger">클릭</span><div><div class="ia-action">내 우주에 추가</div><div class="ia-result">토스트 + /my 추가</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FLASHCARD -->
+    <div class="page-card" id="page-flashcard">
+      <div class="card-header">
+        <div>
+          <div class="route">/flashcard</div>
+          <div class="page-name">플래시카드 학습</div>
+        </div>
+        <div class="access-badges"><span class="ab u">로그인</span></div>
+      </div>
+      <div class="card-body">
+        <div class="layout-diagram">
+          <div class="layout-row">
+            <div class="layout-cell full header">setup → study → done 3단계</div>
+          </div>
+          <div class="layout-row">
+            <div class="layout-cell" style="flex:1; min-height:40px">① 설정 화면<br>중요도 필터 + 10/20/50</div>
+            <div class="layout-cell" style="flex:1">② 학습 화면<br>카드 + 앎/모름</div>
+            <div class="layout-cell" style="flex:1">③ 완료 화면<br>결과 + 재시작</div>
+          </div>
+        </div>
+
+        <div class="comp-section">
+          <div class="comp-label">컴포넌트</div>
+          <div class="comp-list">
+            <div class="comp-item"><span class="comp-icon">⭐</span><div><div class="comp-name">중요도 필터</div><div class="comp-desc">전체 / ★★★ / ★★ / ★</div></div></div>
+            <div class="comp-item"><span class="comp-icon">📊</span><div><div class="comp-name">진행 프로그레스바</div><div class="comp-desc">상단 슬림 바, N/전체 카운터</div></div></div>
+            <div class="comp-item"><span class="comp-icon">🃏</span><div><div class="comp-name">FlashcardItem</div><div class="comp-desc">앞: 대형 한자 / 뒤: 뜻+발음, 3D 플립</div></div></div>
+            <div class="comp-item"><span class="comp-icon">❌</span><div><div class="comp-name">모름 버튼</div><div class="comp-desc">빨강계, 다음 카드 + 틀림 기록</div></div></div>
+            <div class="comp-item"><span class="comp-icon">✅</span><div><div class="comp-name">앎 버튼</div><div class="comp-desc">초록계, 다음 카드 + 맞음 기록</div></div></div>
+            <div class="comp-item"><span class="comp-icon">🏆</span><div><div class="comp-name">완료 결과 카드</div><div class="comp-desc">정확도 N/M + % + 돌아가기/재시작</div></div></div>
+          </div>
+        </div>
+
+        <div class="comp-section">
+          <div class="comp-label">인터랙션</div>
+          <div class="ia-list">
+            <div class="ia-item click"><span class="ia-trigger">클릭</span><div><div class="ia-action">카드 앞면</div><div class="ia-result">3D flip 애니메이션 → 뒷면(뜻+발음)</div></div></div>
+            <div class="ia-item click"><span class="ia-trigger">클릭</span><div><div class="ia-action">앎 / 모름 버튼</div><div class="ia-result">다음 카드로 슬라이드 + 결과 누적</div></div></div>
+            <div class="ia-item click"><span class="ia-trigger">키보드</span><div><div class="ia-action">← → 방향키</div><div class="ia-result">모름 / 앎 단축키</div></div></div>
+            <div class="ia-item click"><span class="ia-trigger">클릭</span><div><div class="ia-action">10 / 20 / 50 버튼</div><div class="ia-result">해당 수량 카드 세션 시작</div></div></div>
+          </div>
+        </div>
+        <div class="state-row">
+          <span class="state-tag">setup</span>
+          <span class="state-tag active">studying</span>
+          <span class="state-tag">flipped</span>
+          <span class="state-tag">done</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUIZ -->
+    <div class="page-card" id="page-quiz">
+      <div class="card-header">
+        <div>
+          <div class="route">/quiz</div>
+          <div class="page-name">퀴즈</div>
+        </div>
+        <div class="access-badges"><span class="ab u">로그인</span></div>
+      </div>
+      <div class="card-body">
+        <div class="comp-section">
+          <div class="comp-label">컴포넌트</div>
+          <div class="comp-list">
+            <div class="comp-item"><span class="comp-icon">🎯</span><div><div class="comp-name">모드 선택</div><div class="comp-desc">뜻 맞추기 / 음 맞추기 토글</div></div></div>
+            <div class="comp-item"><span class="comp-icon">📊</span><div><div class="comp-name">프로그레스바</div><div class="comp-desc">문제 N/전체</div></div></div>
+            <div class="comp-item"><span class="comp-icon">🈴</span><div><div class="comp-name">문제 한자 표시</div><div class="comp-desc">대형 한자 + 문제 텍스트</div></div></div>
+            <div class="comp-item"><span class="comp-icon">🔘</span><div><div class="comp-name">4지선다 버튼</div><div class="comp-desc">선택 전: 기본 / 선택 후: 정답(초록)/오답(빨강)</div></div></div>
+            <div class="comp-item"><span class="comp-icon">⏭️</span><div><div class="comp-name">다음 버튼</div><div class="comp-desc">선택 후 활성화</div></div></div>
+            <div class="comp-item"><span class="comp-icon">📈</span><div><div class="comp-name">결과 화면</div><div class="comp-desc">맞은 수 / 전체 + 정확도 %</div></div></div>
+          </div>
+        </div>
+        <div class="comp-section">
+          <div class="comp-label">인터랙션</div>
+          <div class="ia-list">
+            <div class="ia-item click"><span class="ia-trigger">클릭</span><div><div class="ia-action">선택지 버튼</div><div class="ia-result">즉시 정답/오답 피드백 (색상 변경)</div></div></div>
+            <div class="ia-item click"><span class="ia-trigger">클릭</span><div><div class="ia-action">다음 버튼</div><div class="ia-result">다음 문제 or 결과 화면</div></div></div>
+            <div class="ia-item click"><span class="ia-trigger">키보드</span><div><div class="ia-action">1~4 숫자키</div><div class="ia-result">해당 선택지 선택</div></div></div>
+          </div>
+        </div>
+        <div class="state-row">
+          <span class="state-tag">setup</span>
+          <span class="state-tag active">answering</span>
+          <span class="state-tag">revealed</span>
+          <span class="state-tag">done</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="page-card" id="page-stats">
+      <div class="card-header">
+        <div>
+          <div class="route">/stats</div>
+          <div class="page-name">학습 통계</div>
+        </div>
+        <div class="access-badges"><span class="ab u">로그인</span></div>
+      </div>
+      <div class="card-body">
+        <div class="comp-section">
+          <div class="comp-label">컴포넌트</div>
+          <div class="comp-list">
+            <div class="comp-item"><span class="comp-icon">🔵</span><div><div class="comp-name">전체 진행률 링 차트</div><div class="comp-desc">학습한 항목 / 전체 (%) 도넛 차트</div></div></div>
+            <div class="comp-item"><span class="comp-icon">📦</span><div><div class="comp-name">StatCard 4개</div><div class="comp-desc">학습 항목수 / 스트릭 / 플래시 정확도 / 퀴즈 정확도</div></div></div>
+            <div class="comp-item"><span class="comp-icon">📅</span><div><div class="comp-name">최근 7일 히스토리 (예정)</div><div class="comp-desc">일별 학습량 바 차트</div></div></div>
+            <div class="comp-item"><span class="comp-icon">⚠️</span><div><div class="comp-name">약점 목록 (예정)</div><div class="comp-desc">틀린 횟수 많은 항목 리스트</div></div></div>
+          </div>
+        </div>
+        <div class="ux-note">현재: StatCard 4개 + 링 차트 구현됨. 히스토리 바 차트, 약점 목록은 미구현.</div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="page-card" id="page-settings">
+      <div class="card-header">
+        <div>
+          <div class="route">/settings</div>
+          <div class="page-name">설정</div>
+        </div>
+        <div class="access-badges"><span class="ab u">로그인</span></div>
+      </div>
+      <div class="card-body">
+        <div class="comp-section">
+          <div class="comp-label">컴포넌트</div>
+          <div class="comp-list">
+            <div class="comp-item"><span class="comp-icon">👤</span><div><div class="comp-name">Profile 섹션</div><div class="comp-desc">표시이름 + 이메일 (읽기 전용)</div></div></div>
+            <div class="comp-item"><span class="comp-icon">🎨</span><div><div class="comp-name">Appearance 섹션</div><div class="comp-desc">다크/라이트 모드 토글</div></div></div>
+            <div class="comp-item"><span class="comp-icon">🚪</span><div><div class="comp-name">로그아웃 버튼</div><div class="comp-desc">signOut → /</div></div></div>
+          </div>
+        </div>
+        <div class="comp-section">
+          <div class="comp-label">인터랙션</div>
+          <div class="ia-list">
+            <div class="ia-item click"><span class="ia-trigger">클릭</span><div><div class="ia-action">다크모드 토글</div><div class="ia-result">즉시 테마 전환 + 저장</div></div></div>
+            <div class="ia-item click"><span class="ia-trigger">클릭</span><div><div class="ia-action">로그아웃</div><div class="ia-result">세션 종료 → /</div></div></div>
+          </div>
+        </div>
+        <div class="ux-note">미구현: 이름 편집, 비밀번호 변경, 프로필 이미지 업로드</div>
+      </div>
+    </div>
+
+    <!-- ADMIN -->
+    <div class="page-card" id="page-admin">
+      <div class="card-header">
+        <div>
+          <div class="route">/admin</div>
+          <div class="page-name">관리자 패널</div>
+        </div>
+        <div class="access-badges"><span class="ab a">관리자</span></div>
+      </div>
+      <div class="card-body">
+        <div class="comp-section">
+          <div class="comp-label">컴포넌트</div>
+          <div class="comp-list">
+            <div class="comp-item"><span class="comp-icon">👥</span><div><div class="comp-name">유저 관리 탭</div><div class="comp-desc">전체 유저 목록 + 역할 변경 (user/admin)</div></div></div>
+            <div class="comp-item"><span class="comp-icon">📝</span><div><div class="comp-name">콘텐츠 관리 탭</div><div class="comp-desc">한자/본초/경혈/방제 CRUD + 임포트/익스포트</div></div></div>
+            <div class="comp-item"><span class="comp-icon">🏷️</span><div><div class="comp-name">태그 관리 탭</div><div class="comp-desc">태그 생성/편집 + 동의어 그룹 매핑</div></div></div>
+            <div class="comp-item"><span class="comp-icon">📊</span><div><div class="comp-name">분석 탭 (예정)</div><div class="comp-desc">DAU, 가입 추이, 인기 항목</div></div></div>
+            <div class="comp-item"><span class="comp-icon">🌐</span><div><div class="comp-name">퍼블릭 유니버스 설정 (예정)</div><div class="comp-desc">/universe 추천 DB 편집</div></div></div>
+          </div>
+        </div>
+        <div class="comp-section">
+          <div class="comp-label">인터랙션</div>
+          <div class="ia-list">
+            <div class="ia-item cond"><span class="ia-trigger">조건</span><div><div class="ia-action">비관리자 접근</div><div class="ia-result">403 or → /my 리디렉트</div></div></div>
+            <div class="ia-item click"><span class="ia-trigger">클릭</span><div><div class="ia-action">역할 변경 드롭다운</div><div class="ia-result">즉시 DB 업데이트 + 확인 토스트</div></div></div>
+            <div class="ia-item click"><span class="ia-trigger">클릭</span><div><div class="ia-action">항목 삭제</div><div class="ia-result">확인 모달 → 삭제 실행</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXPLORE/BROWSE -->
+    <div class="page-card" id="page-explore">
+      <div class="card-header">
+        <div>
+          <div class="route">/explore/browse</div>
+          <div class="page-name">데이터셋 브라우저</div>
+        </div>
+        <div class="access-badges"><span class="ab u">로그인</span></div>
+      </div>
+      <div class="card-body">
+        <div class="comp-section">
+          <div class="comp-label">컴포넌트</div>
+          <div class="comp-list">
+            <div class="comp-item"><span class="comp-icon">🌌</span><div><div class="comp-name">Official Universe 카드</div><div class="comp-desc">공식 전체 그래프 → /explore</div></div></div>
+            <div class="comp-item"><span class="comp-icon">📦</span><div><div class="comp-name">데이터셋 카드</div><div class="comp-desc">한자/본초/경혈/방제 항목 수 + 이동 링크</div></div></div>
+            <div class="comp-item"><span class="comp-icon">🔜</span><div><div class="comp-name">Coming Soon 섹션</div><div class="comp-desc">타 사용자 공개 유니버스 (미래)</div></div></div>
+          </div>
+        </div>
+        <div class="comp-section">
+          <div class="comp-label">인터랙션</div>
+          <div class="ia-list">
+            <div class="ia-item click"><span class="ia-trigger">클릭</span><div><div class="ia-action">데이터셋 카드</div><div class="ia-result">→ /boncho, /acupoint, /prescription</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end page-grid -->
+</section>
+
+<!-- ============================== NAVIGATION ============================== -->
+<section class="section" id="nav">
+  <div class="section-title">네비게이션 구조</div>
+  <table>
+    <thead>
+      <tr><th>아이콘</th><th>이름</th><th>라우트</th><th>표시 조건</th><th>위치</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Planet</td><td>마이유니버스</td><td><code>/my</code></td><td>로그인</td><td>사이드바 상단</td></tr>
+      <tr><td>Compass</td><td>탐색</td><td><code>/explore</code></td><td>로그인</td><td>사이드바</td></tr>
+      <tr><td>Leaf</td><td>본초학</td><td><code>/boncho</code></td><td>로그인</td><td>사이드바</td></tr>
+      <tr><td>Crosshair</td><td>경혈학</td><td><code>/acupoint</code></td><td>로그인</td><td>사이드바</td></tr>
+      <tr><td>Flask</td><td>방제학</td><td><code>/prescription</code></td><td>로그인</td><td>사이드바</td></tr>
+      <tr><td>Cards</td><td>플래시카드</td><td><code>/flashcard</code></td><td>로그인</td><td>사이드바</td></tr>
+      <tr><td>Brain</td><td>퀴즈</td><td><code>/quiz</code></td><td>로그인</td><td>사이드바</td></tr>
+      <tr><td>ChartBar</td><td>통계</td><td><code>/stats</code></td><td>로그인</td><td>사이드바</td></tr>
+      <tr><td>Gear</td><td>설정</td><td><code>/settings</code></td><td>로그인</td><td>사이드바 하단</td></tr>
+      <tr><td>Crown</td><td>관리자</td><td><code>/admin</code></td><td>admin 역할만</td><td>사이드바 하단</td></tr>
+      <tr><td>Sun/Moon</td><td>다크모드</td><td>—</td><td>로그인</td><td>사이드바 하단</td></tr>
+    </tbody>
+  </table>
+
+  <div style="margin-top:16px; padding:12px 16px; background:var(--surface); border:1px solid var(--border); border-radius:8px; font-size:12px;">
+    <strong>사이드바 미표시 페이지:</strong>
+    <code>/</code> <code>/login</code> <code>/universe</code> <code>/my</code> <code>/explore</code> <code>/explore/browse</code> <code>/auth/callback</code> <code>/terms</code>
+    <div style="margin-top:6px; color:var(--muted)">이 페이지들은 AppShell 없이 전체화면 또는 독립 레이아웃 사용</div>
+  </div>
+</section>
+
+<!-- ============================== INTERACTION PRINCIPLES ============================== -->
+<section class="section" id="interactions">
+  <div class="section-title">인터랙션 원칙</div>
+  <table>
+    <thead>
+      <tr><th>원칙</th><th>내용</th><th>적용 범위</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>인증 게이트</td><td>로그인 필요 기능 클릭 시 disabled 처리 없이 → /login 이동</td><td>전체</td></tr>
+      <tr><td>디바운스 검색</td><td>300ms 디바운스 후 실시간 필터 (API 부하 방지)</td><td>모든 검색</td></tr>
+      <tr><td>낙관적 업데이트</td><td>내 우주 추가/삭제는 서버 응답 전 UI 즉시 반영</td><td>/my, 상세 패널</td></tr>
+      <tr><td>60fps 유지</td><td>그래프 물리 연산은 Web Worker, 렌더링은 PixiJS/Three.js</td><td>/universe, /my</td></tr>
+      <tr><td>토스트 피드백</td><td>추가/삭제/오류 시 비침습적 토스트 (2~3초)</td><td>전체</td></tr>
+      <tr><td>음 배지 규칙</td><td>1글자: 정원 / 다글자: pill. border 0.5px + radius 999px</td><td>한자 관련 전체</td></tr>
+      <tr><td>색상 원칙</td><td>흰~흑 계열만. 별(중요도)만 yellow-5 허용</td><td>전체 UI</td></tr>
+      <tr><td>키보드 접근성</td><td>플래시카드 ←→, 퀴즈 1~4 숫자키 단축키</td><td>학습 페이지</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============================== COMPONENT CATALOG ============================== -->
+<section class="section" id="components">
+  <div class="section-title">공통 컴포넌트 목록</div>
+  <table>
+    <thead>
+      <tr><th>컴포넌트</th><th>파일</th><th>용도</th><th>상태</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>AppShell</td><td><code>components/ui/AppShell.tsx</code></td><td>루트 레이아웃 래퍼 (사이드바 조건부)</td><td>✅ 구현</td></tr>
+      <tr><td>Sidebar</td><td><code>components/ui/Sidebar.tsx</code></td><td>좌측 네비게이션 (60px 접힘/220px 펼침)</td><td>✅ 구현</td></tr>
+      <tr><td>SearchInput</td><td><code>components/ui/SearchInput.tsx</code></td><td>디바운스 검색 인풋</td><td>✅ 구현</td></tr>
+      <tr><td>FilterChips</td><td><code>components/ui/FilterChips.tsx</code></td><td>필터 칩 그룹</td><td>✅ 구현</td></tr>
+      <tr><td>PageHeader</td><td><code>components/ui/PageHeader.tsx</code></td><td>페이지 제목 + 아이콘</td><td>✅ 구현</td></tr>
+      <tr><td>WorkspaceLayout</td><td><code>components/workspace/WorkspaceLayout.tsx</code></td><td>3열 워크스페이스 레이아웃</td><td>✅ 구현</td></tr>
+      <tr><td>KnowledgeGraph</td><td><code>components/graph/KnowledgeGraph.tsx</code></td><td>Three.js 3D 인터랙티브 그래프</td><td>✅ 구현</td></tr>
+      <tr><td>FlashcardItem</td><td><code>components/learning/FlashcardItem.tsx</code></td><td>플립 애니메이션 플래시카드</td><td>✅ 구현</td></tr>
+      <tr><td>TagSection</td><td><code>components/tags/TagSection.tsx</code></td><td>사용자 태그 CRUD</td><td>✅ 구현</td></tr>
+      <tr><td>BonchoDetailPanel</td><td><code>components/boncho/BonchoDetailPanel.tsx</code></td><td>본초 상세 정보 패널</td><td>✅ 구현</td></tr>
+      <tr><td>AcupointSidePanel</td><td><code>components/acupoint/AcupointSidePanel.tsx</code></td><td>경혈 상세 정보 패널</td><td>✅ 구현</td></tr>
+      <tr><td>PrescriptionSidePanel</td><td><code>components/prescription/PrescriptionSidePanel.tsx</code></td><td>방제 상세 정보 패널</td><td>✅ 구현</td></tr>
+      <tr><td>Empty State</td><td>(미구현)</td><td>/my 첫 방문 가이드</td><td>⚠️ 미구현</td></tr>
+      <tr><td>Onboarding</td><td>(미구현)</td><td>신규 가입 직후 튜토리얼</td><td>⚠️ 미구현</td></tr>
+      <tr><td>HistoryChart</td><td>(미구현)</td><td>7일 학습 히스토리 바 차트</td><td>⚠️ 미구현</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<hr>
+<div style="text-align:center; padding:24px; color:var(--muted); font-size:11px;">
+  OWN UNIVERSE — UX 설계 문서 · 2026-04-14 · Claude Code 생성
+  <br>
+  <a href="#" style="color:var(--accent); text-decoration:none; font-size:11px;">FigJam 플로우차트 →</a>
+</div>
+
+</div><!-- end main -->
+</body>
+</html>
