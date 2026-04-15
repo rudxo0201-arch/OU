@@ -1,6 +1,7 @@
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
 import '@mantine/dates/styles.css';
+import 'xterm/css/xterm.css';
 import './globals.css';
 
 import { ColorSchemeScript, MantineProvider } from '@mantine/core';
@@ -27,6 +28,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="ko" suppressHydrationWarning className={orbitron.variable}>
       <head>
         <ColorSchemeScript defaultColorScheme="auto" />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#060810" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />

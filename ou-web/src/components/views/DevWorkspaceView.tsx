@@ -1,12 +1,14 @@
 'use client';
 
 import { useCallback, useRef, useState } from 'react';
-import { Box } from '@mantine/core';
+import { Box, Group, Text, Badge } from '@mantine/core';
+import { Terminal, Globe } from '@phosphor-icons/react';
 import type { ViewProps } from './registry';
 import { CodeView } from './CodeView';
 import { TerminalView } from './TerminalView';
 import { AIDevView } from './AIDevView';
 import { GitPanel } from './dev/GitPanel';
+import { PreviewPanel } from './dev/PreviewPanel';
 import { ProjectSelector } from './dev/ProjectSelector';
 import { useDevWorkspaceStore } from '@/stores/devWorkspaceStore';
 import { useWebContainer } from '@/hooks/useWebContainer';
@@ -135,10 +137,8 @@ function DevWorkspaceLayout({ nodes, filters, onSave, layoutConfig }: ViewProps)
           }}
         />
 
-        {/* 터미널 */}
-        <Box style={{ flex: 1, minHeight: 120, overflow: 'hidden' }}>
-          <TerminalView {...viewProps} />
-        </Box>
+        {/* 터미널 / 프리뷰 */}
+        <BottomPanel viewProps={viewProps} />
       </Box>
 
       {/* 수평 드래그 핸들 */}
@@ -174,6 +174,59 @@ function DevWorkspaceLayout({ nodes, filters, onSave, layoutConfig }: ViewProps)
         <Box style={{ flex: 1, minHeight: 100, overflow: 'hidden' }}>
           <GitPanel />
         </Box>
+      </Box>
+    </Box>
+  );
+}
+
+/** 터미널 + 프리뷰 탭 패널 */
+function BottomPanel({ viewProps }: { viewProps: ViewProps }) {
+  const [tab, setTab] = useState<'terminal' | 'preview'>('terminal');
+  const { previewUrl } = useDevWorkspaceStore();
+
+  return (
+    <Box style={{ flex: 1, minHeight: 120, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+      {/* 탭 헤더 */}
+      <Group gap={0} style={{ borderBottom: '1px solid var(--mantine-color-dark-5)', flexShrink: 0 }}>
+        <Group
+          gap={4}
+          px="sm"
+          py={4}
+          style={{
+            cursor: 'pointer',
+            borderBottom: tab === 'terminal' ? '2px solid var(--mantine-color-green-5)' : '2px solid transparent',
+          }}
+          onClick={() => setTab('terminal')}
+        >
+          <Terminal size={11} color={tab === 'terminal' ? 'var(--mantine-color-green-5)' : undefined} />
+          <Text fz={10} fw={tab === 'terminal' ? 600 : 400} c={tab === 'terminal' ? undefined : 'dimmed'}>
+            터미널
+          </Text>
+        </Group>
+        <Group
+          gap={4}
+          px="sm"
+          py={4}
+          style={{
+            cursor: 'pointer',
+            borderBottom: tab === 'preview' ? '2px solid var(--mantine-color-blue-5)' : '2px solid transparent',
+          }}
+          onClick={() => setTab('preview')}
+        >
+          <Globe size={11} color={tab === 'preview' ? 'var(--mantine-color-blue-5)' : undefined} />
+          <Text fz={10} fw={tab === 'preview' ? 600 : 400} c={tab === 'preview' ? undefined : 'dimmed'}>
+            프리뷰
+          </Text>
+          {previewUrl && <Badge size="xs" color="green" variant="dot" />}
+        </Group>
+      </Group>
+
+      {/* 탭 컨텐츠 */}
+      <Box style={{ flex: 1, minHeight: 0, display: tab === 'terminal' ? 'block' : 'none' }}>
+        <TerminalView {...viewProps} />
+      </Box>
+      <Box style={{ flex: 1, minHeight: 0, display: tab === 'preview' ? 'block' : 'none' }}>
+        <PreviewPanel />
       </Box>
     </Box>
   );

@@ -57,12 +57,18 @@ export function ActionBlock({ action, onExecuted }: ActionBlockProps) {
     setStatus('running');
     setError(null);
 
+    const ctx = {
+      isAdminMode: wsStore.isAdminMode,
+      projectId: wsStore.projectId,
+      webcontainerInstance: wsStore.webcontainerInstance,
+    };
+
     let result: ActionResult;
 
     if (action.type === 'file_edit') {
-      result = await executeFileEdit(action);
+      result = await executeFileEdit(action, ctx);
     } else if (action.type === 'terminal') {
-      result = await executeTerminal(action);
+      result = await executeTerminal(action, ctx);
       // 터미널 결과를 store에 반영
       if (result.data) {
         wsStore.appendTerminalOutput({
@@ -76,7 +82,7 @@ export function ActionBlock({ action, onExecuted }: ActionBlockProps) {
       }
     } else {
       // git
-      result = await executeGit(action);
+      result = await executeGit(action, ctx);
       // git 후 상태 갱신
       if (result.success) {
         wsStore.refreshGitStatus();

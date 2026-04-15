@@ -21,6 +21,8 @@ export function WebContainerTerminal() {
     if (webcontainerStatus !== 'ready' || !webcontainerInstance || !terminalRef.current) return;
 
     let disposed = false;
+    let resizeObserver: ResizeObserver | null = null;
+    const abortController = new AbortController();
 
     async function init() {
       try {
@@ -55,45 +57,47 @@ export function WebContainerTerminal() {
         const shell = await spawnShell();
         shellRef.current = shell;
 
-        // 쉘 출력 → xterm
+        // 쉘 출력 → xterm (abort signal로 안전하게 정리)
         shell.output.pipeTo(
           new WritableStream({
             write(chunk) {
               if (!disposed) term.write(chunk);
             },
           }),
-        );
+          { signal: abortController.signal },
+        ).catch(() => {}); // abort 시 에러 무시
 
         // xterm 입력 → 쉘
         const writer = shell.input.getWriter();
         term.onData(data => {
-          writer.write(data);
+          if (!disposed) writer.write(data);
         });
 
         // 리사이즈
-        const resizeObserver = new ResizeObserver(() => {
-          fitAddon.fit();
-          shell.resize({ cols: term.cols, rows: term.rows });
+        resizeObserver = new ResizeObserver(() => {
+          try {
+            fitAddon.fit();
+            shell.resize({ cols: term.cols, rows: term.rows });
+          } catch { /* resize 중 에러 무시 */ }
         });
         resizeObserver.observe(terminalRef.current!);
-
-        return () => {
-          resizeObserver.disconnect();
-        };
       } catch (e) {
         if (!disposed) setError((e as Error).message);
       }
     }
 
-    const cleanupPromise = init();
+    init();
 
     return () => {
       disposed = true;
+      abortController.abort(); // WritableStream 정리
+      resizeObserver?.disconnect();
       xtermRef.current?.dispose();
       xtermRef.current = null;
-      shellRef.current?.kill();
+      // shell kill은 약간의 지연 후 (stream flush 대기)
+      const shell = shellRef.current;
       shellRef.current = null;
-      cleanupPromise?.then(cleanup => cleanup?.());
+      if (shell) setTimeout(() => shell.kill(), 100);
     };
   }, [webcontainerStatus, webcontainerInstance]);
 

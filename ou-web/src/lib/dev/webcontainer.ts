@@ -68,17 +68,43 @@ export async function loadProject(projectId: string): Promise<WebContainer> {
   const tree = toFileSystemTree(files);
   await container.mount(tree);
 
+  // package.json이 있으면 자동으로 npm install
+  try {
+    const pkgJson = await container.fs.readFile('package.json', 'utf-8');
+    if (pkgJson) {
+      const installProcess = await container.spawn('npm', ['install']);
+      // install 출력은 무시 (시간이 걸릴 수 있음)
+      await installProcess.exit;
+    }
+  } catch {
+    // package.json 없음 → 설치 불필요
+  }
+
   // git init (WebContainer에서 로컬 git 사용 가능하게)
-  const initProcess = await container.spawn('git', ['init']);
-  await initProcess.exit;
+  try {
+    const initProcess = await container.spawn('git', ['init']);
+    const initCode = await initProcess.exit;
+    if (initCode !== 0) throw new Error(`git init exited with ${initCode}`);
 
-  const addProcess = await container.spawn('git', ['add', '.']);
-  await addProcess.exit;
+    const addProcess = await container.spawn('git', ['add', '.']);
+    const addCode = await addProcess.exit;
+    if (addCode !== 0) throw new Error(`git add exited with ${addCode}`);
 
-  const commitProcess = await container.spawn('git', [
-    'commit', '-m', 'initial', '--allow-empty',
-  ]);
-  await commitProcess.exit;
+    const commitProcess = await container.spawn('git', [
+      'commit', '-m', 'initial', '--allow-empty',
+    ]);
+    await commitProcess.exit; // commit 실패는 무시 (빈 프로젝트 가능)
+  } catch (e) {
+    console.warn('[WebContainer] git init failed, continuing without git:', e);
+  }
+
+  // server-ready 이벤트 리스닝 (dev server 등이 시작되면 프리뷰 URL 전달)
+  container.on('server-ready', (_port: number, url: string) => {
+    // Zustand store에 직접 접근 (dynamic import)
+    import('@/stores/devWorkspaceStore').then(m => {
+      m.useDevWorkspaceStore.getState().setPreviewUrl(url);
+    });
+  });
 
   return container;
 }
@@ -100,8 +126,9 @@ export async function writeContainerFile(path: string, content: string): Promise
   if (parts.length > 1) {
     const dir = parts.slice(0, -1).join('/');
     try {
-      await instance.spawn('mkdir', ['-p', dir]);
-    } catch { /* ignore */ }
+      const mkdirProcess = await instance.spawn('mkdir', ['-p', dir]);
+      await mkdirProcess.exit;
+    } catch { /* mkdir might not exist in jsh */ }
   }
 
   await instance.fs.writeFile(path, content);

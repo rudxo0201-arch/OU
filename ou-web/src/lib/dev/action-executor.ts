@@ -21,6 +21,8 @@
  * 보안: 기존 /api/dev/file, /api/dev/exec, /api/dev/git 호출 → 서버사이드 보안 그대로 유지
  */
 
+import { parse as parseShellArgs } from 'shell-quote';
+
 export interface FileEditAction {
   type: 'file_edit';
   path: string;
@@ -136,8 +138,10 @@ export async function executeTerminal(action: TerminalAction, ctx?: ExecContext)
     if (ctx?.webcontainerInstance && !ctx.isAdminMode) {
       // WebContainer 내부에서 명령 실행
       const container = ctx.webcontainerInstance;
-      const args = action.command.split(' ');
-      const cmd = args.shift()!;
+      const parsed = parseShellArgs(action.command).filter((t): t is string => typeof t === 'string');
+      const cmd = parsed[0];
+      const args = parsed.slice(1);
+      if (!cmd) return { success: false, error: 'Empty command' };
       const process = await container.spawn(cmd, args);
 
       let stdout = '';

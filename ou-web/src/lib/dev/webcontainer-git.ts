@@ -5,27 +5,31 @@
 import type { WebContainer } from '@webcontainer/api';
 import type { GitChange, GitLogEntry } from '@/stores/devWorkspaceStore';
 
-/** 컨테이너에서 명령 실행 후 stdout 수집 */
+/**
+ * 컨테이너에서 명령 실행 후 출력 수집
+ * WebContainer의 process.output에는 stdout/stderr가 합쳐져서 나온다.
+ */
 async function exec(
   container: WebContainer,
   cmd: string,
   args: string[],
-): Promise<{ stdout: string; stderr: string; exitCode: number }> {
+): Promise<{ stdout: string; exitCode: number }> {
   const process = await container.spawn(cmd, args);
 
-  let stdout = '';
-  let stderr = '';
+  let output = '';
 
-  process.output.pipeTo(
+  // pipeTo는 stream이 끝날 때까지 대기하므로 별도 promise로
+  const outputDone = process.output.pipeTo(
     new WritableStream({
-      write(chunk) { stdout += chunk; },
+      write(chunk) { output += chunk; },
     }),
   );
 
-  // WebContainer의 stderr는 output에 합쳐질 수 있음
   const exitCode = await process.exit;
+  // stream flush 대기
+  await outputDone.catch(() => {});
 
-  return { stdout, stderr, exitCode };
+  return { stdout: output, exitCode };
 }
 
 /** git status --porcelain 파싱 */

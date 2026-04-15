@@ -61,6 +61,10 @@ interface DevWorkspaceStore {
   currentErrors: string[];
   setCurrentErrors: (errors: string[]) => void;
 
+  // 프리뷰 상태
+  previewUrl: string | null;
+  setPreviewUrl: (url: string | null) => void;
+
   // Git 상태
   gitBranch: string;
   gitChanges: GitChange[];
@@ -85,6 +89,7 @@ export const useDevWorkspaceStore = create<DevWorkspaceStore>()((set, get) => ({
   selectedText: '',
   terminalOutput: [],
   currentErrors: [],
+  previewUrl: null,
 
   // Git 초기값
   gitBranch: '',
@@ -112,6 +117,7 @@ export const useDevWorkspaceStore = create<DevWorkspaceStore>()((set, get) => ({
       webcontainerStatus: 'idle',
       webcontainerError: null,
       webcontainerInstance: null,
+      previewUrl: null,
     });
   },
 
@@ -131,6 +137,7 @@ export const useDevWorkspaceStore = create<DevWorkspaceStore>()((set, get) => ({
       webcontainerStatus: 'idle',
       webcontainerError: null,
       webcontainerInstance: null,
+      previewUrl: null,
     });
   },
 
@@ -160,12 +167,17 @@ export const useDevWorkspaceStore = create<DevWorkspaceStore>()((set, get) => ({
   setSelectedText: (text) => set({ selectedText: text }),
 
   appendTerminalOutput: (entry) => set(s => ({
-    terminalOutput: [...s.terminalOutput.slice(-99), entry],
+    terminalOutput: [...s.terminalOutput.slice(-99), {
+      ...entry,
+      stdout: entry.stdout.slice(0, 100_000),
+      stderr: entry.stderr.slice(0, 10_000),
+    }],
   })),
 
   clearTerminalOutput: () => set({ terminalOutput: [] }),
 
   setCurrentErrors: (errors) => set({ currentErrors: errors }),
+  setPreviewUrl: (url) => set({ previewUrl: url }),
 
   refreshGitStatus: async () => {
     const { isAdminMode, webcontainerInstance } = get();
