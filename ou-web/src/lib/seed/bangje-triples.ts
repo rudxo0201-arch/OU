@@ -141,8 +141,105 @@ export async function generateBangjeTriples(supabaseAdmin: SupabaseClient) {
     }
   }
 
+  // 방제 간 파생 관계 트리플 생성
+  const formulaRelTriples = generateFormulaRelationTriples(formulaNodes);
+  if (formulaRelTriples.length > 0) {
+    const { error: relError } = await supabaseAdmin
+      .from('triples')
+      .insert(formulaRelTriples);
+
+    if (relError) {
+      console.error(`[BangjeTriples] Formula relation insert failed:`, relError.message);
+    } else {
+      totalGenerated += formulaRelTriples.length;
+    }
+  }
+
   return {
     generated: totalGenerated,
     total: formulaNodes.length,
+    formulaRelations: formulaRelTriples.length,
   };
+}
+
+/**
+ * 방제 간 파생 관계를 이름 패턴으로 결정적 추출
+ * - 가미X → derived_from X
+ * - X가Y탕 → derived_from X탕
+ * - 소X / 대X → related_to 쌍
+ */
+function generateFormulaRelationTriples(
+  formulaNodes: { id: string; domain_data: Record<string, any> }[],
+): TripleInsert[] {
+  const triples: TripleInsert[] = [];
+  const base = {
+    source_level: 'node' as const,
+    source_type: 'generated' as const,
+    confidence: 'high' as const,
+  };
+
+  // 이름 → nodeId + displayName 맵
+  const nameMap = new Map<string, { nodeId: string; display: string }>();
+  for (const node of formulaNodes) {
+    const d = node.domain_data;
+    const korean = d.name_korean;
+    const display = d.name_hanja ? `${korean}(${d.name_hanja})` : korean;
+    if (korean) nameMap.set(korean, { nodeId: node.id, display });
+  }
+
+  for (const node of formulaNodes) {
+    const d = node.domain_data;
+    const name = d.name_korean as string;
+    if (!name) continue;
+
+    const display = d.name_hanja ? `${name}(${d.name_hanja})` : name;
+
+    // 패턴 1: 가미X → derived_from X
+    if (name.startsWith('가미')) {
+      const parent = name.slice(2);
+      const parentInfo = nameMap.get(parent);
+      if (parentInfo) {
+        triples.push({
+          ...base,
+          node_id: node.id,
+          subject: display,
+          predicate: 'derived_from',
+          object: parentInfo.display,
+        });
+      }
+    }
+
+    // 패턴 2: X가Y탕/산/환 → derived_from X탕/산/환
+    const gaMatch = name.match(/^(.+)가(.+)(탕|산|환|음)$/);
+    if (gaMatch) {
+      const parentName = gaMatch[1] + gaMatch[3];
+      const parentInfo = nameMap.get(parentName);
+      if (parentInfo) {
+        triples.push({
+          ...base,
+          node_id: node.id,
+          subject: display,
+          predicate: 'derived_from',
+          object: parentInfo.display,
+        });
+      }
+    }
+
+    // 패턴 3: 소X ↔ 대X → related_to
+    if (name.startsWith('소')) {
+      const counterpart = '대' + name.slice(1);
+      const counterInfo = nameMap.get(counterpart);
+      if (counterInfo) {
+        triples.push({
+          ...base,
+          node_id: node.id,
+          subject: display,
+          predicate: 'related_to',
+          object: counterInfo.display,
+        });
+      }
+    }
+  }
+
+  return triples;
 }

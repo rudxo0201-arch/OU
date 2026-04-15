@@ -14,10 +14,10 @@ export const GlassCard = forwardRef<HTMLDivElement, GlassCardProps>(
       <Box
         ref={ref}
         style={{
-          background: 'rgba(0, 0, 0, 0.6)',
-          backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)',
-          border: '0.5px solid var(--mantine-color-default-border)',
+          background: 'var(--ou-glass-bg)',
+          backdropFilter: 'blur(var(--ou-glass-blur))',
+          WebkitBackdropFilter: 'blur(var(--ou-glass-blur))',
+          border: '0.5px solid var(--ou-glass-border)',
           borderRadius: 'var(--mantine-radius-md)',
           ...style,
         }}

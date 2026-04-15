@@ -70,12 +70,13 @@ function buildRawText(formula: BangjeRawItem): string {
 }
 
 /**
- * 본초 herb_id → DataNode UUID 룩업맵 구축
+ * 본초 herb_id + name_korean → DataNode UUID 룩업맵 구축
+ * herb_id 우선, 실패 시 이름으로 fallback
  */
 async function buildHerbNodeMap(
   supabaseAdmin: SupabaseClient,
   adminUserId: string,
-): Promise<Map<string, string>> {
+): Promise<{ idMap: Map<string, string>; nameMap: Map<string, string> }> {
   const { data: herbNodes } = await supabaseAdmin
     .from('data_nodes')
     .select('id, domain_data')
@@ -83,14 +84,33 @@ async function buildHerbNodeMap(
     .eq('domain', 'knowledge')
     .eq('is_admin_node', true);
 
-  const map = new Map<string, string>();
+  const idMap = new Map<string, string>();
+  const nameMap = new Map<string, string>();
+
   for (const node of herbNodes ?? []) {
-    const herbId = (node as any).domain_data?.herb_id;
-    if (herbId) {
-      map.set(herbId, node.id);
+    const d = (node as any).domain_data;
+    if (!d?.herb_id && !d?.name_korean) continue;
+    if (d.herb_id) idMap.set(d.herb_id, node.id);
+    if (d.name_korean && !nameMap.has(d.name_korean)) {
+      nameMap.set(d.name_korean, node.id);
     }
   }
-  return map;
+  return { idMap, nameMap };
+}
+
+/**
+ * 구성약물에서 본초 노드 UUID 해석
+ * 1순위: herb_id → idMap, 2순위: herb_name → nameMap
+ */
+function resolveHerbNodeId(
+  comp: { herb_id: string | null; herb_name: string },
+  maps: { idMap: Map<string, string>; nameMap: Map<string, string> },
+): string | null {
+  if (comp.herb_id) {
+    const found = maps.idMap.get(comp.herb_id);
+    if (found) return found;
+  }
+  return maps.nameMap.get(comp.herb_name) ?? null;
 }
 
 /**
@@ -150,8 +170,8 @@ export async function seedBangjeData(
     };
   }
 
-  // 4. 본초 노드 룩업맵 구축
-  const herbNodeMap = await buildHerbNodeMap(supabaseAdmin, adminUserId);
+  // 4. 본초 노드 룩업맵 구축 (ID + 이름 fallback)
+  const herbMaps = await buildHerbNodeMap(supabaseAdmin, adminUserId);
 
   // 5. DataNode 일괄 삽입 (배치 50개씩)
   const BATCH_SIZE = 50;
@@ -164,10 +184,10 @@ export async function seedBangjeData(
       const hasData = !!(formula.efficacy || formula.indications);
       const displayName = formula.hanja ? `${formula.name}(${formula.hanja})` : formula.name;
 
-      // 구성약물에 herb_node_id 해석
+      // 구성약물에 herb_node_id 해석 (ID 우선, 이름 fallback)
       const compositionWithNodeIds = formula.composition.map(c => ({
         ...c,
-        herb_node_id: c.herb_id ? (herbNodeMap.get(c.herb_id) ?? null) : null,
+        herb_node_id: resolveHerbNodeId(c, herbMaps),
       }));
 
       return {
@@ -264,7 +284,7 @@ export async function seedBangjeData(
     if (!matchingFormula) continue;
 
     for (const comp of matchingFormula.composition) {
-      const herbNodeId = comp.herb_id ? herbNodeMap.get(comp.herb_id) : null;
+      const herbNodeId = resolveHerbNodeId(comp, herbMaps);
       if (!herbNodeId) continue;
 
       const weight = comp.role === '군' ? 1.5

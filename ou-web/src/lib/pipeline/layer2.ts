@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { classifyDomain } from './classifier';
 import { detectUnresolved } from './unresolved';
 import { isAdminEmail } from '@/lib/auth/roles';
@@ -23,7 +23,7 @@ function isUpdateMessage(text: string): boolean {
  * Searches last 20 nodes for the user, matching by keyword overlap.
  */
 async function findNodeToUpdate(
-  supabase: Awaited<ReturnType<typeof createClient>>,
+  supabase: ReturnType<typeof createAdminClient>,
   userId: string,
   userMessage: string,
   domain: string,
@@ -80,7 +80,7 @@ interface SaveMessageInput {
 }
 
 export async function saveMessageAsync(input: SaveMessageInput) {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   // 비로그인은 메시지/노드 저장 스킵 (DB FK 제약)
   if (!input.userId) {

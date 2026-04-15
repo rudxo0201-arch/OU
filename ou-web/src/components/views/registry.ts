@@ -32,6 +32,9 @@ export const VIEW_REGISTRY: Record<string, ComponentType<ViewProps>> = {
   resume:          dynamic(() => import('./ResumeView').then(m => m.ResumeView), { ssr: false }),
   snapshot:        dynamic(() => import('./SnapshotView').then(m => m.SnapshotView), { ssr: false }),
   map:             dynamic(() => import('./MapView').then(m => m.MapView), { ssr: false }),
+  code:            dynamic(() => import('./CodeView').then(m => m.CodeView), { ssr: false }),
+  terminal:        dynamic(() => import('./TerminalView').then(m => m.TerminalView), { ssr: false }),
+  ai_dev:          dynamic(() => import('./AIDevView').then(m => m.AIDevView), { ssr: false }),
 };
 
 /* ── View Meta: 뷰별 동작 속성 ── */
@@ -57,6 +60,9 @@ export const VIEW_META: Record<string, ViewMeta> = {
   pdf:             { previewOnClick: false },
   lecture:         { previewOnClick: false },
   map:             { previewOnClick: true },
+  code:            { previewOnClick: false },
+  terminal:        { previewOnClick: false },
+  ai_dev:          { previewOnClick: false },
 };
 
 export function getViewMeta(viewType: string): ViewMeta {
@@ -71,5 +77,6 @@ export const DOMAIN_VIEW_MAP: Record<string, string> = {
   idea:      'mindmap',
   relation:  'relationship',
   emotion:   'journal',
-  finance:   'chart',
+  finance:     'chart',
+  development: 'code',
 };

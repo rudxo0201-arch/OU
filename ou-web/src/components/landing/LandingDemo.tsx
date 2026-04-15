@@ -1,221 +1,316 @@
 'use client';
 
-import { useEffect, useRef, useMemo } from 'react';
-import { Box, Stack, Title, Text, Button, Group, UnstyledButton } from '@mantine/core';
-import { CalendarBlank, CurrencyKrw, CheckSquare, SmileyMeh } from '@phosphor-icons/react';
+import { useEffect, useRef, useCallback } from 'react';
+import { Box, Stack, Text, UnstyledButton, Group } from '@mantine/core';
+import { ArrowRight } from '@phosphor-icons/react';
 import { useRouter } from 'next/navigation';
 
 /* ──────────────────────────────────────────────
- * Demo nodes — everyday Korean labels
+ * DotSphere — PixiJS WebGL particle sphere
+ * 피보나치 구체 + 드래그 회전 + repulsion + 브리딩
  * ──────────────────────────────────────────────*/
-const DEMO_NODES = [
-  { id: 1, label: '희민 생일', size: 7, importance: 3 },
-  { id: 2, label: '경제학 시험', size: 8, importance: 3 },
-  { id: 3, label: '오늘 점심', size: 6, importance: 2 },
-  { id: 4, label: '여행 계획', size: 7, importance: 2 },
-  { id: 5, label: '운동 기록', size: 6, importance: 2 },
-  { id: 6, label: '아이디어 메모', size: 5, importance: 1 },
-  { id: 7, label: '읽을 책', size: 5, importance: 1 },
-  { id: 8, label: '프로젝트 회의', size: 7, importance: 3 },
-  { id: 9, label: '가계부', size: 5, importance: 1 },
-  { id: 10, label: '감사 일기', size: 6, importance: 2 },
-];
-
-const DEMO_EDGES: [number, number][] = [
-  [1, 4], [2, 8], [3, 10], [4, 5], [6, 7],
-  [8, 2], [9, 3], [5, 10], [1, 6], [7, 9],
-];
-
-/* ──────────────────────────────────────────────
- * Seeded random for stable SSR/CSR layout
- * ──────────────────────────────────────────────*/
-function seededRandom(seed: number) {
-  let s = seed;
-  return () => {
-    s = (s * 16807) % 2147483647;
-    return (s - 1) / 2147483646;
-  };
-}
-
-/* ──────────────────────────────────────────────
- * DemoGraph — lightweight CSS-animated graph
- * ──────────────────────────────────────────────*/
-function DemoGraph() {
+function DotSphere() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const appRef = useRef<any>(null);
+  const destroyedRef = useRef(false);
 
-  // Generate stable positions for nodes
-  const nodePositions = useMemo(() => {
-    const rand = seededRandom(42);
-    const padding = 15; // percent from edges
-    return DEMO_NODES.map(() => ({
-      x: padding + rand() * (100 - padding * 2),
-      y: padding + rand() * (100 - padding * 2),
-      delay: rand() * 6,
-      duration: 8 + rand() * 6,
-      dx: (rand() - 0.5) * 20,
-      dy: (rand() - 0.5) * 20,
-    }));
+  useEffect(() => {
+    if (!containerRef.current) return;
+    destroyedRef.current = false;
+
+    let animId: number;
+    let app: any;
+
+    const init = async () => {
+      const PIXI = await import('pixi.js');
+
+      if (destroyedRef.current || !containerRef.current) return;
+
+      app = new PIXI.Application();
+      appRef.current = app;
+
+      const container = containerRef.current;
+      const w = container.clientWidth;
+      const h = container.clientHeight;
+
+      await app.init({
+        width: w,
+        height: h,
+        backgroundAlpha: 0,
+        antialias: true,
+        resolution: Math.min(window.devicePixelRatio, 2),
+        autoDensity: true,
+      });
+
+      if (destroyedRef.current) {
+        app.destroy(true);
+        return;
+      }
+
+      container.appendChild(app.canvas);
+
+      // ── 피보나치 구체 점 생성 ──
+      const isMobile = window.innerWidth < 768;
+      const NUM_POINTS = isMobile ? 500 : 800;
+      const RADIUS = Math.min(w, h) * 0.38;
+      const CENTER_X = w * 0.5;
+      const CENTER_Y = h * 0.5;
+      const PERSPECTIVE = 800;
+      const DOT_COLOR = 0x1a1a1a;
+
+      // 피보나치 구체 좌표
+      const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+      const points: { theta: number; phi: number; baseX: number; baseY: number; baseZ: number; dx: number; dy: number }[] = [];
+
+      for (let i = 0; i < NUM_POINTS; i++) {
+        const y = 1 - (i / (NUM_POINTS - 1)) * 2; // -1 to 1
+        const radiusAtY = Math.sqrt(1 - y * y);
+        const theta = goldenAngle * i;
+        const baseX = Math.cos(theta) * radiusAtY * RADIUS;
+        const baseY = y * RADIUS;
+        const baseZ = Math.sin(theta) * radiusAtY * RADIUS;
+        points.push({ theta: 0, phi: 0, baseX, baseY, baseZ, dx: 0, dy: 0 });
+      }
+
+      // ── Graphics 렌더러 ──
+      const gfx = new PIXI.Graphics();
+      app.stage.addChild(gfx);
+
+      // ── 인터랙션 상태 ──
+      let rotY = 0; // Y축 회전각
+      let rotX = 0; // X축 회전각
+      let autoRotSpeed = 0.002;
+      let dragging = false;
+      let lastPointer = { x: 0, y: 0 };
+      let velocityX = 0;
+      let velocityY = 0;
+      let mouseX = -9999;
+      let mouseY = -9999;
+      const REPULSION_RADIUS = 80;
+      const REPULSION_STRENGTH = 30;
+      let frameCount = 0;
+
+      // 마우스/터치 이벤트
+      const onPointerDown = (e: PointerEvent) => {
+        dragging = true;
+        lastPointer = { x: e.clientX, y: e.clientY };
+        velocityX = 0;
+        velocityY = 0;
+      };
+      const onPointerMove = (e: PointerEvent) => {
+        const rect = container.getBoundingClientRect();
+        mouseX = e.clientX - rect.left;
+        mouseY = e.clientY - rect.top;
+
+        if (dragging) {
+          const dx = e.clientX - lastPointer.x;
+          const dy = e.clientY - lastPointer.y;
+          velocityY = dx * 0.005;
+          velocityX = dy * 0.005;
+          rotY += dx * 0.005;
+          rotX += dy * 0.005;
+          // X축 회전 제한
+          rotX = Math.max(-Math.PI / 3, Math.min(Math.PI / 3, rotX));
+          lastPointer = { x: e.clientX, y: e.clientY };
+        }
+      };
+      const onPointerUp = () => {
+        dragging = false;
+      };
+      const onPointerLeave = () => {
+        mouseX = -9999;
+        mouseY = -9999;
+        dragging = false;
+      };
+
+      // 터치 이벤트
+      const onTouchStart = (e: TouchEvent) => {
+        if (e.touches.length === 1) {
+          dragging = true;
+          lastPointer = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+          velocityX = 0;
+          velocityY = 0;
+        }
+      };
+      const onTouchMove = (e: TouchEvent) => {
+        if (e.touches.length === 1) {
+          const rect = container.getBoundingClientRect();
+          mouseX = e.touches[0].clientX - rect.left;
+          mouseY = e.touches[0].clientY - rect.top;
+
+          if (dragging) {
+            const dx = e.touches[0].clientX - lastPointer.x;
+            const dy = e.touches[0].clientY - lastPointer.y;
+            velocityY = dx * 0.005;
+            velocityX = dy * 0.005;
+            rotY += dx * 0.005;
+            rotX += dy * 0.005;
+            rotX = Math.max(-Math.PI / 3, Math.min(Math.PI / 3, rotX));
+            lastPointer = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+          }
+        }
+      };
+      const onTouchEnd = () => {
+        dragging = false;
+        mouseX = -9999;
+        mouseY = -9999;
+      };
+
+      container.addEventListener('pointerdown', onPointerDown);
+      container.addEventListener('pointermove', onPointerMove);
+      container.addEventListener('pointerup', onPointerUp);
+      container.addEventListener('pointerleave', onPointerLeave);
+      container.addEventListener('touchstart', onTouchStart, { passive: true });
+      container.addEventListener('touchmove', onTouchMove, { passive: true });
+      container.addEventListener('touchend', onTouchEnd);
+
+      // ── 애니메이션 루프 ──
+      const animate = () => {
+        if (destroyedRef.current) return;
+
+        frameCount++;
+
+        // 자동 회전 (드래그 중이 아닐 때)
+        if (!dragging) {
+          rotY += autoRotSpeed;
+          // 관성 감쇠
+          rotY += velocityY;
+          rotX += velocityX;
+          velocityY *= 0.95;
+          velocityX *= 0.95;
+          rotX = Math.max(-Math.PI / 3, Math.min(Math.PI / 3, rotX));
+        }
+
+        const cosY = Math.cos(rotY);
+        const sinY = Math.sin(rotY);
+        const cosX = Math.cos(rotX);
+        const sinX = Math.sin(rotX);
+
+        gfx.clear();
+
+        // Z-sort를 위한 임시 배열
+        const projected: { sx: number; sy: number; z: number; size: number; alpha: number }[] = [];
+
+        for (let i = 0; i < NUM_POINTS; i++) {
+          const p = points[i];
+
+          // Y축 회전
+          let x = p.baseX * cosY + p.baseZ * sinY;
+          let z = -p.baseX * sinY + p.baseZ * cosY;
+          let y = p.baseY;
+
+          // X축 회전
+          const y2 = y * cosX - z * sinX;
+          const z2 = y * sinX + z * cosX;
+          y = y2;
+          z = z2;
+
+          // Perspective projection
+          const scale = PERSPECTIVE / (PERSPECTIVE + z);
+          let sx = CENTER_X + x * scale;
+          let sy = CENTER_Y + y * scale;
+
+          // 깊이 기반 크기/알파
+          const normalizedZ = (z + RADIUS) / (2 * RADIUS); // 0(뒤)~1(앞)
+          const dotSize = 0.8 + normalizedZ * 2.5;
+          let alpha = 0.12 + normalizedZ * 0.6;
+
+          // 브리딩 (앞쪽 점만)
+          if (normalizedZ > 0.6) {
+            const breathe = Math.sin(frameCount * 0.02 + i * 0.1) * 0.15;
+            alpha += breathe * normalizedZ;
+          }
+
+          // Repulsion
+          const dxMouse = sx - mouseX;
+          const dyMouse = sy - mouseY;
+          const distMouse = Math.sqrt(dxMouse * dxMouse + dyMouse * dyMouse);
+          if (distMouse < REPULSION_RADIUS && distMouse > 0) {
+            const force = (1 - distMouse / REPULSION_RADIUS) * REPULSION_STRENGTH;
+            sx += (dxMouse / distMouse) * force;
+            sy += (dyMouse / distMouse) * force;
+          }
+
+          projected.push({ sx, sy, z, size: dotSize, alpha: Math.max(0.05, Math.min(1, alpha)) });
+        }
+
+        // Z-sort: 뒤쪽 먼저 그리기
+        projected.sort((a, b) => a.z - b.z);
+
+        for (const p of projected) {
+          gfx.circle(p.sx, p.sy, p.size);
+          gfx.fill({ color: DOT_COLOR, alpha: p.alpha });
+        }
+
+        animId = requestAnimationFrame(animate);
+      };
+
+      animId = requestAnimationFrame(animate);
+
+      // 리사이즈 핸들러
+      const onResize = () => {
+        if (!container || destroyedRef.current) return;
+        const nw = container.clientWidth;
+        const nh = container.clientHeight;
+        app.renderer.resize(nw, nh);
+      };
+      window.addEventListener('resize', onResize);
+
+      // cleanup 참조 저장
+      (containerRef as any)._cleanup = () => {
+        window.removeEventListener('resize', onResize);
+        container.removeEventListener('pointerdown', onPointerDown);
+        container.removeEventListener('pointermove', onPointerMove);
+        container.removeEventListener('pointerup', onPointerUp);
+        container.removeEventListener('pointerleave', onPointerLeave);
+        container.removeEventListener('touchstart', onTouchStart);
+        container.removeEventListener('touchmove', onTouchMove);
+        container.removeEventListener('touchend', onTouchEnd);
+        cancelAnimationFrame(animId);
+        app.destroy(true);
+      };
+    };
+
+    init();
+
+    return () => {
+      destroyedRef.current = true;
+      if ((containerRef as any)._cleanup) {
+        (containerRef as any)._cleanup();
+      }
+    };
   }, []);
 
   return (
-    <Box
+    <div
       ref={containerRef}
       style={{
-        position: 'relative',
         width: '100%',
         height: '100%',
-        overflow: 'hidden',
+        cursor: 'grab',
+        touchAction: 'none',
       }}
-    >
-      {/* SVG edges */}
-      <svg
-        style={{
-          position: 'absolute',
-          inset: 0,
-          width: '100%',
-          height: '100%',
-          pointerEvents: 'none',
-        }}
-      >
-        {DEMO_EDGES.map(([srcIdx, tgtIdx], i) => {
-          const src = nodePositions[srcIdx - 1];
-          const tgt = nodePositions[tgtIdx - 1];
-          return (
-            <line
-              key={i}
-              x1={`${src.x}%`}
-              y1={`${src.y}%`}
-              x2={`${tgt.x}%`}
-              y2={`${tgt.y}%`}
-              stroke="rgba(255,255,255,0.07)"
-              strokeWidth="0.5"
-              className="demo-edge"
-            />
-          );
-        })}
-      </svg>
-
-      {/* Nodes */}
-      {DEMO_NODES.map((node, i) => {
-        const pos = nodePositions[i];
-        const glowSize = node.size * 6;
-        return (
-          <div
-            key={node.id}
-            className="demo-node"
-            style={{
-              position: 'absolute',
-              left: `${pos.x}%`,
-              top: `${pos.y}%`,
-              transform: 'translate(-50%, -50%)',
-              animation: `demoFloat${i % 4} ${pos.duration}s ease-in-out ${pos.delay}s infinite alternate`,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: 6,
-              pointerEvents: 'none',
-            }}
-          >
-            {/* Glow */}
-            <div
-              style={{
-                position: 'absolute',
-                width: glowSize,
-                height: glowSize,
-                borderRadius: '50%',
-                background: 'radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%)',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-              }}
-            />
-            {/* Dot */}
-            <div
-              style={{
-                width: node.size,
-                height: node.size,
-                borderRadius: '50%',
-                background: `rgba(255,255,255,${0.4 + node.importance * 0.15})`,
-                boxShadow: `0 0 ${node.size * 2}px rgba(255,255,255,${0.1 + node.importance * 0.05})`,
-                position: 'relative',
-                zIndex: 1,
-                animation: `demoTwinkle ${3 + (i % 3)}s ease-in-out ${pos.delay}s infinite alternate`,
-              }}
-            />
-            {/* Label */}
-            <span
-              style={{
-                fontSize: 11,
-                color: `rgba(255,255,255,${0.3 + node.importance * 0.1})`,
-                whiteSpace: 'nowrap',
-                letterSpacing: '-0.2px',
-                position: 'relative',
-                zIndex: 1,
-                fontWeight: 400,
-              }}
-            >
-              {node.label}
-            </span>
-          </div>
-        );
-      })}
-
-      {/* Center glow */}
-      <div
-        style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: 120,
-          height: 120,
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(255,255,255,0.04) 0%, transparent 70%)',
-          pointerEvents: 'none',
-        }}
-      />
-
-      {/* Keyframe styles */}
-      <style>{`
-        @keyframes demoFloat0 {
-          from { transform: translate(-50%, -50%) translate(0px, 0px); }
-          to   { transform: translate(-50%, -50%) translate(8px, -12px); }
-        }
-        @keyframes demoFloat1 {
-          from { transform: translate(-50%, -50%) translate(0px, 0px); }
-          to   { transform: translate(-50%, -50%) translate(-10px, 8px); }
-        }
-        @keyframes demoFloat2 {
-          from { transform: translate(-50%, -50%) translate(0px, 0px); }
-          to   { transform: translate(-50%, -50%) translate(6px, 10px); }
-        }
-        @keyframes demoFloat3 {
-          from { transform: translate(-50%, -50%) translate(0px, 0px); }
-          to   { transform: translate(-50%, -50%) translate(-8px, -6px); }
-        }
-        @keyframes demoTwinkle {
-          0%   { opacity: 0.6; }
-          50%  { opacity: 1; }
-          100% { opacity: 0.7; }
-        }
-      `}</style>
-    </Box>
+    />
   );
 }
 
 /* ──────────────────────────────────────────────
- * LandingDemo — main landing page component
+ * LandingDemo — 랜딩페이지
  * ──────────────────────────────────────────────*/
 export function LandingDemo() {
   const router = useRouter();
 
-  const handleStart = () => {
-    router.push('/login');
-  };
-
-  const handleTry = () => {
+  const handleTry = useCallback(() => {
     router.push('/chat');
-  };
+  }, [router]);
+
+  const handleSignIn = useCallback(() => {
+    router.push('/login');
+  }, [router]);
+
+  const handleSignUp = useCallback(() => {
+    router.push('/login?signup=true');
+  }, [router]);
 
   return (
     <>
@@ -226,164 +321,134 @@ export function LandingDemo() {
           display: 'flex',
           height: '100dvh',
           overflow: 'hidden',
+          background: '#ffffff',
         }}
       >
-        {/* Left — Graph */}
+        {/* Left — Dot Sphere */}
         <Box
           style={{
-            width: '50%',
+            width: '55%',
             height: '100%',
-            background: '#060810',
             position: 'relative',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
-          <DemoGraph />
-          {/* Vignette overlay */}
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              background:
-                'radial-gradient(ellipse at center, transparent 40%, rgba(6,8,16,0.6) 80%)',
-              pointerEvents: 'none',
-            }}
-          />
+          <DotSphere />
         </Box>
 
         {/* Right — CTA */}
         <Box
           style={{
-            width: '50%',
+            width: '45%',
             height: '100%',
-            background: '#fff',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             padding: 48,
           }}
         >
-          <Stack gap="xl" style={{ maxWidth: 380 }}>
-            <Stack gap={4}>
-              <Title
-                order={1}
+          <Stack gap={32} align="center">
+            {/* Logo */}
+            <Stack gap={10} align="center">
+              <Text
                 style={{
-                  fontSize: 56,
-                  fontWeight: 800,
-                  letterSpacing: '-2px',
+                  fontFamily: 'var(--ou-font-logo)',
+                  fontSize: 80,
+                  fontWeight: 900,
                   lineHeight: 1,
                   color: '#000',
+                  letterSpacing: '2px',
                 }}
               >
                 OU
-              </Title>
+              </Text>
               <Text
                 style={{
-                  fontSize: 28,
-                  fontWeight: 300,
+                  fontFamily: 'var(--ou-font-logo)',
+                  fontSize: 11,
+                  fontWeight: 700,
                   color: '#999',
-                  letterSpacing: '-0.5px',
-                  lineHeight: 1.2,
+                  letterSpacing: '6px',
+                  textTransform: 'uppercase' as const,
                 }}
               >
-                Just talk.
+                OWN UNIVERSE
               </Text>
             </Stack>
 
+            {/* Tagline */}
             <Text
               style={{
-                fontSize: 17,
-                color: '#444',
-                lineHeight: 1.7,
-                fontWeight: 500,
+                fontSize: 22,
+                fontWeight: 300,
+                color: '#555',
+                letterSpacing: '1px',
               }}
             >
-              말하면, 정리돼요.
+              Just talk.
             </Text>
 
-            {/* 시나리오 프리필 체험 */}
-            <Box
+            {/* CTA Button */}
+            <UnstyledButton
+              onClick={handleTry}
               style={{
-                padding: '14px 18px',
-                borderRadius: 12,
-                border: '1px solid #e0e0e0',
-                background: '#fafafa',
+                padding: '14px 48px',
+                borderRadius: 999,
+                background: '#1a1a1a',
+                color: '#fff',
+                fontSize: 14,
+                fontWeight: 600,
+                letterSpacing: '2px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 10,
+                transition: 'all 200ms ease',
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.background = '#333';
+                e.currentTarget.style.transform = 'scale(1.02)';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = '#1a1a1a';
+                e.currentTarget.style.transform = 'scale(1)';
               }}
             >
-              <Text fz={13} c="#888" mb={8}>이렇게 말해보세요</Text>
-              <Text fz={15} fw={500} c="#333" mb={12} style={{ lineHeight: 1.5 }}>
-                &ldquo;다음주 금요일 7시 강남역에서 친구 모임&rdquo;
-              </Text>
-              <Group gap="sm">
-                <Button
-                  size="sm"
-                  variant="filled"
-                  color="dark"
-                  radius="md"
-                  onClick={() => router.push('/chat?scenario=schedule-demo')}
-                  styles={{ root: { background: '#000', fontSize: 13, fontWeight: 600, height: 36 } }}
-                >
-                  이거 보내보기
-                </Button>
-                <Button
-                  size="sm"
-                  variant="subtle"
-                  color="gray"
-                  radius="md"
-                  onClick={handleTry}
-                  styles={{ root: { fontSize: 13, height: 36 } }}
-                >
-                  직접 써보기
-                </Button>
-              </Group>
-            </Box>
+              TRY IT
+              <ArrowRight size={16} weight="bold" />
+            </UnstyledButton>
 
-            {/* 시나리오 카테고리 */}
-            <Group gap="xs" justify="center">
-              {[
-                { icon: CalendarBlank, label: '일정', id: 'schedule-demo' },
-                { icon: CurrencyKrw, label: '가계부', id: 'finance-demo' },
-                { icon: CheckSquare, label: '할 일', id: 'task-demo' },
-                { icon: SmileyMeh, label: '일기', id: 'emotion-demo' },
-              ].map(item => (
-                <UnstyledButton
-                  key={item.id}
-                  onClick={() => router.push(`/chat?scenario=${item.id}`)}
-                  style={{
-                    padding: '8px 14px',
-                    borderRadius: 20,
-                    border: '1px solid #e8e8e8',
-                    fontSize: 12,
-                    color: '#666',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    transition: 'all 150ms',
-                  }}
-                >
-                  <item.icon size={14} weight="bold" />
-                  {item.label}
-                </UnstyledButton>
-              ))}
+            {/* Sign in / Sign up */}
+            <Group gap={0} style={{ fontSize: 13, color: '#999' }}>
+              <UnstyledButton
+                onClick={handleSignIn}
+                style={{
+                  fontSize: 13,
+                  color: '#999',
+                  padding: '4px 12px',
+                  transition: 'color 150ms',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.color = '#333'; }}
+                onMouseLeave={e => { e.currentTarget.style.color = '#999'; }}
+              >
+                Sign in
+              </UnstyledButton>
+              <Text span c="#ccc">|</Text>
+              <UnstyledButton
+                onClick={handleSignUp}
+                style={{
+                  fontSize: 13,
+                  color: '#999',
+                  padding: '4px 12px',
+                  transition: 'color 150ms',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.color = '#333'; }}
+                onMouseLeave={e => { e.currentTarget.style.color = '#999'; }}
+              >
+                Sign up
+              </UnstyledButton>
             </Group>
-
-            <Button
-              size="lg"
-              variant="filled"
-              color="dark"
-              radius="md"
-              onClick={handleStart}
-              fullWidth
-              styles={{
-                root: {
-                  background: '#000',
-                  height: 48,
-                  fontSize: 15,
-                  fontWeight: 600,
-                },
-              }}
-            >
-              무료로 시작하기
-            </Button>
           </Stack>
         </Box>
       </Box>
@@ -396,146 +461,107 @@ export function LandingDemo() {
           overflow: 'hidden',
           display: 'flex',
           flexDirection: 'column',
+          background: '#ffffff',
         }}
       >
-        {/* Top — Graph */}
+        {/* Top — Dot Sphere */}
         <Box
           style={{
-            height: '40vh',
-            background: '#060810',
+            height: '45vh',
             position: 'relative',
             flexShrink: 0,
           }}
         >
-          <DemoGraph />
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              background:
-                'radial-gradient(ellipse at center, transparent 30%, rgba(6,8,16,0.6) 80%)',
-              pointerEvents: 'none',
-            }}
-          />
+          <DotSphere />
         </Box>
 
         {/* Bottom — CTA */}
         <Box
           style={{
             flex: 1,
-            background: '#fff',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             padding: 24,
           }}
         >
-          <Stack gap="lg" style={{ maxWidth: 340, width: '100%' }}>
-            <Stack gap={2} align="center">
-              <Title
-                order={1}
+          <Stack gap={20} align="center">
+            {/* Logo */}
+            <Stack gap={6} align="center">
+              <Text
                 style={{
-                  fontSize: 40,
-                  fontWeight: 800,
-                  letterSpacing: '-1.5px',
+                  fontFamily: 'var(--ou-font-logo)',
+                  fontSize: 48,
+                  fontWeight: 900,
                   lineHeight: 1,
                   color: '#000',
+                  letterSpacing: '1px',
                 }}
               >
                 OU
-              </Title>
+              </Text>
               <Text
                 style={{
-                  fontSize: 22,
-                  fontWeight: 300,
+                  fontFamily: 'var(--ou-font-logo)',
+                  fontSize: 9,
+                  fontWeight: 700,
                   color: '#999',
-                  letterSpacing: '-0.3px',
+                  letterSpacing: '5px',
+                  textTransform: 'uppercase' as const,
                 }}
               >
-                Just talk.
+                OWN UNIVERSE
               </Text>
             </Stack>
 
-            <Text ta="center" style={{ fontSize: 15, color: '#444', fontWeight: 500 }}>
-              말하면, 정리돼요.
-            </Text>
-
-            {/* 시나리오 프리필 */}
-            <Box
+            {/* Tagline */}
+            <Text
               style={{
-                padding: '12px 16px',
-                borderRadius: 12,
-                border: '1px solid #e0e0e0',
-                background: '#fafafa',
+                fontSize: 18,
+                fontWeight: 300,
+                color: '#555',
+                letterSpacing: '1px',
               }}
             >
-              <Text fz={12} c="#888" mb={6}>이렇게 말해보세요</Text>
-              <Text fz={14} fw={500} c="#333" mb={10} style={{ lineHeight: 1.5 }}>
-                &ldquo;다음주 금요일 7시 강남역에서 친구 모임&rdquo;
-              </Text>
-              <Group gap="sm">
-                <Button
-                  size="xs"
-                  variant="filled"
-                  color="dark"
-                  radius="md"
-                  onClick={() => router.push('/chat?scenario=schedule-demo')}
-                  styles={{ root: { background: '#000', fontSize: 12, fontWeight: 600 } }}
-                >
-                  이거 보내보기
-                </Button>
-                <Button
-                  size="xs"
-                  variant="subtle"
-                  color="gray"
-                  radius="md"
-                  onClick={handleTry}
-                  styles={{ root: { fontSize: 12 } }}
-                >
-                  직접 써보기
-                </Button>
-              </Group>
-            </Box>
+              Just talk.
+            </Text>
 
-            {/* 카테고리 */}
-            <Group gap={6} justify="center">
-              {[
-                { icon: CalendarBlank, label: '일정', id: 'schedule-demo' },
-                { icon: CurrencyKrw, label: '가계부', id: 'finance-demo' },
-                { icon: CheckSquare, label: '할 일', id: 'task-demo' },
-                { icon: SmileyMeh, label: '일기', id: 'emotion-demo' },
-              ].map(item => (
-                <UnstyledButton
-                  key={item.id}
-                  onClick={() => router.push(`/chat?scenario=${item.id}`)}
-                  style={{
-                    padding: '6px 12px',
-                    borderRadius: 16,
-                    border: '1px solid #e8e8e8',
-                    fontSize: 11,
-                    color: '#666',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 4,
-                  }}
-                >
-                  <item.icon size={12} weight="bold" />
-                  {item.label}
-                </UnstyledButton>
-              ))}
-            </Group>
-
-            <Button
-              size="lg"
-              variant="filled"
-              color="dark"
-              radius="md"
-              onClick={handleStart}
-              fullWidth
-              styles={{ root: { background: '#000', height: 44, fontSize: 14, fontWeight: 600 } }}
+            {/* CTA Button */}
+            <UnstyledButton
+              onClick={handleTry}
+              style={{
+                padding: '12px 40px',
+                borderRadius: 999,
+                background: '#1a1a1a',
+                color: '#fff',
+                fontSize: 13,
+                fontWeight: 600,
+                letterSpacing: '2px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+              }}
             >
-              무료로 시작하기
-            </Button>
+              TRY IT
+              <ArrowRight size={14} weight="bold" />
+            </UnstyledButton>
+
+            {/* Sign in / Sign up */}
+            <Group gap={0} style={{ fontSize: 12, color: '#999' }}>
+              <UnstyledButton
+                onClick={handleSignIn}
+                style={{ fontSize: 12, color: '#999', padding: '4px 10px' }}
+              >
+                Sign in
+              </UnstyledButton>
+              <Text span c="#ccc">|</Text>
+              <UnstyledButton
+                onClick={handleSignUp}
+                style={{ fontSize: 12, color: '#999', padding: '4px 10px' }}
+              >
+                Sign up
+              </UnstyledButton>
+            </Group>
           </Stack>
         </Box>
       </Box>

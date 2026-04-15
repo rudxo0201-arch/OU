@@ -65,7 +65,7 @@ export function AuditLog() {
         <Text fz="xs" c="dimmed">총 {total.toLocaleString()}건</Text>
         <Select
           placeholder="작업 유형 필터"
-          data={actions}
+          data={actions ?? []}
           value={actionFilter}
           onChange={setActionFilter}
           clearable

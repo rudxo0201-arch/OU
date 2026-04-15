@@ -46,6 +46,7 @@ OU는 특정 도메인(한의학 등)에 종속된 서비스가 아니다.
 | `ROADMAP.md` | Phase, 위험, 에이전트, KPI | 전체 구조 파악 시 |
 | `FRONTEND_DESIGN.md` | 프론트엔드 설계 | UI 구현 시 |
 | `IDEAS.md` | 아이디어 로그 (누락 방지) | 기획 참고 시 |
+| `SCENARIOS.md` | 페르소나별 UX 시나리오 | 마케팅/UX 기획 시 |
 
 ---
 
@@ -154,7 +155,7 @@ ou-web/
     ├── components/
     │   ├── graph/         # PixiJS 그래프뷰
     │   ├── chat/          # OU-Chat UI
-    │   ├── views/         # 데이터뷰 컴포넌트들
+    │   ├── views/         # 데이터뷰 컴포넌트 (registry.ts 기반, 등록만으로 확장)
     │   └── ui/            # 공통 UI
     ├── lib/
     │   ├── pipeline/      # DataNode 생성 파이프라인 (Layer 1/2/3)

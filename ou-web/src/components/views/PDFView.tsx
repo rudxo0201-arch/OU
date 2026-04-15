@@ -10,8 +10,14 @@ import {
   File, TextAa, ListBullets, Planet, Lightbulb, Article,
   HighlighterCircle, NotePencil, BookmarkSimple,
   Star, PencilSimple, Trash, X, Check,
-  CaretLeft, CaretRight, MagnifyingGlass,
+  CaretLeft, CaretRight, MagnifyingGlass, BookOpen,
 } from '@phosphor-icons/react';
+import dynamic from 'next/dynamic';
+
+const PublishView = dynamic(
+  () => import('./pdf/PublishView').then(m => ({ default: m.PublishView })),
+  { ssr: false },
+);
 import { useAnnotations } from '@/hooks/useAnnotations';
 import { StructuredDocumentView, type SelectionInfo } from '@/components/views/pdf/StructuredDocumentView';
 import { CanvasAnnotationOverlay } from '@/components/canvas-annotation/CanvasAnnotationOverlay';
@@ -67,7 +73,7 @@ function splitIntoPages(text: string): string[] {
  * 폴백: sections 없으면 기존 extractedText 기반
  */
 export function PDFView({ nodes, onSave }: PDFViewProps) {
-  const [activeTab, setActiveTab] = useState<string | null>('original');
+  const [activeTab, setActiveTab] = useState<string | null>('publish');
   const [activeTool, setActiveTool] = useState<'highlight' | 'note' | 'bookmark' | null>(null);
   const [activeColor, setActiveColor] = useState(HIGHLIGHT_COLORS[0]);
   const [noteModal, setNoteModal] = useState<{ open: boolean; selectedText: string; editId?: string }>({
@@ -346,6 +352,7 @@ export function PDFView({ nodes, onSave }: PDFViewProps) {
     <Box p="md">
       <Tabs value={activeTab} onChange={setActiveTab} variant="outline" color="gray">
         <Tabs.List>
+          <Tabs.Tab value="publish" leftSection={<BookOpen size={14} />}>출판</Tabs.Tab>
           <Tabs.Tab value="original" leftSection={<File size={14} />}>원본</Tabs.Tab>
           <Tabs.Tab value="text" leftSection={<TextAa size={14} />}>텍스트</Tabs.Tab>
           <Tabs.Tab value="summary" leftSection={<Article size={14} />}>요약</Tabs.Tab>
@@ -515,6 +522,15 @@ export function PDFView({ nodes, onSave }: PDFViewProps) {
             )}
           </Stack>
         )}
+
+        {/* ── 출판 ── */}
+        <Tabs.Panel value="publish" pt="md">
+          <PublishView
+            nodeId={nodeId}
+            title={domainData.title ?? node.raw?.slice(0, 50) ?? 'Untitled'}
+            subtitle={domainData.subtitle}
+          />
+        </Tabs.Panel>
 
         {/* ── 원본 ── */}
         <Tabs.Panel value="original" pt="md">

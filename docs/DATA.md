@@ -97,6 +97,9 @@ example_of / involves / located_at / occurs_at
 'high'   관리자 검증 완료 or LLM + 기본 DB 일치
 'medium' LLM 추론 (hallucination 가능)
 'low'    검증 실패 or 의심 데이터
+
+→ 상세 정의는 DATA_STANDARD.md 참조
+→ source_type, source_level 등 필드 상세도 DATA_STANDARD.md가 정본
 ```
 
 ---

@@ -1,5 +1,5 @@
-import { OUAppShell } from '@/components/ui/OUAppShell';
+import { OUUniverseShell } from '@/components/ui/OUUniverseShell';
 
 export default function PrivateLayout({ children }: { children: React.ReactNode }) {
-  return <OUAppShell>{children}</OUAppShell>;
+  return <OUUniverseShell>{children}</OUUniverseShell>;
 }

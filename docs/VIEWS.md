@@ -140,8 +140,9 @@ AI 뷰 생성기(Claude Code)로 자동 생성
 
 ### 도메인 특화 뷰
 ```
-본초뷰, 경혈뷰, 방제뷰, 한자뷰 (현재 구현)
-→ 점차 모든 도메인으로 확대
+본초뷰, 경혈뷰, 방제뷰, 한자뷰 (첫 번째 도메인 예시)
+→ 어떤 도메인이든 같은 패턴으로 뷰 추가 가능
+→ 뷰 레지스트리에 등록만 하면 됨
 ```
 
 ```
@@ -149,6 +150,87 @@ AI 뷰 생성기(Claude Code)로 자동 생성
   전자책(.epub) / 출판책(PDF) / 웹 강의
   문제집 / 챗봇 / 웹사이트 / 앱
   = 같은 데이터, 다른 프론트엔드
+```
+
+---
+
+## 뷰 등록 프로토콜 (불변)
+
+### 새 뷰 추가 = 3단계
+
+```
+1. 컴포넌트 생성
+   components/views/NewView.tsx
+   → ViewProps 인터페이스 구현 (아래 참조)
+
+2. 레지스트리 등록 (registry.ts에 한 줄 추가)
+   VIEW_REGISTRY: 컴포넌트 등록 (dynamic import)
+   VIEW_META: previewOnClick 설정
+   DOMAIN_VIEW_MAP: 도메인 자동 매핑 (해당 시)
+
+3. 기본 뷰 등록 (선택, default-views.ts)
+   DefaultViewDef 추가 → 사용자에게 기본 뷰로 제공
+
+→ 기존 코드 수정 없음. 등록만.
+```
+
+### ViewProps 인터페이스
+
+```typescript
+// components/views/registry.ts
+interface ViewProps {
+  nodes: DataNode[];                    // 필터된 노드 목록
+  filters?: Record<string, any>;       // 현재 적용된 필터
+  onSave?: () => void;                 // 저장 콜백
+  layoutConfig?: LayoutConfig;         // 뷰별 스타일 설정
+}
+
+// 확장이 필요한 경우 (검색, 내보내기 등)
+interface ExtendedViewProps extends ViewProps {
+  onSearch?: (params: any) => void;    // 서버사이드 검색
+  loading?: boolean;
+  total?: number;
+}
+```
+
+### 레지스트리 3종
+
+```
+VIEW_REGISTRY: Record<string, ComponentType<ViewProps>>
+  → 뷰 타입 키 → 컴포넌트 매핑
+  → dynamic import (lazy loading, SSR 비활성화)
+
+VIEW_META: Record<string, ViewMeta>
+  → 뷰별 동작 속성 (previewOnClick 등)
+
+DOMAIN_VIEW_MAP: Record<string, string>
+  → 도메인 → 기본 뷰 타입 자동 매핑
+  → schedule → calendar, task → task, finance → chart ...
+```
+
+### ViewRenderer 라우팅
+
+```
+ViewRenderer가 viewType을 받아서 VIEW_REGISTRY에서 컴포넌트 조회
+→ nodes.length === 0 이면 null (빈 뷰 표시 금지)
+→ 등록 안 된 viewType이면 null
+→ 일치하면 렌더링
+```
+
+### FilterConfig 구조
+
+```
+FilterConfig = {
+  domain?: string         // 단일 도메인 ('schedule', 'task', ...)
+  source_type?: string    // 소스 타입 ('chat', 'upload', 'pdf', 'dev_tool', ...)
+  dateRange?: { start: string, end: string }
+  confidence?: string[]   // 신뢰도 필터
+  search?: string         // 텍스트 검색
+  tags?: string[]         // 시스템 태그
+}
+
+→ saved_views 테이블의 filter_config (JSONB) 필드에 저장
+→ 빈 결과가 나오는 필터는 UI에 표시하지 않는다 (불변 원칙)
 ```
 
 ---

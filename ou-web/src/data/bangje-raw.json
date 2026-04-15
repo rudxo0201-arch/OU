@@ -340,7 +340,7 @@
       {
         "herb_name": "총백",
         "herb_hanja": "蔥白",
-        "herb_id": null,
+        "herb_id": "01-1-13",
         "dosage": "3경",
         "role": "사"
       }
@@ -381,7 +381,7 @@
       {
         "herb_name": "총백",
         "herb_hanja": "蔥白",
-        "herb_id": null,
+        "herb_id": "01-1-13",
         "dosage": "6g",
         "role": "신"
       },
@@ -721,7 +721,7 @@
       {
         "herb_name": "전호",
         "herb_hanja": "前胡",
-        "herb_id": null,
+        "herb_id": "13-2-1",
         "dosage": "6g",
         "role": "신"
       },
@@ -842,7 +842,7 @@
       {
         "herb_name": "전호",
         "herb_hanja": "前胡",
-        "herb_id": null,
+        "herb_id": "13-2-1",
         "dosage": "6g",
         "role": "좌"
       },
@@ -1040,7 +1040,7 @@
       {
         "herb_name": "총백",
         "herb_hanja": "蔥白",
-        "herb_id": null,
+        "herb_id": "01-1-13",
         "dosage": "9g",
         "role": "군"
       },
@@ -1256,7 +1256,7 @@
       {
         "herb_name": "전호",
         "herb_hanja": "前胡",
-        "herb_id": null,
+        "herb_id": "13-2-1",
         "dosage": "6g",
         "role": "좌"
       },
@@ -3277,7 +3277,7 @@
       {
         "herb_name": "단삼",
         "herb_hanja": "丹參",
-        "herb_id": null,
+        "herb_id": "12-1-9",
         "dosage": "6g",
         "role": "좌"
       }
@@ -5539,7 +5539,7 @@
       {
         "herb_name": "형개",
         "herb_hanja": "荊芥",
-        "herb_id": null,
+        "herb_id": "01-1-4",
         "dosage": "5g",
         "role": "신"
       },
@@ -5742,7 +5742,7 @@
       {
         "herb_name": "백지",
         "herb_hanja": "白芷",
-        "herb_id": null,
+        "herb_id": "01-1-6",
         "dosage": "3g",
         "role": "군"
       },
@@ -5847,7 +5847,7 @@
       {
         "herb_name": "총백",
         "herb_hanja": "葱白",
-        "herb_id": null,
+        "herb_id": "01-1-13",
         "dosage": "3g",
         "role": "사"
       }
@@ -10510,7 +10510,7 @@
       {
         "herb_name": "오령지",
         "herb_hanja": "五靈脂",
-        "herb_id": null,
+        "herb_id": "12-1-14",
         "dosage": "6g",
         "role": "군"
       }
@@ -10577,7 +10577,7 @@
       {
         "herb_name": "천산갑",
         "herb_hanja": "穿山甲",
-        "herb_id": null,
+        "herb_id": "12-1-16",
         "dosage": "6g",
         "role": "좌"
       },
@@ -10650,7 +10650,7 @@
       {
         "herb_name": "오령지",
         "herb_hanja": "五靈脂",
-        "herb_id": null,
+        "herb_id": "12-1-14",
         "dosage": "6g",
         "role": "좌"
       },
@@ -10664,7 +10664,7 @@
       {
         "herb_name": "몰약",
         "herb_hanja": "沒藥",
-        "herb_id": null,
+        "herb_id": "12-1-3",
         "dosage": "3g",
         "role": "좌"
       },
@@ -10717,14 +10717,14 @@
       {
         "herb_name": "대계",
         "herb_hanja": "大薊",
-        "herb_id": null,
+        "herb_id": "11-2-1",
         "dosage": "9g",
         "role": "군"
       },
       {
         "herb_name": "소계",
         "herb_hanja": "小薊",
-        "herb_id": null,
+        "herb_id": "11-2-2",
         "dosage": "9g",
         "role": "군"
       },
@@ -10766,7 +10766,7 @@
       {
         "herb_name": "종려피",
         "herb_hanja": "棕櫚皮",
-        "herb_id": null,
+        "herb_id": "11-1-3",
         "dosage": "9g",
         "role": "좌"
       },
@@ -10938,7 +10938,7 @@
       {
         "herb_name": "소계",
         "herb_hanja": "小薊",
-        "herb_id": null,
+        "herb_id": "11-2-2",
         "dosage": "15g",
         "role": "군"
       },
@@ -10973,7 +10973,7 @@
       {
         "herb_name": "담죽엽",
         "herb_hanja": "淡竹葉",
-        "herb_id": null,
+        "herb_id": "2-1-8",
         "dosage": "6g",
         "role": "좌"
       },
@@ -11244,7 +11244,7 @@
       {
         "herb_name": "우방자",
         "herb_hanja": "牛蒡子",
-        "herb_id": null,
+        "herb_id": "01-2-2",
         "dosage": "6g",
         "role": "좌"
       },
@@ -11325,14 +11325,14 @@
       {
         "herb_name": "유향",
         "herb_hanja": "乳香",
-        "herb_id": null,
+        "herb_id": "12-1-2",
         "dosage": "6g",
         "role": "좌"
       },
       {
         "herb_name": "몰약",
         "herb_hanja": "沒藥",
-        "herb_id": null,
+        "herb_id": "12-1-3",
         "dosage": "6g",
         "role": "좌"
       },
@@ -11384,14 +11384,14 @@
       {
         "herb_name": "상엽",
         "herb_hanja": "桑葉",
-        "herb_id": null,
+        "herb_id": "01-2-3",
         "dosage": "6g",
         "role": "신"
       },
       {
         "herb_name": "국화",
         "herb_hanja": "菊花",
-        "herb_id": null,
+        "herb_id": "01-2-4",
         "dosage": "9g",
         "role": "신"
       },
@@ -11887,7 +11887,7 @@
       {
         "herb_name": "상엽",
         "herb_hanja": "桑葉",
-        "herb_id": null,
+        "herb_id": "01-2-3",
         "dosage": "3g",
         "role": "군"
       },
@@ -11915,7 +11915,7 @@
       {
         "herb_name": "담두시",
         "herb_hanja": "淡豆豉",
-        "herb_id": null,
+        "herb_id": "01-2-9",
         "dosage": "3g",
         "role": "좌"
       },
@@ -11962,7 +11962,7 @@
       {
         "herb_name": "상엽",
         "herb_hanja": "桑葉",
-        "herb_id": null,
+        "herb_id": "01-2-3",
         "dosage": "9g",
         "role": "군"
       },
@@ -12249,7 +12249,7 @@
       {
         "herb_name": "자소엽",
         "herb_hanja": "紫蘇葉",
-        "herb_id": null,
+        "herb_id": "01-1-3",
         "dosage": "6g",
         "role": "신"
       },
@@ -12897,7 +12897,7 @@
       {
         "herb_name": "담죽엽",
         "herb_hanja": "淡竹葉",
-        "herb_id": null,
+        "herb_id": "2-1-8",
         "dosage": "6g",
         "role": "좌"
       },
@@ -14266,7 +14266,7 @@
       {
         "herb_name": "학슬",
         "herb_hanja": "鶴蝨",
-        "herb_id": null,
+        "herb_id": "10-5",
         "dosage": "30g",
         "role": "군"
       },
@@ -14287,21 +14287,21 @@
       {
         "herb_name": "관중",
         "herb_hanja": "貫衆",
-        "herb_id": null,
+        "herb_id": "10-8",
         "dosage": "30g",
         "role": "좌"
       },
       {
         "herb_name": "사군자",
         "herb_hanja": "使君子",
-        "herb_id": null,
+        "herb_id": "10-1",
         "dosage": "30g",
         "role": "좌"
       },
       {
         "herb_name": "무이",
         "herb_hanja": "蕪荑",
-        "herb_id": null,
+        "herb_id": "10-7",
         "dosage": "30g",
         "role": "좌"
       },
@@ -14315,7 +14315,7 @@
       {
         "herb_name": "뇌환",
         "herb_hanja": "雷丸",
-        "herb_id": null,
+        "herb_id": "10-4",
         "dosage": "30g",
         "role": "좌"
       }
@@ -14553,14 +14553,14 @@
       {
         "herb_name": "유향",
         "herb_hanja": "乳香",
-        "herb_id": null,
+        "herb_id": "12-1-2",
         "dosage": "3g",
         "role": "좌"
       },
       {
         "herb_name": "몰약",
         "herb_hanja": "沒藥",
-        "herb_id": null,
+        "herb_id": "12-1-3",
         "dosage": "3g",
         "role": "좌"
       },
@@ -14595,14 +14595,14 @@
       {
         "herb_name": "천산갑",
         "herb_hanja": "穿山甲",
-        "herb_id": null,
+        "herb_id": "12-1-16",
         "dosage": "3g",
         "role": "좌"
       },
       {
         "herb_name": "조각자",
         "herb_hanja": "皂角刺",
-        "herb_id": null,
+        "herb_id": "12-1-25",
         "dosage": "3g",
         "role": "좌"
       },
@@ -14674,21 +14674,21 @@
       {
         "herb_name": "백전",
         "herb_hanja": "百前",
-        "herb_id": null,
+        "herb_id": "13-1-7",
         "dosage": "6g",
         "role": "좌"
       },
       {
         "herb_name": "자완",
         "herb_hanja": "紫菀",
-        "herb_id": null,
+        "herb_id": "13-3-3",
         "dosage": "6g",
         "role": "좌"
       },
       {
         "herb_name": "백부근",
         "herb_hanja": "百部根",
-        "herb_id": null,
+        "herb_id": "13-3-2",
         "dosage": "6g",
         "role": "좌"
       }

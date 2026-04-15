@@ -497,8 +497,17 @@ CREATE POLICY "nodes_delete" ON data_nodes
   FOR DELETE USING (user_id = auth.uid());
 
 -- messages
-CREATE POLICY "messages_own" ON messages
-  FOR ALL USING (user_id = auth.uid());
+CREATE POLICY "messages_select" ON messages
+  FOR SELECT USING (user_id = auth.uid());
+
+CREATE POLICY "messages_insert" ON messages
+  FOR INSERT WITH CHECK (user_id = auth.uid());
+
+CREATE POLICY "messages_update" ON messages
+  FOR UPDATE USING (user_id = auth.uid());
+
+CREATE POLICY "messages_delete" ON messages
+  FOR DELETE USING (user_id = auth.uid());
 
 -- triples
 CREATE POLICY "triples_via_node" ON triples

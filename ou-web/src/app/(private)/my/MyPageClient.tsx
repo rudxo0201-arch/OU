@@ -6,6 +6,7 @@ import dynamic from 'next/dynamic';
 import type { GraphViewHandle } from '@/components/graph/GraphView';
 import { useAuth } from '@/hooks/useAuth';
 import { useViewEditorStore } from '@/stores/viewEditorStore';
+import { useNavigationStore } from '@/stores/navigationStore';
 
 const GraphView = dynamic(
   () => import('@/components/graph/GraphView').then(m => m.GraphView),
@@ -19,11 +20,17 @@ const ViewEditorDrawer = dynamic(
   () => import('@/components/views/admin/ViewEditorDrawer').then(m => m.ViewEditorDrawer),
   { ssr: false }
 );
+const ChatPanel = dynamic(
+  () => import('@/components/chat/ChatPanel').then(m => m.ChatPanel),
+  { ssr: false }
+);
+
 import { FloatingToolbar } from '@/components/my/FloatingToolbar';
 import { NodeDetailPanel } from '@/components/my/NodeDetailPanel';
 import { NodePreviewCard } from '@/components/my/NodePreviewCard';
-import { SavedViewCarousel } from '@/components/my/SavedViewCarousel';
 import { GenesisEmptyState } from '@/components/my/GenesisEmptyState';
+import { ViewFullscreen } from '@/components/ui/ViewFullscreen';
+import { OrbDock, type OrbItem } from '@/components/ui/OrbDock';
 
 interface MyPageClientProps {
   savedViews: any[];
@@ -38,9 +45,11 @@ export function MyPageClient({ savedViews: initialSavedViews, nodes: initialNode
   const [detailMode, setDetailMode] = useState<'preview' | 'detail'>('preview');
   const [searchQuery, setSearchQuery] = useState('');
   const [adminMode, setAdminMode] = useState(false);
+  const [fullscreenViewId, setFullscreenViewId] = useState<string | null>(null);
   const graphRef = useRef<GraphViewHandle>(null);
   const { isAdmin } = useAuth();
   const editorIsOpen = useViewEditorStore(s => s.isOpen);
+  const { pinnedViewIds, pinView, unpinView } = useNavigationStore();
 
   const handleNodeUpdated = useCallback((updatedNode: any) => {
     setNodes(prev => prev.map(n => n.id === updatedNode.id ? { ...n, ...updatedNode } : n));
@@ -53,6 +62,11 @@ export function MyPageClient({ savedViews: initialSavedViews, nodes: initialNode
   }, []);
 
   const handleNodeSelect = useCallback((node: any) => {
+    // View nodes open their view instead of preview card
+    if (node?.graph_type === 'view' && node?._viewId) {
+      setFullscreenViewId(node._viewId);
+      return;
+    }
     setSelectedNode(node);
     setDetailMode('preview');
   }, []);
@@ -78,34 +92,64 @@ export function MyPageClient({ savedViews: initialSavedViews, nodes: initialNode
     }
   }, []);
 
-  // Filter nodes for graph highlighting based on search
+  const handleNodeCreated = useCallback((node: { id: string; domain: string; raw: string }) => {
+    setNodes(prev => [...prev, { ...node, importance: 1, created_at: new Date().toISOString() }]);
+    graphRef.current?.addNode({ ...node, importance: 1 });
+  }, []);
+
   const filteredNodeIds = searchQuery.trim()
     ? new Set(
         nodes
           .filter(n => {
             const q = searchQuery.toLowerCase();
-            const rawMatch = n.raw?.toLowerCase().includes(q);
-            const domainDataMatch = n.domain_data
-              ? JSON.stringify(n.domain_data).toLowerCase().includes(q)
-              : false;
-            return rawMatch || domainDataMatch;
+            return n.raw?.toLowerCase().includes(q) ||
+              (n.domain_data ? JSON.stringify(n.domain_data).toLowerCase().includes(q) : false);
           })
           .map(n => n.id)
       )
     : null;
 
-  return (
-    <Box style={{ position: 'relative', width: '100%', height: 'calc(100vh - 0px)', overflow: 'hidden' }}>
-      {/* 풀스크린 배경 */}
-      <Box
-        style={{
-          position: 'absolute',
-          inset: 0,
-          background: '#060810',
-        }}
-      />
+  const fullscreenView = fullscreenViewId
+    ? savedViews.find((v: any) => v.id === fullscreenViewId)
+    : null;
 
-      {/* 그래프 — 있든 없든 배경으로 */}
+  // Build Orb items: pinned views + auto-generated (recent views not yet pinned)
+  const pinnedOrbs: OrbItem[] = savedViews
+    .filter((v: any) => pinnedViewIds.includes(v.id))
+    .map((v: any) => ({
+      id: v.id,
+      label: v.name,
+      emoji: v.icon || '📄',
+      pinned: true,
+      onClick: () => setFullscreenViewId(v.id),
+      onPin: () => pinView(v.id),
+      onUnpin: () => unpinView(v.id),
+    }));
+
+  // Auto orbs: most recent unpinned views (up to fill 7 total)
+  const autoSlots = Math.max(0, 7 - pinnedOrbs.length);
+  const autoOrbs: OrbItem[] = savedViews
+    .filter((v: any) => !pinnedViewIds.includes(v.id))
+    .slice(0, autoSlots)
+    .map((v: any) => ({
+      id: v.id,
+      label: v.name,
+      emoji: v.icon || '📄',
+      pinned: false,
+      onClick: () => setFullscreenViewId(v.id),
+      onPin: () => pinView(v.id),
+      onUnpin: () => unpinView(v.id),
+    }));
+
+  const orbItems: OrbItem[] = [...pinnedOrbs, ...autoOrbs];
+
+  // Unified layout — graph background + glass chat left + orb dock right
+  return (
+    <Box style={{ position: 'relative', width: '100%', height: '100vh', overflow: 'hidden' }}>
+      {/* Layer 0: Background */}
+      <Box style={{ position: 'absolute', inset: 0, background: 'var(--ou-bg)' }} />
+
+      {/* Layer 1: Graph (full screen, always visible) */}
       {nodes.length > 0 ? (
         <GraphView
           ref={graphRef}
@@ -119,7 +163,24 @@ export function MyPageClient({ savedViews: initialSavedViews, nodes: initialNode
         <GenesisEmptyState />
       )}
 
-      {/* 상단 글래스 툴바 */}
+      {/* Layer 2: Chat panel — left side, glass */}
+      <Box style={{
+        position: 'absolute',
+        left: 16,
+        top: 16,
+        bottom: 16,
+        width: 360,
+        zIndex: 10,
+      }}>
+        <ChatPanel onNodeCreated={handleNodeCreated} />
+      </Box>
+
+      {/* Layer 3: Orb Dock — right side, fixed */}
+      {orbItems.length > 0 && (
+        <OrbDock side="right" items={orbItems} />
+      )}
+
+      {/* Layer 4: Floating toolbar */}
       {nodes.length > 0 && !adminMode && (
         <FloatingToolbar
           savedViews={savedViews}
@@ -129,21 +190,7 @@ export function MyPageClient({ savedViews: initialSavedViews, nodes: initialNode
         />
       )}
 
-      {/* 관리자 뷰 관리 패널 */}
-      {adminMode && isAdmin && (
-        <AdminViewsPanel
-          views={savedViews}
-          onClose={() => setAdminMode(false)}
-          onViewsChange={setSavedViews}
-        />
-      )}
-
-      {/* 뷰 에디터 Drawer */}
-      {isAdmin && editorIsOpen && (
-        <ViewEditorDrawer nodes={nodes} onSaved={handleViewsRefresh} />
-      )}
-
-      {/* 노드 미리보기 카드 */}
+      {/* Layer 5: Node interactions */}
       {selectedNode && !adminMode && detailMode === 'preview' && (
         <NodePreviewCard
           node={selectedNode}
@@ -152,7 +199,6 @@ export function MyPageClient({ savedViews: initialSavedViews, nodes: initialNode
         />
       )}
 
-      {/* 노드 상세 패널 */}
       {selectedNode && !adminMode && detailMode === 'detail' && (
         <NodeDetailPanel
           node={selectedNode}
@@ -163,9 +209,26 @@ export function MyPageClient({ savedViews: initialSavedViews, nodes: initialNode
         />
       )}
 
-      {/* 하단 저장된 뷰 캐러셀 */}
-      {(!selectedNode || detailMode === 'preview') && !adminMode && (
-        <SavedViewCarousel views={savedViews} nodes={nodes} />
+      {/* Admin controls */}
+      {adminMode && isAdmin && (
+        <AdminViewsPanel
+          views={savedViews}
+          onClose={() => setAdminMode(false)}
+          onViewsChange={setSavedViews}
+        />
+      )}
+
+      {isAdmin && editorIsOpen && (
+        <ViewEditorDrawer nodes={nodes} onSaved={handleViewsRefresh} />
+      )}
+
+      {/* Fullscreen view overlay */}
+      {fullscreenView && (
+        <ViewFullscreen
+          view={fullscreenView}
+          nodes={nodes}
+          onClose={() => setFullscreenViewId(null)}
+        />
       )}
     </Box>
   );

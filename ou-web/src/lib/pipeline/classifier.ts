@@ -33,6 +33,11 @@ const DOMAIN_RULES: Array<{ domain: string; test: (text: string) => boolean }> =
     domain: 'habit',
     test: (t) => /운동|습관|루틴|매일|꾸준히/.test(t),
   },
+  // development: 개발/코딩 관련
+  {
+    domain: 'development',
+    test: (t) => /코드|함수|컴포넌트|API|버그|에러|빌드|배포|커밋|리팩토링|타입|import|export|npm|pnpm|git|PR|이슈|\.ts|\.tsx|\.js|\.css|\.md|서버|클라이언트|데이터베이스|스키마|마이그레이션|엔드포인트/.test(t),
+  },
   // knowledge: 가장 넓은 범위 (기본값에 가까움)
   {
     domain: 'knowledge',
@@ -49,6 +54,7 @@ const VIEW_HINT_MAP: Record<string, string> = {
   emotion: 'journal',
   habit: 'heatmap',
   relation: 'relationship',
+  development: 'timeline',
 };
 
 export async function classifyDomain(text: string) {

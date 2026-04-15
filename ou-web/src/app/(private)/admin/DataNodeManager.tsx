@@ -119,7 +119,7 @@ export function DataNodeManager() {
         />
         <Select
           placeholder="분류"
-          data={domains}
+          data={domains ?? []}
           value={domain}
           onChange={setDomain}
           clearable
@@ -234,7 +234,7 @@ export function DataNodeManager() {
           />
           <Select
             label="분류"
-            data={domains}
+            data={domains ?? []}
             value={editDomain}
             onChange={setEditDomain}
           />

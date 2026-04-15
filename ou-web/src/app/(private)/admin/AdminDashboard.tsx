@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Tabs, Stack, Title, SimpleGrid, Paper, Text, Badge, Group, Avatar, Button, Box, SegmentedControl } from '@mantine/core';
-import { Users, Database, Warning, CurrencyDollar, ArrowRight, ClockCounterClockwise, CheckCircle, XCircle, Table, Eye, UserList, FlowArrow, Lightning, Robot, Leaf, Flask } from '@phosphor-icons/react';
+import { Tabs, Stack, Title, SimpleGrid, Paper, Text, Badge, Group, Avatar, Button, Box, SegmentedControl, TextInput } from '@mantine/core';
+import { Users, Database, Warning, CurrencyDollar, ArrowRight, ClockCounterClockwise, CheckCircle, XCircle, Table, Eye, UserList, FlowArrow, Lightning, Robot, Leaf, Flask, Code } from '@phosphor-icons/react';
 import type { ServiceStatus } from '@/lib/utils/check-env';
 import { SERVICE_LABELS } from '@/lib/utils/check-env';
 import { DataNodeManager } from './DataNodeManager';
@@ -23,6 +23,9 @@ import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 
 const UXFlowEditor = dynamic(() => import('./UXFlowEditor').then(m => m.UXFlowEditor), { ssr: false });
+const CodeView = dynamic(() => import('@/components/views/CodeView').then(m => m.CodeView), { ssr: false });
+const TerminalView = dynamic(() => import('@/components/views/TerminalView').then(m => m.TerminalView), { ssr: false });
+const AIDevView = dynamic(() => import('@/components/views/AIDevView').then(m => m.AIDevView), { ssr: false });
 
 interface AdminDashboardProps {
   stats: {
@@ -226,6 +229,7 @@ export function AdminDashboard({ stats, serviceStatus }: AdminDashboardProps) {
           <Tabs.Tab value="agents" leftSection={<Robot size={14} />}>AI 에이전트</Tabs.Tab>
           <Tabs.Tab value="boncho" leftSection={<Leaf size={14} />}>본초DB</Tabs.Tab>
           <Tabs.Tab value="bangje" leftSection={<Flask size={14} />}>방제DB</Tabs.Tab>
+          <Tabs.Tab value="dev" leftSection={<Code size={14} />}>개발</Tabs.Tab>
         </Tabs.List>
 
         <Tabs.Panel value="nodes" pt="md"><DataNodeManager /></Tabs.Panel>
@@ -240,6 +244,7 @@ export function AdminDashboard({ stats, serviceStatus }: AdminDashboardProps) {
         <Tabs.Panel value="agents" pt="md"><AgentDashboard /></Tabs.Panel>
         <Tabs.Panel value="boncho" pt="md"><BonchoManager /></Tabs.Panel>
         <Tabs.Panel value="bangje" pt="md"><BangjeManager /></Tabs.Panel>
+        <Tabs.Panel value="dev" pt="md"><DevTabContent /></Tabs.Panel>
       </Tabs>
     </Stack>
   );
@@ -279,6 +284,97 @@ function MemberTabContent() {
         size="xs"
       />
       {subTab === 'members' ? <MemberManager /> : <RoleManager />}
+    </Stack>
+  );
+}
+
+/** 개발 탭 — 코드 에디터 + 터미널 + AI + 인제스트 */
+function DevTabContent() {
+  const [subTab, setSubTab] = useState('code');
+  const [ingestDir, setIngestDir] = useState('');
+  const [ingesting, setIngesting] = useState(false);
+  const [ingestResult, setIngestResult] = useState<any>(null);
+  const emptyNodes: any[] = [];
+
+  const handleIngest = async () => {
+    if (!ingestDir.trim() || ingesting) return;
+    setIngesting(true);
+    setIngestResult(null);
+    try {
+      const res = await fetch('/api/ingest/source', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ directory: ingestDir.trim() }),
+      });
+      const data = await res.json();
+      setIngestResult(data);
+    } catch (e) {
+      setIngestResult({ error: 'Network error' });
+    }
+    setIngesting(false);
+  };
+
+  return (
+    <Stack gap="md">
+      {/* 프로젝트 인제스트 */}
+      <Paper p="md">
+        <Text fw={600} fz="sm" mb="sm">프로젝트 인제스트</Text>
+        <Text fz="xs" c="dimmed" mb="sm">
+          폴더 경로를 입력하면 소스 파일을 DataNode로 변환합니다. 파일 간 import 관계가 자동으로 트리플로 추출됩니다.
+        </Text>
+        <Group gap="sm" align="flex-end">
+          <TextInput
+            placeholder="/Users/.../project/src"
+            value={ingestDir}
+            onChange={e => setIngestDir(e.currentTarget.value)}
+            style={{ flex: 1 }}
+            size="sm"
+            disabled={ingesting}
+          />
+          <Button
+            onClick={handleIngest}
+            loading={ingesting}
+            size="sm"
+            variant="light"
+            color="gray"
+          >
+            인제스트
+          </Button>
+        </Group>
+        {ingestResult && (
+          <Box mt="sm">
+            {ingestResult.error ? (
+              <Text fz="xs" c="red">{ingestResult.error}</Text>
+            ) : (
+              <Group gap="md">
+                <Badge variant="light" color="green" size="sm">생성 {ingestResult.results?.created}</Badge>
+                <Badge variant="light" color="blue" size="sm">업데이트 {ingestResult.results?.updated}</Badge>
+                <Badge variant="light" color="gray" size="sm">트리플 {ingestResult.results?.triples}</Badge>
+                <Badge variant="light" color="yellow" size="sm">스킵 {ingestResult.results?.skipped}</Badge>
+                {ingestResult.results?.errors > 0 && (
+                  <Badge variant="light" color="red" size="sm">에러 {ingestResult.results?.errors}</Badge>
+                )}
+              </Group>
+            )}
+          </Box>
+        )}
+      </Paper>
+
+      <SegmentedControl
+        value={subTab}
+        onChange={setSubTab}
+        data={[
+          { label: '코드', value: 'code' },
+          { label: '터미널', value: 'terminal' },
+          { label: 'AI Dev', value: 'ai' },
+        ]}
+        size="xs"
+      />
+      <Box style={{ minHeight: 500 }}>
+        {subTab === 'code' && <CodeView nodes={emptyNodes} />}
+        {subTab === 'terminal' && <TerminalView nodes={emptyNodes} />}
+        {subTab === 'ai' && <AIDevView nodes={emptyNodes} />}
+      </Box>
     </Stack>
   );
 }

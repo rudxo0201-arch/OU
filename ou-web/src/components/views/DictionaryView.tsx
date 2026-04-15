@@ -410,7 +410,7 @@ export function DictionaryView({ nodes, onSearch, total, loading, layoutConfig }
 
   // 사용 가능한 필터 (빈 필터 숨김)
   const availableFilters = useMemo(
-    () => getAvailableFilters(nodes.filter(n => getNodeDomainData(n).type === 'hanja')),
+    () => getAvailableFilters((nodes ?? []).filter(n => getNodeDomainData(n).type === 'hanja')),
     [nodes],
   );
 

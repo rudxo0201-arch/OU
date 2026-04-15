@@ -68,5 +68,33 @@ export default async function MyPage() {
     }
   }
 
-  return <MyPageClient savedViews={savedViews ?? []} nodes={nodes ?? []} links={links} />;
+  // Convert saved_views into view nodes for the graph
+  const viewNodes = (savedViews ?? []).map((v: any) => ({
+    id: `view_${v.id}`,
+    domain: 'view',
+    raw: v.name,
+    importance: 2,
+    graph_type: 'view' as const,
+    _viewId: v.id,
+    _viewType: v.view_type,
+    _viewIcon: v.icon || '📄',
+    created_at: v.created_at,
+  }));
+
+  // Create links from view nodes to their matching data nodes
+  const viewLinks: Array<{ source: string; target: string; label: string }> = [];
+  for (const v of savedViews ?? []) {
+    const filterDomain = v.filter_config?.domain;
+    if (!filterDomain) continue;
+    for (const n of nodes ?? []) {
+      if (n.domain === filterDomain) {
+        viewLinks.push({ source: `view_${v.id}`, target: n.id, label: 'contains' });
+      }
+    }
+  }
+
+  const allNodes = [...(nodes ?? []), ...viewNodes];
+  const allLinks = [...links, ...viewLinks];
+
+  return <MyPageClient savedViews={savedViews ?? []} nodes={allNodes} links={allLinks} />;
 }

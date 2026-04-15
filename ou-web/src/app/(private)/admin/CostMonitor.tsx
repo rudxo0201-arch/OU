@@ -234,7 +234,7 @@ export function CostMonitor() {
         <Text fw={600} fz="sm">최근 API 호출</Text>
         <Select
           placeholder="작업 필터"
-          data={operations}
+          data={operations ?? []}
           value={filterOp}
           onChange={setFilterOp}
           clearable

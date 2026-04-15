@@ -45,9 +45,11 @@ OU가 붙일 때: 모두 DataNode + DataView로 일관 (이질감 없음)
    현재: schedule/task/habit/knowledge/idea/relation/emotion/finance
    추후: product/broadcast/payment/location/... 추가만 하면 됨
 
-2. 뷰 레지스트리는 플러그인 구조:
-   쇼핑뷰/방송뷰/결제뷰 → 레지스트리 등록만으로 동작
+2. 뷰 레지스트리는 대등한 뷰 구조 (플러그인이 아님):
+   쇼핑뷰/방송뷰/결제뷰/코드뷰/터미널뷰 → 레지스트리 등록만으로 동작
    기존 코드 수정 불필요
+   모든 뷰는 동등 — 에디터도, AI도, 터미널도 하나의 뷰
+   파일도 뷰다: 파일 시스템 = 가장 원시적인 렌더러
 
 3. 채팅/피드는 DataView 기반:
    어떤 DataNode든 뷰로 만들어 전송/표시 가능
@@ -75,6 +77,7 @@ OU가 붙일 때: 모두 DataNode + DataView로 일관 (이질감 없음)
 | `DATA_STANDARD.md` | 데이터 저장 표준 (불변) | 데이터 모델 작업 |
 | `DB_SCHEMA.sql` | 전체 DB 스키마 | DB 쿼리/마이그레이션 |
 | `IDEAS.md` | 아이디어 로그 (누락 방지용) | 기획 방향 참고 시 |
+| `SCENARIOS.md` | 페르소나별 UX 시나리오 | 마케팅/UX 기획 시 |
 | `FRONTEND_DESIGN.md` | 프론트엔드 설계 | UI/UX 구현 |
 | `CLAUDE.md` | 개발 원칙, 워크플로우, 용어 | 항상 |
 

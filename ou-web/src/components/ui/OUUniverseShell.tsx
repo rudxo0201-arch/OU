@@ -2,12 +2,11 @@
 
 import { Box } from '@mantine/core';
 import {
-  Compass, Newspaper, ChatCircle, Gear, Sun, Moon,
+  Newspaper, ChatCircle, Gear, Sun, Moon,
 } from '@phosphor-icons/react';
 import { useMantineColorScheme } from '@mantine/core';
 import { useRouter, usePathname } from 'next/navigation';
-import { OrbDock, type OrbItem } from './OrbDock';
-import { useNavigationStore } from '@/stores/navigationStore';
+import { SystemOrbDock, type SystemOrbItem } from './SystemOrbDock';
 
 interface OUUniverseShellProps {
   children: React.ReactNode;
@@ -17,22 +16,8 @@ export function OUUniverseShell({ children }: OUUniverseShellProps) {
   const router = useRouter();
   const pathname = usePathname();
   const { setColorScheme, colorScheme } = useMantineColorScheme();
-  const { viewMode, setViewMode } = useNavigationStore();
 
-  const systemOrbs: OrbItem[] = [
-    {
-      id: 'explore',
-      icon: Compass,
-      label: '탐험하기',
-      active: viewMode === 'explore',
-      onClick: () => {
-        if (viewMode === 'explore') {
-          setViewMode('dashboard');
-        } else {
-          setViewMode('explore');
-        }
-      },
-    },
+  const systemOrbs: SystemOrbItem[] = [
     {
       id: 'feed',
       icon: Newspaper,
@@ -77,8 +62,8 @@ export function OUUniverseShell({ children }: OUUniverseShellProps) {
         {children}
       </Box>
 
-      {/* Right orb dock — system navigation */}
-      <OrbDock side="right" items={systemOrbs} />
+      {/* Left orb dock — system navigation */}
+      <SystemOrbDock side="left" items={systemOrbs} />
     </Box>
   );
 }

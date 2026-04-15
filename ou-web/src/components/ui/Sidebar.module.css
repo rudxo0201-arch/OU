@@ -29,7 +29,7 @@
 .brandText {
   color: var(--mantine-color-text);
   letter-spacing: 4px;
-  font-family: var(--font-logo), sans-serif;
+  font-family: var(--ou-font-logo), sans-serif;
   text-transform: lowercase;
 }
 

@@ -1,5 +1,5 @@
 /**
- * 12개 필수 기본 뷰 정의
+ * 기본 뷰 정의
  * 관리자가 "기본 뷰 생성하기" 클릭 시 일괄 생성
  */
 export interface DefaultViewDef {
@@ -156,5 +156,32 @@ export const DEFAULT_VIEWS: DefaultViewDef[] = [
     filter_config: null,
     schema_map: { title: 'title', location: 'location', date: 'date' },
     sort_order: 16,
+  },
+  {
+    name: '개발 세션',
+    view_type: 'code',
+    icon: '\uD83D\uDCBB',
+    description: '개발 과정을 데이터로',
+    filter_config: { domain: 'development' },
+    schema_map: { title: 'title', action_type: 'action_type', files_changed: 'files_changed' },
+    sort_order: 17,
+  },
+  {
+    name: '터미널',
+    view_type: 'terminal',
+    icon: '\uD83D\uDDA5\uFE0F',
+    description: '개발 로그를 터미널 형태로',
+    filter_config: { source_type: 'dev_tool' },
+    schema_map: { title: 'title', date: 'date' },
+    sort_order: 18,
+  },
+  {
+    name: 'AI 개발 대화',
+    view_type: 'ai_dev',
+    icon: '\uD83E\uDD16',
+    description: 'AI와의 개발 대화 기록',
+    filter_config: { domain: 'development' },
+    schema_map: { title: 'title', date: 'date' },
+    sort_order: 19,
   },
 ];

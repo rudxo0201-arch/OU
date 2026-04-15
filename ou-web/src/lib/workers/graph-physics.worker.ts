@@ -3,6 +3,7 @@ import * as d3 from 'd3-force';
 interface PhysicsNode extends d3.SimulationNodeDatum {
   id: string;
   importance?: number;
+  isView?: boolean;
 }
 
 interface PhysicsLink extends d3.SimulationLinkDatum<PhysicsNode> {
@@ -30,7 +31,9 @@ self.onmessage = (e: MessageEvent) => {
       )
       .force('charge', d3.forceManyBody().strength(-120))
       .force('center', d3.forceCenter(0, 0))
-      .force('collision', d3.forceCollide<PhysicsNode>().radius(d => 8 + (d.importance ?? 1) * 2))
+      .force('collision', d3.forceCollide<PhysicsNode>().radius(d =>
+        d.isView ? 20 + (d.importance ?? 1) * 3 : 8 + (d.importance ?? 1) * 2
+      ))
       .alphaDecay(0.02)
       .on('tick', () => {
         self.postMessage({

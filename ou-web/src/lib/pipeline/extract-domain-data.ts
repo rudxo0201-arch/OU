@@ -256,6 +256,63 @@ function extractHabit(raw: string): Record<string, any> {
   return result;
 }
 
+// ── development ──
+
+const DEV_ACTION_PATTERNS: Array<{ pattern: RegExp; action: string }> = [
+  { pattern: /플랜|계획|설계|기획|구조/, action: 'plan' },
+  { pattern: /에러|오류|버그|실패|문제/, action: 'debug' },
+  { pattern: /리팩토링|정리|개선|최적화/, action: 'refactor' },
+  { pattern: /구현|만들|생성|추가|작성/, action: 'implement' },
+  { pattern: /배포|deploy|빌드|build/, action: 'deploy' },
+  { pattern: /테스트|검증|확인/, action: 'test' },
+];
+
+const TECH_KEYWORDS = [
+  'next.js', 'react', 'typescript', 'supabase', 'vercel', 'mantine',
+  'prisma', 'postgresql', 'redis', 'cloudflare', 'r2', 'pixijs',
+  'd3', 'zustand', 'tailwind', 'node', 'api', 'webhook', 'ssr',
+  'ssg', 'rls', 'jwt', 'oauth', 'claude', 'openai', 'llm',
+];
+
+function extractDevelopment(raw: string): Record<string, any> {
+  const result: Record<string, any> = { date: today() };
+  const lowerRaw = raw.toLowerCase();
+
+  // 파일명 추출: xxx.ts, xxx.tsx, xxx.js 등
+  const fileMatches = raw.match(/[\w\-/]+\.(ts|tsx|js|jsx|css|md|json|sql)/g);
+  if (fileMatches) {
+    result.files_changed = Array.from(new Set(fileMatches)).slice(0, 10);
+  }
+
+  // 에러 타입 추출
+  const errorMatch = raw.match(/(TypeError|SyntaxError|ReferenceError|Error|에러|오류)[:：\s]*(.*?)(?:\n|$)/);
+  if (errorMatch) {
+    result.error_type = errorMatch[1];
+    result.error_message = errorMatch[2]?.trim().slice(0, 100);
+  }
+
+  // 기술 스택 추출
+  const techStack = TECH_KEYWORDS.filter(kw => lowerRaw.includes(kw));
+  if (techStack.length > 0) {
+    result.tech_stack = techStack;
+  }
+
+  // 액션 타입 추출
+  for (const { pattern, action } of DEV_ACTION_PATTERNS) {
+    if (pattern.test(raw)) {
+      result.action_type = action;
+      break;
+    }
+  }
+  if (!result.action_type) result.action_type = 'general';
+
+  // 제목: 첫 문장 또는 첫 30자
+  const firstLine = raw.split('\n')[0].trim();
+  result.title = firstLine.slice(0, 50) || '개발 세션';
+
+  return result;
+}
+
 // ── 기본 (knowledge, idea 등) ──
 
 function extractDefault(raw: string): Record<string, any> {
@@ -274,6 +331,7 @@ const EXTRACTORS: Record<string, (raw: string) => Record<string, any>> = {
   emotion: extractEmotion,
   relation: extractRelation,
   habit: extractHabit,
+  development: extractDevelopment,
 };
 
 export function extractDomainData(raw: string, domain: string): Record<string, any> {

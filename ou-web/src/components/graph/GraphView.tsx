@@ -8,7 +8,10 @@ interface GraphNode {
   domain: string;
   raw?: string;
   importance?: number;
-  graph_type?: 'planet' | 'star';
+  graph_type?: 'planet' | 'star' | 'view';
+  _viewId?: string;
+  _viewType?: string;
+  _viewIcon?: string;
 }
 
 interface GraphLink {
@@ -49,12 +52,34 @@ export const GraphView = forwardRef<GraphViewHandle, GraphViewProps>(
     const selectedGlowRef = useRef<any>(null);
     const highlightIdsRef = useRef<Set<string> | null>(highlightNodeIds ?? null);
 
+    // Track nodes that need spawn animation
+    const spawnAnimations = useRef<Map<string, { startTime: number; duration: number }>>(new Map());
+
     useImperativeHandle(ref, () => ({
       addNode: (node: GraphNode) => {
         allNodesRef.current = [...allNodesRef.current, node];
+
+        // Create sprite immediately if PIXI is initialized
+        const app = pixiRef.current;
+        if (app) {
+          import('pixi.js').then(PIXI => {
+            const totalNodes = allNodesRef.current.length;
+            const sprites = createNodeSprite(PIXI, node, totalNodes, totalNodes > LOD_SIMPLIFY_DOTS);
+            sprites.container.on('pointerdown', () => handleNodeClick(node));
+            // Start at scale 0 for pop animation
+            sprites.container.scale.set(0);
+            app.stage.addChild(sprites.container);
+            nodeSpritesRef.current.set(node.id, { ...sprites, isStar: node.graph_type === 'star', isView: node.graph_type === 'view' } as any);
+
+            // Register spawn animation
+            const duration = node.graph_type === 'view' ? 500 : 400;
+            spawnAnimations.current.set(node.id, { startTime: performance.now(), duration });
+          });
+        }
+
         workerRef.current?.postMessage({
           type: 'ADD_NODES',
-          data: { nodes: [{ id: node.id, importance: node.importance ?? 1 }] },
+          data: { nodes: [{ id: node.id, importance: node.importance ?? 1, isView: node.graph_type === 'view' }] },
         });
       },
       focusNode: (nodeId: string) => {
@@ -79,7 +104,7 @@ export const GraphView = forwardRef<GraphViewHandle, GraphViewProps>(
 
       let animationId: number;
       let pixiApp: any;
-      const nodeSprites: Map<string, { container: any; label: any; glow: any; shape: any; isStar: boolean }> = new Map();
+      const nodeSprites: Map<string, { container: any; label: any; glow: any; shape: any; isStar: boolean; isView: boolean }> = new Map();
       let edgeGraphics: any;
       let particleGraphics: any;
       let selectionGlow: any;
@@ -143,7 +168,7 @@ export const GraphView = forwardRef<GraphViewHandle, GraphViewProps>(
           const sprites = createNodeSprite(PIXI, node, totalNodes, simplified);
           sprites.container.on('pointerdown', () => wrappedHandleNodeClick(node));
           pixiApp.stage.addChild(sprites.container);
-          nodeSprites.set(node.id, { ...sprites, isStar: node.graph_type === 'star' });
+          nodeSprites.set(node.id, { ...sprites, isStar: node.graph_type === 'star', isView: node.graph_type === 'view' });
         });
         nodeSpritesRef.current = nodeSprites as any;
 
@@ -156,7 +181,7 @@ export const GraphView = forwardRef<GraphViewHandle, GraphViewProps>(
         workerRef.current.postMessage({
           type: 'INIT',
           data: {
-            nodes: nodes.map(n => ({ id: n.id, importance: n.importance ?? 1 })),
+            nodes: nodes.map(n => ({ id: n.id, importance: n.importance ?? 1, isView: n.graph_type === 'view' })),
             links,
           },
         });
@@ -213,12 +238,18 @@ export const GraphView = forwardRef<GraphViewHandle, GraphViewProps>(
             const tgt = nodePositions.current.get(link.target);
             if (!src || !tgt) return;
             const weight = link.weight ?? 1;
-            // Edge opacity: 0.2 base + weight-based up to 0.6
-            const alpha = Math.min(0.2 + weight * 0.15, 0.6);
+            const isViewLink = link.source.startsWith('view_') || link.target.startsWith('view_');
+            // View links: softer, thinner
+            const alpha = isViewLink
+              ? Math.min(0.1 + weight * 0.1, 0.3)
+              : Math.min(0.2 + weight * 0.15, 0.6);
+            const lineWidth = isViewLink
+              ? Math.max(0.3, scale * 0.5)
+              : Math.max(0.5, scale * 0.8);
             edgeGraphics
               .moveTo(src.x * scale + cX + vpX, src.y * scale + cY + vpY)
               .lineTo(tgt.x * scale + cX + vpX, tgt.y * scale + cY + vpY)
-              .stroke({ color: 0xffffff, alpha, width: Math.max(0.5, scale * 0.8) });
+              .stroke({ color: 0xffffff, alpha, width: lineWidth });
           });
 
           // Draw selection glow
@@ -256,10 +287,14 @@ export const GraphView = forwardRef<GraphViewHandle, GraphViewProps>(
             sprites.container.position.set(screenX, screenY);
             sprites.container.scale.set(scale);
 
-            // Star: 느리고 강한 펄스 / Planet: 잔잔한 트윙클
+            // View: 느린 펄스 / Star: 강한 펄스 / Planet: 잔잔한 트윙클
             const phase = twinklePhases.get(id) ?? 0;
             if (sprites.glow) {
-              if (sprites.isStar) {
+              if (sprites.isView) {
+                // View node: slow, gentle pulse (ring breathing)
+                const pulse = 0.5 + 0.5 * Math.sin(time * 0.6 + phase);
+                sprites.glow.alpha = sprites.glow._baseAlpha * (0.5 + pulse * 0.5);
+              } else if (sprites.isStar) {
                 const pulse = 0.5 + 0.5 * Math.sin(time * 0.8 + phase);
                 sprites.glow.alpha = sprites.glow._baseAlpha * (0.6 + pulse * 0.8);
               } else {
@@ -290,6 +325,25 @@ export const GraphView = forwardRef<GraphViewHandle, GraphViewProps>(
             if (sprites.label) {
               sprites.label.visible = showLabelsForFewNodes
                 || (showLabels && scale > LOD_LABEL_ZOOM_THRESHOLD);
+            }
+
+            // Spawn animation (elastic pop)
+            const anim = spawnAnimations.current.get(id);
+            if (anim) {
+              const elapsed = performance.now() - anim.startTime;
+              const progress = Math.min(elapsed / anim.duration, 1);
+              // Elastic ease out: overshoot then settle
+              const t = progress < 1
+                ? 1 - Math.pow(1 - progress, 3) * Math.cos(progress * Math.PI * 1.5)
+                : 1;
+              sprites.container.scale.set(scale * t);
+              // Flash glow during spawn
+              if (sprites.glow && progress < 0.6) {
+                sprites.glow.alpha = (sprites.glow._baseAlpha ?? 0.05) * (3 - progress * 4);
+              }
+              if (progress >= 1) {
+                spawnAnimations.current.delete(id);
+              }
             }
           });
         };
@@ -452,6 +506,7 @@ function createNodeSprite(
   const container = new PIXI.Container();
   const importance = node.importance ?? 1;
   const isStar = node.graph_type === 'star';
+  const isView = node.graph_type === 'view';
 
   // Brightness: 0.4 (low importance) to 1.0 (high importance)
   const brightness = Math.min(0.4 + importance * 0.12, 1.0);
@@ -463,12 +518,73 @@ function createNodeSprite(
   let label: any = null;
 
   if (simplified) {
-    // LOD: >500 nodes - just dots
-    const dotRadius = isStar ? 2.5 : 1.5;
+    // LOD: >500 nodes - just dots (view nodes slightly larger)
+    const dotRadius = isView ? 3.5 : isStar ? 2.5 : 1.5;
     shape = new PIXI.Graphics();
-    shape.circle(0, 0, dotRadius).fill({ color: nodeColor, alpha: brightness });
+    if (isView) {
+      // Ring even at simplified LOD
+      shape.circle(0, 0, dotRadius).stroke({ color: nodeColor, alpha: brightness, width: 1 });
+    } else {
+      shape.circle(0, 0, dotRadius).fill({ color: nodeColor, alpha: brightness });
+    }
     (shape as any)._baseAlpha = brightness;
     container.addChild(shape);
+  } else if (isView) {
+    // ── View Node: Ring (hollow circle) with strong glow ──
+    const radius = (4 + importance * 2) * 2.5;
+
+    // Outer glow (strong, 5x radius)
+    glow = new PIXI.Graphics();
+    const glowRadius = radius * 5;
+    const glowAlpha = 0.08;
+    glow.circle(0, 0, glowRadius).fill({ color: nodeColor, alpha: glowAlpha });
+    glow.circle(0, 0, glowRadius * 0.5).fill({ color: nodeColor, alpha: glowAlpha * 1.5 });
+    (glow as any)._baseAlpha = glowAlpha;
+    container.addChild(glow);
+
+    // Ring shape (hollow circle — universe shows through center)
+    shape = new PIXI.Graphics();
+    shape.circle(0, 0, radius).stroke({ color: nodeColor, alpha: 0.6, width: 2 });
+    // Inner subtle ring
+    shape.circle(0, 0, radius * 0.7).stroke({ color: nodeColor, alpha: 0.15, width: 1 });
+    (shape as any)._baseAlpha = 0.6;
+    container.addChild(shape);
+
+    // View icon (emoji) in center — visible at closer zoom
+    if (node._viewIcon) {
+      const iconLabel = new PIXI.Text({
+        text: node._viewIcon,
+        style: {
+          fontFamily: 'system-ui, -apple-system, sans-serif',
+          fontSize: Math.max(12, radius * 0.6),
+          align: 'center',
+        },
+      });
+      iconLabel.anchor.set(0.5, 0.5);
+      iconLabel.position.set(0, 0);
+      iconLabel.alpha = 0.7;
+      container.addChild(iconLabel);
+    }
+
+    // Label (view name) — always slightly brighter than data nodes
+    if (totalNodes < LOD_SIMPLIFY_DOTS && node.raw) {
+      const displayText = node.raw.length > 20 ? node.raw.slice(0, 18) + '..' : node.raw;
+      label = new PIXI.Text({
+        text: displayText,
+        style: {
+          fontFamily: 'system-ui, -apple-system, sans-serif',
+          fontSize: 12,
+          fontWeight: 'bold',
+          fill: 0xffffff,
+          align: 'center',
+        },
+      });
+      label.anchor.set(0.5, 0);
+      label.position.set(0, radius + 6);
+      label.alpha = 0.75;
+      label.visible = totalNodes < 80;
+      container.addChild(label);
+    }
   } else {
     const radius = isStar ? (4 + importance * 2) * 1.8 : 4 + importance * 2;
 
