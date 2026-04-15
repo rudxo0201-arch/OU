@@ -38,10 +38,13 @@ export async function middleware(request: NextRequest) {
   // 관리자 세션 타임아웃 (30분)
   if (ADMIN_ROUTES.some(r => path.startsWith(r)) && user) {
     const { data: sessionData } = await supabase.auth.getSession();
-    const lastActivity = sessionData?.session?.expires_at;
-    // expires_at 기준: 7일 세션 → 관리자는 30분 초과 시 재로그인
-    if (lastActivity) {
-      const sessionAge = Date.now() - (lastActivity * 1000 - 7 * 24 * 60 * 60 * 1000);
+    const session = sessionData?.session;
+    if (session) {
+      // created_at (세션 생성 또는 마지막 리프레시 시각) 기준
+      const createdAt = (session as any).created_at
+        ? new Date((session as any).created_at).getTime()
+        : (session.expires_at! * 1000 - 7 * 24 * 60 * 60 * 1000);
+      const sessionAge = Date.now() - createdAt;
       if (sessionAge > 30 * 60 * 1000) {
         await supabase.auth.signOut();
         return NextResponse.redirect(new URL('/login?reason=timeout', request.url));
