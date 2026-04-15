@@ -10,6 +10,7 @@ export interface ServiceStatus {
   openai: boolean;
   gemini: boolean;
   r2: boolean;
+  sentry: boolean;
   stripe: boolean;
   supabase: boolean;
   upstash: boolean;
@@ -25,6 +26,7 @@ export function checkEnv(): ServiceStatus {
       process.env.CLOUDFLARE_R2_ACCESS_KEY &&
       process.env.CLOUDFLARE_R2_SECRET_KEY
     ),
+    sentry: !!process.env.NEXT_PUBLIC_SENTRY_DSN,
     stripe: !!process.env.STRIPE_SECRET_KEY,
     supabase: !!(
       process.env.NEXT_PUBLIC_SUPABASE_URL &&
@@ -45,6 +47,7 @@ export const SERVICE_LABELS: Record<keyof ServiceStatus, string> = {
   openai: 'OpenAI (임베딩/폴백)',
   gemini: 'Gemini (OCR)',
   r2: 'Cloudflare R2 (파일)',
+  sentry: 'Sentry (에러 추적)',
   stripe: 'Stripe (결제)',
   supabase: 'Supabase (DB/인증)',
   upstash: 'Upstash Redis (캐시)',

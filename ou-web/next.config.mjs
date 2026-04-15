@@ -1,7 +1,10 @@
+import { withSentryConfig } from '@sentry/nextjs';
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
     optimizePackageImports: ['@mantine/core', '@mantine/hooks', '@phosphor-icons/react'],
+    instrumentationHook: true,
   },
   async headers() {
     return [
@@ -18,4 +21,9 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+export default withSentryConfig(nextConfig, {
+  silent: true,
+  disableLogger: true,
+  hideSourceMaps: true,
+  tunnelRoute: '/monitoring',
+});

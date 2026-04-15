@@ -3,6 +3,7 @@
 import { Component, type ReactNode } from 'react';
 import { Box, Stack, Text, Button } from '@mantine/core';
 import { WarningCircle } from '@phosphor-icons/react';
+import * as Sentry from '@sentry/nextjs';
 import { VIEW_REGISTRY } from './registry';
 import type { LayoutConfig } from '@/types/layout-config';
 
@@ -27,6 +28,10 @@ class ViewErrorBoundary extends Component<
 
   static getDerivedStateFromError(error: Error) {
     return { hasError: true, error: error.message };
+  }
+
+  componentDidCatch(error: Error) {
+    Sentry.captureException(error, { tags: { viewType: this.props.viewType } });
   }
 
   render() {

@@ -2,14 +2,20 @@
 
 import { Center, Stack, Text, Button, Group } from '@mantine/core';
 import { WarningCircle } from '@phosphor-icons/react';
+import * as Sentry from '@sentry/nextjs';
 import Link from 'next/link';
+import { useEffect } from 'react';
 
 export default function GlobalError({
+  error,
   reset,
 }: {
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  useEffect(() => {
+    Sentry.captureException(error);
+  }, [error]);
   return (
     <Center h="100vh" px="xl">
       <Stack align="center" gap="lg" maw={400}>
