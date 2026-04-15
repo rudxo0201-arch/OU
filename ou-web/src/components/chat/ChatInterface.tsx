@@ -11,7 +11,7 @@ import { ScenarioSuggestions } from './ScenarioSuggestions';
 import { ChatGraphPanel, type ChatGraphPanelHandle } from './ChatGraphPanel';
 import { useAuth } from '@/hooks/useAuth';
 import { useChatStore } from '@/stores/chatStore';
-import { getScenariosByStage, type Scenario } from '@/data/scenarios';
+import { getScenariosByStage, getScenarioById, type Scenario } from '@/data/scenarios';
 
 // 클라이언트 도메인 분류 — 서버 classifier와 동일 우선순위
 function classifyDomainClient(text: string): string {
@@ -28,9 +28,10 @@ function classifyDomainClient(text: string): string {
 interface ChatInterfaceProps {
   onboarding?: boolean;
   graphNodes?: any[];
+  initialScenarioId?: string;
 }
 
-export function ChatInterface({ onboarding, graphNodes = [] }: ChatInterfaceProps) {
+export function ChatInterface({ onboarding, graphNodes = [], initialScenarioId }: ChatInterfaceProps) {
   const { user } = useAuth();
   const { messages, addMessage, turnCount } = useChatStore();
   const [streaming, setStreaming] = useState(false);
@@ -94,6 +95,19 @@ export function ChatInterface({ onboarding, graphNodes = [] }: ChatInterfaceProp
   const [activeScenario, setActiveScenario] = useState<Scenario | null>(null);
   const scenarioStage = !user ? 'guest' : 'onboarding';
   const scenarios = useMemo(() => getScenariosByStage(scenarioStage), [scenarioStage]);
+
+  // URL ?scenario= 파라미터로 자동 실행
+  const autoScenarioFired = useRef(false);
+  useEffect(() => {
+    if (autoScenarioFired.current || !initialScenarioId) return;
+    if (messages.length < 1) return; // greeting 먼저 기다림
+    autoScenarioFired.current = true;
+    const scenario = getScenarioById(initialScenarioId);
+    if (scenario) {
+      setTimeout(() => handleScenarioSelect(scenario), 500);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialScenarioId, messages.length]);
 
   // 게스트 턴 제한 체크
   const guestLimitReached = !user && turnCount >= 10;

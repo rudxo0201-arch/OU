@@ -9,6 +9,8 @@ import { checkTokenLimit } from '@/lib/utils/token-limit';
 import crypto from 'crypto';
 import { generateCacheKey, getCachedResponse, setCachedResponse } from '@/lib/cache/redis';
 import { isAdminEmail } from '@/lib/auth/roles';
+import { findScenarioResponse } from '@/data/scenario-responses';
+import { classifyDomain } from '@/lib/pipeline/classifier';
 
 /**
  * Determine if a request is cacheable.
@@ -69,6 +71,34 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    // ── 시나리오 캐싱: LLM 호출 없이 사전 생성 응답 반환 ──
+    const lastMsg = messages[messages.length - 1];
+    const scenarioMatch = findScenarioResponse(lastMsg.content);
+    if (scenarioMatch) {
+      const { domain, viewHint, confidence } = await classifyDomain(lastMsg.content);
+
+      // 노드 생성은 그대로 (데이터 파이프라인 실행)
+      saveMessageAsync({
+        userId: user?.id,
+        userMessage: lastMsg.content,
+        assistantMessage: scenarioMatch.response,
+      }).catch(() => {});
+
+      // 캐시된 응답을 SSE로 스트리밍
+      const encoder = new TextEncoder();
+      const stream = new ReadableStream({
+        start(controller) {
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text: scenarioMatch.response })}\n\n`));
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ done: true, domain, viewHint, confidence, scenarioId: scenarioMatch.id })}\n\n`));
+          controller.close();
+        },
+      });
+
+      return new Response(stream, {
+        headers: { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache' },
+      });
+    }
+
     // 구독 플랜 + 일일 토큰 한도 체크
     let userPlan = 'free';
     if (user) {

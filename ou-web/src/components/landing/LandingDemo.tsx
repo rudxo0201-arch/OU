@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useMemo } from 'react';
-import { Box, Stack, Title, Text, Button } from '@mantine/core';
+import { Box, Stack, Title, Text, Button, Group, UnstyledButton } from '@mantine/core';
+import { CalendarBlank, CurrencyKrw, CheckSquare, SmileyMeh } from '@phosphor-icons/react';
 import { useRouter } from 'next/navigation';
 
 /* ──────────────────────────────────────────────
@@ -290,66 +291,99 @@ export function LandingDemo() {
 
             <Text
               style={{
-                fontSize: 15,
-                color: '#666',
+                fontSize: 17,
+                color: '#444',
                 lineHeight: 1.7,
+                fontWeight: 500,
               }}
             >
-              말만 하면 기록이 되고, 원하는 형태로 꺼내 쓸 수 있어요
+              말하면, 정리돼요.
             </Text>
 
-            <Stack gap="sm">
-              <Button
-                size="lg"
-                variant="filled"
-                color="dark"
-                radius="md"
-                onClick={handleStart}
-                fullWidth
-                styles={{
-                  root: {
-                    background: '#000',
-                    height: 52,
-                    fontSize: 16,
-                    fontWeight: 600,
-                    '&:hover': {
-                      background: '#222',
-                    },
-                  },
-                }}
-              >
-                무료로 시작하기
-              </Button>
-              <Button
-                size="md"
-                variant="outline"
-                color="gray"
-                radius="md"
-                onClick={handleTry}
-                fullWidth
-                styles={{
-                  root: {
-                    borderColor: '#ddd',
-                    color: '#666',
-                    height: 44,
-                    fontSize: 14,
-                    fontWeight: 500,
-                  },
-                }}
-              >
-                먼저 체험하기
-              </Button>
-            </Stack>
-
-            <Text
+            {/* 시나리오 프리필 체험 */}
+            <Box
               style={{
-                fontSize: 12,
-                color: '#aaa',
-                textAlign: 'center',
+                padding: '14px 18px',
+                borderRadius: 12,
+                border: '1px solid #e0e0e0',
+                background: '#fafafa',
               }}
             >
-              가입 없이 10회 대화 가능
-            </Text>
+              <Text fz={13} c="#888" mb={8}>이렇게 말해보세요</Text>
+              <Text fz={15} fw={500} c="#333" mb={12} style={{ lineHeight: 1.5 }}>
+                &ldquo;다음주 금요일 7시 강남역에서 친구 모임&rdquo;
+              </Text>
+              <Group gap="sm">
+                <Button
+                  size="sm"
+                  variant="filled"
+                  color="dark"
+                  radius="md"
+                  onClick={() => router.push('/chat?scenario=schedule-demo')}
+                  styles={{ root: { background: '#000', fontSize: 13, fontWeight: 600, height: 36 } }}
+                >
+                  이거 보내보기
+                </Button>
+                <Button
+                  size="sm"
+                  variant="subtle"
+                  color="gray"
+                  radius="md"
+                  onClick={handleTry}
+                  styles={{ root: { fontSize: 13, height: 36 } }}
+                >
+                  직접 써보기
+                </Button>
+              </Group>
+            </Box>
+
+            {/* 시나리오 카테고리 */}
+            <Group gap="xs" justify="center">
+              {[
+                { icon: CalendarBlank, label: '일정', id: 'schedule-demo' },
+                { icon: CurrencyKrw, label: '가계부', id: 'finance-demo' },
+                { icon: CheckSquare, label: '할 일', id: 'task-demo' },
+                { icon: SmileyMeh, label: '일기', id: 'emotion-demo' },
+              ].map(item => (
+                <UnstyledButton
+                  key={item.id}
+                  onClick={() => router.push(`/chat?scenario=${item.id}`)}
+                  style={{
+                    padding: '8px 14px',
+                    borderRadius: 20,
+                    border: '1px solid #e8e8e8',
+                    fontSize: 12,
+                    color: '#666',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    transition: 'all 150ms',
+                  }}
+                >
+                  <item.icon size={14} weight="bold" />
+                  {item.label}
+                </UnstyledButton>
+              ))}
+            </Group>
+
+            <Button
+              size="lg"
+              variant="filled"
+              color="dark"
+              radius="md"
+              onClick={handleStart}
+              fullWidth
+              styles={{
+                root: {
+                  background: '#000',
+                  height: 48,
+                  fontSize: 15,
+                  fontWeight: 600,
+                },
+              }}
+            >
+              무료로 시작하기
+            </Button>
           </Stack>
         </Box>
       </Box>
@@ -422,68 +456,86 @@ export function LandingDemo() {
               </Text>
             </Stack>
 
-            <Text
-              ta="center"
-              style={{
-                fontSize: 14,
-                color: '#666',
-                lineHeight: 1.7,
-              }}
-            >
-              말만 하면 기록이 되고,
-              <br />
-              원하는 형태로 꺼내 쓸 수 있어요
+            <Text ta="center" style={{ fontSize: 15, color: '#444', fontWeight: 500 }}>
+              말하면, 정리돼요.
             </Text>
 
-            <Stack gap="sm">
-              <Button
-                size="lg"
-                variant="filled"
-                color="dark"
-                radius="md"
-                onClick={handleStart}
-                fullWidth
-                styles={{
-                  root: {
-                    background: '#000',
-                    height: 48,
-                    fontSize: 15,
-                    fontWeight: 600,
-                  },
-                }}
-              >
-                무료로 시작하기
-              </Button>
-              <Button
-                size="md"
-                variant="outline"
-                color="gray"
-                radius="md"
-                onClick={handleTry}
-                fullWidth
-                styles={{
-                  root: {
-                    borderColor: '#ddd',
+            {/* 시나리오 프리필 */}
+            <Box
+              style={{
+                padding: '12px 16px',
+                borderRadius: 12,
+                border: '1px solid #e0e0e0',
+                background: '#fafafa',
+              }}
+            >
+              <Text fz={12} c="#888" mb={6}>이렇게 말해보세요</Text>
+              <Text fz={14} fw={500} c="#333" mb={10} style={{ lineHeight: 1.5 }}>
+                &ldquo;다음주 금요일 7시 강남역에서 친구 모임&rdquo;
+              </Text>
+              <Group gap="sm">
+                <Button
+                  size="xs"
+                  variant="filled"
+                  color="dark"
+                  radius="md"
+                  onClick={() => router.push('/chat?scenario=schedule-demo')}
+                  styles={{ root: { background: '#000', fontSize: 12, fontWeight: 600 } }}
+                >
+                  이거 보내보기
+                </Button>
+                <Button
+                  size="xs"
+                  variant="subtle"
+                  color="gray"
+                  radius="md"
+                  onClick={handleTry}
+                  styles={{ root: { fontSize: 12 } }}
+                >
+                  직접 써보기
+                </Button>
+              </Group>
+            </Box>
+
+            {/* 카테고리 */}
+            <Group gap={6} justify="center">
+              {[
+                { icon: CalendarBlank, label: '일정', id: 'schedule-demo' },
+                { icon: CurrencyKrw, label: '가계부', id: 'finance-demo' },
+                { icon: CheckSquare, label: '할 일', id: 'task-demo' },
+                { icon: SmileyMeh, label: '일기', id: 'emotion-demo' },
+              ].map(item => (
+                <UnstyledButton
+                  key={item.id}
+                  onClick={() => router.push(`/chat?scenario=${item.id}`)}
+                  style={{
+                    padding: '6px 12px',
+                    borderRadius: 16,
+                    border: '1px solid #e8e8e8',
+                    fontSize: 11,
                     color: '#666',
-                    height: 42,
-                    fontSize: 13,
-                    fontWeight: 500,
-                  },
-                }}
-              >
-                먼저 체험하기
-              </Button>
-            </Stack>
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 4,
+                  }}
+                >
+                  <item.icon size={12} weight="bold" />
+                  {item.label}
+                </UnstyledButton>
+              ))}
+            </Group>
 
-            <Text
-              style={{
-                fontSize: 11,
-                color: '#aaa',
-                textAlign: 'center',
-              }}
+            <Button
+              size="lg"
+              variant="filled"
+              color="dark"
+              radius="md"
+              onClick={handleStart}
+              fullWidth
+              styles={{ root: { background: '#000', height: 44, fontSize: 14, fontWeight: 600 } }}
             >
-              가입 없이 10회 대화 가능
-            </Text>
+              무료로 시작하기
+            </Button>
           </Stack>
         </Box>
       </Box>
