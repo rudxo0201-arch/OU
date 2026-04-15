@@ -148,4 +148,13 @@ export const DEFAULT_VIEWS: DefaultViewDef[] = [
     schema_map: null,
     sort_order: 15,
   },
+  {
+    name: '내 지도',
+    view_type: 'map',
+    icon: '\uD83D\uDCCD',
+    description: '약속 장소를 지도에서 한눈에',
+    filter_config: null,
+    schema_map: { title: 'title', location: 'location', date: 'date' },
+    sort_order: 16,
+  },
 ];

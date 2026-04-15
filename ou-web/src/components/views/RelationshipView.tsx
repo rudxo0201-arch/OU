@@ -18,6 +18,7 @@ interface ContactCard {
   id: string;
   name: string;
   relationship: string;
+  contact: string;
   lastMentioned: string;
   birthday: string;
   memo: string;
@@ -39,6 +40,7 @@ export function RelationshipView({ nodes }: ViewProps) {
           id: n.id,
           name: dd.name ?? ((n.raw ?? '').slice(0, 20) || '이름 없음'),
           relationship: dd.relationship ?? dd.type ?? '',
+          contact: dd.contact ?? '',
           lastMentioned: lastDate,
           birthday: dd.birthday ?? '',
           memo: dd.memo ?? dd.content ?? n.raw ?? '',
@@ -187,6 +189,12 @@ export function RelationshipView({ nodes }: ViewProps) {
 
               <Collapse in={isExpanded}>
                 <Stack gap="xs" mt="sm" style={{ borderTop: '0.5px solid var(--mantine-color-default-border)', paddingTop: 8 }}>
+                  {card.contact && (
+                    <Group gap={6}>
+                      <Text fz={10} c="dimmed">연락처</Text>
+                      <Text fz="xs">{card.contact}</Text>
+                    </Group>
+                  )}
                   {card.birthday && (
                     <Group gap={6}>
                       <Text fz={10} c="dimmed">생일</Text>

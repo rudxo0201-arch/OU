@@ -207,6 +207,16 @@ export const VIEW_SCHEMA_HINTS: ViewSchemaHint[] = [
     bestDomains: [],
     dataShape: 'single',
   },
+  {
+    viewType: 'map',
+    label: '지도',
+    description: '약속 장소를 지도에 표시',
+    icon: 'MapPin',
+    requiredFields: ['location'],
+    optionalFields: ['date', 'time', 'title', 'address'],
+    bestDomains: ['schedule'],
+    dataShape: 'list',
+  },
 ];
 
 /**

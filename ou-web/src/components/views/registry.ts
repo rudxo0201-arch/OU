@@ -31,6 +31,7 @@ export const VIEW_REGISTRY: Record<string, ComponentType<ViewProps>> = {
   health:          dynamic(() => import('./HealthView').then(m => m.HealthView), { ssr: false }),
   resume:          dynamic(() => import('./ResumeView').then(m => m.ResumeView), { ssr: false }),
   snapshot:        dynamic(() => import('./SnapshotView').then(m => m.SnapshotView), { ssr: false }),
+  map:             dynamic(() => import('./MapView').then(m => m.MapView), { ssr: false }),
 };
 
 /* ── View Meta: 뷰별 동작 속성 ── */
@@ -55,6 +56,7 @@ export const VIEW_META: Record<string, ViewMeta> = {
   journal:         { previewOnClick: false },
   pdf:             { previewOnClick: false },
   lecture:         { previewOnClick: false },
+  map:             { previewOnClick: true },
 };
 
 export function getViewMeta(viewType: string): ViewMeta {

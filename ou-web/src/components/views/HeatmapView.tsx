@@ -36,6 +36,16 @@ export function HeatmapView({ nodes }: ViewProps) {
     [dateCounts],
   );
 
+  const streak = useMemo(() => {
+    let count = 0;
+    let d = dayjs();
+    while (dateCounts[d.format('YYYY-MM-DD')]) {
+      count++;
+      d = d.subtract(1, 'day');
+    }
+    return count;
+  }, [dateCounts]);
+
   const today = dayjs();
   const startDate = today.subtract(WEEKS * 7 - 1, 'day');
   // Adjust to start on Sunday
@@ -72,7 +82,10 @@ export function HeatmapView({ nodes }: ViewProps) {
     <Stack gap="sm" p="md">
       <Group justify="space-between" align="baseline">
         <Text fz="sm" fw={600}>활동 기록</Text>
-        <Text fz="xs" c="dimmed">{totalDays}일 기록됨</Text>
+        <Group gap="sm">
+          {streak > 0 && <Text fz="xs" fw={600}>{streak}일 연속</Text>}
+          <Text fz="xs" c="dimmed">{totalDays}일 기록됨</Text>
+        </Group>
       </Group>
 
       <Box style={{ overflowX: 'auto' }}>

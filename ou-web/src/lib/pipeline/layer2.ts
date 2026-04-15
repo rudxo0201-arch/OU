@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import { classifyDomain } from './classifier';
 import { detectUnresolved } from './unresolved';
 import { isAdminEmail } from '@/lib/auth/roles';
+import { extractDomainData } from './extract-domain-data';
 
 // 수정/보충 패턴 감지
 const UPDATE_PATTERNS = [
@@ -170,6 +171,11 @@ export async function saveMessageAsync(input: SaveMessageInput) {
     }
   }
 
+  const domainData = {
+    ...extractDomainData(input.userMessage, domain),
+    ...(adminInternalData ?? {}),
+  };
+
   const { data: node, error: nodeErr } = await supabase.from('data_nodes').insert({
     user_id: input.userId,
     group_id: input.groupId ?? null,
@@ -181,7 +187,7 @@ export async function saveMessageAsync(input: SaveMessageInput) {
     resolution: 'resolved',
     view_hint: viewHint,
     visibility: 'private',
-    ...(adminInternalData ? { domain_data: adminInternalData } : {}),
+    domain_data: domainData,
   }).select().single();
 
   if (nodeErr) {
