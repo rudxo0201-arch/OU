@@ -108,13 +108,22 @@ export async function embedPendingSentences(nodeId: string) {
   }
 }
 
-const TRIPLE_SYSTEM_PROMPT = `아래 텍스트에서 트리플(주어, 서술어, 목적어)을 추출하세요.
-서술어는 반드시 아래 목록만 사용:
-is_a, part_of, causes, derived_from, related_to,
-opposite_of, requires, example_of, involves, located_at, occurs_at
+const TRIPLE_SYSTEM_PROMPT = `텍스트에서 의미 있는 트리플(주어, 서술어, 목적어)을 추출하세요.
+
+규칙:
+1. 서술어는 반드시 아래 11개만 사용:
+   is_a (A는 B이다), part_of (A는 B의 일부), causes (A가 B를 유발),
+   derived_from (A는 B에서 유래), related_to (A는 B와 관련),
+   opposite_of (A는 B의 반대), requires (A는 B를 필요로 함),
+   example_of (A는 B의 예시), involves (A는 B를 포함/관여),
+   located_at (A는 B에 위치), occurs_at (A는 B에 발생)
+2. 주어/목적어는 구체적 명사구로 (대명사 "그것", "이것" 금지)
+3. 한 문장에서 여러 트리플 가능
+4. 추론이 아니라 텍스트에 명시된 관계만 추출
+5. 트리플이 없으면 빈 배열 []
 
 JSON 배열로만 출력. 설명 없이.
-예: [{"subject":"A","predicate":"is_a","object":"B"}]`;
+예: [{"subject":"인지혁명","predicate":"causes","object":"호모 사피엔스 지배"},{"subject":"강남역","predicate":"located_at","object":"서울"}]`;
 
 export async function extractTriples(nodeId: string) {
   const supabase = await createClient();
