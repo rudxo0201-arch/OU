@@ -217,6 +217,16 @@ export const VIEW_SCHEMA_HINTS: ViewSchemaHint[] = [
     bestDomains: ['schedule'],
     dataShape: 'list',
   },
+  {
+    viewType: 'dev_workspace',
+    label: '개발 환경',
+    description: '코드를 편집하고 AI와 개발하는 환경',
+    icon: 'Code',
+    requiredFields: ['project_name'],
+    optionalFields: ['tech_stack', 'description'],
+    bestDomains: ['development'],
+    dataShape: 'hierarchical',
+  },
 ];
 
 /**

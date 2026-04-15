@@ -1,9 +1,12 @@
 'use client';
 
 import { useCallback, useRef, useState } from 'react';
-import { Stack, Text, Box, Group, ActionIcon, ScrollArea, Textarea, Loader } from '@mantine/core';
-import { PaperPlaneRight, Lightning, User } from '@phosphor-icons/react';
+import { Stack, Text, Box, Group, ActionIcon, ScrollArea, Textarea, Loader, Badge } from '@mantine/core';
+import { PaperPlaneRight, Lightning, User, File } from '@phosphor-icons/react';
 import type { ViewProps } from './registry';
+import { useDevWorkspaceStore } from '@/stores/devWorkspaceStore';
+import { parseActions, stripActions } from '@/lib/dev/action-executor';
+import { ActionBlock } from './dev/ActionBlock';
 
 interface ChatMessage {
   id: string;
@@ -16,6 +19,9 @@ export function AIDevView({ nodes }: ViewProps) {
   const [input, setInput] = useState('');
   const [streaming, setStreaming] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // DevWorkspace store에서 맥락 읽기
+  const wsStore = useDevWorkspaceStore();
 
   const scrollToBottom = useCallback(() => {
     setTimeout(() => {
@@ -36,16 +42,46 @@ export function AIDevView({ nodes }: ViewProps) {
     scrollToBottom();
 
     try {
-      // 기존 /api/chat 활용 (SSE 스트리밍)
       const chatMessages = [...messages, userMsg].map(m => ({
         role: m.role,
         content: m.content,
       }));
 
-      const res = await fetch('/api/chat', {
+      // 터미널 출력에서 최근 5개
+      const recentTerminal = wsStore.terminalOutput.slice(-5).map(t => ({
+        command: t.command,
+        stdout: t.stdout,
+        stderr: t.stderr,
+        exitCode: t.exitCode,
+      }));
+
+      const context: Record<string, any> = {
+        activeFilePath: wsStore.activeFilePath,
+        selectedText: wsStore.selectedText || undefined,
+      };
+
+      // Admin 모드에서만 터미널/Git 맥락 전송
+      if (wsStore.isAdminMode) {
+        if (recentTerminal.length > 0) context.recentTerminalOutput = recentTerminal;
+        if (wsStore.currentErrors.length > 0) context.currentErrors = wsStore.currentErrors;
+        if (wsStore.gitBranch) context.gitBranch = wsStore.gitBranch;
+        if (wsStore.gitChanges.length > 0) context.gitChanges = wsStore.gitChanges;
+        if (wsStore.gitLog.length > 0) context.gitLog = wsStore.gitLog.slice(0, 5);
+      }
+
+      // 프로젝트 모드: projectId 전달
+      if (wsStore.projectId) {
+        context.projectId = wsStore.projectId;
+        context.projectName = wsStore.projectName;
+      }
+
+      const res = await fetch('/api/dev/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: chatMessages }),
+        body: JSON.stringify({
+          messages: chatMessages,
+          context,
+        }),
       });
 
       if (!res.body) throw new Error('No body');
@@ -83,7 +119,7 @@ export function AIDevView({ nodes }: ViewProps) {
 
     setStreaming(false);
     scrollToBottom();
-  }, [input, streaming, messages, scrollToBottom]);
+  }, [input, streaming, messages, scrollToBottom, wsStore]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -95,10 +131,14 @@ export function AIDevView({ nodes }: ViewProps) {
   return (
     <Box style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 400 }}>
       {/* Header */}
-      <Group gap="xs" p="sm" style={{ borderBottom: '1px solid var(--mantine-color-dark-4)', flexShrink: 0 }}>
+      <Group gap="xs" p="sm" style={{ borderBottom: '1px solid var(--mantine-color-dark-4)', flexShrink: 0 }} wrap="nowrap">
         <Lightning size={14} color="var(--mantine-color-yellow-5)" />
         <Text fz={12} fw={600}>AI Dev</Text>
-        <Text fz={10} c="dimmed">개발 AI와 대화</Text>
+        {wsStore.activeFilePath && (
+          <Badge size="xs" variant="light" color="gray" leftSection={<File size={8} />}>
+            {wsStore.activeFilePath.split('/').pop()}
+          </Badge>
+        )}
       </Group>
 
       {/* Messages */}
@@ -135,19 +175,43 @@ export function AIDevView({ nodes }: ViewProps) {
               </Box>
               <Box style={{ flex: 1, minWidth: 0 }}>
                 <Text fz={10} c="dimmed" mb={2}>{msg.role === 'user' ? 'You' : 'AI'}</Text>
-                <Text
-                  fz={12}
-                  style={{
-                    whiteSpace: 'pre-wrap',
-                    fontFamily: msg.role === 'assistant' ? 'monospace' : 'inherit',
-                    lineHeight: 1.6,
-                  }}
-                >
-                  {msg.content}
-                  {streaming && msg.role === 'assistant' && !msg.content && (
-                    <Loader size={12} color="yellow" type="dots" />
-                  )}
-                </Text>
+                {msg.role === 'assistant' && msg.content ? (() => {
+                  const actions = parseActions(msg.content);
+                  const textOnly = stripActions(msg.content);
+                  return (
+                    <>
+                      {textOnly && (
+                        <Text
+                          fz={12}
+                          style={{
+                            whiteSpace: 'pre-wrap',
+                            fontFamily: 'monospace',
+                            lineHeight: 1.6,
+                          }}
+                        >
+                          {textOnly}
+                        </Text>
+                      )}
+                      {actions.map((action, i) => (
+                        <ActionBlock key={`${msg.id}-action-${i}`} action={action} />
+                      ))}
+                    </>
+                  );
+                })() : (
+                  <Text
+                    fz={12}
+                    style={{
+                      whiteSpace: 'pre-wrap',
+                      fontFamily: msg.role === 'assistant' ? 'monospace' : 'inherit',
+                      lineHeight: 1.6,
+                    }}
+                  >
+                    {msg.content}
+                    {streaming && msg.role === 'assistant' && !msg.content && (
+                      <Loader size={12} color="yellow" type="dots" />
+                    )}
+                  </Text>
+                )}
               </Box>
             </Group>
           ))}

@@ -4,17 +4,28 @@ import { useCallback, useRef, useState } from 'react';
 import { Text, Box, Group, Badge, ScrollArea, TextInput, Loader } from '@mantine/core';
 import { Terminal, WarningCircle, CheckCircle } from '@phosphor-icons/react';
 import type { ViewProps } from './registry';
-
-interface TerminalEntry {
-  id: string;
-  command: string;
-  stdout: string;
-  stderr: string;
-  exitCode: number;
-  timestamp: string;
-}
+import { useDevWorkspaceStore } from '@/stores/devWorkspaceStore';
+import type { TerminalEntry } from '@/stores/devWorkspaceStore';
 
 export function TerminalView({ nodes }: ViewProps) {
+  const { isAdminMode, projectId } = useDevWorkspaceStore();
+
+  // R2 모드 (일반 사용자): 터미널 비활성
+  if (!isAdminMode && projectId) {
+    return (
+      <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+        <Box ta="center">
+          <Terminal size={28} color="var(--mantine-color-dark-3)" />
+          <Text fz="xs" c="dimmed" mt="xs">터미널은 다음 업데이트에서 활성화됩니다</Text>
+        </Box>
+      </Box>
+    );
+  }
+
+  return <TerminalViewInner nodes={nodes} />;
+}
+
+function TerminalViewInner({ nodes }: { nodes: any[] }) {
   const [history, setHistory] = useState<TerminalEntry[]>([]);
   const [input, setInput] = useState('');
   const [running, setRunning] = useState(false);
@@ -22,6 +33,9 @@ export function TerminalView({ nodes }: ViewProps) {
   const [cmdIdx, setCmdIdx] = useState(-1);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // DevWorkspace store 연동
+  const wsStore = useDevWorkspaceStore();
 
   const executeCommand = useCallback(async () => {
     const cmd = input.trim();
@@ -40,34 +54,44 @@ export function TerminalView({ nodes }: ViewProps) {
       });
       const data = await res.json();
 
+      const ts = new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+      let entry: TerminalEntry;
+
       if (data.error) {
-        setHistory(prev => [...prev, {
+        entry = {
           id: Date.now().toString(),
           command: cmd,
           stdout: '',
           stderr: data.error + (data.hint ? `\n${data.hint}` : ''),
           exitCode: 1,
-          timestamp: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }),
-        }]);
+          timestamp: ts,
+        };
       } else {
-        setHistory(prev => [...prev, {
+        entry = {
           id: Date.now().toString(),
           command: cmd,
           stdout: data.stdout || '',
           stderr: data.stderr || '',
           exitCode: data.exitCode ?? 0,
-          timestamp: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }),
-        }]);
+          timestamp: ts,
+        };
+      }
+      setHistory(prev => [...prev, entry]);
+      wsStore.appendTerminalOutput(entry);
+      if (entry.stderr && entry.exitCode !== 0) {
+        wsStore.setCurrentErrors([entry.stderr]);
       }
     } catch (e) {
-      setHistory(prev => [...prev, {
+      const entry: TerminalEntry = {
         id: Date.now().toString(),
         command: cmd,
         stdout: '',
         stderr: 'Network error',
         exitCode: 1,
         timestamp: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }),
-      }]);
+      };
+      setHistory(prev => [...prev, entry]);
+      wsStore.appendTerminalOutput(entry);
     }
     setRunning(false);
 

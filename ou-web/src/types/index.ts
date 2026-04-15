@@ -3,7 +3,8 @@ export type DataNodeDomain =
   | 'schedule' | 'task' | 'habit' | 'knowledge'
   | 'idea' | 'relation' | 'emotion' | 'finance'
   | 'product' | 'broadcast' | 'education'
-  | 'media' | 'location' | 'unresolved';
+  | 'media' | 'location' | 'unresolved'
+  | 'development';
 
 // 표준 서술어 (절대 추가/변경 금지)
 export type TriplePredicate =

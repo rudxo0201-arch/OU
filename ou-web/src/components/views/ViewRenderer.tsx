@@ -14,7 +14,9 @@ interface ViewRendererProps {
 }
 
 export function ViewRenderer({ viewType, nodes, filters, onSave, inline, layoutConfig }: ViewRendererProps) {
-  const View = VIEW_REGISTRY[viewType];
+  // 하위 호환: pdf → document
+  const resolvedType = viewType === 'pdf' || viewType === 'export' ? 'document' : viewType;
+  const View = VIEW_REGISTRY[resolvedType];
 
   // 필터 원칙: 빈 뷰 표시 금지
   if (!nodes || nodes.length === 0) return null;

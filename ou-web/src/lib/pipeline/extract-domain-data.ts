@@ -110,25 +110,53 @@ const CATEGORY_MAP: Record<string, string> = {
 function extractFinance(raw: string): Record<string, any> {
   const result: Record<string, any> = { date: today() };
 
-  // 금액 파싱
-  const amountMatch = raw.match(/(\d[\d,]*)(?:\s*)(만원|천원|원)/);
-  if (amountMatch) {
-    let amount = parseInt(amountMatch[1].replace(/,/g, ''), 10);
-    if (amountMatch[2] === '만원') amount *= 10000;
-    if (amountMatch[2] === '천원') amount *= 1000;
-    result.amount = amount;
-  }
+  // 금액 파싱 — 다건 추출
+  const amountRegex = /(\d[\d,]*)(?:\s*)(만원|천원|원)/g;
+  const items: Array<{ amount: number; label: string; category: string }> = [];
 
-  // 카테고리
-  for (const [keyword, category] of Object.entries(CATEGORY_MAP)) {
-    if (raw.includes(keyword)) {
-      result.category = category;
-      break;
+  // 쉼표나 줄바꿈으로 분리된 항목별 처리
+  const segments = raw.split(/[,，]\s*|\n+/).map(s => s.trim()).filter(Boolean);
+
+  for (const segment of segments) {
+    const match = segment.match(/(\d[\d,]*)(?:\s*)(만원|천원|원)/);
+    if (!match) continue;
+
+    let amount = parseInt(match[1].replace(/,/g, ''), 10);
+    if (match[2] === '만원') amount *= 10000;
+    if (match[2] === '천원') amount *= 1000;
+
+    // 이 세그먼트의 카테고리
+    let category = '기타';
+    for (const [keyword, cat] of Object.entries(CATEGORY_MAP)) {
+      if (segment.includes(keyword)) { category = cat; break; }
     }
-  }
-  if (!result.category) result.category = '기타';
 
-  // 제목: 금액 제거한 나머지 텍스트
+    // 라벨: 금액 제거한 나머지
+    const label = segment.replace(/\d[\d,]*\s*(만원|천원|원)/g, '').trim() || category;
+
+    items.push({ amount, label, category });
+  }
+
+  if (items.length > 0) {
+    result.items = items;
+    result.amount = items.reduce((sum, it) => sum + it.amount, 0);
+    result.category = items[0].category;
+  } else {
+    // 단건 fallback
+    const singleMatch = raw.match(/(\d[\d,]*)(?:\s*)(만원|천원|원)/);
+    if (singleMatch) {
+      let amount = parseInt(singleMatch[1].replace(/,/g, ''), 10);
+      if (singleMatch[2] === '만원') amount *= 10000;
+      if (singleMatch[2] === '천원') amount *= 1000;
+      result.amount = amount;
+    }
+    for (const [keyword, category] of Object.entries(CATEGORY_MAP)) {
+      if (raw.includes(keyword)) { result.category = category; break; }
+    }
+    if (!result.category) result.category = '기타';
+  }
+
+  // 제목
   const title = raw
     .replace(/\d[\d,]*\s*(만원|천원|원)/g, '')
     .replace(/결제|지출|소비|지불|구매|입금|송금/g, '')

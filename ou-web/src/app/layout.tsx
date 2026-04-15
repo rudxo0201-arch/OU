@@ -6,8 +6,16 @@ import './globals.css';
 import { ColorSchemeScript, MantineProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import { ModalsProvider } from '@mantine/modals';
+import { Orbitron } from 'next/font/google';
 import { theme } from '@/theme';
 import { AuthProvider } from '@/components/ui/AuthProvider';
+
+const orbitron = Orbitron({
+  subsets: ['latin'],
+  weight: ['700', '800', '900'],
+  display: 'swap',
+  variable: '--font-orbitron',
+});
 
 export const metadata = {
   title: 'OU — Just talk.',
@@ -16,7 +24,7 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ko" suppressHydrationWarning>
+    <html lang="ko" suppressHydrationWarning className={orbitron.variable}>
       <head>
         <ColorSchemeScript defaultColorScheme="auto" />
         <link rel="manifest" href="/manifest.json" />

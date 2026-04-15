@@ -12,6 +12,7 @@ import { ChatGraphPanel, type ChatGraphPanelHandle } from './ChatGraphPanel';
 import { useAuth } from '@/hooks/useAuth';
 import { useChatStore } from '@/stores/chatStore';
 import { getScenariosByStage, getScenarioById, type Scenario } from '@/data/scenarios';
+import { extractDomainData } from '@/lib/pipeline/extract-domain-data';
 
 // 클라이언트 도메인 분류 — 서버 classifier와 동일 우선순위
 function classifyDomainClient(text: string): string {
@@ -29,14 +30,16 @@ interface ChatInterfaceProps {
   onboarding?: boolean;
   graphNodes?: any[];
   initialScenarioId?: string;
+  /** 다른 컴포넌트에 내장될 때 true — 그래프 패널 숨기고 height를 100%로 */
+  embedded?: boolean;
 }
 
-export function ChatInterface({ onboarding, graphNodes = [], initialScenarioId }: ChatInterfaceProps) {
+export function ChatInterface({ onboarding, graphNodes = [], initialScenarioId, embedded }: ChatInterfaceProps) {
   const { user } = useAuth();
   const { messages, addMessage, turnCount } = useChatStore();
   const [streaming, setStreaming] = useState(false);
   const [abortController, setAbortController] = useState<AbortController | null>(null);
-  const [showGraph, setShowGraph] = useState(true);
+  const [showGraph, setShowGraph] = useState(!embedded);
   const viewport = useRef<HTMLDivElement>(null);
   const graphPanelRef = useRef<ChatGraphPanelHandle>(null);
 
@@ -108,6 +111,19 @@ export function ChatInterface({ onboarding, graphNodes = [], initialScenarioId }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialScenarioId, messages.length]);
+
+  // 랜딩에서 전달된 pendingMessage 자동 전송
+  const pendingFired = useRef(false);
+  useEffect(() => {
+    if (pendingFired.current) return;
+    const pending = useChatStore.getState().pendingMessage;
+    if (!pending) return;
+    if (messages.length < 1) return; // greeting 먼저
+    pendingFired.current = true;
+    useChatStore.getState().setPendingMessage(null);
+    setTimeout(() => handleSend(pending), 300);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [messages.length]);
 
   // 게스트 턴 제한 체크
   const guestLimitReached = !user && turnCount >= 10;
@@ -203,10 +219,11 @@ export function ChatInterface({ onboarding, graphNodes = [], initialScenarioId }
               const domain = data.domain || classifyDomainClient(text);
               const nodeId = data.nodeId || `local-${Date.now()}`;
               const confidence = data.confidence;
+              const domain_data = extractDomainData(text, domain);
 
               useChatStore.getState().updateMessage(assistantId, {
                 streaming: false,
-                nodeCreated: { domain, nodeId, confidence },
+                nodeCreated: { domain, nodeId, confidence, domain_data },
               });
 
               // 그래프 패널에 노드 추가
@@ -293,7 +310,7 @@ export function ChatInterface({ onboarding, graphNodes = [], initialScenarioId }
   };
 
   return (
-    <Box style={{ display: 'flex', height: '100vh' }}>
+    <Box style={{ display: 'flex', height: embedded ? '100%' : '100vh' }}>
       {/* 채팅 영역 */}
       <Stack
         gap={0}
@@ -334,7 +351,7 @@ export function ChatInterface({ onboarding, graphNodes = [], initialScenarioId }
                         viewType={viewRecommendation.viewType}
                         nodes={messages
                           .filter(m => m.nodeCreated?.domain === viewRecommendation.domain)
-                          .map(m => ({ id: m.nodeCreated?.nodeId, domain: m.nodeCreated?.domain, raw: m.content }))}
+                          .map(m => ({ id: m.nodeCreated?.nodeId, domain: m.nodeCreated?.domain, raw: m.content, domain_data: m.nodeCreated?.domain_data }))}
                       />
                     </Box>
                   )}

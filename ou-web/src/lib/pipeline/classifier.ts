@@ -54,7 +54,7 @@ const VIEW_HINT_MAP: Record<string, string> = {
   emotion: 'journal',
   habit: 'heatmap',
   relation: 'relationship',
-  development: 'timeline',
+  development: 'dev_workspace',
 };
 
 export async function classifyDomain(text: string) {

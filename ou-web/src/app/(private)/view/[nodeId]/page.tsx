@@ -145,7 +145,7 @@ export default async function ViewPage({ params }: { params: { nodeId: string } 
             triples={triples ?? []}
             sections={sections ?? []}
             sentences={sentences ?? []}
-            viewTypeOverride={node.source_file_type === 'pdf' ? 'pdf' : undefined}
+            viewTypeOverride={node.source_file_type === 'pdf' ? 'document' : undefined}
           />
         )}
       </Box>

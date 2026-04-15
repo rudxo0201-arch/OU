@@ -18,14 +18,29 @@ interface SpendingItem {
 
 export function ChartView({ nodes }: ViewProps) {
   const items: SpendingItem[] = useMemo(
-    () =>
-      nodes
-        .filter(n => n.domain_data?.amount != null)
-        .map(n => ({
-          amount: Number(n.domain_data.amount) || 0,
-          category: n.domain_data.category ?? '기타',
-          date: n.domain_data.date ?? '',
-        })),
+    () => {
+      const result: SpendingItem[] = [];
+      for (const n of nodes) {
+        if (!n.domain_data) continue;
+        // 다건 items 배열 지원
+        if (Array.isArray(n.domain_data.items)) {
+          for (const it of n.domain_data.items) {
+            result.push({
+              amount: Number(it.amount) || 0,
+              category: it.category ?? '기타',
+              date: n.domain_data.date ?? '',
+            });
+          }
+        } else if (n.domain_data.amount != null) {
+          result.push({
+            amount: Number(n.domain_data.amount) || 0,
+            category: n.domain_data.category ?? '기타',
+            date: n.domain_data.date ?? '',
+          });
+        }
+      }
+      return result;
+    },
     [nodes],
   );
 

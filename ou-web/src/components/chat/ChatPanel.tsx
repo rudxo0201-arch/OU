@@ -1,16 +1,22 @@
 'use client';
 
-import { useState, useRef, useEffect, useMemo } from 'react';
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { Box, Stack, ScrollArea, ActionIcon, Text } from '@mantine/core';
 import { CaretRight, CaretLeft } from '@phosphor-icons/react';
 import { ChatInput, type ImageUploadResult, type FileUploadResult } from './ChatInput';
 import { MessageBubble } from './MessageBubble';
 import { TokenGauge } from './TokenGauge';
 import { ScenarioSuggestions } from './ScenarioSuggestions';
+import { YouTubeWorkspace, type YouTubeWorkspaceData } from './YouTubeWorkspace';
 import { useAuth } from '@/hooks/useAuth';
 import { useChatStore } from '@/stores/chatStore';
 import { useNavigationStore } from '@/stores/navigationStore';
 import { getScenariosByStage, type Scenario } from '@/data/scenarios';
+import { extractDomainData } from '@/lib/pipeline/extract-domain-data';
+import { ViewRecommendBadge } from './ViewRecommendBadge';
+import { DOMAIN_VIEW_MAP } from '@/components/views/registry';
+
+const YOUTUBE_URL_RE = /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?.*v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
 
 function classifyDomainClient(text: string): string {
   if (/\d+(원|만원|천원)|결제|지출|소비|구매/.test(text)) return 'finance';
@@ -34,6 +40,8 @@ export function ChatPanel({ onNodeCreated }: ChatPanelProps) {
   const { chatPanelOpen, toggleChatPanel } = useNavigationStore();
   const [streaming, setStreaming] = useState(false);
   const [abortController, setAbortController] = useState<AbortController | null>(null);
+  const [youtubeMode, setYoutubeMode] = useState<YouTubeWorkspaceData | null>(null);
+  const [youtubeLoading, setYoutubeLoading] = useState(false);
   const viewport = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -57,15 +65,90 @@ export function ChatPanel({ onNodeCreated }: ChatPanelProps) {
   }, []);
 
   const [scenarioUsed, setScenarioUsed] = useState(false);
+  const [activeScenario, setActiveScenario] = useState<Scenario | null>(null);
   const scenarioStage = !user ? 'guest' : 'onboarding';
   const scenarios = useMemo(() => getScenariosByStage(scenarioStage), [scenarioStage]);
   const showScenarios = messages.length <= 1 && !scenarioUsed;
 
   const guestLimitReached = !user && turnCount >= 10;
 
+  // 뷰 추천 로직
+  const domainCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    messages.forEach(m => {
+      if (m.nodeCreated?.domain) {
+        counts[m.nodeCreated.domain] = (counts[m.nodeCreated.domain] || 0) + 1;
+      }
+    });
+    return counts;
+  }, [messages]);
+
+  const viewRecommendation = useMemo(() => {
+    if (activeScenario) {
+      const view = activeScenario.expectedViews[0];
+      if (view) return { domain: activeScenario.domain, viewType: view };
+    }
+    for (const [domain, count] of Object.entries(domainCounts)) {
+      const threshold = domain === 'knowledge' ? 5 : 3;
+      if (count >= threshold && DOMAIN_VIEW_MAP[domain]) {
+        return { domain, viewType: DOMAIN_VIEW_MAP[domain] };
+      }
+    }
+    return null;
+  }, [domainCounts, activeScenario]);
+
+  const lastRecommended = useRef<string | null>(null);
+  const showViewRecommend = viewRecommendation && viewRecommendation.viewType !== lastRecommended.current;
+
   const handleSend = async (text: string, imageResult?: ImageUploadResult, fileResult?: FileUploadResult) => {
     if (!text.trim() || streaming) return;
     if (guestLimitReached) return;
+
+    // YouTube URL 단독 입력 감지 → 워크스페이스 모드 전환
+    const trimmed = text.trim();
+    const ytMatch = trimmed.match(YOUTUBE_URL_RE);
+    const isUrlOnly = ytMatch && trimmed.replace(/https?:\/\/[^\s]+/, '').trim() === '';
+
+    if (isUrlOnly && ytMatch && !youtubeLoading) {
+      addMessage({ id: Date.now().toString(), role: 'user', content: text, createdAt: new Date() });
+      const loadingId = (Date.now() + 1).toString();
+      addMessage({ id: loadingId, role: 'assistant', content: '스크립트를 가져오고 있어요...', createdAt: new Date(), streaming: true });
+      setYoutubeLoading(true);
+
+      try {
+        const res = await fetch('/api/ingest/youtube', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url: trimmed }),
+        });
+        const data = await res.json();
+
+        if (res.ok && data.nodeId) {
+          useChatStore.getState().updateMessage(loadingId, { content: '영상을 불러왔어요!', streaming: false });
+          setYoutubeMode({
+            videoId: ytMatch[1],
+            nodeId: data.nodeId,
+            metadata: data.metadata,
+            transcript: data.transcript,
+            transcriptCorrected: data.transcriptCorrected,
+          });
+          onNodeCreated?.({ id: data.nodeId, domain: data.domain, raw: data.metadata.title });
+        } else {
+          useChatStore.getState().updateMessage(loadingId, {
+            content: data.error || '영상을 불러오지 못했어요.',
+            streaming: false,
+          });
+        }
+      } catch {
+        useChatStore.getState().updateMessage(loadingId, {
+          content: '영상을 불러오는 중 오류가 발생했어요.',
+          streaming: false,
+        });
+      } finally {
+        setYoutubeLoading(false);
+      }
+      return;
+    }
 
     const userMsg = {
       id: Date.now().toString(),
@@ -91,9 +174,14 @@ export function ChatPanel({ onNodeCreated }: ChatPanelProps) {
       .filter(m => m.id !== 'onboarding' && m.id !== assistantId && m.id !== userMsg.id)
       .map(m => ({ role: m.role, content: m.content }));
 
+    // 워크스페이스 모드: transcript를 system context로 추가
+    const youtubeContext = youtubeMode?.transcriptCorrected
+      ? `[이 대화는 YouTube 영상 "${youtubeMode.metadata.title}" 시청 중입니다]\n[영상 스크립트]\n${youtubeMode.transcriptCorrected}\n\n`
+      : '';
+
     const apiUserContent = imageResult
       ? `[사용자가 이미지를 보냈습니다: ${imageResult.fileName}]\n이미지 종류: ${imageResult.imageType}\n이미지 내용:\n${imageResult.text}`
-      : text;
+      : youtubeContext ? `${youtubeContext}${text}` : text;
 
     try {
       const res = await fetch('/api/chat', {
@@ -136,10 +224,11 @@ export function ChatPanel({ onNodeCreated }: ChatPanelProps) {
             if (data.done) {
               const domain = data.domain || classifyDomainClient(text);
               const nodeId = data.nodeId || `local-${Date.now()}`;
+              const domain_data = extractDomainData(text, domain);
 
               useChatStore.getState().updateMessage(assistantId, {
                 streaming: false,
-                nodeCreated: { domain, nodeId, confidence: data.confidence },
+                nodeCreated: { domain, nodeId, confidence: data.confidence, domain_data },
               });
 
               onNodeCreated?.({ id: nodeId, domain, raw: text });
@@ -174,6 +263,7 @@ export function ChatPanel({ onNodeCreated }: ChatPanelProps) {
   };
 
   const handleScenarioSelect = (scenario: Scenario) => {
+    setActiveScenario(scenario);
     setScenarioUsed(true);
     handleSend(scenario.prompt);
   };
@@ -204,6 +294,40 @@ export function ChatPanel({ onNodeCreated }: ChatPanelProps) {
         >
           <CaretRight size={18} />
         </ActionIcon>
+      </Box>
+    );
+  }
+
+  // YouTube 워크스페이스 모드
+  if (youtubeMode) {
+    return (
+      <Box style={{ width: 360, minWidth: 300, height: '100%' }}>
+        <YouTubeWorkspace
+          data={youtubeMode}
+          onClose={() => setYoutubeMode(null)}
+        >
+          {/* 워크스페이스 내 채팅 영역 */}
+          <ScrollArea style={{ maxHeight: 200 }} viewportRef={viewport}>
+            <Stack gap="xs" px="sm" py="xs">
+              {messages.filter(m => m.id !== 'onboarding').slice(-10).map(msg => (
+                <MessageBubble
+                  key={msg.id}
+                  message={msg}
+                  onAddInfo={handleSend}
+                />
+              ))}
+            </Stack>
+          </ScrollArea>
+          <Box px="sm" pb="sm" pt={4}>
+            <ChatInput
+              onSend={handleSend}
+              onStop={handleStop}
+              streaming={streaming}
+              disabled={guestLimitReached}
+              loggedIn={!!user}
+            />
+          </Box>
+        </YouTubeWorkspace>
       </Box>
     );
   }
@@ -246,13 +370,30 @@ export function ChatPanel({ onNodeCreated }: ChatPanelProps) {
           {showScenarios && (
             <ScenarioSuggestions scenarios={scenarios} onSelect={handleScenarioSelect} />
           )}
-          {messages.map(msg => (
-            <MessageBubble
-              key={msg.id}
-              message={msg}
-              onAddInfo={handleSend}
-            />
-          ))}
+          {messages.map((msg, idx) => {
+            const isLastAssistant = msg.role === 'assistant' && !msg.streaming && idx === messages.length - 1;
+            const shouldShowViewRecommend = isLastAssistant && showViewRecommend;
+
+            return (
+              <Box key={msg.id}>
+                <MessageBubble
+                  message={msg}
+                  onAddInfo={handleSend}
+                />
+                {shouldShowViewRecommend && viewRecommendation && (
+                  <Box mt="xs">
+                    <ViewRecommendBadge
+                      domain={viewRecommendation.domain}
+                      viewType={viewRecommendation.viewType}
+                      nodes={messages
+                        .filter(m => m.nodeCreated?.domain === viewRecommendation.domain)
+                        .map(m => ({ id: m.nodeCreated?.nodeId, domain: m.nodeCreated?.domain, raw: m.content, domain_data: m.nodeCreated?.domain_data }))}
+                    />
+                  </Box>
+                )}
+              </Box>
+            );
+          })}
         </Stack>
       </ScrollArea>
 

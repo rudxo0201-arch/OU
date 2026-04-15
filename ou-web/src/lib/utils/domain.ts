@@ -24,6 +24,7 @@ const DOMAIN_LABELS: Record<string, string> = {
   media: '미디어',
   location: '장소',
   unresolved: '기타',
+  development: '개발',
 };
 
 export function getDomainLabel(domain: string): string {
@@ -144,6 +145,12 @@ const DOMAIN_STYLES: Record<string, DomainStyle> = {
     borderRadius: '6px',
     fontWeight: 400,
   },
+  development: {
+    borderStyle: 'solid',
+    borderWidth: '1px',
+    borderRadius: '4px',
+    fontWeight: 500,
+  },
 };
 
 const DEFAULT_STYLE: DomainStyle = {
@@ -174,6 +181,7 @@ const DOMAIN_ICONS: Record<string, string> = {
   media: 'PlayCircle',
   location: 'MapPin',
   unresolved: 'Question',
+  development: 'Code',
 };
 
 export function getDomainIcon(domain: string): string {

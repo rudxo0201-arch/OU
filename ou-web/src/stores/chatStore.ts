@@ -8,7 +8,7 @@ export interface ChatMessage {
   content: string;
   createdAt: Date;
   streaming?: boolean;
-  nodeCreated?: { domain: string; nodeId?: string; confidence?: string };
+  nodeCreated?: { domain: string; nodeId?: string; confidence?: string; domain_data?: Record<string, any> };
   /** 이미지 업로드 시 미리보기 URL */
   imagePreview?: string;
   /** OCR 결과 (이미지 업로드 시) */
@@ -28,9 +28,12 @@ interface ChatStore {
   messages: ChatMessage[];
   turnCount: number;
   showUpgradeModal: boolean;
+  /** 랜딩에서 입력 후 /chat으로 전달할 메시지 */
+  pendingMessage: string | null;
   addMessage: (msg: ChatMessage) => void;
   updateMessage: (id: string, updates: Partial<ChatMessage>) => void;
   setShowUpgradeModal: (show: boolean) => void;
+  setPendingMessage: (msg: string | null) => void;
   reset: () => void;
   /** 게스트 메시지를 localStorage에 백업 */
   persistGuest: () => void;
@@ -44,6 +47,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   messages: [],
   turnCount: 0,
   showUpgradeModal: false,
+  pendingMessage: null,
   addMessage: msg => set(s => ({
     messages: [...s.messages, msg],
     turnCount: msg.role === 'user' ? s.turnCount + 1 : s.turnCount,
@@ -52,7 +56,8 @@ export const useChatStore = create<ChatStore>((set, get) => ({
     messages: s.messages.map(m => m.id === id ? { ...m, ...updates } : m),
   })),
   setShowUpgradeModal: show => set({ showUpgradeModal: show }),
-  reset: () => set({ messages: [], turnCount: 0 }),
+  setPendingMessage: msg => set({ pendingMessage: msg }),
+  reset: () => set({ messages: [], turnCount: 0, pendingMessage: null }),
 
   persistGuest: () => {
     try {

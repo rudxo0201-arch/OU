@@ -21,10 +21,8 @@ export const VIEW_REGISTRY: Record<string, ComponentType<ViewProps>> = {
   timeline:        dynamic(() => import('./TimelineView').then(m => m.TimelineView), { ssr: false }),
   flashcard:       dynamic(() => import('./FlashcardView').then(m => m.FlashcardView), { ssr: false }),
   document:        dynamic(() => import('./DocumentView').then(m => m.DocumentView), { ssr: false }),
-  export:          dynamic(() => import('./ExportView').then(m => m.ExportView), { ssr: false }),
   dictionary:      dynamic(() => import('./DictionaryView').then(m => m.DictionaryView), { ssr: false }),
   table:           dynamic(() => import('./TableView').then(m => m.TableView), { ssr: false }),
-  pdf:             dynamic(() => import('./PDFView').then(m => m.PDFView), { ssr: false }),
   lecture:         dynamic(() => import('./LectureView').then(m => m.LectureView), { ssr: false }),
   profile:         dynamic(() => import('./ProfileView').then(m => m.ProfileView), { ssr: false }),
   relationship:    dynamic(() => import('./RelationshipView').then(m => m.RelationshipView), { ssr: false }),
@@ -35,6 +33,9 @@ export const VIEW_REGISTRY: Record<string, ComponentType<ViewProps>> = {
   code:            dynamic(() => import('./CodeView').then(m => m.CodeView), { ssr: false }),
   terminal:        dynamic(() => import('./TerminalView').then(m => m.TerminalView), { ssr: false }),
   ai_dev:          dynamic(() => import('./AIDevView').then(m => m.AIDevView), { ssr: false }),
+  transcript:      dynamic(() => import('./TranscriptView').then(m => m.TranscriptView), { ssr: false }),
+  dev_workspace:   dynamic(() => import('./DevWorkspaceView').then(m => m.DevWorkspaceView), { ssr: false }),
+  explorer:        dynamic(() => import('./ExplorerView').then(m => m.ExplorerView), { ssr: false }),
 };
 
 /* ── View Meta: 뷰별 동작 속성 ── */
@@ -57,12 +58,14 @@ export const VIEW_META: Record<string, ViewMeta> = {
   dictionary:      { previewOnClick: false },
   document:        { previewOnClick: false },
   journal:         { previewOnClick: false },
-  pdf:             { previewOnClick: false },
   lecture:         { previewOnClick: false },
   map:             { previewOnClick: true },
   code:            { previewOnClick: false },
   terminal:        { previewOnClick: false },
   ai_dev:          { previewOnClick: false },
+  transcript:      { previewOnClick: false },
+  dev_workspace:   { previewOnClick: false },
+  explorer:        { previewOnClick: false },
 };
 
 export function getViewMeta(viewType: string): ViewMeta {
@@ -78,5 +81,5 @@ export const DOMAIN_VIEW_MAP: Record<string, string> = {
   relation:  'relationship',
   emotion:   'journal',
   finance:     'chart',
-  development: 'code',
+  development: 'dev_workspace',
 };

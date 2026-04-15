@@ -1,9 +1,10 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Stack, Text, Group, Badge, Box, ActionIcon, ScrollArea, TextInput, Loader, Tabs } from '@mantine/core';
-import { CaretRight, CaretDown, File, Folder, FolderOpen, FloppyDisk, X, MagnifyingGlass } from '@phosphor-icons/react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Stack, Text, Group, Box, ActionIcon, ScrollArea, Loader } from '@mantine/core';
+import { CaretRight, CaretDown, File, Folder, FolderOpen, FloppyDisk, X } from '@phosphor-icons/react';
 import type { ViewProps } from './registry';
+import { useDevWorkspaceStore } from '@/stores/devWorkspaceStore';
 
 // Monaco는 dynamic import (SSR 불가)
 let MonacoEditor: any = null;
@@ -24,10 +25,40 @@ interface OpenTab {
   modified: boolean;
 }
 
+/** API 모드별 URL 빌더 */
+function useApiUrls() {
+  const { projectId, isAdminMode } = useDevWorkspaceStore();
+
+  if (isAdminMode || !projectId) {
+    // Admin 모드: 기존 서버 FS API
+    return {
+      listFiles: (dirPath: string) =>
+        `/api/dev/files?path=${encodeURIComponent(dirPath)}`,
+      readFile: (filePath: string) =>
+        `/api/dev/file?path=${encodeURIComponent(filePath)}`,
+      saveFile: '/api/dev/file',
+      saveBody: (path: string, content: string) =>
+        JSON.stringify({ path, content }),
+    };
+  }
+
+  // R2 모드: 프로젝트 API
+  return {
+    listFiles: (dirPath: string) =>
+      `/api/dev/projects/${projectId}/files?path=${encodeURIComponent(dirPath)}`,
+    readFile: (filePath: string) =>
+      `/api/dev/projects/${projectId}/files?mode=content&path=${encodeURIComponent(filePath)}`,
+    saveFile: `/api/dev/projects/${projectId}/files`,
+    saveBody: (path: string, content: string) =>
+      JSON.stringify({ path, content }),
+  };
+}
+
 // ── 파일 트리 노드 ──
-function FileTreeNode({ item, onFileClick, depth = 0 }: {
+function FileTreeNode({ item, onFileClick, listFilesUrl, depth = 0 }: {
   item: FileItem;
   onFileClick: (path: string) => void;
+  listFilesUrl: (dirPath: string) => string;
   depth?: number;
 }) {
   const [expanded, setExpanded] = useState(false);
@@ -38,13 +69,13 @@ function FileTreeNode({ item, onFileClick, depth = 0 }: {
     if (children.length > 0) { setExpanded(!expanded); return; }
     setLoading(true);
     try {
-      const res = await fetch(`/api/dev/files?path=${encodeURIComponent(item.path)}`);
+      const res = await fetch(listFilesUrl(item.path));
       const data = await res.json();
       setChildren(data.items || []);
       setExpanded(true);
     } catch { /* ignore */ }
     setLoading(false);
-  }, [item.path, children.length, expanded]);
+  }, [item.path, children.length, expanded, listFilesUrl]);
 
   if (item.type === 'directory') {
     return (
@@ -63,7 +94,7 @@ function FileTreeNode({ item, onFileClick, depth = 0 }: {
           <Text fz={11} truncate="end">{item.name}</Text>
         </Group>
         {expanded && children.map(child => (
-          <FileTreeNode key={child.path} item={child} onFileClick={onFileClick} depth={depth + 1} />
+          <FileTreeNode key={child.path} item={child} onFileClick={onFileClick} listFilesUrl={listFilesUrl} depth={depth + 1} />
         ))}
       </Box>
     );
@@ -90,9 +121,17 @@ function FileTreeNode({ item, onFileClick, depth = 0 }: {
 export function CodeView({ nodes }: ViewProps) {
   const [rootItems, setRootItems] = useState<FileItem[]>([]);
   const [tabs, setTabs] = useState<OpenTab[]>([]);
-  const [activeTab, setActiveTab] = useState<string | null>(null);
+  const [activeTab, setActiveTabLocal] = useState<string | null>(null);
   const [editorReady, setEditorReady] = useState(false);
   const editorRef = useRef<any>(null);
+
+  const wsStore = useDevWorkspaceStore();
+  const api = useApiUrls();
+
+  const setActiveTab = useCallback((path: string | null) => {
+    setActiveTabLocal(path);
+    wsStore.setActiveFilePath(path);
+  }, [wsStore]);
 
   // Monaco lazy load
   useEffect(() => {
@@ -104,46 +143,48 @@ export function CodeView({ nodes }: ViewProps) {
     }
   }, []);
 
-  // 루트 디렉토리 로드
+  // 루트 디렉토리 로드 (프로젝트 변경 시 재로드)
   useEffect(() => {
-    fetch('/api/dev/files?path=')
+    fetch(api.listFiles(''))
       .then(r => r.json())
       .then(d => setRootItems(d.items || []))
       .catch(() => {});
-  }, []);
+  }, [api.listFiles]);
 
   // 파일 열기
   const openFile = useCallback(async (filePath: string) => {
-    // 이미 열린 탭이면 활성화만
     if (tabs.find(t => t.path === filePath)) {
       setActiveTab(filePath);
       return;
     }
 
     try {
-      const res = await fetch(`/api/dev/file?path=${encodeURIComponent(filePath)}`);
+      const res = await fetch(api.readFile(filePath));
       const data = await res.json();
       if (data.content !== undefined) {
+        const lang = data.language || 'plaintext';
         const newTab: OpenTab = {
           path: filePath,
           content: data.content,
-          language: data.language || 'plaintext',
+          language: lang,
           modified: false,
         };
         setTabs(prev => [...prev, newTab]);
         setActiveTab(filePath);
+        wsStore.addOpenFile({ path: filePath, language: lang });
       }
     } catch { /* ignore */ }
-  }, [tabs]);
+  }, [tabs, setActiveTab, wsStore, api]);
 
   // 탭 닫기
   const closeTab = useCallback((filePath: string, e: React.MouseEvent) => {
     e.stopPropagation();
     setTabs(prev => prev.filter(t => t.path !== filePath));
+    wsStore.removeOpenFile(filePath);
     if (activeTab === filePath) {
       setActiveTab(tabs.length > 1 ? tabs.find(t => t.path !== filePath)?.path ?? null : null);
     }
-  }, [activeTab, tabs]);
+  }, [activeTab, tabs, setActiveTab, wsStore]);
 
   // 저장
   const saveFile = useCallback(async () => {
@@ -151,14 +192,14 @@ export function CodeView({ nodes }: ViewProps) {
     if (!tab || !tab.modified) return;
 
     try {
-      await fetch('/api/dev/file', {
+      await fetch(api.saveFile, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ path: tab.path, content: tab.content }),
+        body: api.saveBody(tab.path, tab.content),
       });
       setTabs(prev => prev.map(t => t.path === activeTab ? { ...t, modified: false } : t));
     } catch { /* ignore */ }
-  }, [activeTab, tabs]);
+  }, [activeTab, tabs, api]);
 
   // Monaco onChange
   const handleEditorChange = useCallback((value: string | undefined) => {
@@ -168,14 +209,17 @@ export function CodeView({ nodes }: ViewProps) {
     ));
   }, [activeTab]);
 
-  // 단축키
+  // 단축키 + 선택 텍스트 감지
   const handleEditorMount = useCallback((editor: any, monaco: any) => {
     editorRef.current = editor;
-    // Ctrl+S → 저장
     editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
       saveFile();
     });
-  }, [saveFile]);
+    editor.onDidChangeCursorSelection(() => {
+      const selection = editor.getModel()?.getValueInRange(editor.getSelection());
+      if (selection) wsStore.setSelectedText(selection);
+    });
+  }, [saveFile, wsStore]);
 
   const currentTab = tabs.find(t => t.path === activeTab);
 
@@ -197,7 +241,7 @@ export function CodeView({ nodes }: ViewProps) {
         <ScrollArea.Autosize mah={450}>
           <Box p={4}>
             {rootItems.map(item => (
-              <FileTreeNode key={item.path} item={item} onFileClick={openFile} />
+              <FileTreeNode key={item.path} item={item} onFileClick={openFile} listFilesUrl={api.listFiles} />
             ))}
           </Box>
         </ScrollArea.Autosize>
@@ -235,7 +279,6 @@ export function CodeView({ nodes }: ViewProps) {
               );
             })}
 
-            {/* 저장 버튼 */}
             {currentTab?.modified && (
               <ActionIcon size="sm" variant="subtle" color="blue" ml="auto" mr="xs" onClick={saveFile}>
                 <FloppyDisk size={14} />

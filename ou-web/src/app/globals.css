@@ -1,8 +1,7 @@
 /* Pretendard 웹폰트 */
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css');
 
-/* Orbitron — OU 로고 폰트 (SIL OFL 1.1, 상업적 이용 무료) */
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&display=swap');
+/* Orbitron — next/font/google로 로드 (layout.tsx) */
 
 /* Mantine 핵심 스타일 */
 @layer mantine;
@@ -10,7 +9,7 @@
 /* ===== OU 글로벌 CSS 변수 ===== */
 
 :root {
-  --ou-font-logo: 'Orbitron', sans-serif;
+  --ou-font-logo: var(--font-orbitron, 'Orbitron'), sans-serif;
   --ou-bg: #ffffff;
   --ou-glass-bg: rgba(0, 0, 0, 0.04);
   --ou-glass-border: rgba(0, 0, 0, 0.08);
