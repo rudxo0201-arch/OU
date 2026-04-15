@@ -4,6 +4,7 @@ import { isAdmin } from '@/lib/auth/roles';
 import { seedAdminData } from '@/lib/seed/admin-seed';
 import { seedParadigmData } from '@/lib/seed/paradigm-seed';
 import { seedBonchoData } from '@/lib/seed/boncho-seed';
+import { seedBangjeData } from '@/lib/seed/bangje-seed';
 
 export async function POST(request: Request) {
   try {
@@ -29,6 +30,19 @@ export async function POST(request: Request) {
         message: result.created > 0
           ? `본초 DataNode ${result.created}개 생성 (${scope}).`
           : '이미 모든 본초 데이터가 존재합니다.',
+      });
+    }
+
+    if (type === 'bangje' || type === 'bangje-all') {
+      const scope = type === 'bangje-all' ? 'all' : 'starred';
+      const result = await seedBangjeData(supabase, scope);
+      return NextResponse.json({
+        success: true,
+        created: result.created,
+        skipped: result.skipped,
+        message: result.created > 0
+          ? `방제 DataNode ${result.created}개 생성 (${scope}).`
+          : '이미 모든 방제 데이터가 존재합니다.',
       });
     }
 

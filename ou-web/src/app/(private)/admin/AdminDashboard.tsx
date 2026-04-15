@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Tabs, Stack, Title, SimpleGrid, Paper, Text, Badge, Group, Avatar, Button, Box, SegmentedControl } from '@mantine/core';
-import { Users, Database, Warning, CurrencyDollar, ArrowRight, ClockCounterClockwise, CheckCircle, XCircle, Table, Eye, UserList, FlowArrow, Lightning, Robot, Leaf } from '@phosphor-icons/react';
+import { Users, Database, Warning, CurrencyDollar, ArrowRight, ClockCounterClockwise, CheckCircle, XCircle, Table, Eye, UserList, FlowArrow, Lightning, Robot, Leaf, Flask } from '@phosphor-icons/react';
 import type { ServiceStatus } from '@/lib/utils/check-env';
 import { SERVICE_LABELS } from '@/lib/utils/check-env';
 import { DataNodeManager } from './DataNodeManager';
@@ -17,6 +17,7 @@ import { RoleManager } from './RoleManager';
 import { ScenarioGenerator } from './ScenarioGenerator';
 import { AgentDashboard } from './AgentDashboard';
 import { BonchoManager } from './BonchoManager';
+import { BangjeManager } from './BangjeManager';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
@@ -224,6 +225,7 @@ export function AdminDashboard({ stats, serviceStatus }: AdminDashboardProps) {
           <Tabs.Tab value="scenarios" leftSection={<Lightning size={14} />}>시나리오 생성</Tabs.Tab>
           <Tabs.Tab value="agents" leftSection={<Robot size={14} />}>AI 에이전트</Tabs.Tab>
           <Tabs.Tab value="boncho" leftSection={<Leaf size={14} />}>본초DB</Tabs.Tab>
+          <Tabs.Tab value="bangje" leftSection={<Flask size={14} />}>방제DB</Tabs.Tab>
         </Tabs.List>
 
         <Tabs.Panel value="nodes" pt="md"><DataNodeManager /></Tabs.Panel>
@@ -237,6 +239,7 @@ export function AdminDashboard({ stats, serviceStatus }: AdminDashboardProps) {
         <Tabs.Panel value="scenarios" pt="md"><ScenarioGenerator /></Tabs.Panel>
         <Tabs.Panel value="agents" pt="md"><AgentDashboard /></Tabs.Panel>
         <Tabs.Panel value="boncho" pt="md"><BonchoManager /></Tabs.Panel>
+        <Tabs.Panel value="bangje" pt="md"><BangjeManager /></Tabs.Panel>
       </Tabs>
     </Stack>
   );
