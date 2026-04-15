@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { Stack, Title, SimpleGrid, Paper, Text, Button, List, Badge, Group, Box } from '@mantine/core';
-import { Check, Star, UsersThree, Rocket } from '@phosphor-icons/react';
+import { useEffect, useState } from 'react';
+import { Stack, Title, SimpleGrid, Paper, Text, Button, List, Badge, Group, Box, Loader } from '@mantine/core';
+import { Check, Star, UsersThree, Rocket, ArrowRight } from '@phosphor-icons/react';
 
 const PLANS = [
   {
@@ -13,7 +13,7 @@ const PLANS = [
     icon: <Star size={24} weight="light" />,
     description: '기본 기능으로 시작하세요',
     features: [
-      '10회/일 대화',
+      '50회/일 대화',
       '기본 보기 방식',
       '광고 포함',
     ],
@@ -28,7 +28,7 @@ const PLANS = [
     icon: <Rocket size={24} weight="light" />,
     description: '제한 없이 자유롭게',
     features: [
-      '무제한 대화',
+      '500회/일 대화',
       '광고 제거',
       'AI 보기 생성',
       '파일 업로드 무제한',
@@ -56,18 +56,31 @@ const PLANS = [
   },
 ];
 
+interface SubscriptionInfo {
+  plan: string;
+  status: string;
+  periodEnd: string | null;
+  cancelledAt: string | null;
+}
+
 export default function UpgradePage() {
-  const [currentPlan] = useState('free'); // TODO: fetch from user profile
+  const [sub, setSub] = useState<SubscriptionInfo | null>(null);
+  const [loading, setLoading] = useState(true);
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
-  const [checkoutReady] = useState(false); // Stripe not yet configured
+  const [portalLoading, setPortalLoading] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/billing/subscription')
+      .then(r => r.json())
+      .then(data => setSub(data))
+      .catch(() => setSub({ plan: 'free', status: 'active', periodEnd: null, cancelledAt: null }))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const currentPlan = sub?.plan || 'free';
 
   const handleUpgrade = async (planId: string) => {
-    if (planId === currentPlan) return;
-
-    if (!checkoutReady) {
-      // Stripe not configured yet
-      return;
-    }
+    if (planId === currentPlan || planId === 'free') return;
 
     setLoadingPlan(planId);
     try {
@@ -76,14 +89,45 @@ export default function UpgradePage() {
         body: JSON.stringify({ plan: planId }),
         headers: { 'Content-Type': 'application/json' },
       });
-      const { url } = await res.json();
-      if (url) window.location.href = url;
-    } catch {
-      // silently fail
-    } finally {
-      setLoadingPlan(null);
-    }
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else if (data.error === 'Stripe not configured') {
+        // Stripe 미설정 → 무시
+      }
+    } catch { /* ignore */ }
+    setLoadingPlan(null);
   };
+
+  const handlePortal = async () => {
+    setPortalLoading(true);
+    try {
+      const res = await fetch('/api/billing/portal', { method: 'POST' });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+    } catch { /* ignore */ }
+    setPortalLoading(false);
+  };
+
+  const handleCancel = async () => {
+    if (!confirm('정말 해지하시겠어요? 현재 결제 기간이 끝날 때까지는 계속 사용할 수 있어요.')) return;
+
+    try {
+      const res = await fetch('/api/billing/subscription', { method: 'DELETE' });
+      const data = await res.json();
+      if (data.success) {
+        setSub(prev => prev ? { ...prev, cancelledAt: new Date().toISOString(), status: 'cancelled' } : prev);
+      }
+    } catch { /* ignore */ }
+  };
+
+  if (loading) {
+    return (
+      <Stack align="center" justify="center" mih={400}>
+        <Loader size="sm" />
+      </Stack>
+    );
+  }
 
   return (
     <Stack gap="xl" p="xl" maw={960} mx="auto">
@@ -91,6 +135,43 @@ export default function UpgradePage() {
         <Title order={2}>플랜 선택</Title>
         <Text c="dimmed" fz="sm" mt={4}>나에게 맞는 플랜을 골라보세요</Text>
       </div>
+
+      {/* 현재 구독 상태 */}
+      {currentPlan !== 'free' && (
+        <Paper p="md" style={{ border: '0.5px solid var(--mantine-color-default-border)' }}>
+          <Group justify="space-between" wrap="nowrap">
+            <div>
+              <Group gap="xs">
+                <Text fw={600}>{currentPlan.toUpperCase()} 플랜</Text>
+                <Badge
+                  size="sm"
+                  variant="light"
+                  color={sub?.cancelledAt ? 'yellow' : sub?.status === 'past_due' ? 'red' : 'green'}
+                >
+                  {sub?.cancelledAt ? '해지 예정' : sub?.status === 'past_due' ? '결제 실패' : '활성'}
+                </Badge>
+              </Group>
+              {sub?.periodEnd && (
+                <Text fz="xs" c="dimmed" mt={2}>
+                  {sub.cancelledAt
+                    ? `${new Date(sub.periodEnd).toLocaleDateString('ko-KR')}에 만료됩니다`
+                    : `다음 결제일: ${new Date(sub.periodEnd).toLocaleDateString('ko-KR')}`}
+                </Text>
+              )}
+            </div>
+            <Group gap="xs">
+              <Button size="xs" variant="subtle" onClick={handlePortal} loading={portalLoading}>
+                결제 관리
+              </Button>
+              {!sub?.cancelledAt && (
+                <Button size="xs" variant="subtle" color="red" onClick={handleCancel}>
+                  해지
+                </Button>
+              )}
+            </Group>
+          </Group>
+        </Paper>
+      )}
 
       <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="lg">
         {PLANS.map(plan => {
@@ -159,22 +240,12 @@ export default function UpgradePage() {
 
                 <Box mt="auto" pt="md">
                   {isCurrent ? (
-                    <Button
-                      fullWidth
-                      variant="light"
-                      color="gray"
-                      style={{ cursor: 'default' }}
-                    >
+                    <Button fullWidth variant="light" color="gray" style={{ cursor: 'default' }}>
                       현재 플랜
                     </Button>
-                  ) : !checkoutReady ? (
-                    <Button
-                      fullWidth
-                      variant={plan.highlighted ? 'filled' : 'light'}
-                      color={plan.highlighted ? 'dark' : 'gray'}
-                      style={{ cursor: 'default' }}
-                    >
-                      준비 중
+                  ) : plan.id === 'free' && currentPlan !== 'free' ? (
+                    <Button fullWidth variant="light" color="gray" style={{ cursor: 'default' }}>
+                      {sub?.cancelledAt ? '해지 후 전환됨' : '다운그레이드'}
                     </Button>
                   ) : (
                     <Button
@@ -183,6 +254,7 @@ export default function UpgradePage() {
                       color={plan.highlighted ? 'dark' : 'gray'}
                       loading={loadingPlan === plan.id}
                       onClick={() => handleUpgrade(plan.id)}
+                      rightSection={<ArrowRight size={14} />}
                     >
                       {plan.cta}
                     </Button>
@@ -195,7 +267,7 @@ export default function UpgradePage() {
       </SimpleGrid>
 
       <Text fz="xs" c="dimmed" ta="center" mt="sm">
-        언제든 플랜을 변경하거나 취소할 수 있어요.
+        언제든 플랜을 변경하거나 취소할 수 있어요. 해지해도 결제 기간이 끝날 때까지 사용 가능합니다.
       </Text>
     </Stack>
   );

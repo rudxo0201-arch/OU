@@ -63,11 +63,41 @@ export async function POST(req: NextRequest) {
         break;
       }
 
+      case 'customer.subscription.updated': {
+        const subscription = event.data.object as any; // Stripe.Subscription
+        const customerId = (subscription.customer as string);
+
+        const { data: existingSub } = await supabase
+          .from('subscriptions')
+          .select('user_id')
+          .eq('stripe_customer_id', customerId)
+          .single();
+
+        if (existingSub) {
+          const status = subscription.cancel_at_period_end ? 'cancelled' : 'active';
+          const periodEnd = subscription.current_period_end
+            ? new Date(subscription.current_period_end * 1000).toISOString()
+            : null;
+
+          await supabase
+            .from('subscriptions')
+            .update({
+              status,
+              current_period_end: periodEnd,
+              cancelled_at: subscription.cancel_at_period_end
+                ? new Date().toISOString()
+                : null,
+              updated_at: new Date().toISOString(),
+            })
+            .eq('user_id', existingSub.user_id);
+        }
+        break;
+      }
+
       case 'customer.subscription.deleted': {
         const subscription = event.data.object as Stripe.Subscription;
         const customerId = subscription.customer as string;
 
-        // Find user by stripe_customer_id and downgrade to free
         const { data: existingSub } = await supabase
           .from('subscriptions')
           .select('user_id')
@@ -80,13 +110,35 @@ export async function POST(req: NextRequest) {
             .update({
               plan: 'free',
               token_limit: 10000,
-              status: 'canceled',
+              status: 'expired',
               stripe_subscription_id: null,
               updated_at: new Date().toISOString(),
             })
             .eq('user_id', existingSub.user_id);
         }
+        break;
+      }
 
+      case 'invoice.payment_failed': {
+        const invoice = event.data.object as any; // Stripe.Invoice
+        const customerId = invoice.customer as string;
+
+        const { data: existingSub } = await supabase
+          .from('subscriptions')
+          .select('user_id')
+          .eq('stripe_customer_id', customerId)
+          .single();
+
+        if (existingSub) {
+          // 결제 실패 시 상태만 변경 (즉시 다운그레이드는 안 함)
+          await supabase
+            .from('subscriptions')
+            .update({
+              status: 'past_due',
+              updated_at: new Date().toISOString(),
+            })
+            .eq('user_id', existingSub.user_id);
+        }
         break;
       }
     }
