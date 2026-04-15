@@ -20,19 +20,13 @@ function statusLabel(staged: string, unstaged: string): { text: string; color: s
 }
 
 export function GitPanel() {
-  const { gitBranch, gitChanges, gitLog, gitLoading, refreshGitStatus, isAdminMode, projectId } = useDevWorkspaceStore();
+  const {
+    gitBranch, gitChanges, gitLog, gitLoading, refreshGitStatus,
+    isAdminMode, projectId, webcontainerInstance, webcontainerStatus,
+  } = useDevWorkspaceStore();
 
-  // R2 모드 (일반 사용자): Git 비활성
-  if (!isAdminMode && projectId) {
-    return (
-      <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-        <Box ta="center">
-          <GitBranch size={28} color="var(--mantine-color-dark-3)" />
-          <Text fz="xs" c="dimmed" mt="xs">Git은 다음 업데이트에서 활성화됩니다</Text>
-        </Box>
-      </Box>
-    );
-  }
+  const isWC = !isAdminMode && projectId && webcontainerStatus === 'ready' && webcontainerInstance;
+
   const [commitMsg, setCommitMsg] = useState('');
   const [committing, setCommitting] = useState(false);
   const [diffPath, setDiffPath] = useState<string | null>(null);
@@ -40,46 +34,68 @@ export function GitPanel() {
   const [tab, setTab] = useState<'changes' | 'log'>('changes');
 
   useEffect(() => {
-    refreshGitStatus();
-  }, [refreshGitStatus]);
+    // WebContainer 준비되면 git status 갱신
+    if (isAdminMode || (webcontainerStatus === 'ready' && webcontainerInstance)) {
+      refreshGitStatus();
+    }
+  }, [refreshGitStatus, isAdminMode, webcontainerStatus, webcontainerInstance]);
 
   const handleStageAll = useCallback(async () => {
-    await fetch('/api/dev/git', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ operation: 'add', paths: ['.'] }),
-    });
+    if (isWC) {
+      const { wcGitAdd } = await import('@/lib/dev/webcontainer-git');
+      await wcGitAdd(webcontainerInstance, ['.']);
+    } else {
+      await fetch('/api/dev/git', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ operation: 'add', paths: ['.'] }),
+      });
+    }
     refreshGitStatus();
-  }, [refreshGitStatus]);
+  }, [refreshGitStatus, isWC, webcontainerInstance]);
 
   const handleStageFile = useCallback(async (path: string) => {
-    await fetch('/api/dev/git', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ operation: 'add', paths: [path] }),
-    });
+    if (isWC) {
+      const { wcGitAdd } = await import('@/lib/dev/webcontainer-git');
+      await wcGitAdd(webcontainerInstance, [path]);
+    } else {
+      await fetch('/api/dev/git', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ operation: 'add', paths: [path] }),
+      });
+    }
     refreshGitStatus();
-  }, [refreshGitStatus]);
+  }, [refreshGitStatus, isWC, webcontainerInstance]);
 
   const handleCommit = useCallback(async () => {
     const msg = commitMsg.trim();
     if (!msg) return;
     setCommitting(true);
     try {
-      const res = await fetch('/api/dev/git', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ operation: 'commit', message: msg }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        setCommitMsg('');
-        refreshGitStatus();
+      if (isWC) {
+        const { wcGitCommit } = await import('@/lib/dev/webcontainer-git');
+        const result = await wcGitCommit(webcontainerInstance, msg);
+        if (result.success) {
+          setCommitMsg('');
+          refreshGitStatus();
+        }
+      } else {
+        const res = await fetch('/api/dev/git', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ operation: 'commit', message: msg }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          setCommitMsg('');
+          refreshGitStatus();
+        }
       }
     } finally {
       setCommitting(false);
     }
-  }, [commitMsg, refreshGitStatus]);
+  }, [commitMsg, refreshGitStatus, isWC, webcontainerInstance]);
 
   const handleViewDiff = useCallback(async (path: string) => {
     if (diffPath === path) {
@@ -87,15 +103,22 @@ export function GitPanel() {
       setDiffContent('');
       return;
     }
-    const res = await fetch('/api/dev/git', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ operation: 'diff', paths: [path] }),
-    });
-    const data = await res.json();
-    setDiffPath(path);
-    setDiffContent(data.diff || '변경 없음 (이미 스테이지됨)');
-  }, [diffPath]);
+    if (isWC) {
+      const { wcGitDiff } = await import('@/lib/dev/webcontainer-git');
+      const diff = await wcGitDiff(webcontainerInstance, [path]);
+      setDiffPath(path);
+      setDiffContent(diff || '변경 없음 (이미 스테이지됨)');
+    } else {
+      const res = await fetch('/api/dev/git', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ operation: 'diff', paths: [path] }),
+      });
+      const data = await res.json();
+      setDiffPath(path);
+      setDiffContent(data.diff || '변경 없음 (이미 스테이지됨)');
+    }
+  }, [diffPath, isWC, webcontainerInstance]);
 
   const stagedFiles = gitChanges.filter(c => c.staged !== ' ' && c.staged !== '?');
   const unstagedFiles = gitChanges.filter(c => c.unstaged !== ' ' || c.staged === '?');

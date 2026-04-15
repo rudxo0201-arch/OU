@@ -186,20 +186,29 @@ export function CodeView({ nodes }: ViewProps) {
     }
   }, [activeTab, tabs, setActiveTab, wsStore]);
 
-  // 저장
+  // 저장 (R2 + WebContainer 동시 쓰기)
   const saveFile = useCallback(async () => {
     const tab = tabs.find(t => t.path === activeTab);
     if (!tab || !tab.modified) return;
 
     try {
+      // R2/서버 저장
       await fetch(api.saveFile, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: api.saveBody(tab.path, tab.content),
       });
+
+      // WebContainer에도 동기화
+      const { webcontainerInstance, isAdminMode } = wsStore;
+      if (!isAdminMode && webcontainerInstance) {
+        const { writeContainerFile } = await import('@/lib/dev/webcontainer');
+        await writeContainerFile(tab.path, tab.content);
+      }
+
       setTabs(prev => prev.map(t => t.path === activeTab ? { ...t, modified: false } : t));
     } catch { /* ignore */ }
-  }, [activeTab, tabs, api]);
+  }, [activeTab, tabs, api, wsStore]);
 
   // Monaco onChange
   const handleEditorChange = useCallback((value: string | undefined) => {

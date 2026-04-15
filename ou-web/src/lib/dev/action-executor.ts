@@ -93,18 +93,35 @@ export function stripActions(text: string): string {
   return text.replace(ACTION_BLOCK_REGEX, '').trim();
 }
 
+interface ExecContext {
+  isAdminMode: boolean;
+  projectId: string | null;
+  webcontainerInstance: any;
+}
+
 /**
- * 파일 수정 액션 실행
+ * 파일 수정 액션 실행 (Admin: 서버 FS, Project: R2 + WebContainer)
  */
-export async function executeFileEdit(action: FileEditAction): Promise<ActionResult> {
+export async function executeFileEdit(action: FileEditAction, ctx?: ExecContext): Promise<ActionResult> {
   try {
-    const res = await fetch('/api/dev/file', {
+    const apiUrl = ctx && !ctx.isAdminMode && ctx.projectId
+      ? `/api/dev/projects/${ctx.projectId}/files`
+      : '/api/dev/file';
+
+    const res = await fetch(apiUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ path: action.path, content: action.content }),
     });
     const data = await res.json();
     if (!res.ok) return { success: false, error: data.error || 'Write failed' };
+
+    // WebContainer에도 동기화
+    if (ctx?.webcontainerInstance && !ctx.isAdminMode) {
+      const { writeContainerFile } = await import('@/lib/dev/webcontainer');
+      await writeContainerFile(action.path, action.content);
+    }
+
     return { success: true, data };
   } catch (e) {
     return { success: false, error: (e as Error).message };
@@ -112,10 +129,30 @@ export async function executeFileEdit(action: FileEditAction): Promise<ActionRes
 }
 
 /**
- * 터미널 명령 실행
+ * 터미널 명령 실행 (Admin: 서버 API, Project: WebContainer)
  */
-export async function executeTerminal(action: TerminalAction): Promise<ActionResult> {
+export async function executeTerminal(action: TerminalAction, ctx?: ExecContext): Promise<ActionResult> {
   try {
+    if (ctx?.webcontainerInstance && !ctx.isAdminMode) {
+      // WebContainer 내부에서 명령 실행
+      const container = ctx.webcontainerInstance;
+      const args = action.command.split(' ');
+      const cmd = args.shift()!;
+      const process = await container.spawn(cmd, args);
+
+      let stdout = '';
+      process.output.pipeTo(
+        new WritableStream({ write(chunk) { stdout += chunk; } }),
+      );
+      const exitCode = await process.exit;
+
+      return {
+        success: exitCode === 0,
+        data: { stdout, exitCode },
+        error: exitCode !== 0 ? stdout : undefined,
+      };
+    }
+
     const res = await fetch('/api/dev/exec', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -130,10 +167,29 @@ export async function executeTerminal(action: TerminalAction): Promise<ActionRes
 }
 
 /**
- * Git 액션 실행
+ * Git 액션 실행 (Admin: 서버 API, Project: WebContainer git)
  */
-export async function executeGit(action: GitAction): Promise<ActionResult> {
+export async function executeGit(action: GitAction, ctx?: ExecContext): Promise<ActionResult> {
   try {
+    if (ctx?.webcontainerInstance && !ctx.isAdminMode) {
+      const { wcGitAdd, wcGitCommit, wcGitDiff } = await import('@/lib/dev/webcontainer-git');
+      const container = ctx.webcontainerInstance;
+
+      switch (action.operation) {
+        case 'add':
+          await wcGitAdd(container, action.paths || ['.']);
+          return { success: true };
+        case 'commit':
+          return await wcGitCommit(container, action.message || '');
+        case 'diff': {
+          const diff = await wcGitDiff(container, action.paths || []);
+          return { success: true, data: { diff } };
+        }
+        default:
+          return { success: false, error: `Unsupported operation: ${action.operation}` };
+      }
+    }
+
     const res = await fetch('/api/dev/git', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

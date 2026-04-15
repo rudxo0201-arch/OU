@@ -9,6 +9,7 @@ import { AIDevView } from './AIDevView';
 import { GitPanel } from './dev/GitPanel';
 import { ProjectSelector } from './dev/ProjectSelector';
 import { useDevWorkspaceStore } from '@/stores/devWorkspaceStore';
+import { useWebContainer } from '@/hooks/useWebContainer';
 
 const MIN_PANEL = 200;
 
@@ -24,6 +25,9 @@ export function DevWorkspaceView({ nodes, filters, onSave, layoutConfig }: ViewP
 }
 
 function DevWorkspaceLayout({ nodes, filters, onSave, layoutConfig }: ViewProps) {
+  // WebContainer 부팅 (프로젝트 모드에서만 활성)
+  useWebContainer();
+
   // 패널 비율 (%) — 좌측 영역 너비, 좌측 내 에디터 높이
   const [leftWidth, setLeftWidth] = useState(65);
   const [editorHeight, setEditorHeight] = useState(65);

@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 
+export type WebContainerStatus = 'idle' | 'booting' | 'loading' | 'ready' | 'error';
+
 export interface OpenFile {
   path: string;
   language: string;
@@ -34,6 +36,13 @@ interface DevWorkspaceStore {
   clearProject: () => void;
   setAdminMode: (mode: boolean) => void;
 
+  // WebContainer 상태
+  webcontainerStatus: WebContainerStatus;
+  webcontainerError: string | null;
+  webcontainerInstance: any | null; // WebContainer type (dynamic import)
+  setWebcontainerStatus: (status: WebContainerStatus, error?: string) => void;
+  setWebcontainerInstance: (instance: any) => void;
+
   // 파일 상태
   activeFilePath: string | null;
   openFiles: OpenFile[];
@@ -60,11 +69,16 @@ interface DevWorkspaceStore {
   refreshGitStatus: () => Promise<void>;
 }
 
-export const useDevWorkspaceStore = create<DevWorkspaceStore>()(set => ({
+export const useDevWorkspaceStore = create<DevWorkspaceStore>()((set, get) => ({
   // 프로젝트 초기값
   projectId: null,
   projectName: '',
   isAdminMode: false,
+
+  // WebContainer 초기값
+  webcontainerStatus: 'idle' as WebContainerStatus,
+  webcontainerError: null,
+  webcontainerInstance: null,
 
   activeFilePath: null,
   openFiles: [],
@@ -78,31 +92,56 @@ export const useDevWorkspaceStore = create<DevWorkspaceStore>()(set => ({
   gitLog: [],
   gitLoading: false,
 
-  setProject: (id, name) => set({
-    projectId: id,
-    projectName: name,
-    // 프로젝트 전환 시 파일 상태 초기화
-    activeFilePath: null,
-    openFiles: [],
-    selectedText: '',
-    terminalOutput: [],
-    currentErrors: [],
-    gitBranch: '',
-    gitChanges: [],
-    gitLog: [],
-  }),
+  setProject: (id, name) => {
+    // 프로젝트 전환 시 기존 WebContainer 정리
+    const prev = get().webcontainerInstance;
+    if (prev) {
+      import('@/lib/dev/webcontainer').then(m => m.teardown());
+    }
+    set({
+      projectId: id,
+      projectName: name,
+      activeFilePath: null,
+      openFiles: [],
+      selectedText: '',
+      terminalOutput: [],
+      currentErrors: [],
+      gitBranch: '',
+      gitChanges: [],
+      gitLog: [],
+      webcontainerStatus: 'idle',
+      webcontainerError: null,
+      webcontainerInstance: null,
+    });
+  },
 
-  clearProject: () => set({
-    projectId: null,
-    projectName: '',
-    activeFilePath: null,
-    openFiles: [],
-    selectedText: '',
-    terminalOutput: [],
-    currentErrors: [],
-  }),
+  clearProject: () => {
+    const prev = get().webcontainerInstance;
+    if (prev) {
+      import('@/lib/dev/webcontainer').then(m => m.teardown());
+    }
+    set({
+      projectId: null,
+      projectName: '',
+      activeFilePath: null,
+      openFiles: [],
+      selectedText: '',
+      terminalOutput: [],
+      currentErrors: [],
+      webcontainerStatus: 'idle',
+      webcontainerError: null,
+      webcontainerInstance: null,
+    });
+  },
 
   setAdminMode: (mode) => set({ isAdminMode: mode }),
+
+  setWebcontainerStatus: (status, error) => set({
+    webcontainerStatus: status,
+    webcontainerError: error || null,
+  }),
+
+  setWebcontainerInstance: (instance) => set({ webcontainerInstance: instance }),
 
   setActiveFilePath: (path) => set({ activeFilePath: path }),
 
@@ -129,17 +168,32 @@ export const useDevWorkspaceStore = create<DevWorkspaceStore>()(set => ({
   setCurrentErrors: (errors) => set({ currentErrors: errors }),
 
   refreshGitStatus: async () => {
+    const { isAdminMode, webcontainerInstance } = get();
     set({ gitLoading: true });
+
     try {
-      const res = await fetch('/api/dev/git');
-      if (!res.ok) throw new Error('Git status fetch failed');
-      const data = await res.json();
-      set({
-        gitBranch: data.branch || '',
-        gitChanges: data.changes || [],
-        gitLog: data.log || [],
-        gitLoading: false,
-      });
+      if (!isAdminMode && webcontainerInstance) {
+        // WebContainer 모드: 컨테이너 내부 git
+        const { wcGitStatus } = await import('@/lib/dev/webcontainer-git');
+        const result = await wcGitStatus(webcontainerInstance);
+        set({
+          gitBranch: result.branch,
+          gitChanges: result.changes,
+          gitLog: result.log,
+          gitLoading: false,
+        });
+      } else {
+        // Admin 모드: 서버 API
+        const res = await fetch('/api/dev/git');
+        if (!res.ok) throw new Error('Git status fetch failed');
+        const data = await res.json();
+        set({
+          gitBranch: data.branch || '',
+          gitChanges: data.changes || [],
+          gitLog: data.log || [],
+          gitLoading: false,
+        });
+      }
     } catch {
       set({ gitLoading: false });
     }
