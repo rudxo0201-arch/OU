@@ -11,8 +11,8 @@ interface SaveNudgeProps {
 }
 
 const NUDGE_COPY: Record<string, string> = {
-  turn_limit: '대화가 쌓이고 있어요. 저장하지 않으면 사라져요.',
-  view_created: '저장하면 언제든 다시 볼 수 있어요.',
+  turn_limit: '이 데이터를 저장하고 계속 쌓아보세요.',
+  view_created: '가입하면 이 뷰를 저장하고 언제든 다시 볼 수 있어요.',
 };
 
 export function SaveNudge({ trigger, nodeCount, onDismiss }: SaveNudgeProps) {

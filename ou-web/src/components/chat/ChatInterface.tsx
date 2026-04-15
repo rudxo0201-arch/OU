@@ -7,9 +7,11 @@ import { MessageBubble } from './MessageBubble';
 import { TokenGauge } from './TokenGauge';
 import { SaveNudge } from './SaveNudge';
 import { ViewRecommendBadge } from './ViewRecommendBadge';
+import { ScenarioSuggestions } from './ScenarioSuggestions';
 import { ChatGraphPanel, type ChatGraphPanelHandle } from './ChatGraphPanel';
 import { useAuth } from '@/hooks/useAuth';
 import { useChatStore } from '@/stores/chatStore';
+import { getScenariosByStage, type Scenario } from '@/data/scenarios';
 
 // 클라이언트 도메인 분류 — 서버 classifier와 동일 우선순위
 function classifyDomainClient(text: string): string {
@@ -86,6 +88,12 @@ export function ChatInterface({ onboarding, graphNodes = [] }: ChatInterfaceProp
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // 시나리오 가이드
+  const [scenarioUsed, setScenarioUsed] = useState(false);
+  const [activeScenario, setActiveScenario] = useState<Scenario | null>(null);
+  const scenarioStage = !user ? 'guest' : 'onboarding';
+  const scenarios = useMemo(() => getScenariosByStage(scenarioStage), [scenarioStage]);
 
   // 게스트 턴 제한 체크
   const guestLimitReached = !user && turnCount >= 10;
@@ -239,18 +247,30 @@ export function ChatInterface({ onboarding, graphNodes = [] }: ChatInterfaceProp
     return counts;
   }, [messages]);
 
-  // 뷰 추천 로직
+  // 뷰 추천 로직: 시나리오 사용 시 1턴 만에 즉시 추천
   const viewRecommendation = useMemo(() => {
+    if (activeScenario) {
+      const view = activeScenario.expectedViews[0];
+      if (view) return { domain: activeScenario.domain, viewType: view };
+    }
     if (domainCounts.schedule >= 3) return { domain: 'schedule', viewType: 'calendar' };
     if (domainCounts.finance >= 3) return { domain: 'finance', viewType: 'chart' };
     if (domainCounts.knowledge >= 5) return { domain: 'knowledge', viewType: 'knowledge_graph' };
     if (domainCounts.task >= 3) return { domain: 'task', viewType: 'task' };
     return null;
-  }, [domainCounts]);
+  }, [domainCounts, activeScenario]);
 
   // 마지막으로 추천한 뷰 타입을 추적 (중복 추천 방지)
   const lastRecommended = useRef<string | null>(null);
   const showViewRecommend = viewRecommendation && viewRecommendation.viewType !== lastRecommended.current;
+
+  const showScenarios = messages.length <= 1 && !scenarioUsed;
+
+  const handleScenarioSelect = (scenario: Scenario) => {
+    setActiveScenario(scenario);
+    setScenarioUsed(true);
+    handleSend(scenario.prompt);
+  };
 
   // SaveNudge dismiss 상태
   const [nudgeDismissed, setNudgeDismissed] = useState<Record<string, boolean>>({});
@@ -267,6 +287,10 @@ export function ChatInterface({ onboarding, graphNodes = [] }: ChatInterfaceProp
       >
         <ScrollArea flex={1} viewportRef={viewport}>
           <Stack gap="md" p="md" maw={720} mx="auto" pb="xl">
+            {showScenarios && (
+              <ScenarioSuggestions scenarios={scenarios} onSelect={handleScenarioSelect} />
+            )}
+
             {messages.map((msg, idx) => {
               // assistant 메시지의 직전 user 메시지를 찾음
               const prevUserMsg = msg.role === 'assistant'
