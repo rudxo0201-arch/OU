@@ -1,6 +1,8 @@
 'use client';
 
-import { Box } from '@mantine/core';
+import { Component, type ReactNode } from 'react';
+import { Box, Stack, Text, Button } from '@mantine/core';
+import { WarningCircle } from '@phosphor-icons/react';
 import { VIEW_REGISTRY } from './registry';
 import type { LayoutConfig } from '@/types/layout-config';
 
@@ -11,6 +13,45 @@ interface ViewRendererProps {
   onSave?: () => void;
   inline?: boolean;
   layoutConfig?: LayoutConfig;
+}
+
+/** 뷰 크래시 방지 에러 바운더리 */
+class ViewErrorBoundary extends Component<
+  { children: ReactNode; viewType: string },
+  { hasError: boolean; error: string | null }
+> {
+  constructor(props: { children: ReactNode; viewType: string }) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error: error.message };
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <Stack align="center" justify="center" h="100%" mih={200} gap="sm" p="xl">
+          <WarningCircle size={32} color="var(--mantine-color-red-5)" />
+          <Text fz="sm" c="dimmed" ta="center">뷰를 표시할 수 없습니다</Text>
+          {process.env.NODE_ENV === 'development' && this.state.error && (
+            <Text fz={10} c="red" ta="center" maw={400} style={{ fontFamily: 'monospace' }}>
+              {this.state.error}
+            </Text>
+          )}
+          <Button
+            size="xs"
+            variant="subtle"
+            onClick={() => this.setState({ hasError: false, error: null })}
+          >
+            다시 시도
+          </Button>
+        </Stack>
+      );
+    }
+    return this.props.children;
+  }
 }
 
 export function ViewRenderer({ viewType, nodes, filters, onSave, inline, layoutConfig }: ViewRendererProps) {
@@ -29,15 +70,17 @@ export function ViewRenderer({ viewType, nodes, filters, onSave, inline, layoutC
   }
 
   return (
-    <Box
-      style={inline ? {
-        border: '0.5px solid var(--mantine-color-default-border)',
-        borderRadius: 8,
-        overflow: 'hidden',
-        maxHeight: 400,
-      } : undefined}
-    >
-      <View nodes={nodes} filters={filters} onSave={onSave} layoutConfig={layoutConfig} />
-    </Box>
+    <ViewErrorBoundary viewType={resolvedType}>
+      <Box
+        style={inline ? {
+          border: '0.5px solid var(--mantine-color-default-border)',
+          borderRadius: 8,
+          overflow: 'hidden',
+          maxHeight: 400,
+        } : undefined}
+      >
+        <View nodes={nodes} filters={filters} onSave={onSave} layoutConfig={layoutConfig} />
+      </Box>
+    </ViewErrorBoundary>
   );
 }

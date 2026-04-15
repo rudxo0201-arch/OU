@@ -31,6 +31,9 @@ pnpm-debug.log*
 *.swo
 .DS_Store
 
+# MCP config (contains API keys)
+.mcp.json
+
 # vercel
 .vercel
 
