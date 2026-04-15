@@ -85,21 +85,8 @@ CREATE TABLE personas (
   created_at          TIMESTAMPTZ DEFAULT now()
 );
 
--- 페르소나별 DataNode 공개 설정
-CREATE TABLE persona_node_visibility (
-  persona_id  UUID REFERENCES personas(id) ON DELETE CASCADE,
-  node_id     UUID REFERENCES data_nodes(id) ON DELETE CASCADE,
-  is_visible  BOOLEAN DEFAULT false,  -- 기본: 비공개
-  PRIMARY KEY (persona_id, node_id)
-);
-
--- 페르소나별 엣지 공개 설정
-CREATE TABLE persona_edge_visibility (
-  persona_id    UUID REFERENCES personas(id) ON DELETE CASCADE,
-  relation_id   UUID REFERENCES node_relations(id) ON DELETE CASCADE,
-  is_visible    BOOLEAN DEFAULT false,
-  PRIMARY KEY (persona_id, relation_id)
-);
+-- 페르소나별 DataNode/엣지 공개 설정은 data_nodes, node_relations 뒤에 정의 (의존성)
+-- → 아래 "페르소나 가시성 테이블" 섹션 참조
 
 -- 팔로우는 페르소나 단위
 CREATE TABLE persona_follows (
@@ -365,6 +352,24 @@ CREATE TABLE node_relations (
                   )),
   created_at      TIMESTAMPTZ DEFAULT now(),
   UNIQUE (source_node_id, target_node_id, relation_type)
+);
+
+-- ============================================================
+-- 페르소나 가시성 테이블 (data_nodes, node_relations 의존)
+-- ============================================================
+
+CREATE TABLE persona_node_visibility (
+  persona_id  UUID REFERENCES personas(id) ON DELETE CASCADE,
+  node_id     UUID REFERENCES data_nodes(id) ON DELETE CASCADE,
+  is_visible  BOOLEAN DEFAULT false,
+  PRIMARY KEY (persona_id, node_id)
+);
+
+CREATE TABLE persona_edge_visibility (
+  persona_id    UUID REFERENCES personas(id) ON DELETE CASCADE,
+  relation_id   UUID REFERENCES node_relations(id) ON DELETE CASCADE,
+  is_visible    BOOLEAN DEFAULT false,
+  PRIMARY KEY (persona_id, relation_id)
 );
 
 -- ============================================================
