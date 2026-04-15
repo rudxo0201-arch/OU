@@ -38,6 +38,25 @@ CREATE TABLE IF NOT EXISTS api_audit_log (
   created_at  TIMESTAMPTZ DEFAULT now()
 );
 
+CREATE TABLE IF NOT EXISTS api_keys (
+  id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id     UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  key_hash    TEXT NOT NULL UNIQUE,
+  key_prefix  TEXT NOT NULL,
+  name        TEXT NOT NULL,
+  scopes      TEXT[] DEFAULT '{mcp:write,mcp:read}',
+  last_used_at TIMESTAMPTZ,
+  expires_at  TIMESTAMPTZ,
+  revoked_at  TIMESTAMPTZ,
+  created_at  TIMESTAMPTZ DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS api_keys_hash_idx ON api_keys (key_hash) WHERE revoked_at IS NULL;
+CREATE INDEX IF NOT EXISTS api_keys_user_idx ON api_keys (user_id) WHERE revoked_at IS NULL;
+ALTER TABLE api_keys ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "api_keys_own" ON api_keys FOR ALL USING (user_id = auth.uid());
+GRANT ALL ON api_keys TO authenticated;
+GRANT ALL ON api_keys TO service_role;
+
 -- ============================================================
 -- 2. 그룹 (personas 보다 먼저 — 의존성)
 -- ============================================================
@@ -81,7 +100,7 @@ CREATE TABLE IF NOT EXISTS messages (
   group_id    UUID REFERENCES groups(id),
   role        TEXT NOT NULL CHECK (role IN ('user','assistant')),
   raw         TEXT NOT NULL,
-  type        TEXT NOT NULL CHECK (type IN ('chat','question','answer')),
+  type        TEXT NOT NULL CHECK (type IN ('chat','question','answer','dev_session','mcp_session')),
   pair_id     UUID REFERENCES messages(id),
   created_at  TIMESTAMPTZ DEFAULT now()
 );
@@ -105,7 +124,7 @@ CREATE TABLE IF NOT EXISTS data_nodes (
                    )),
   source_type      TEXT NOT NULL CHECK (source_type IN (
                      'chat','upload','youtube','crawl','manual',
-                     'import','interaction'
+                     'import','interaction','dev_tool','mcp'
                    )),
 
   source_file_url  TEXT,
