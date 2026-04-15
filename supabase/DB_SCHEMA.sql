@@ -264,6 +264,32 @@ CREATE TABLE sentences (
 );
 
 -- ============================================================
+-- 6.5. 섹션 이미지 (PDF 내 의미 있는 이미지)
+-- ============================================================
+-- sentences와 order_idx를 공유하여 하나의 렌더링 스트림 구성
+-- 장식(아이콘/배경/로고)은 저장하지 않음 — 데이터 이미지만
+
+CREATE TABLE section_images (
+  id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  section_id       UUID REFERENCES sections(id) ON DELETE CASCADE,
+  node_id          UUID REFERENCES data_nodes(id) ON DELETE CASCADE,
+
+  image_url        TEXT NOT NULL,          -- R2 경로: {userId}/nodes/{nodeId}/img-{order}.png
+  order_idx        INTEGER NOT NULL,       -- section 내 sentences와 공유하는 순서
+
+  caption          TEXT,                   -- 원본 캡션 ("그림 1. 경락의 흐름")
+  description      TEXT,                   -- Gemini Vision 생성 설명
+  ocr_text         TEXT,                   -- 이미지 내 텍스트/수치 추출 결과
+
+  source_type      TEXT DEFAULT 'embedded' CHECK (source_type IN (
+                     'embedded','captured'  -- 원본 바이너리 추출 vs 렌더링 영역 캡처
+                   )),
+  source_location  JSONB,                  -- { page, x, y, width, height }
+
+  created_at       TIMESTAMPTZ DEFAULT now()
+);
+
+-- ============================================================
 -- 7. 트리플 (온톨로지)
 -- ============================================================
 -- 핵심 설계:
@@ -475,7 +501,74 @@ CREATE TABLE api_cost_log (
 );
 
 -- ============================================================
--- 13. 인덱스
+-- 14. 어노테이션 (도메인 중립 — 모든 DataNode에 적용)
+-- ============================================================
+-- 하이라이트/메모/북마크가 sentence 단위로 매핑되어
+-- triple_sentence_sources와 JOIN 가능 → "이 하이라이트에서 어떤 지식이 추출됐나?"
+
+CREATE TABLE annotations (
+  id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id       UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  node_id       UUID NOT NULL REFERENCES data_nodes(id) ON DELETE CASCADE,
+
+  -- 구조화 데이터 매핑 (선택적)
+  section_id    UUID REFERENCES sections(id) ON DELETE SET NULL,
+
+  -- 타입
+  type          TEXT NOT NULL CHECK (type IN (
+                  'highlight',   -- 텍스트 하이라이트
+                  'note',        -- 텍스트 + 메모
+                  'bookmark',    -- 위치 북마크
+                  'canvas'       -- 캔버스 필기 (펜/자유 하이라이트)
+                )),
+
+  -- 내용
+  selected_text TEXT,                -- 선택된 원문 텍스트
+  note_text     TEXT,                -- 사용자 메모
+  color         TEXT NOT NULL DEFAULT 'gray-3' CHECK (color IN (
+                  'yellow-2',    -- 노랑
+                  'gray-3',      -- 회색
+                  'gray-5',      -- 진회색
+                  'dark-3'       -- 어두운
+                )),
+
+  -- 위치 정보 (도메인 중립적 JSONB)
+  -- highlight/note: { sentence_ids, start_sentence_id, start_offset, end_sentence_id, end_offset }
+  -- bookmark:       { section_idx }
+  position      JSONB,
+
+  importance    INTEGER DEFAULT 0 CHECK (importance IN (0, 1)),
+
+  -- 소프트 삭제 (데이터 불삭제 원칙)
+  deleted_at    TIMESTAMPTZ,
+
+  created_at    TIMESTAMPTZ DEFAULT now(),
+  updated_at    TIMESTAMPTZ DEFAULT now()
+);
+
+-- 어노테이션 ↔ 문장 매핑 (N:M — 하이라이트가 여러 문장에 걸칠 수 있음)
+-- triple_sentence_sources와 동일 패턴
+CREATE TABLE annotation_sentence_targets (
+  annotation_id  UUID REFERENCES annotations(id) ON DELETE CASCADE,
+  sentence_id    UUID REFERENCES sentences(id) ON DELETE CASCADE,
+  PRIMARY KEY (annotation_id, sentence_id)
+);
+
+-- 어노테이션 변경 이력 (데이터 불삭제 원칙)
+CREATE TABLE annotation_events (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  annotation_id   UUID NOT NULL REFERENCES annotations(id) ON DELETE CASCADE,
+  user_id         UUID NOT NULL REFERENCES profiles(id),
+  event_type      TEXT NOT NULL CHECK (event_type IN (
+                    'created', 'updated', 'deleted', 'restored'
+                  )),
+  previous_state  JSONB,           -- 변경 전 상태 스냅샷
+  metadata        JSONB,
+  created_at      TIMESTAMPTZ DEFAULT now()
+);
+
+-- ============================================================
+-- 15. 인덱스
 -- ============================================================
 
 -- 벡터 유사도 검색
@@ -510,8 +603,101 @@ CREATE INDEX unresolved_user_status_idx
 CREATE INDEX embed_status_idx
   ON sentences (embed_status) WHERE embed_status != 'done';
 
+-- 어노테이션
+CREATE INDEX annotations_node_idx
+  ON annotations (node_id) WHERE deleted_at IS NULL;
+CREATE INDEX annotations_user_node_idx
+  ON annotations (user_id, node_id) WHERE deleted_at IS NULL;
+CREATE INDEX annotations_section_idx
+  ON annotations (section_id) WHERE section_id IS NOT NULL AND deleted_at IS NULL;
+CREATE INDEX annotation_sentence_targets_sentence_idx
+  ON annotation_sentence_targets (sentence_id);
+CREATE INDEX annotation_events_annotation_idx
+  ON annotation_events (annotation_id);
+
 -- ============================================================
--- 14. RLS (Row Level Security)
+-- 16. 로직화 에이전트 (LLM→규칙 점진적 전환)
+-- ============================================================
+-- LLM 호출 패턴을 관찰→규칙 추출→검증→대체하는 메타 시스템
+-- 데이터가 쌓일수록 LLM 의존도 감소 → 비용 절감 + 속도 향상
+
+-- LLM 호출 입출력 로그 (api_cost_log 확장: 비용뿐 아니라 입출력 데이터 포함)
+CREATE TABLE llm_call_log (
+  id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  operation     TEXT NOT NULL,          -- 'extract_triple', 'chat', 'verify', 'view_gen' 등
+  input_hash    TEXT NOT NULL,          -- SHA256(입력 텍스트) → 동일 입력 캐시 히트
+  input_text    TEXT NOT NULL,          -- 원본 입력 (최대 2000자 트림)
+  output_text   TEXT NOT NULL,          -- LLM 응답
+  output_parsed JSONB,                  -- 파싱된 구조화 결과 (JSON 출력인 경우)
+  model         TEXT NOT NULL,
+  tokens_used   INTEGER,
+  cost_usd      NUMERIC(10,6),
+  user_id       UUID REFERENCES profiles(id),
+  node_id       UUID REFERENCES data_nodes(id),
+  created_at    TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE INDEX llm_call_log_op_hash_idx ON llm_call_log (operation, input_hash);
+CREATE INDEX llm_call_log_operation_idx ON llm_call_log (operation, created_at DESC);
+
+-- 추출된 규칙 (LLM 호출을 대체하는 로직)
+CREATE TABLE logic_rules (
+  id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  operation     TEXT NOT NULL,          -- 어떤 LLM 호출을 대체하는지
+  rule_type     TEXT NOT NULL CHECK (rule_type IN (
+                  'regex', 'lookup', 'template', 'decision_tree', 'ml_model'
+                )),
+  rule_config   JSONB NOT NULL,         -- 규칙 정의 (패턴, 매핑 등)
+
+  -- 성능 지표
+  accuracy      FLOAT,                  -- 검증된 정확도 (0~1)
+  coverage      FLOAT,                  -- 전체 입력 중 처리 가능 비율 (0~1)
+  sample_count  INTEGER DEFAULT 0,      -- 검증에 사용된 샘플 수
+
+  -- 라이프사이클: draft → testing → shadow → active → retired
+  status        TEXT DEFAULT 'draft' CHECK (status IN (
+                  'draft', 'testing', 'shadow', 'active', 'retired'
+                )),
+  promoted_at   TIMESTAMPTZ,            -- shadow → active 전환 시점
+  retired_at    TIMESTAMPTZ,
+
+  created_at    TIMESTAMPTZ DEFAULT now(),
+  updated_at    TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE INDEX logic_rules_op_status_idx ON logic_rules (operation, status);
+
+-- 규칙 검증 로그 (섀도 모드에서 규칙 vs LLM 비교 기록)
+CREATE TABLE rule_validations (
+  id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  rule_id       UUID REFERENCES logic_rules(id) ON DELETE CASCADE,
+  input_text    TEXT NOT NULL,
+  rule_output   JSONB,                  -- 규칙이 생성한 결과
+  llm_output    JSONB,                  -- LLM이 생성한 결과 (정답)
+  is_match      BOOLEAN,                -- 일치 여부
+  diff_detail   JSONB,                  -- 차이점 상세
+  created_at    TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE INDEX rule_validations_rule_match_idx ON rule_validations (rule_id, is_match);
+
+-- 패턴 클러스터 (반복 패턴 감지용)
+CREATE TABLE pattern_clusters (
+  id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  operation     TEXT NOT NULL,
+  cluster_key   TEXT NOT NULL,          -- 패턴 시그니처
+  example_inputs TEXT[],                -- 대표 입력 예시 (최대 10개)
+  example_outputs JSONB[],             -- 대표 출력 예시
+  frequency     INTEGER DEFAULT 1,     -- 출현 빈도
+  last_seen_at  TIMESTAMPTZ DEFAULT now(),
+  created_at    TIMESTAMPTZ DEFAULT now(),
+  UNIQUE(operation, cluster_key)
+);
+
+CREATE INDEX pattern_clusters_freq_idx ON pattern_clusters (operation, frequency DESC);
+
+-- ============================================================
+-- RLS (Row Level Security)
 -- ============================================================
 
 ALTER TABLE data_nodes ENABLE ROW LEVEL SECURITY;
@@ -529,6 +715,22 @@ CREATE POLICY "personal_nodes" ON data_nodes
     OR is_admin_node = true      -- 관리자 노드는 전체 공개
     OR visibility = 'public'
     OR (visibility = 'link' AND /* 링크 토큰 검증 로직 */ true)
+  );
+
+-- 어노테이션: 본인만 접근
+ALTER TABLE annotations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE annotation_events ENABLE ROW LEVEL SECURITY;
+ALTER TABLE annotation_sentence_targets ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "annotations_own" ON annotations
+  FOR ALL USING (user_id = auth.uid());
+CREATE POLICY "annotation_events_own" ON annotation_events
+  FOR ALL USING (user_id = auth.uid());
+CREATE POLICY "annotation_sentence_targets_own" ON annotation_sentence_targets
+  FOR ALL USING (
+    annotation_id IN (
+      SELECT id FROM annotations WHERE user_id = auth.uid()
+    )
   );
 
 -- 그룹 DataNode: 멤버만 접근

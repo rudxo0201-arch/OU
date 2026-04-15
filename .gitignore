@@ -36,3 +36,6 @@ pnpm-debug.log*
 
 # turbo
 .turbo
+
+# large data files
+**/scripts/data/

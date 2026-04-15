@@ -1,0 +1,161 @@
+/* Pretendard 웹폰트 */
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css');
+
+/* Mantine 핵심 스타일 */
+@layer mantine;
+
+/* 다크모드 배경 — PixiJS 캔버스 #060810과 완전 일치 */
+[data-mantine-color-scheme="dark"] {
+  --mantine-color-body: #060810;
+}
+[data-mantine-color-scheme="dark"] body {
+  background: #060810;
+}
+
+/* ===== OU 애니메이션 시스템 ===== */
+
+@keyframes ou-glow-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+  50% { box-shadow: 0 0 20px 4px rgba(255, 255, 255, 0.15); }
+}
+
+@keyframes ou-star-twinkle {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+@keyframes ou-slide-in-right {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes ou-scale-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes ou-slide-up {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes ou-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes ou-pulse-dot {
+  0%, 80%, 100% { opacity: 0.25; transform: scale(0.8); }
+  40% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes ou-star-breathe {
+  0%, 100% {
+    transform: scale(0.8);
+    opacity: 0.4;
+    filter: drop-shadow(0 0 0px rgba(255, 255, 255, 0));
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1.0;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6));
+  }
+}
+
+@keyframes ou-ripple {
+  0%   { transform: scale(0.3); opacity: 0.7; }
+  70%  { opacity: 0.15; }
+  100% { transform: scale(1);   opacity: 0; }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* ===== 마크다운 렌더링 ===== */
+
+.ou-markdown p { margin: 0 0 8px; }
+.ou-markdown p:last-child { margin-bottom: 0; }
+.ou-markdown h1, .ou-markdown h2, .ou-markdown h3 {
+  margin: 16px 0 8px;
+  font-weight: 600;
+}
+.ou-markdown h1 { font-size: 1.25em; }
+.ou-markdown h2 { font-size: 1.15em; }
+.ou-markdown h3 { font-size: 1.05em; }
+.ou-markdown ul, .ou-markdown ol {
+  margin: 4px 0 8px;
+  padding-left: 20px;
+}
+.ou-markdown li { margin: 2px 0; }
+.ou-markdown code {
+  background: rgba(255, 255, 255, 0.06);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+.ou-markdown pre {
+  background: rgba(255, 255, 255, 0.04);
+  border: 0.5px solid var(--mantine-color-default-border);
+  border-radius: var(--mantine-radius-md);
+  padding: 12px;
+  overflow-x: auto;
+  margin: 8px 0;
+}
+.ou-markdown pre code {
+  background: none;
+  padding: 0;
+}
+.ou-markdown blockquote {
+  border-left: 2px solid var(--mantine-color-default-border);
+  margin: 8px 0;
+  padding-left: 12px;
+  color: var(--mantine-color-dimmed);
+}
+.ou-markdown strong { font-weight: 600; }
+.ou-markdown a { color: var(--mantine-color-text); text-decoration: underline; }
+.ou-markdown hr {
+  border: none;
+  border-top: 0.5px solid var(--mantine-color-default-border);
+  margin: 12px 0;
+}
+
+/* ===== 반응형 유틸 ===== */
+
+@media (max-width: 768px) {
+  .mobile-no-margin-right { margin-right: 0 !important; }
+  .landing-container { flex-direction: column !important; }
+  .landing-graph { height: 50vh !important; flex: none !important; }
+  .landing-content { width: 100% !important; height: 50vh !important; flex: none !important; padding: 0 24px; }
+}
+
+/* 모바일: NodeDetailPanel 풀스크린 */
+@media (max-width: 768px) {
+  .node-detail-panel {
+    top: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    border-radius: 0 !important;
+  }
+}
+
+/* 모바일: FloatingToolbar 세로 정렬 */
+@media (max-width: 768px) {
+  .floating-toolbar-inner {
+    flex-direction: column !important;
+    gap: 6px !important;
+  }
+  .floating-toolbar-inner .mantine-ScrollArea-root {
+    max-width: 100% !important;
+  }
+}
+
+/* 모바일: Feed 단일 열 */
+@media (max-width: 768px) {
+  .feed-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
