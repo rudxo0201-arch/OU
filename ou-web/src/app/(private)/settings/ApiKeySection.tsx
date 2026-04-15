@@ -255,10 +255,19 @@ export function ApiKeySection() {
           </div>
 
           <div>
-            <Text fw={600} mb="xs">ChatGPT / Gemini 대화 가져오기</Text>
+            <Text fw={600} mb="xs">ChatGPT</Text>
             <Text size="sm" c="dimmed">
-              대화 내보내기 기능으로 JSON 파일을 다운로드한 뒤,
-              OU의 Chat View에서 업로드하면 자동으로 구조화됩니다.
+              Settings → Connectors → Add MCP Server에서 URL과 API Key를 입력하세요.
+              <br />
+              URL: <Code>/api/mcp/sse</Code>
+            </Text>
+          </div>
+
+          <div>
+            <Text fw={600} mb="xs">Gemini / 기타</Text>
+            <Text size="sm" c="dimmed">
+              MCP 미지원 서비스는 대화 내보내기(JSON) 후
+              OU Chat View에서 업로드하면 자동으로 구조화됩니다.
             </Text>
           </div>
         </Stack>
