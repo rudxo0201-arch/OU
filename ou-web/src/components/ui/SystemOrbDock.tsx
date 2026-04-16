@@ -26,7 +26,7 @@ export function SystemOrbDock({ side, items, orbSize = 44 }: SystemOrbDockProps)
       style={{
         position: 'fixed',
         bottom: 24,
-        [side]: 16,
+        [side]: side === 'left' ? 380 : 16,
         zIndex: 15,
         display: 'flex',
         flexDirection: 'column',

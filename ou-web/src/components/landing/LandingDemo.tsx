@@ -199,8 +199,13 @@ export function LandingDemo() {
   }, [input, router]);
 
   const handleScenarioClick = useCallback((scenarioId: string) => {
-    router.push(`/chat?scenario=${scenarioId}`);
-  }, [router]);
+    // 시나리오의 프롬프트를 store에 저장하고 /my로 이동
+    const scenario = scenarios.find(s => s.id === scenarioId);
+    if (scenario) {
+      useChatStore.getState().setPendingMessage(scenario.prompt);
+    }
+    router.push('/my');
+  }, [router, scenarios]);
 
   return (
     <div

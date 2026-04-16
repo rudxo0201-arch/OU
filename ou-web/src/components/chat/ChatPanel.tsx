@@ -63,6 +63,19 @@ export function ChatPanel({ onNodeCreated }: ChatPanelProps) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // pendingMessage 자동 전송 (랜딩 시나리오에서 넘어온 경우)
+  const pendingSent = useRef(false);
+  useEffect(() => {
+    if (pendingSent.current) return;
+    const pending = useChatStore.getState().pendingMessage;
+    if (pending && messages.length >= 1) {
+      pendingSent.current = true;
+      useChatStore.getState().setPendingMessage(null);
+      setTimeout(() => handleSend(pending), 500);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [messages]);
+
   const [scenarioUsed, setScenarioUsed] = useState(false);
   const [activeScenario, setActiveScenario] = useState<Scenario | null>(null);
   const scenarioStage = !user ? 'guest' : 'onboarding';
@@ -383,9 +396,6 @@ export function ChatPanel({ onNodeCreated }: ChatPanelProps) {
       {/* Messages */}
       <div ref={viewport} style={{ flex: 1, overflow: 'auto' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: 16, paddingBottom: 32 }}>
-          {showScenarios && (
-            <ScenarioSuggestions scenarios={scenarios} onSelect={handleScenarioSelect} />
-          )}
           {messages.map((msg, idx) => {
             const isLastAssistant = msg.role === 'assistant' && !msg.streaming && idx === messages.length - 1;
             const shouldShowViewRecommend = isLastAssistant && showViewRecommend;
@@ -413,8 +423,13 @@ export function ChatPanel({ onNodeCreated }: ChatPanelProps) {
         </div>
       </div>
 
-      {/* Input */}
-      <div style={{ padding: 12, borderTop: '0.5px solid var(--ou-glass-border)' }}>
+      {/* Scenarios + Input */}
+      <div style={{ padding: 12, borderTop: '0.5px solid var(--ou-glass-border)', paddingBottom: 16 }}>
+        {showScenarios && (
+          <div style={{ marginBottom: 8 }}>
+            <ScenarioSuggestions scenarios={scenarios} onSelect={handleScenarioSelect} />
+          </div>
+        )}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           <ChatInput
             onSend={handleSend}
