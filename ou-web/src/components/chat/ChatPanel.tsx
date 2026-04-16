@@ -375,7 +375,7 @@ export function ChatPanel({ onNodeCreated }: ChatPanelProps) {
           borderBottom: '0.5px solid var(--ou-glass-border)',
         }}
       >
-        <span style={{ fontSize: 13, fontWeight: 600 }}>Chat</span>
+        <span style={{ fontSize: 13, fontWeight: 600 }}></span>
         <button
           onClick={toggleChatPanel}
           style={{
