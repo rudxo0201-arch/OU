@@ -3,9 +3,11 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { Box, Text, Stack, Paper, Group, Badge } from '@mantine/core';
 import type { ViewProps } from './registry';
+import { tripleToSentence } from '@/lib/triples/sentence-templates';
+import type { TriplePredicate } from '@/types';
 
 interface GNode { id: string; label: string; importance: number; x: number; y: number; vx: number; vy: number; conns: number; }
-interface GEdge { source: string; target: string; predicate: string; }
+interface GEdge { source: string; target: string; predicate: string; sourceLabel?: string; targetLabel?: string; }
 
 function truncate(s: string, max: number) { return s.length > max ? s.slice(0, max) + '...' : s; }
 
@@ -25,7 +27,10 @@ function buildGraph(nodes: any[]): { gNodes: GNode[]; gEdges: GEdge[] } {
       const subj = t.subject_node_id ?? t.subject;
       const obj = t.object_node_id ?? t.object;
       if (subj && obj && idSet.has(subj) && idSet.has(obj) && subj !== obj) {
-        gEdges.push({ source: subj, target: obj, predicate: t.predicate ?? 'related_to' });
+        gEdges.push({
+          source: subj, target: obj, predicate: t.predicate ?? 'related_to',
+          sourceLabel: t.subject ?? '', targetLabel: t.object ?? '',
+        });
         connCount[subj] = (connCount[subj] ?? 0) + 1;
         connCount[obj] = (connCount[obj] ?? 0) + 1;
       }
@@ -162,7 +167,7 @@ export function KnowledgeGraphView({ nodes }: ViewProps) {
 
   return (
     <Stack gap="xs" p="sm">
-      <Text fz="xs" c="dimmed">지식 그래프 ({gNodes.length}개 노드, {gEdges.length}개 연결)</Text>
+      <Text fz="xs" c="dimmed">지식 그래프 ({gNodes.length}개, {gEdges.length}개 연결)</Text>
       <Box style={{ border: '0.5px solid var(--mantine-color-default-border)', borderRadius: 8, overflow: 'hidden' }}>
         <svg
           ref={svgRef}
@@ -260,9 +265,14 @@ export function KnowledgeGraphView({ nodes }: ViewProps) {
               {gEdges.filter(e => e.source === selectedId || e.target === selectedId).slice(0, 5).map((e, i) => {
                 const otherId = e.source === selectedId ? e.target : e.source;
                 const other = nodeMap.get(otherId);
+                const sentence = tripleToSentence({
+                  subject: e.source === selectedId ? selectedNode.label : (other?.label ?? '?'),
+                  predicate: e.predicate as TriplePredicate,
+                  object: e.source === selectedId ? (other?.label ?? '?') : selectedNode.label,
+                });
                 return (
                   <Text key={i} fz={11} c="dimmed">
-                    {e.predicate.replace(/_/g, ' ')} → {other?.label ?? '?'}
+                    {sentence}
                   </Text>
                 );
               })}

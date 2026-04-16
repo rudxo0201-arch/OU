@@ -420,7 +420,7 @@ export function NodeDetailPanel({
                   >
                     <Group gap={6} wrap="nowrap">
                       {rel.predicate && (
-                        <Badge variant="dot" color="gray" size="xs">{rel.predicate}</Badge>
+                        <Badge variant="dot" color="gray" size="xs">{getPredicateLabel(rel.predicate)}</Badge>
                       )}
                       <Text fz="xs" lineClamp={1}>{rel.raw ?? rel.domain}</Text>
                     </Group>

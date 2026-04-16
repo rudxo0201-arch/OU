@@ -1,24 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { COPY } from '@/lib/copy';
 
 export async function POST(req: NextRequest) {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!user) return NextResponse.json({ message: COPY.error.unauthorized }, { status: 401 });
 
     let body: { name?: string; viewType?: string; customCode?: string; filterConfig?: unknown };
     try {
       body = await req.json();
     } catch {
-      return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
+      return NextResponse.json({ message: COPY.error.generic }, { status: 400 });
     }
 
     const { name, viewType, customCode, filterConfig } = body;
 
     if (!name || !viewType) {
       return NextResponse.json(
-        { error: 'name and viewType are required' },
+        { message: COPY.error.generic },
         { status: 400 }
       );
     }
@@ -37,13 +38,13 @@ export async function POST(req: NextRequest) {
 
     if (error) {
       console.error('[Views/POST] Supabase error:', error.message);
-      return NextResponse.json({ error: 'Failed to create view' }, { status: 500 });
+      return NextResponse.json({ message: COPY.error.generic }, { status: 500 });
     }
 
     return NextResponse.json({ success: true, view: data });
   } catch (e) {
     console.error('[Views/POST] Unexpected error:', e);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ message: COPY.error.generic }, { status: 500 });
   }
 }
 
@@ -51,7 +52,7 @@ export async function GET(req: NextRequest) {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!user) return NextResponse.json({ message: COPY.error.unauthorized }, { status: 401 });
 
     const { data, error } = await supabase
       .from('saved_views')
@@ -61,13 +62,13 @@ export async function GET(req: NextRequest) {
 
     if (error) {
       console.error('[Views/GET] Supabase error:', error.message);
-      return NextResponse.json({ error: 'Failed to load views' }, { status: 500 });
+      return NextResponse.json({ message: COPY.error.generic }, { status: 500 });
     }
 
     return NextResponse.json({ views: data });
   } catch (e) {
     console.error('[Views/GET] Unexpected error:', e);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ message: COPY.error.generic }, { status: 500 });
   }
 }
 
@@ -75,13 +76,13 @@ export async function DELETE(req: NextRequest) {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!user) return NextResponse.json({ message: COPY.error.unauthorized }, { status: 401 });
 
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');
 
     if (!id) {
-      return NextResponse.json({ error: 'id is required' }, { status: 400 });
+      return NextResponse.json({ message: COPY.error.generic }, { status: 400 });
     }
 
     const { error } = await supabase
@@ -92,13 +93,13 @@ export async function DELETE(req: NextRequest) {
 
     if (error) {
       console.error('[Views/DELETE] Supabase error:', error.message);
-      return NextResponse.json({ error: 'Failed to delete view' }, { status: 500 });
+      return NextResponse.json({ message: COPY.error.generic }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });
   } catch (e) {
     console.error('[Views/DELETE] Unexpected error:', e);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ message: COPY.error.generic }, { status: 500 });
   }
 }
 
@@ -106,19 +107,19 @@ export async function PATCH(req: NextRequest) {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!user) return NextResponse.json({ message: COPY.error.unauthorized }, { status: 401 });
 
     let body: Record<string, unknown>;
     try {
       body = await req.json();
     } catch {
-      return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
+      return NextResponse.json({ message: COPY.error.generic }, { status: 400 });
     }
 
     const { id, ...fields } = body;
 
     if (!id) {
-      return NextResponse.json({ error: 'id is required' }, { status: 400 });
+      return NextResponse.json({ message: COPY.error.generic }, { status: 400 });
     }
 
     // 허용된 업데이트 필드만 추출
@@ -136,7 +137,7 @@ export async function PATCH(req: NextRequest) {
     }
 
     if (Object.keys(updateData).length === 1) {
-      return NextResponse.json({ error: 'No valid fields to update' }, { status: 400 });
+      return NextResponse.json({ message: COPY.error.generic }, { status: 400 });
     }
 
     const { data, error } = await supabase
@@ -149,12 +150,12 @@ export async function PATCH(req: NextRequest) {
 
     if (error) {
       console.error('[Views/PATCH] Supabase error:', error.message);
-      return NextResponse.json({ error: 'Failed to update view' }, { status: 500 });
+      return NextResponse.json({ message: COPY.error.generic }, { status: 500 });
     }
 
     return NextResponse.json({ success: true, view: data });
   } catch (e) {
     console.error('[Views/PATCH] Unexpected error:', e);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ message: COPY.error.generic }, { status: 500 });
   }
 }

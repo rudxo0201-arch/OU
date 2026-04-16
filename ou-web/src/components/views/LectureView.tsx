@@ -10,6 +10,8 @@ import {
   Play, Image, FileText, CaretLeft, CaretRight,
   Plus, DotsSixVertical, Cards, ListNumbers,
 } from '@phosphor-icons/react';
+import { tripleToSentence } from '@/lib/triples/sentence-templates';
+import type { TriplePredicate } from '@/types';
 
 interface LectureViewProps {
   nodes: any[];
@@ -71,7 +73,7 @@ export function LectureView({ nodes }: LectureViewProps) {
         for (const t of dd.triples) {
           if (t.subject && t.predicate && t.object) {
             items.push({
-              question: `${t.subject}의 ${t.predicate.replace(/_/g, ' ')}는?`,
+              question: tripleToSentence({ subject: t.subject, predicate: t.predicate as TriplePredicate, object: '?' }),
               answer: t.object,
             });
           }

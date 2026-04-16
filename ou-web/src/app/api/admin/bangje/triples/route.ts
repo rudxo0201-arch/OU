@@ -17,8 +17,8 @@ export async function POST() {
       success: true,
       ...result,
       message: result.generated > 0
-        ? `방제 ${result.total}개에서 트리플 ${result.generated}개 생성.`
-        : '트리플을 생성할 방제가 없습니다.',
+        ? `방제 ${result.total}개에서 관계 ${result.generated}개 생성.`
+        : '관계를 생성할 방제가 없습니다.',
     });
   } catch (e: any) {
     console.error('[Admin/Bangje/Triples] Error:', e);

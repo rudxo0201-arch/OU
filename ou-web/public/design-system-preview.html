@@ -4359,56 +4359,107 @@
   <!-- VIEW: FlowchartView -->
   <div class="section">
     <div class="section-title">FlowchartView (플로우차트뷰)</div>
-    <div style="display: flex; align-items: center; gap: 0; justify-content: center;">
-      <!-- Step 1 -->
-      <div class="flow-step active" style="min-width: 120px;">
-        <i class="ph ph-chat-circle" style="margin-right: 4px;"></i> 대화 입력
-      </div>
-      <!-- connector -->
-      <div style="width: 40px; height: 1px; background: var(--ou-border-subtle);"></div>
-      <!-- Step 2 -->
-      <div class="flow-step" style="min-width: 120px;">
-        <i class="ph ph-brain" style="margin-right: 4px;"></i> LLM 분석
-      </div>
-      <!-- connector: extends 17px under diamond left vertex -->
-      <div style="width: 50px; height: 1px; background: var(--ou-border-subtle); margin-right: -17px; position: relative; z-index: 2;"></div>
-      <!-- Diamond -->
-      <div class="flow-diamond">
-        <span>데이터<br>존재?</span>
-      </div>
-      <!-- Diamond → branch split: overlaps diamond by 17px so line starts at vertex -->
-      <div style="width: 50px; height: 1px; background: var(--ou-border-subtle); flex-shrink: 0; margin-left: -17px; position: relative; z-index: 2;"></div>
-      <!-- Branches: border-left = split bar, border-right = merge bar -->
-      <div style="display: flex; flex-direction: column; border-left: 1px solid var(--ou-border-subtle); border-right: 1px solid var(--ou-border-subtle);">
-        <!-- Upper branch -->
-        <div style="display: flex; align-items: center;">
-          <div style="width: 16px; height: 1px; background: var(--ou-border-subtle); flex-shrink: 0;"></div>
-          <div style="font-size: 9px; color: var(--ou-text-muted); padding: 0 4px; flex-shrink: 0;">예</div>
-          <div style="width: 12px; height: 1px; background: var(--ou-border-subtle); flex-shrink: 0;"></div>
-          <div class="flow-step" style="min-width: 120px;">
+    <div style="position: relative; padding: 40px 0;">
+      <!-- All boxes in a flex row -->
+      <div style="display: flex; align-items: center; gap: 0; justify-content: center;">
+        <div class="flow-step active" style="min-width: 120px;" id="fc-s1">
+          <i class="ph ph-chat-circle" style="margin-right: 4px;"></i> 대화 입력
+        </div>
+        <div style="width: 40px;"></div>
+        <div class="flow-step" style="min-width: 120px;" id="fc-s2">
+          <i class="ph ph-brain" style="margin-right: 4px;"></i> LLM 분석
+        </div>
+        <div style="width: 40px;"></div>
+        <div class="flow-diamond" id="fc-dia">
+          <span>데이터<br>존재?</span>
+        </div>
+        <div style="width: 70px;"></div>
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+          <div class="flow-step" style="min-width: 120px;" id="fc-s3">
             <i class="ph ph-link" style="margin-right: 4px;"></i> 기존 노드 연결
           </div>
-          <div style="width: 16px; height: 1px; background: var(--ou-border-subtle); flex-shrink: 0;"></div>
-        </div>
-        <!-- Spacer -->
-        <div style="height: 16px;"></div>
-        <!-- Lower branch -->
-        <div style="display: flex; align-items: center;">
-          <div style="width: 16px; height: 1px; background: var(--ou-border-subtle); flex-shrink: 0;"></div>
-          <div style="font-size: 9px; color: var(--ou-text-muted); padding: 0 4px; flex-shrink: 0;">아니오</div>
-          <div style="width: 12px; height: 1px; background: var(--ou-border-subtle); flex-shrink: 0;"></div>
-          <div class="flow-step" style="min-width: 120px;">
+          <div class="flow-step" style="min-width: 120px;" id="fc-s4">
             <i class="ph ph-plus-circle" style="margin-right: 4px;"></i> 새 노드 생성
           </div>
-          <div style="width: 16px; height: 1px; background: var(--ou-border-subtle); flex-shrink: 0;"></div>
+        </div>
+        <div style="width: 60px;"></div>
+        <div class="flow-step active" style="min-width: 120px; box-shadow: var(--ou-glow-md);" id="fc-s5">
+          <i class="ph ph-eye" style="margin-right: 4px;"></i> 뷰 업데이트
         </div>
       </div>
-      <!-- Merge → final connector -->
-      <div style="width: 40px; height: 1px; background: var(--ou-border-subtle); flex-shrink: 0;"></div>
-      <!-- Step final -->
-      <div class="flow-step active" style="min-width: 120px; box-shadow: var(--ou-glow-md);">
-        <i class="ph ph-eye" style="margin-right: 4px;"></i> 뷰 업데이트
-      </div>
+      <!-- SVG connection lines overlay -->
+      <svg style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible;">
+        <line id="fc-l1" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
+        <line id="fc-l2" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
+        <!-- Diamond → split point -->
+        <line id="fc-l3" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
+        <!-- Split → upper branch -->
+        <line id="fc-l4v" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
+        <line id="fc-l4h" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
+        <!-- Split → lower branch -->
+        <line id="fc-l5h" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
+        <!-- Upper → merge point -->
+        <line id="fc-l6" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
+        <!-- Lower → merge point -->
+        <line id="fc-l7" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
+        <!-- Merge vertical -->
+        <line id="fc-l8v" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
+        <!-- Merge → final -->
+        <line id="fc-l9" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
+        <!-- Edge labels (pill style) -->
+        <rect id="fc-lbl-yes-bg" fill="#060810"/>
+        <text id="fc-lbl-yes" fill="rgba(255,255,255,0.4)" font-size="9" font-family="'Pretendard Variable', sans-serif" text-anchor="middle" dominant-baseline="central">예</text>
+        <rect id="fc-lbl-no-bg" fill="#060810"/>
+        <text id="fc-lbl-no" fill="rgba(255,255,255,0.4)" font-size="9" font-family="'Pretendard Variable', sans-serif" text-anchor="middle" dominant-baseline="central">아니오</text>
+      </svg>
+      <script>
+        requestAnimationFrame(function() {
+          var wrap = document.querySelector('#fc-s1').closest('[style*="position: relative"]');
+          var wr = wrap.getBoundingClientRect();
+          function cx(el) { var r = el.getBoundingClientRect(); return { l: r.left - wr.left, r: r.right - wr.left, t: r.top - wr.top, b: r.bottom - wr.top, cx: (r.left + r.right) / 2 - wr.left, cy: (r.top + r.bottom) / 2 - wr.top }; }
+          var s1=cx(document.getElementById('fc-s1'));
+          var s2=cx(document.getElementById('fc-s2'));
+          var dia=cx(document.getElementById('fc-dia'));
+          var s3=cx(document.getElementById('fc-s3'));
+          var s4=cx(document.getElementById('fc-s4'));
+          var s5=cx(document.getElementById('fc-s5'));
+          function ln(id,x1,y1,x2,y2){var e=document.getElementById(id);e.setAttribute('x1',x1);e.setAttribute('y1',y1);e.setAttribute('x2',x2);e.setAttribute('y2',y2);}
+          function pill(bgId,txtId,label,cx,cy){
+            var t=document.getElementById(txtId); t.setAttribute('x',cx); t.setAttribute('y',cy); t.textContent=label;
+            var pw=label.length*7+10, ph=16;
+            var b=document.getElementById(bgId); b.setAttribute('x',cx-pw/2); b.setAttribute('y',cy-ph/2); b.setAttribute('width',pw); b.setAttribute('height',ph);
+          }
+          // S1 → S2
+          ln('fc-l1', s1.r, s1.cy, s2.l, s2.cy);
+          // S2 → Diamond LEFT vertex (dia.l = leftmost point after rotate)
+          ln('fc-l2', s2.r, s2.cy, dia.l, dia.cy);
+          // Diamond RIGHT vertex → split point (longer for edge labels)
+          var splitX = s3.l - 50;
+          var splitY = (s3.cy + s4.cy) / 2;
+          ln('fc-l3', dia.r, dia.cy, splitX, splitY);
+          // Split vertical bar
+          ln('fc-l4v', splitX, s3.cy, splitX, s4.cy);
+          // Split → S3 (upper)
+          ln('fc-l4h', splitX, s3.cy, s3.l, s3.cy);
+          // Split → S4 (lower)
+          ln('fc-l5h', splitX, s4.cy, s4.l, s4.cy);
+          // Merge point
+          var mergeX = s3.r + 24;
+          // S3 → merge
+          ln('fc-l6', s3.r, s3.cy, mergeX, s3.cy);
+          // S4 → merge
+          ln('fc-l7', s4.r, s4.cy, mergeX, s4.cy);
+          // Merge vertical bar
+          ln('fc-l8v', mergeX, s3.cy, mergeX, s4.cy);
+          // Merge → S5
+          ln('fc-l9', mergeX, splitY, s5.l, s5.cy);
+          // Edge labels (pill badges on branch lines)
+          var yesX = (splitX + s3.l) / 2;
+          var noX = (splitX + s4.l) / 2;
+          pill('fc-lbl-yes-bg', 'fc-lbl-yes', '예', yesX, s3.cy);
+          pill('fc-lbl-no-bg', 'fc-lbl-no', '아니오', noX, s4.cy);
+        });
+      </script>
     </div>
   </div>
 

@@ -4,6 +4,7 @@ import { Box, Group, Text, Button, CloseButton, Stack, Overlay } from '@mantine/
 import { useRouter } from 'next/navigation';
 import { useChatStore } from '@/stores/chatStore';
 import { Warning } from '@phosphor-icons/react';
+import { COPY } from '@/lib/copy';
 
 interface SaveNudgeProps {
   trigger: 'turn_limit' | 'view_created' | 'session_end';
@@ -12,7 +13,7 @@ interface SaveNudgeProps {
 }
 
 const NUDGE_COPY: Record<string, string> = {
-  turn_limit: '이 데이터를 저장하고 계속 쌓아보세요.',
+  turn_limit: COPY.nudge.save_guest,
   view_created: '가입하면 이 뷰를 저장하고 언제든 다시 볼 수 있어요.',
   session_end: '잠깐! 지금까지 나눈 대화가 사라져요.',
 };

@@ -118,7 +118,7 @@ export async function POST(
     await supabase
       .from('chat_rooms')
       .update({
-        last_message: content?.trim()?.substring(0, 200) || '[DataNode]',
+        last_message: content?.trim()?.substring(0, 200) || '(첨부)',
         updated_at: new Date().toISOString(),
       })
       .eq('id', roomId);

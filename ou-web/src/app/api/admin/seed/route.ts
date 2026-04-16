@@ -28,7 +28,7 @@ export async function POST(request: Request) {
         created: result.created,
         skipped: result.skipped,
         message: result.created > 0
-          ? `본초 DataNode ${result.created}개 생성 (${scope}).`
+          ? `본초 데이터 ${result.created}개 생성 (${scope}).`
           : '이미 모든 본초 데이터가 존재합니다.',
       });
     }
@@ -41,7 +41,7 @@ export async function POST(request: Request) {
         created: result.created,
         skipped: result.skipped,
         message: result.created > 0
-          ? `방제 DataNode ${result.created}개 생성 (${scope}).`
+          ? `방제 데이터 ${result.created}개 생성 (${scope}).`
           : '이미 모든 방제 데이터가 존재합니다.',
       });
     }
@@ -54,7 +54,7 @@ export async function POST(request: Request) {
         skipped: result.skipped,
         viewsCreated: result.viewsCreated,
         message: result.created > 0
-          ? `DataNode ${result.created}개, 뷰 ${result.viewsCreated}개 생성.`
+          ? `데이터 ${result.created}개, 뷰 ${result.viewsCreated}개 생성.`
           : '이미 모든 패러다임 인사이트가 존재합니다.',
       });
     }
