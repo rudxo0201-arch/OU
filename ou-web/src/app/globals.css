@@ -111,12 +111,28 @@
   --ou-orb-glow: rgba(0,0,0,0.08);
 }
 
-/* 다크모드 배경 — PixiJS 캔버스 #060810과 완전 일치 */
+/* 다크모드 — Mantine 색상 오버라이드 */
 [data-mantine-color-scheme="dark"] {
   --mantine-color-body: #060810;
+  --mantine-color-text: rgba(255,255,255,0.85);
+  --mantine-color-dimmed: rgba(255,255,255,0.45);
+  --mantine-color-placeholder: rgba(255,255,255,0.30);
+  --mantine-color-default-border: rgba(255,255,255,0.10);
+  --mantine-color-default-color: rgba(255,255,255,0.85);
 }
 [data-mantine-color-scheme="dark"] body {
   background: #060810;
+  color: rgba(255,255,255,0.85);
+}
+
+/* 라이트모드 — Mantine 색상 오버라이드 */
+[data-mantine-color-scheme="light"] {
+  --mantine-color-body: #f5f5f7;
+  --mantine-color-text: rgba(0,0,0,0.85);
+  --mantine-color-dimmed: rgba(0,0,0,0.45);
+  --mantine-color-placeholder: rgba(0,0,0,0.30);
+  --mantine-color-default-border: rgba(0,0,0,0.10);
+  --mantine-color-default-color: rgba(0,0,0,0.85);
 }
 
 /* ===== OU 블록 유틸리티 클래스 ===== */

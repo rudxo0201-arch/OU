@@ -27,7 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ko" suppressHydrationWarning className={orbitron.variable}>
       <head>
-        <ColorSchemeScript defaultColorScheme="auto" />
+        <ColorSchemeScript defaultColorScheme="dark" />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" sizes="any" />
         <link rel="icon" href="/favicon.svg" />
         <link rel="manifest" href="/manifest.json" />
@@ -37,7 +37,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
       <body>
-        <MantineProvider theme={theme} defaultColorScheme="auto">
+        <MantineProvider theme={theme} defaultColorScheme="dark">
           <ModalsProvider>
             <Notifications position="top-right" />
             <AuthProvider>
