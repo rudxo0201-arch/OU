@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { Box, Stack, Text, TextInput, UnstyledButton, Group } from '@mantine/core';
 import {
   PaperPlaneRight, CalendarBlank, CurrencyKrw, CheckSquare, SmileyMeh,
   ListChecks, Barbell, Brain, Users, Notebook, Lightbulb, BookOpen,
@@ -184,8 +183,8 @@ function DotSphere() {
 }
 
 /* ──────────────────────────────────────────────
- * LandingDemo — 세로 중앙 정렬
- * 구체 → 로고 → 입력창 → 시나리오
+ * LandingDemo — 순수 HTML + inline style
+ * Mantine 의존 제거 (하이드레이션 깨짐 방지)
  * ──────────────────────────────────────────────*/
 export function LandingDemo() {
   const router = useRouter();
@@ -195,7 +194,6 @@ export function LandingDemo() {
   const handleSubmit = useCallback(() => {
     const text = input.trim();
     if (!text) return;
-    // pendingMessage를 store에 저장하고 /chat으로 이동
     useChatStore.getState().setPendingMessage(text);
     router.push('/chat');
   }, [input, router]);
@@ -204,12 +202,8 @@ export function LandingDemo() {
     router.push(`/chat?scenario=${scenarioId}`);
   }, [router]);
 
-  const handleLogin = useCallback(() => router.push('/login'), [router]);
-  const handleSignUp = useCallback(() => router.push('/login?signup=true'), [router]);
-
   return (
-    <Box
-      data-mantine-color-scheme="dark"
+    <div
       style={{
         height: '100dvh',
         overflow: 'hidden',
@@ -218,150 +212,91 @@ export function LandingDemo() {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
+        fontFamily: "'Pretendard Variable', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
       }}
     >
-      {/* 우상단: Log in / Sign up */}
-      <Group
-        gap={0}
-        style={{
-          position: 'absolute',
-          top: 20,
-          right: 24,
-          zIndex: 10,
-          fontSize: 13,
-        }}
-      >
-        <UnstyledButton
-          onClick={handleLogin}
-          style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', padding: '4px 12px', transition: 'color 150ms' }}
-          onMouseEnter={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.8)'; }}
-          onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.4)'; }}
+      {/* 우상단: Log in / 가입하기 */}
+      <div style={{ position: 'absolute', top: 20, right: 24, zIndex: 10, display: 'flex', alignItems: 'center', gap: 0 }}>
+        <button
+          onClick={() => router.push('/login')}
+          style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', padding: '4px 12px', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}
         >
           Log in
-        </UnstyledButton>
-        <Text span style={{ color: 'rgba(255,255,255,0.2)' }}>|</Text>
-        <UnstyledButton
-          onClick={handleSignUp}
-          style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', padding: '4px 12px', transition: 'color 150ms' }}
-          onMouseEnter={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.8)'; }}
-          onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.4)'; }}
+        </button>
+        <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: 13 }}>|</span>
+        <button
+          onClick={() => router.push('/login?signup=true')}
+          style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', padding: '4px 12px', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}
         >
           가입하기
-        </UnstyledButton>
-      </Group>
+        </button>
+      </div>
 
       {/* 구체 */}
-      <Box
-        style={{
-          width: '100%',
-          height: '30vh',
-          minHeight: 180,
-          maxHeight: 320,
-          flexShrink: 0,
-          overflow: 'hidden',
-          position: 'relative',
-        }}
-        className="ou-sphere-container"
-      >
+      <div style={{ width: '100%', height: '30vh', minHeight: 180, maxHeight: 320, flexShrink: 0, overflow: 'hidden', position: 'relative' }}>
         <DotSphere />
-      </Box>
+      </div>
 
       {/* 로고 + 입력 + 시나리오 */}
-      <Stack gap={20} align="center" style={{ flexShrink: 0, padding: '0 24px', maxWidth: 560, width: '100%', position: 'relative', zIndex: 2 }}>
+      <div style={{ flexShrink: 0, padding: '0 24px', maxWidth: 560, width: '100%', position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20 }}>
         {/* 로고 */}
-        <Stack gap={4} align="center">
-          <Text
-            style={{
-              fontFamily: 'var(--ou-font-logo)',
-              fontSize: 48,
-              fontWeight: 900,
-              lineHeight: 1,
-              color: '#fff',
-              letterSpacing: '2px',
-            }}
-          >
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+          <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: 48, fontWeight: 900, lineHeight: 1, color: '#fff', letterSpacing: '2px' }}>
             OU
-          </Text>
-          <Text
-            style={{
-              fontFamily: 'var(--ou-font-logo)',
-              fontSize: 9,
-              fontWeight: 700,
-              color: 'rgba(255,255,255,0.35)',
-              letterSpacing: '5px',
-              textTransform: 'uppercase' as const,
-            }}
-          >
+          </div>
+          <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.35)', letterSpacing: '5px', textTransform: 'uppercase' as const }}>
             OWN UNIVERSE
-          </Text>
-          <Text
-            style={{
-              fontFamily: 'var(--ou-font-logo)',
-              fontSize: 14,
-              color: 'rgba(255,255,255,0.25)',
-              letterSpacing: '3px',
-              marginTop: 8,
-            }}
-          >
+          </div>
+          <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: 14, color: 'rgba(255,255,255,0.25)', letterSpacing: '3px', marginTop: 8 }}>
             Just talk.
-          </Text>
-        </Stack>
+          </div>
+        </div>
 
-        {/* 입력창 — pill shape, 글래스 */}
-        <Box style={{ width: '100%', position: 'relative' }}>
-          <TextInput
+        {/* 입력창 */}
+        <div style={{ width: '100%', position: 'relative' }}>
+          <input
+            type="text"
             placeholder="뭐든 말씀해보세요..."
             value={input}
-            onChange={e => setInput(e.currentTarget.value)}
-            onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSubmit(); } }}
-            size="lg"
-            rightSection={
-              input.trim() ? (
-                <UnstyledButton onClick={handleSubmit} style={{ color: 'rgba(255,255,255,0.6)' }}>
-                  <PaperPlaneRight size={18} weight="bold" />
-                </UnstyledButton>
-              ) : null
-            }
-            styles={{
-              input: {
-                backgroundColor: 'rgba(255,255,255,0.06)',
-                border: '0.5px solid rgba(255,255,255,0.1)',
-                borderRadius: 999,
-                color: '#fff',
-                fontSize: 15,
-                height: 52,
-                paddingLeft: 24,
-                paddingRight: 48,
-                '&::placeholder': {
-                  color: 'rgba(255,255,255,0.3)',
-                },
-                '&:focus': {
-                  borderColor: 'rgba(255,255,255,0.25)',
-                },
-              },
+            onChange={e => setInput(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleSubmit(); } }}
+            style={{
+              width: '100%',
+              height: 52,
+              backgroundColor: 'rgba(255,255,255,0.06)',
+              border: '0.5px solid rgba(255,255,255,0.1)',
+              borderRadius: 999,
+              color: '#fff',
+              fontSize: 15,
+              paddingLeft: 24,
+              paddingRight: 48,
+              outline: 'none',
+              fontFamily: 'inherit',
+              transition: 'border-color 180ms ease',
             }}
+            onFocus={e => { e.target.style.borderColor = 'rgba(255,255,255,0.25)'; }}
+            onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.1)'; }}
           />
-        </Box>
+          {input.trim() && (
+            <button
+              onClick={handleSubmit}
+              style={{
+                position: 'absolute', right: 16, top: '50%', transform: 'translateY(-50%)',
+                background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.6)',
+                display: 'flex', alignItems: 'center',
+              }}
+            >
+              <PaperPlaneRight size={18} weight="bold" />
+            </button>
+          )}
+        </div>
 
         {/* 시나리오 버튼 */}
-        <Group
-          gap={8}
-          justify="center"
-          wrap="wrap"
-          className="ou-scenario-buttons"
-          style={{
-            width: '100%',
-            overflowX: 'auto',
-            flexWrap: 'wrap',
-            WebkitOverflowScrolling: 'touch',
-            msOverflowStyle: 'none',
-            scrollbarWidth: 'none',
-          }}
-        >
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center', width: '100%' }}>
           {scenarios.map(scenario => {
             const IconComponent = SCENARIO_ICONS[scenario.icon] ?? Star;
             return (
-              <UnstyledButton
+              <button
                 key={scenario.id}
                 onClick={() => handleScenarioClick(scenario.id)}
                 style={{
@@ -369,10 +304,14 @@ export function LandingDemo() {
                   borderRadius: 999,
                   border: '0.5px solid rgba(255,255,255,0.1)',
                   background: 'rgba(255,255,255,0.04)',
-                  transition: 'all 150ms',
+                  cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   gap: 6,
+                  fontFamily: 'inherit',
+                  fontSize: 12,
+                  color: 'rgba(255,255,255,0.6)',
+                  transition: 'all 150ms',
                 }}
                 onMouseEnter={e => {
                   e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
@@ -384,46 +323,20 @@ export function LandingDemo() {
                 }}
               >
                 <IconComponent size={14} weight="bold" style={{ color: 'rgba(255,255,255,0.5)' }} />
-                <Text fz={12} style={{ color: 'rgba(255,255,255,0.6)' }}>{scenario.title}</Text>
-              </UnstyledButton>
+                {scenario.title}
+              </button>
             );
           })}
-        </Group>
-      </Stack>
+        </div>
+      </div>
 
       {/* Footer */}
-      <Text
-        style={{
-          position: 'absolute',
-          bottom: 16,
-          left: '50%',
-          transform: 'translateX(-50%)',
-          fontSize: 11,
-          color: 'rgba(255,255,255,0.15)',
-          letterSpacing: '1px',
-          whiteSpace: 'nowrap',
-        }}
-      >
+      <div style={{
+        position: 'absolute', bottom: 16, left: '50%', transform: 'translateX(-50%)',
+        fontSize: 11, color: 'rgba(255,255,255,0.15)', letterSpacing: '1px', whiteSpace: 'nowrap',
+      }}>
         ouuniverse.com
-      </Text>
-
-      {/* Mobile responsive styles */}
-      <style>{`
-        @media (max-width: 768px) {
-          .ou-sphere-container {
-            height: 25vh !important;
-          }
-          .ou-scenario-buttons {
-            flex-wrap: nowrap !important;
-            justify-content: flex-start !important;
-            overflow-x: auto !important;
-            padding-bottom: 4px;
-          }
-          .ou-scenario-buttons::-webkit-scrollbar {
-            display: none;
-          }
-        }
-      `}</style>
-    </Box>
+      </div>
+    </div>
   );
 }
