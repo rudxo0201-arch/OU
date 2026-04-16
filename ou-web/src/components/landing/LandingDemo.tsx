@@ -179,7 +179,7 @@ function DotSphere() {
     };
   }, []);
 
-  return <div ref={containerRef} style={{ width: '100%', height: '100%', cursor: 'grab', touchAction: 'none' }} />;
+  return <div ref={containerRef} style={{ width: '100%', height: '100%', pointerEvents: 'none' }} />;
 }
 
 /* ──────────────────────────────────────────────
@@ -215,26 +215,26 @@ export function LandingDemo() {
         fontFamily: "'Pretendard Variable', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
       }}
     >
-      {/* 별 배경 */}
+      {/* 별 배경 — 작고 은은하게 */}
       <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 0 }}>
-        {Array.from({ length: 60 }, (_, i) => (
+        {Array.from({ length: 40 }, (_, i) => (
           <span
             key={i}
             style={{
               position: 'absolute',
-              width: Math.random() > 0.7 ? 2 : 1,
-              height: Math.random() > 0.7 ? 2 : 1,
+              width: 1,
+              height: 1,
               borderRadius: '50%',
-              background: 'rgba(255,255,255,0.5)',
+              background: 'rgba(255,255,255,0.4)',
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
-              animation: `twinkle ${2 + Math.random() * 3}s ease-in-out infinite alternate`,
-              animationDelay: `${Math.random() * 3}s`,
+              animation: `twinkle ${3 + Math.random() * 4}s ease-in-out infinite alternate`,
+              animationDelay: `${Math.random() * 5}s`,
             }}
           />
         ))}
       </div>
-      <style>{`@keyframes twinkle { 0% { opacity: 0.15; } 100% { opacity: 0.7; } }`}</style>
+      <style>{`@keyframes twinkle { 0% { opacity: 0.1; } 100% { opacity: 0.5; } }`}</style>
 
       {/* 우상단: Log in / 가입하기 */}
       <div style={{ position: 'absolute', top: 20, right: 24, zIndex: 10, display: 'flex', alignItems: 'center', gap: 0 }}>
@@ -253,13 +253,23 @@ export function LandingDemo() {
         </button>
       </div>
 
-      {/* 구체 — 전체 배경 */}
-      <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
+      {/* 구체 — 전체 배경 (클릭 투과) */}
+      <div style={{ position: 'absolute', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 0, pointerEvents: 'none' }}>
         <DotSphere />
       </div>
 
       {/* 콘텐츠 — 구체 위에 떠 있음 */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', maxWidth: 480, padding: '0 24px', position: 'relative', zIndex: 2 }}>
+      <div style={{
+        flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+        width: '100%', maxWidth: 480, padding: '0 24px', position: 'relative', zIndex: 2,
+      }}>
+        {/* 콘텐츠 뒤 어두운 그라데이션 — 가독성 확보 */}
+        <div style={{
+          position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+          width: 600, height: 500, borderRadius: '50%',
+          background: 'radial-gradient(ellipse, rgba(6,8,16,0.85) 0%, rgba(6,8,16,0.4) 50%, transparent 70%)',
+          pointerEvents: 'none', zIndex: -1,
+        }} />
         {/* 로고 */}
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
           <div style={{ fontFamily: "var(--font-orbitron, 'Orbitron'), sans-serif", fontSize: 48, fontWeight: 900, lineHeight: 1, color: '#fff', letterSpacing: '2px' }}>
