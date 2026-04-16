@@ -54,7 +54,7 @@ export function OUUniverseShell({ children }: OUUniverseShellProps) {
         width: '100vw',
         height: '100vh',
         overflow: 'hidden',
-        background: 'var(--ou-bg)',
+        background: 'var(--ou-space, #060810)',
       }}
     >
       {/* Main content */}

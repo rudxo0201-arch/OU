@@ -45,21 +45,22 @@ export function SystemOrbDock({ side, items, orbSize = 44 }: SystemOrbDockProps)
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              background: 'var(--ou-orb-bg)',
-              backdropFilter: 'blur(var(--ou-glass-blur))',
-              WebkitBackdropFilter: 'blur(var(--ou-glass-blur))',
-              border: '0.5px solid var(--ou-orb-border)',
+              background: 'transparent',
+              backdropFilter: 'blur(16px)',
+              WebkitBackdropFilter: 'blur(16px)',
+              border: '0.5px solid var(--ou-border-muted, rgba(255,255,255,0.14))',
               transition: 'all 150ms ease',
-              boxShadow: item.active ? '0 0 20px 4px var(--ou-orb-glow)' : 'none',
+              boxShadow: item.active ? 'var(--ou-glow-md, 0 0 20px 2px rgba(255,255,255,0.08))' : 'var(--ou-glow-xs, none)',
+              color: 'var(--ou-text-body, rgba(255,255,255,0.7))',
               cursor: 'pointer',
             }}
             onMouseEnter={e => {
               e.currentTarget.style.transform = 'scale(1.1)';
-              e.currentTarget.style.boxShadow = '0 0 16px 2px var(--ou-orb-glow)';
+              e.currentTarget.style.boxShadow = 'var(--ou-glow-hover, 0 0 24px 3px rgba(255,255,255,0.12))';
             }}
             onMouseLeave={e => {
               e.currentTarget.style.transform = 'scale(1)';
-              e.currentTarget.style.boxShadow = item.active ? '0 0 20px 4px var(--ou-orb-glow)' : 'none';
+              e.currentTarget.style.boxShadow = item.active ? 'var(--ou-glow-md)' : 'var(--ou-glow-xs)';
             }}
           >
             <item.icon size={iconSize} weight={item.active ? 'fill' : 'light'} />
