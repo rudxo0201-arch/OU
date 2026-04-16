@@ -319,9 +319,40 @@ export function ChatInterface({ onboarding, graphNodes = [], initialScenarioId, 
 
   // SaveNudge dismiss 상태
   const [nudgeDismissed, setNudgeDismissed] = useState<Record<string, boolean>>({});
+  const [showSessionEnd, setShowSessionEnd] = useState(false);
   const handleDismissNudge = (trigger: string) => {
     setNudgeDismissed(prev => ({ ...prev, [trigger]: true }));
   };
+
+  // 게스트 사용자가 페이지를 떠날 때 session_end 모달 표시
+  useEffect(() => {
+    if (user) return; // 로그인 사용자는 무시
+
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      const currentTurnCount = useChatStore.getState().turnCount;
+      if (currentTurnCount > 0) {
+        e.preventDefault();
+        // 브라우저 기본 확인 대화상자 트리거
+        e.returnValue = '';
+      }
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') {
+        const currentTurnCount = useChatStore.getState().turnCount;
+        if (currentTurnCount > 0 && !nudgeDismissed['session_end']) {
+          setShowSessionEnd(true);
+        }
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [user, nudgeDismissed]);
 
   return (
     <Box style={{ display: 'flex', height: embedded ? '100%' : '100vh' }}>
@@ -415,6 +446,17 @@ export function ChatInterface({ onboarding, graphNodes = [], initialScenarioId, 
             onClose={() => setShowGraph(false)}
           />
         </Box>
+      )}
+      {/* 게스트 이탈 시 session_end 모달 */}
+      {showSessionEnd && !nudgeDismissed['session_end'] && (
+        <SaveNudge
+          trigger="session_end"
+          nodeCount={messages.filter(m => m.nodeCreated).length}
+          onDismiss={() => {
+            setShowSessionEnd(false);
+            handleDismissNudge('session_end');
+          }}
+        />
       )}
     </Box>
   );

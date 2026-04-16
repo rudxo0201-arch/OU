@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   Stack, Title, Text, Paper, Group, Button,
   TextInput, Badge, Box, Progress, Center,
@@ -8,6 +8,7 @@ import {
 } from '@mantine/core';
 import {
   CheckCircle, ChatTeardrop, User, MapPin, Clock, Cube, ArrowRight,
+  SkipForward, Keyboard, Check,
 } from '@phosphor-icons/react';
 import { useRouter } from 'next/navigation';
 
@@ -84,11 +85,35 @@ export function AccuracyClient({ entities: initialEntities }: AccuracyClientProp
   const [customInput, setCustomInput] = useState('');
   const [resolving, setResolving] = useState(false);
   const [slideIn, setSlideIn] = useState(true);
+  const [resolvedCount, setResolvedCount] = useState(0);
+  const [skippedCount, setSkippedCount] = useState(0);
+  const [showCheckmark, setShowCheckmark] = useState(false);
 
   const current = entities[currentIdx];
   const progress = entities.length > 0
     ? Math.round((currentIdx / entities.length) * 100)
     : 100;
+
+  // 정확도 계산: 해결된 수 / 전체 수
+  const currentAccuracy = entities.length > 0
+    ? Math.round(((entities.length - initialEntities.length) / Math.max(entities.length, 1)) * 100)
+    : 100;
+  const nextAccuracy = entities.length > 0
+    ? Math.round(((resolvedCount + 1) / entities.length) * 100)
+    : 100;
+  const currentResolvedAccuracy = entities.length > 0
+    ? Math.round((resolvedCount / entities.length) * 100)
+    : 100;
+
+  const advanceToNext = useCallback(() => {
+    setSlideIn(false);
+    setTimeout(() => {
+      setCurrentIdx(i => i + 1);
+      setCustomInput('');
+      setSlideIn(true);
+      setShowCheckmark(false);
+    }, 200);
+  }, []);
 
   const handleResolve = async (resolvedValue: string) => {
     if (!current || resolving) return;
@@ -109,15 +134,14 @@ export function AccuracyClient({ entities: initialEntities }: AccuracyClientProp
     }
 
     setResolving(false);
-    setSlideIn(false);
+    setResolvedCount(c => c + 1);
+    setShowCheckmark(true);
     setTimeout(() => {
-      setCurrentIdx(i => i + 1);
-      setCustomInput('');
-      setSlideIn(true);
-    }, 200);
+      advanceToNext();
+    }, 600);
   };
 
-  const handleSkip = async () => {
+  const handleSkip = useCallback(async () => {
     if (!current) return;
 
     try {
@@ -133,13 +157,35 @@ export function AccuracyClient({ entities: initialEntities }: AccuracyClientProp
       // Continue
     }
 
-    setSlideIn(false);
-    setTimeout(() => {
-      setCurrentIdx(i => i + 1);
-      setCustomInput('');
-      setSlideIn(true);
-    }, 200);
-  };
+    setSkippedCount(c => c + 1);
+    advanceToNext();
+  }, [current, advanceToNext]);
+
+  // 키보드 단축키: 1-4 후보 선택, S 건너뛰기
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // 입력 필드에 포커스 중이면 무시
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') return;
+      if (!current || resolving || showCheckmark) return;
+
+      const config = getEntityConfig(current);
+      const candidates = current.candidates ?? config.defaults;
+
+      if (e.key >= '1' && e.key <= '4') {
+        const idx = parseInt(e.key) - 1;
+        if (idx < candidates.length) {
+          handleResolve(candidates[idx]);
+        }
+      } else if (e.key === 's' || e.key === 'S') {
+        handleSkip();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [current, resolving, showCheckmark, handleSkip]);
 
   // Empty state
   if (initialEntities.length === 0) {
@@ -196,8 +242,30 @@ export function AccuracyClient({ entities: initialEntities }: AccuracyClientProp
           OU가 아직 모르는 것들이에요. 알려주시면 더 정확해져요.
         </Text>
         <Progress value={progress} size="xs" mt="xs" color="gray" />
-        <Text fz="xs" c="dimmed">{currentIdx + 1} / {entities.length}</Text>
+        <Group justify="space-between">
+          <Text fz="xs" c="dimmed">{currentIdx + 1} / {entities.length}</Text>
+          <Group gap="md">
+            <Text fz="xs" c="dimmed">전체 {entities.length}개</Text>
+            <Text fz="xs" c="dimmed">확인 {resolvedCount}개</Text>
+            <Text fz="xs" c="dimmed">건너뜀 {skippedCount}개</Text>
+          </Group>
+        </Group>
       </Stack>
+
+      {/* 정확도 향상 안내 */}
+      {current && (
+        <Text fz="sm" ta="center" c="dimmed">
+          정확도가 <Text span fw={600} c="white">{currentResolvedAccuracy}%</Text> → <Text span fw={600} c="white">{nextAccuracy}%</Text> 로 높아져요
+        </Text>
+      )}
+
+      {/* 단축키 안내 */}
+      <Group gap="xs" justify="center">
+        <Keyboard size={14} color="var(--mantine-color-gray-6)" />
+        <Text fz="xs" c="dimmed">
+          1~4 선택 · S 건너뛰기 · Enter 직접 입력
+        </Text>
+      </Group>
 
       <Transition mounted={slideIn} transition="slide-left" duration={200}>
         {(styles) => (
@@ -249,16 +317,46 @@ export function AccuracyClient({ entities: initialEntities }: AccuracyClientProp
                 </Text>
               </Group>
 
+              {/* 확인 체크마크 */}
+              {showCheckmark && (
+                <Center>
+                  <Box
+                    style={{
+                      width: 48,
+                      height: 48,
+                      borderRadius: '50%',
+                      background: 'rgba(255,255,255,0.1)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      animation: 'fadeInScale 0.3s ease-out',
+                    }}
+                  >
+                    <Check size={28} weight="bold" color="var(--mantine-color-gray-3)" />
+                  </Box>
+                </Center>
+              )}
+
               {/* Candidate buttons */}
+              {!showCheckmark && (
               <Stack gap="xs">
-                {candidates.map(candidate => (
+                {candidates.map((candidate, idx) => (
                   <Button
                     key={candidate}
                     variant="light"
                     color="gray"
                     justify="flex-start"
                     loading={resolving}
-                    leftSection={<ArrowRight size={14} />}
+                    leftSection={
+                      <Group gap={4}>
+                        {idx < 4 && (
+                          <Badge size="xs" variant="outline" color="gray" style={{ minWidth: 18 }}>
+                            {idx + 1}
+                          </Badge>
+                        )}
+                        <ArrowRight size={14} />
+                      </Group>
+                    }
                     onClick={() => handleResolve(candidate)}
                   >
                     {candidate}
@@ -289,15 +387,19 @@ export function AccuracyClient({ entities: initialEntities }: AccuracyClientProp
                   </Button>
                 </Group>
               </Stack>
+              )}
 
+              {!showCheckmark && (
               <Button
                 variant="subtle"
                 color="gray"
                 size="xs"
                 onClick={handleSkip}
+                leftSection={<SkipForward size={14} />}
               >
-                건너뛰기
+                건너뛰기 (S)
               </Button>
+              )}
             </Stack>
           </Paper>
         )}

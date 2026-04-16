@@ -25,7 +25,7 @@ export const SCENARIOS: Scenario[] = [
     title: '일정 등록하기',
     description: '한 마디로 캘린더와 지도가 생겨요',
     prompt: '다음주 금요일 7시 강남역에서 친구 모임',
-    expectedViews: ['calendar', 'map'],
+    expectedViews: ['calendar', 'map', 'gantt'],
     domain: 'schedule',
     stage: 'guest',
     icon: 'CalendarBlank',
@@ -45,7 +45,7 @@ export const SCENARIOS: Scenario[] = [
     title: '할 일 정리하기',
     description: '할 일을 말하면 보드가 만들어져요',
     prompt: '리포트 금요일까지, 세탁소 내일 가기, 엄마한테 전화하기',
-    expectedViews: ['task'],
+    expectedViews: ['task', 'matrix'],
     domain: 'task',
     stage: 'guest',
     icon: 'CheckSquare',
@@ -60,6 +60,16 @@ export const SCENARIOS: Scenario[] = [
     stage: 'guest',
     icon: 'SmileyMeh',
   },
+  {
+    id: 'project-demo',
+    title: '프로젝트 관리',
+    description: '일정을 말하면 간트 차트가 만들어져요',
+    prompt: '이번 달 프로젝트 일정을 정리하고 싶어. 기획서 작성은 4월 20일까지, 디자인은 4월 25일까지, 개발은 5월 5일까지야.',
+    expectedViews: ['gantt', 'task'],
+    domain: 'task',
+    stage: 'guest',
+    icon: 'ListChecks',
+  },
 
   // ── onboarding: 가입 직후 ──
   {
@@ -71,6 +81,16 @@ export const SCENARIOS: Scenario[] = [
     domain: 'habit',
     stage: 'onboarding',
     icon: 'Barbell',
+  },
+  {
+    id: 'quiz-onboard',
+    title: '퀴즈로 복습',
+    description: '배운 내용이 퀴즈로 바뀌어요',
+    prompt: '오늘 배운 내용으로 퀴즈를 만들어줘. 광합성은 식물이 빛 에너지를 이용해 이산화탄소와 물을 포도당으로 변환하는 과정이야.',
+    expectedViews: ['quiz', 'flashcard'],
+    domain: 'knowledge',
+    stage: 'onboarding',
+    icon: 'Brain',
   },
   {
     id: 'relation-onboard',
@@ -113,6 +133,16 @@ export const SCENARIOS: Scenario[] = [
     domain: 'knowledge',
     stage: 'active',
     icon: 'BookOpen',
+  },
+  {
+    id: 'priority-active',
+    title: '우선순위 정리',
+    description: '할 일을 중요도와 긴급도로 분류해요',
+    prompt: '해야 할 일들 우선순위 정리해줘. 보고서 마감이 급하고, 운동은 중요하지만 급하진 않아, 이메일 확인은 급하지만 중요하지 않아.',
+    expectedViews: ['matrix', 'task'],
+    domain: 'task',
+    stage: 'active',
+    icon: 'FunnelSimple',
   },
   {
     id: 'gift-active',

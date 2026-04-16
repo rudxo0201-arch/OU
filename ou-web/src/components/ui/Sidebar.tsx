@@ -159,10 +159,10 @@ export function Sidebar() {
           {/* 코어 */}
           {CORE_NAV.map(item => renderNavItem(item, undefined, true))}
 
-          {/* 정확도 — unresolvedCount > 0일 때만 */}
-          {unresolvedCount > 0 && renderNavItem(
+          {/* 정확도 — 항상 표시, 미해결 항목이 있으면 배지 */}
+          {renderNavItem(
             { id: 'accuracy', label: '정확도 높이기', icon: Target, href: '/accuracy' },
-            unresolvedCount,
+            unresolvedCount > 0 ? unresolvedCount : undefined,
             true
           )}
 
