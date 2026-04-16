@@ -2,8 +2,17 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { Box, Stack, Text, TextInput, UnstyledButton, Group } from '@mantine/core';
-import { PaperPlaneRight } from '@phosphor-icons/react';
-import * as Icons from '@phosphor-icons/react';
+import {
+  PaperPlaneRight, CalendarBlank, CurrencyKrw, CheckSquare, SmileyMeh,
+  ListChecks, Barbell, Brain, Users, Notebook, Lightbulb, BookOpen,
+  FunnelSimple, Gift, Star,
+} from '@phosphor-icons/react';
+import type { ComponentType } from 'react';
+
+const SCENARIO_ICONS: Record<string, ComponentType<any>> = {
+  CalendarBlank, CurrencyKrw, CheckSquare, SmileyMeh, ListChecks,
+  Barbell, Brain, Users, Notebook, Lightbulb, BookOpen, FunnelSimple, Gift, Star,
+};
 import { useRouter } from 'next/navigation';
 import { getScenariosByStage } from '@/data/scenarios';
 import { useChatStore } from '@/stores/chatStore';
@@ -363,7 +372,7 @@ export function LandingDemo() {
           }}
         >
           {scenarios.map(scenario => {
-            const IconComponent = (Icons as any)[scenario.icon] ?? Icons.Star;
+            const IconComponent = SCENARIO_ICONS[scenario.icon] ?? Star;
             return (
               <UnstyledButton
                 key={scenario.id}

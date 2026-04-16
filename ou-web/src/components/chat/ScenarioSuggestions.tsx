@@ -1,7 +1,17 @@
 'use client';
 
 import { Box, Group, Stack, Text, UnstyledButton, ScrollArea } from '@mantine/core';
-import * as Icons from '@phosphor-icons/react';
+import {
+  CalendarBlank, CurrencyKrw, CheckSquare, SmileyMeh, ListChecks,
+  Barbell, Brain, Users, Notebook, Lightbulb, BookOpen, FunnelSimple,
+  Gift, Star,
+} from '@phosphor-icons/react';
+import type { ComponentType } from 'react';
+
+const SCENARIO_ICONS: Record<string, ComponentType<any>> = {
+  CalendarBlank, CurrencyKrw, CheckSquare, SmileyMeh, ListChecks,
+  Barbell, Brain, Users, Notebook, Lightbulb, BookOpen, FunnelSimple, Gift, Star,
+};
 import type { Scenario } from '@/data/scenarios';
 
 interface ScenarioSuggestionsProps {
@@ -18,7 +28,7 @@ export function ScenarioSuggestions({ scenarios, onSelect }: ScenarioSuggestions
       <ScrollArea scrollbarSize={4} type="hover">
         <Group gap="sm" wrap="nowrap">
           {scenarios.map(scenario => {
-            const IconComponent = (Icons as any)[scenario.icon] ?? Icons.Star;
+            const IconComponent = SCENARIO_ICONS[scenario.icon] ?? Star;
             return (
               <UnstyledButton
                 key={scenario.id}
