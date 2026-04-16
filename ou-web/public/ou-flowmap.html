@@ -250,6 +250,13 @@ body.dragging { cursor: grabbing; }
   overflow: hidden;
   transition: box-shadow var(--ou-transition), border-color var(--ou-transition);
   z-index: 1;
+  cursor: grab;
+}
+.page-card.card-dragging {
+  cursor: grabbing;
+  z-index: 100 !important;
+  box-shadow: 0 0 40px 8px rgba(255,255,255,0.12);
+  border-color: var(--ou-border-hover);
 }
 .page-card:hover {
   border-color: var(--ou-border-hover);
@@ -3242,6 +3249,160 @@ body.dragging { cursor: grabbing; }
     panX = window.innerWidth / 2 - targetX * zoom;
     panY = window.innerHeight / 2 - targetY * zoom;
     applyTransform();
+  });
+
+  // ===== CARD DRAG =====
+  var dragCard = null;
+  var cardDragStartX = 0, cardDragStartY = 0;
+  var cardOrigLeft = 0, cardOrigTop = 0;
+  var arrowRAF = 0;
+
+  document.addEventListener('mousedown', function(e) {
+    var card = e.target.closest('.page-card');
+    if (!card) return;
+    // Don't drag when clicking interactive elements or navigation
+    if (e.target.closest('button, input, select, textarea, [data-goto]')) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    dragCard = card;
+    cardDragStartX = e.clientX;
+    cardDragStartY = e.clientY;
+    cardOrigLeft = parseInt(card.style.left) || 0;
+    cardOrigTop = parseInt(card.style.top) || 0;
+    card.classList.add('card-dragging');
+    body.style.cursor = 'grabbing';
+  }, true);
+
+  window.addEventListener('mousemove', function(e) {
+    if (!dragCard) return;
+    e.preventDefault();
+
+    var dx = (e.clientX - cardDragStartX) / zoom;
+    var dy = (e.clientY - cardDragStartY) / zoom;
+
+    dragCard.style.left = Math.round(cardOrigLeft + dx) + 'px';
+    dragCard.style.top = Math.round(cardOrigTop + dy) + 'px';
+
+    // Throttle arrow + minimap redraw with rAF
+    if (!arrowRAF) {
+      arrowRAF = requestAnimationFrame(function() {
+        drawArrows();
+        updateMinimap();
+        arrowRAF = 0;
+      });
+    }
+  });
+
+  window.addEventListener('mouseup', function() {
+    if (!dragCard) return;
+    var movedCard = dragCard;
+    dragCard.classList.remove('card-dragging');
+    dragCard = null;
+    body.style.cursor = '';
+    pushAwayFrom(movedCard);
+    drawArrows();
+    updateMinimap();
+  });
+
+  // ===== COLLISION RESOLUTION =====
+  // Only the dragged card is "fixed". Others get pushed away from it.
+  var CARD_GAP = 30;
+
+  function pushAwayFrom(movedEl) {
+    var cards = Array.from(allPages);
+    var moved = rectOf(movedEl);
+
+    // Sort by distance from moved card (closest first)
+    var others = cards.filter(function(c) { return c !== movedEl; });
+
+    for (var pass = 0; pass < 6; pass++) {
+      var anyPushed = false;
+
+      others.forEach(function(card) {
+        var r = rectOf(card);
+
+        // Check overlap (with gap)
+        var overlapX = Math.min(moved.l + moved.w + CARD_GAP, r.l + r.w + CARD_GAP) - Math.max(moved.l, r.l);
+        var overlapY = Math.min(moved.t + moved.h + CARD_GAP, r.t + r.h + CARD_GAP) - Math.max(moved.t, r.t);
+
+        if (overlapX <= 0 || overlapY <= 0) return; // no overlap
+
+        anyPushed = true;
+
+        // Push along axis with smallest overlap (least disruption)
+        var mCx = moved.l + moved.w / 2;
+        var mCy = moved.t + moved.h / 2;
+        var rCx = r.l + r.w / 2;
+        var rCy = r.t + r.h / 2;
+
+        if (overlapX < overlapY) {
+          // Push horizontally
+          var dir = rCx >= mCx ? 1 : -1;
+          card.style.left = Math.round(r.l + dir * overlapX) + 'px';
+        } else {
+          // Push vertically
+          var dir = rCy >= mCy ? 1 : -1;
+          card.style.top = Math.round(r.t + dir * overlapY) + 'px';
+        }
+      });
+
+      if (!anyPushed) break;
+
+      // Re-read moved rect in case we need secondary passes
+      // (moved card doesn't move, but pushed cards might now overlap each other)
+      // For secondary passes, resolve pushed cards against each other
+      for (var i = 0; i < others.length; i++) {
+        var a = rectOf(others[i]);
+        for (var j = i + 1; j < others.length; j++) {
+          var b = rectOf(others[j]);
+          var ox = Math.min(a.l + a.w + CARD_GAP, b.l + b.w + CARD_GAP) - Math.max(a.l, b.l);
+          var oy = Math.min(a.t + a.h + CARD_GAP, b.t + b.h + CARD_GAP) - Math.max(a.t, b.t);
+          if (ox <= 0 || oy <= 0) continue;
+          var aCx = a.l + a.w / 2, bCx = b.l + b.w / 2;
+          var aCy = a.t + a.h / 2, bCy = b.t + b.h / 2;
+          if (ox < oy) {
+            var d = bCx >= aCx ? 1 : -1;
+            var half = Math.ceil(ox / 2);
+            others[i].style.left = Math.round(a.l - d * half) + 'px';
+            others[j].style.left = Math.round(b.l + d * half) + 'px';
+          } else {
+            var d = bCy >= aCy ? 1 : -1;
+            var half = Math.ceil(oy / 2);
+            others[i].style.top = Math.round(a.t - d * half) + 'px';
+            others[j].style.top = Math.round(b.t + d * half) + 'px';
+          }
+        }
+      }
+    }
+  }
+
+  function rectOf(el) {
+    return {
+      l: parseInt(el.style.left) || 0,
+      t: parseInt(el.style.top) || 0,
+      w: parseInt(el.style.width) || 0,
+      h: parseInt(el.style.height) || 0
+    };
+  }
+
+  // ===== FIX UNITLESS POSITIONS =====
+  // HTML has left:2600 without "px" — invalid CSS. Parse raw attribute and re-apply with units.
+  allPages.forEach(function(p) {
+    var raw = p.getAttribute('style') || '';
+    var lm = raw.match(/left:\s*(\d+)(?:;|px)/);
+    var tm = raw.match(/top:\s*(\d+)(?:;|px)/);
+    if (lm) p.style.left = lm[1] + 'px';
+    if (tm) p.style.top = tm[1] + 'px';
+  });
+  // Also fix group banners
+  document.querySelectorAll('.group-banner').forEach(function(b) {
+    var raw = b.getAttribute('style') || '';
+    var lm = raw.match(/left:\s*(\d+)(?:;|px)/);
+    var tm = raw.match(/top:\s*(\d+)(?:;|px)/);
+    if (lm) b.style.left = lm[1] + 'px';
+    if (tm) b.style.top = tm[1] + 'px';
   });
 
   // ===== INIT =====

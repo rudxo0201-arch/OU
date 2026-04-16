@@ -2983,6 +2983,8 @@
           </div>
         </div>
         <div style="font-size: 9px; color: var(--ou-text-muted); margin-top: 8px;"><i class="ph ph-cursor-click"></i> 호버 → 미리보기 / 클릭 → 노드 뷰 이동</div>
+        <!-- Spacer for absolute-positioned preview card (~200px height) -->
+        <div style="height: 200px;"></div>
       </div>
     </div>
   </div>
@@ -4321,7 +4323,7 @@
       <!-- Level 1 -->
       <div style="display: flex; gap: 32px; position: relative;">
         <!-- Horizontal connector: spans from 1st child center to last child center -->
-        <div style="position: absolute; top: 0; left: calc(50% / 4); right: calc(50% / 4); height: 1px; background: var(--ou-border-subtle);"></div>
+        <div style="position: absolute; top: 0; left: calc((100% - 96px) / 8); right: calc((100% - 96px) / 8); height: 1px; background: var(--ou-border-subtle);"></div>
         <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0;">
           <div style="width: 1px; height: 16px; background: var(--ou-border-subtle);"></div>
           <div class="org-node">
@@ -4357,36 +4359,54 @@
   <!-- VIEW: FlowchartView -->
   <div class="section">
     <div class="section-title">FlowchartView (플로우차트뷰)</div>
-    <div style="display: flex; align-items: center; gap: 0; flex-wrap: wrap; justify-content: center;">
+    <div style="display: flex; align-items: center; gap: 0; justify-content: center;">
+      <!-- Step 1 -->
       <div class="flow-step active" style="min-width: 120px;">
         <i class="ph ph-chat-circle" style="margin-right: 4px;"></i> 대화 입력
       </div>
-      <div class="flow-arrow">→</div>
+      <!-- connector -->
+      <div style="width: 40px; height: 1px; background: var(--ou-border-subtle);"></div>
+      <!-- Step 2 -->
       <div class="flow-step" style="min-width: 120px;">
         <i class="ph ph-brain" style="margin-right: 4px;"></i> LLM 분석
       </div>
-      <div class="flow-arrow">→</div>
+      <!-- connector: extends 17px under diamond left vertex -->
+      <div style="width: 50px; height: 1px; background: var(--ou-border-subtle); margin-right: -17px; position: relative; z-index: 2;"></div>
+      <!-- Diamond -->
       <div class="flow-diamond">
         <span>데이터<br>존재?</span>
       </div>
-      <div style="display: flex; flex-direction: column; gap: 8px; align-items: center;">
-        <div style="display: flex; align-items: center; gap: 0;">
-          <div style="font-size: 9px; color: var(--ou-text-muted); padding-right: 2px;">예</div>
-          <div class="flow-arrow">→</div>
+      <!-- Diamond → branch split: overlaps diamond by 17px so line starts at vertex -->
+      <div style="width: 50px; height: 1px; background: var(--ou-border-subtle); flex-shrink: 0; margin-left: -17px; position: relative; z-index: 2;"></div>
+      <!-- Branches: border-left = split bar, border-right = merge bar -->
+      <div style="display: flex; flex-direction: column; border-left: 1px solid var(--ou-border-subtle); border-right: 1px solid var(--ou-border-subtle);">
+        <!-- Upper branch -->
+        <div style="display: flex; align-items: center;">
+          <div style="width: 16px; height: 1px; background: var(--ou-border-subtle); flex-shrink: 0;"></div>
+          <div style="font-size: 9px; color: var(--ou-text-muted); padding: 0 4px; flex-shrink: 0;">예</div>
+          <div style="width: 12px; height: 1px; background: var(--ou-border-subtle); flex-shrink: 0;"></div>
           <div class="flow-step" style="min-width: 120px;">
             <i class="ph ph-link" style="margin-right: 4px;"></i> 기존 노드 연결
           </div>
+          <div style="width: 16px; height: 1px; background: var(--ou-border-subtle); flex-shrink: 0;"></div>
         </div>
-        <div style="display: flex; align-items: center; gap: 0;">
-          <div style="font-size: 9px; color: var(--ou-text-muted); padding-right: 2px;">아니오</div>
-          <div class="flow-arrow">→</div>
+        <!-- Spacer -->
+        <div style="height: 16px;"></div>
+        <!-- Lower branch -->
+        <div style="display: flex; align-items: center;">
+          <div style="width: 16px; height: 1px; background: var(--ou-border-subtle); flex-shrink: 0;"></div>
+          <div style="font-size: 9px; color: var(--ou-text-muted); padding: 0 4px; flex-shrink: 0;">아니오</div>
+          <div style="width: 12px; height: 1px; background: var(--ou-border-subtle); flex-shrink: 0;"></div>
           <div class="flow-step" style="min-width: 120px;">
             <i class="ph ph-plus-circle" style="margin-right: 4px;"></i> 새 노드 생성
           </div>
+          <div style="width: 16px; height: 1px; background: var(--ou-border-subtle); flex-shrink: 0;"></div>
         </div>
       </div>
-      <div class="flow-arrow">→</div>
-      <div class="flow-step" style="min-width: 120px; border-color: var(--ou-border-medium); box-shadow: var(--ou-glow-md);">
+      <!-- Merge → final connector -->
+      <div style="width: 40px; height: 1px; background: var(--ou-border-subtle); flex-shrink: 0;"></div>
+      <!-- Step final -->
+      <div class="flow-step active" style="min-width: 120px; box-shadow: var(--ou-glow-md);">
         <i class="ph ph-eye" style="margin-right: 4px;"></i> 뷰 업데이트
       </div>
     </div>

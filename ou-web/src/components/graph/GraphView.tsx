@@ -53,7 +53,20 @@ export const GraphView = forwardRef<GraphViewHandle, GraphViewProps>(
     const highlightIdsRef = useRef<Set<string> | null>(highlightNodeIds ?? null);
 
     // Track nodes that need spawn animation
-    const spawnAnimations = useRef<Map<string, { startTime: number; duration: number }>>(new Map());
+    interface SpawnAnim {
+      startTime: number;
+      duration: number;
+      phase: 'pop' | 'sparkle';
+      sparkleStart?: number;
+    }
+    const spawnAnimations = useRef<Map<string, SpawnAnim>>(new Map());
+
+    // Spawn particle burst (small white dots radiating outward)
+    interface SpawnParticle {
+      x: number; y: number; vx: number; vy: number;
+      alpha: number; startTime: number; lifetime: number;
+    }
+    const spawnParticles = useRef<SpawnParticle[]>([]);
 
     useImperativeHandle(ref, () => ({
       addNode: (node: GraphNode) => {
@@ -73,7 +86,7 @@ export const GraphView = forwardRef<GraphViewHandle, GraphViewProps>(
 
             // Register spawn animation
             const duration = node.graph_type === 'view' ? 500 : 400;
-            spawnAnimations.current.set(node.id, { startTime: performance.now(), duration });
+            spawnAnimations.current.set(node.id, { startTime: performance.now(), duration, phase: 'pop' });
           });
         }
 
@@ -231,6 +244,24 @@ export const GraphView = forwardRef<GraphViewHandle, GraphViewProps>(
             particleGraphics.circle(px, py, size).fill({ color: 0xffffff, alpha });
           });
 
+          // ── Spawn burst particles ────────────────────────
+          const now = performance.now();
+          spawnParticles.current = spawnParticles.current.filter(sp => {
+            const elapsed = now - sp.startTime;
+            if (elapsed > sp.lifetime) return false;
+            sp.x += sp.vx;
+            sp.y += sp.vy;
+            sp.vx *= 0.97; // friction
+            sp.vy *= 0.97;
+            const fadeProgress = elapsed / sp.lifetime;
+            const alpha = sp.alpha * (1 - fadeProgress * fadeProgress);
+            const px = sp.x * scale + cX + vpX;
+            const py = sp.y * scale + cY + vpY;
+            const pSize = Math.max(0.5, (1.5 - fadeProgress) * Math.min(scale, 1.5));
+            particleGraphics.circle(px, py, pSize).fill({ color: 0xffffff, alpha });
+            return true;
+          });
+
           // ── Draw edges ─────────────────────────────────────
           edgeGraphics.clear();
           links.forEach(link => {
@@ -327,22 +358,59 @@ export const GraphView = forwardRef<GraphViewHandle, GraphViewProps>(
                 || (showLabels && scale > LOD_LABEL_ZOOM_THRESHOLD);
             }
 
-            // Spawn animation (elastic pop)
+            // Spawn animation (elastic pop → sparkle decay)
             const anim = spawnAnimations.current.get(id);
             if (anim) {
-              const elapsed = performance.now() - anim.startTime;
-              const progress = Math.min(elapsed / anim.duration, 1);
-              // Elastic ease out: overshoot then settle
-              const t = progress < 1
-                ? 1 - Math.pow(1 - progress, 3) * Math.cos(progress * Math.PI * 1.5)
-                : 1;
-              sprites.container.scale.set(scale * t);
-              // Flash glow during spawn
-              if (sprites.glow && progress < 0.6) {
-                sprites.glow.alpha = (sprites.glow._baseAlpha ?? 0.05) * (3 - progress * 4);
-              }
-              if (progress >= 1) {
-                spawnAnimations.current.delete(id);
+              const now = performance.now();
+
+              if (anim.phase === 'pop') {
+                const elapsed = now - anim.startTime;
+                const progress = Math.min(elapsed / anim.duration, 1);
+                // Elastic ease out: overshoot then settle
+                const t = progress < 1
+                  ? 1 - Math.pow(1 - progress, 3) * Math.cos(progress * Math.PI * 1.5)
+                  : 1;
+                sprites.container.scale.set(scale * t);
+                // Flash glow during spawn
+                if (sprites.glow && progress < 0.6) {
+                  sprites.glow.alpha = (sprites.glow._baseAlpha ?? 0.05) * (3 - progress * 4);
+                }
+                if (progress >= 1) {
+                  // Transition to sparkle phase
+                  anim.phase = 'sparkle';
+                  anim.sparkleStart = now;
+
+                  // Emit particle burst (8-12 particles)
+                  const pos = nodePositions.current.get(id);
+                  if (pos) {
+                    const count = 8 + Math.floor(Math.random() * 5);
+                    for (let i = 0; i < count; i++) {
+                      const angle = (Math.PI * 2 * i) / count + Math.random() * 0.3;
+                      const speed = 0.3 + Math.random() * 0.4;
+                      spawnParticles.current.push({
+                        x: pos.x, y: pos.y,
+                        vx: Math.cos(angle) * speed,
+                        vy: Math.sin(angle) * speed,
+                        alpha: 0.8,
+                        startTime: now,
+                        lifetime: 500 + Math.random() * 200,
+                      });
+                    }
+                  }
+                }
+              } else if (anim.phase === 'sparkle') {
+                // Sparkle: brightness decays from 3x to 1x over 3 seconds
+                const sparkleElapsed = now - (anim.sparkleStart ?? now);
+                const sparkleDuration = 3000;
+                const sparkleProgress = Math.min(sparkleElapsed / sparkleDuration, 1);
+                // Ease out: fast initial decay then slow settle
+                const glowMultiplier = 1 + 2 * (1 - sparkleProgress * sparkleProgress);
+                if (sprites.glow) {
+                  sprites.glow.alpha = (sprites.glow._baseAlpha ?? 0.05) * glowMultiplier;
+                }
+                if (sparkleProgress >= 1) {
+                  spawnAnimations.current.delete(id);
+                }
               }
             }
           });
