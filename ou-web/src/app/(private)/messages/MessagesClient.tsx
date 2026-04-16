@@ -1,10 +1,6 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import {
-  Stack, Text, Paper, Group, Button, Box, Avatar,
-  Center, Modal, TextInput, Loader, UnstyledButton, Badge,
-} from '@mantine/core';
 import { useRouter } from 'next/navigation';
 import { ChatCircle, PlusCircle, MagnifyingGlass } from '@phosphor-icons/react';
 import { createClient } from '@/lib/supabase/client';
@@ -177,52 +173,57 @@ export function MessagesClient({ userId }: { userId: string }) {
 
   if (loading) {
     return (
-      <Center h="60vh">
-        <Loader size="sm" color="gray" />
-      </Center>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh' }}>
+        <span style={{ color: 'var(--ou-text-dimmed)', fontSize: 13 }}>...</span>
+      </div>
     );
   }
 
   const renderRoomList = () => (
-    <Stack gap="sm" p="xl" maw={640} mx="auto">
-      <Group justify="space-between" mb="sm">
-        <Text
-          fz={10}
-          fw={500}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: 24, maxWidth: 640, margin: '0 auto' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
+        <span
           style={{
+            fontSize: 10,
+            fontWeight: 500,
             color: 'var(--ou-text-heading)',
             textTransform: 'uppercase',
             letterSpacing: 3,
           }}
         >
           MESSAGES
-        </Text>
+        </span>
         {/* pill-block create button */}
-        <Button
-          variant="default"
-          size="sm"
-          leftSection={<PlusCircle size={16} style={{ color: 'var(--ou-text-body)' }} />}
+        <button
           onClick={openNewChat}
           style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
             background: 'transparent',
             border: '0.5px solid var(--ou-border-subtle)',
             borderRadius: 'var(--ou-radius-pill)',
             color: 'var(--ou-text-body)',
             boxShadow: 'var(--ou-glow-sm)',
             transition: 'border-color var(--ou-transition), box-shadow var(--ou-transition)',
+            padding: '6px 14px',
+            fontSize: 14,
+            fontFamily: 'inherit',
+            cursor: 'pointer',
           }}
-          onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
+          onMouseEnter={(e) => {
             (e.currentTarget as HTMLElement).style.borderColor = 'var(--ou-border-hover)';
             (e.currentTarget as HTMLElement).style.boxShadow = 'var(--ou-glow-hover)';
           }}
-          onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
+          onMouseLeave={(e) => {
             (e.currentTarget as HTMLElement).style.borderColor = 'var(--ou-border-subtle)';
             (e.currentTarget as HTMLElement).style.boxShadow = 'var(--ou-glow-sm)';
           }}
         >
+          <PlusCircle size={16} style={{ color: 'var(--ou-text-body)' }} />
           새 대화
-        </Button>
-      </Group>
+        </button>
+      </div>
 
       {rooms.map(room => (
         /* card-block room item */
@@ -247,42 +248,61 @@ export function MessagesClient({ userId }: { userId: string }) {
             (e.currentTarget as HTMLElement).style.boxShadow = 'var(--ou-glow-sm)';
           }}
         >
-          <Group gap="sm" wrap="nowrap">
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'nowrap' }}>
             {/* Avatar — 36px circle with border-muted */}
-            <Avatar
-              src={getRoomAvatar(room)}
-              size={36}
-              radius="xl"
-              color="gray"
+            <div
               style={{
+                width: 36,
+                height: 36,
+                borderRadius: '50%',
                 border: '0.5px solid var(--ou-border-muted)',
                 boxShadow: 'var(--ou-glow-xs)',
                 flexShrink: 0,
+                overflow: 'hidden',
+                background: 'var(--ou-surface-muted)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
               }}
             >
-              {!getRoomAvatar(room) && <ChatCircle size={18} weight="light" style={{ color: 'var(--ou-text-dimmed)' }} />}
-            </Avatar>
-            <Box flex={1} style={{ overflow: 'hidden' }}>
-              <Group justify="space-between" mb={2} wrap="nowrap">
-                <Group gap={6} wrap="nowrap">
-                  <Text fz="sm" fw={room.unread_count > 0 ? 700 : 500} lineClamp={1} style={{ color: 'var(--ou-text-strong)' }}>
+              {getRoomAvatar(room) ? (
+                <img src={getRoomAvatar(room)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              ) : (
+                <ChatCircle size={18} weight="light" style={{ color: 'var(--ou-text-dimmed)' }} />
+              )}
+            </div>
+            <div style={{ flex: 1, overflow: 'hidden' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 2, flexWrap: 'nowrap' }}>
+                <div style={{ display: 'flex', gap: 6, flexWrap: 'nowrap' }}>
+                  <span style={{
+                    fontSize: 14,
+                    fontWeight: room.unread_count > 0 ? 700 : 500,
+                    color: 'var(--ou-text-strong)',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}>
                     {getRoomDisplayName(room)}
-                  </Text>
-                </Group>
-                <Text fz="xs" style={{ flexShrink: 0, color: 'var(--ou-text-dimmed)' }}>
+                  </span>
+                </div>
+                <span style={{ flexShrink: 0, fontSize: 12, color: 'var(--ou-text-dimmed)' }}>
                   {formatTime(room.updated_at)}
-                </Text>
-              </Group>
-              <Group gap="xs" wrap="nowrap">
-                <Text
-                  fz="xs"
-                  fw={room.unread_count > 0 ? 500 : 400}
-                  lineClamp={1}
-                  flex={1}
-                  style={{ color: room.unread_count > 0 ? 'var(--ou-text-body)' : 'var(--ou-text-dimmed)' }}
+                </span>
+              </div>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'nowrap', alignItems: 'center' }}>
+                <span
+                  style={{
+                    fontSize: 12,
+                    fontWeight: room.unread_count > 0 ? 500 : 400,
+                    flex: 1,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    color: room.unread_count > 0 ? 'var(--ou-text-body)' : 'var(--ou-text-dimmed)',
+                  }}
                 >
                   {room.last_message ?? '아직 메시지가 없어요'}
-                </Text>
+                </span>
                 {/* badge-block.count unread */}
                 {room.unread_count > 0 && (
                   <div
@@ -306,149 +326,187 @@ export function MessagesClient({ userId }: { userId: string }) {
                     {room.unread_count > 9 ? '9+' : room.unread_count}
                   </div>
                 )}
-              </Group>
-            </Box>
-          </Group>
+              </div>
+            </div>
+          </div>
         </div>
       ))}
-    </Stack>
+    </div>
   );
 
   const renderEmpty = () => (
-    <Center h="60vh">
-      <Stack align="center" gap="md">
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
         <ChatCircle size={48} weight="light" style={{ color: 'var(--ou-text-dimmed)' }} />
-        <Text fw={600} fz="lg" style={{ color: 'var(--ou-text-strong)' }}>아직 대화가 없어요</Text>
-        <Text fz="sm" ta="center" style={{ color: 'var(--ou-text-dimmed)' }}>
+        <span style={{ fontWeight: 600, fontSize: 18, color: 'var(--ou-text-strong)' }}>아직 대화가 없어요</span>
+        <span style={{ fontSize: 14, textAlign: 'center', color: 'var(--ou-text-dimmed)' }}>
           친구를 초대해서 대화를 시작해보세요.
-        </Text>
-        <Group gap="sm">
-          <Button
-            variant="default"
-            leftSection={<PlusCircle size={18} style={{ color: 'var(--ou-text-body)' }} />}
+        </span>
+        <div style={{ display: 'flex', gap: 12 }}>
+          <button
             onClick={openNewChat}
             style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
               background: 'transparent',
               border: '0.5px solid var(--ou-border-subtle)',
               borderRadius: 'var(--ou-radius-pill)',
               color: 'var(--ou-text-body)',
               boxShadow: 'var(--ou-glow-sm)',
+              padding: '8px 16px',
+              fontSize: 14,
+              fontFamily: 'inherit',
+              cursor: 'pointer',
             }}
           >
+            <PlusCircle size={18} style={{ color: 'var(--ou-text-body)' }} />
             새 대화 시작하기
-          </Button>
-        </Group>
-      </Stack>
-    </Center>
+          </button>
+        </div>
+      </div>
+    </div>
   );
 
   return (
     <>
       {rooms.length === 0 ? renderEmpty() : renderRoomList()}
 
-      {/* Modal — floating-block in modal */}
-      <Modal
-        opened={modalOpen}
-        onClose={() => setModalOpen(false)}
-        title={<Text fw={600} style={{ color: 'var(--ou-text-strong)' }}>새 대화</Text>}
-        centered
-        styles={{
-          content: {
-            background: 'var(--ou-surface-muted)',
-            backdropFilter: 'blur(24px)',
-            WebkitBackdropFilter: 'blur(24px)',
-            border: '0.5px solid var(--ou-border-subtle)',
-            boxShadow: 'var(--ou-glow-lg)',
-            borderRadius: 'var(--ou-radius-card)',
-          },
-          header: {
-            background: 'transparent',
-            borderBottom: '0.5px solid var(--ou-border-faint)',
-          },
-          body: {
-            background: 'transparent',
-          },
-        }}
-      >
-        <Stack gap="md" mt="sm">
-          {/* input-block search */}
-          <TextInput
-            placeholder="이름 또는 아이디로 검색"
-            leftSection={<MagnifyingGlass size={16} weight="light" style={{ color: 'var(--ou-text-dimmed)' }} />}
-            value={query}
-            onChange={(e) => searchUsers(e.currentTarget.value)}
-            autoFocus
-            styles={{
-              input: {
-                background: 'transparent',
-                border: '0.5px solid var(--ou-border-subtle)',
-                borderRadius: 'var(--ou-radius-pill)',
-                color: 'var(--ou-text-body)',
-                boxShadow: 'var(--ou-glow-sm)',
-              },
+      {/* Modal — fixed overlay */}
+      {modalOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 1000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'rgba(0,0,0,0.5)',
+            backdropFilter: 'blur(4px)',
+          }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setModalOpen(false);
+          }}
+        >
+          <div
+            style={{
+              width: '90%',
+              maxWidth: 440,
+              background: 'var(--ou-surface-muted)',
+              backdropFilter: 'blur(24px)',
+              WebkitBackdropFilter: 'blur(24px)',
+              border: '0.5px solid var(--ou-border-subtle)',
+              boxShadow: 'var(--ou-glow-lg)',
+              borderRadius: 'var(--ou-radius-card)',
+              padding: 24,
             }}
-          />
-
-          {searching && (
-            <Center py="md">
-              <Loader size="sm" color="gray" />
-            </Center>
-          )}
-
-          {!searching && results.length > 0 && (
-            <Stack gap={4}>
-              {results.map(profile => (
-                <UnstyledButton
-                  key={profile.id}
-                  onClick={() => createRoomWithUser(profile.id)}
-                  disabled={creating}
-                  py="sm"
-                  px="xs"
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '0.5px solid var(--ou-border-faint)', paddingBottom: 12, marginBottom: 16 }}>
+              <span style={{ fontWeight: 600, color: 'var(--ou-text-strong)' }}>새 대화</span>
+              <button onClick={() => setModalOpen(false)} style={{ background: 'none', border: 'none', color: 'var(--ou-text-dimmed)', cursor: 'pointer', fontSize: 18, fontFamily: 'inherit' }}>&times;</button>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              {/* input-block search */}
+              <div style={{ position: 'relative' }}>
+                <div style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}>
+                  <MagnifyingGlass size={16} weight="light" style={{ color: 'var(--ou-text-dimmed)' }} />
+                </div>
+                <input
+                  placeholder="이름 또는 아이디로 검색"
+                  value={query}
+                  onChange={(e) => searchUsers(e.target.value)}
+                  autoFocus
                   style={{
-                    borderRadius: 'var(--ou-radius-card)',
-                    border: '0.5px solid transparent',
-                    transition: 'border-color var(--ou-transition), background var(--ou-transition)',
+                    width: '100%',
+                    background: 'transparent',
+                    border: '0.5px solid var(--ou-border-subtle)',
+                    borderRadius: 'var(--ou-radius-pill)',
+                    color: 'var(--ou-text-body)',
+                    boxShadow: 'var(--ou-glow-sm)',
+                    padding: '10px 12px 10px 36px',
+                    fontSize: 14,
+                    fontFamily: 'inherit',
+                    outline: 'none',
+                    boxSizing: 'border-box',
                   }}
-                  onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
-                    (e.currentTarget as HTMLElement).style.borderColor = 'var(--ou-border-subtle)';
-                    (e.currentTarget as HTMLElement).style.background = 'var(--ou-surface-faint)';
-                  }}
-                  onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
-                    (e.currentTarget as HTMLElement).style.borderColor = 'transparent';
-                    (e.currentTarget as HTMLElement).style.background = 'transparent';
-                  }}
-                >
-                  <Group gap="sm">
-                    <Avatar
-                      src={profile.avatar_url ?? undefined}
-                      size="sm"
-                      radius="xl"
-                      style={{
-                        border: '0.5px solid var(--ou-border-muted)',
-                        boxShadow: 'var(--ou-glow-xs)',
-                      }}
-                    />
-                    <Box>
-                      <Text fz="sm" fw={500} style={{ color: 'var(--ou-text-strong)' }}>
-                        {profile.display_name || profile.handle}
-                      </Text>
-                      {profile.handle && (
-                        <Text fz="xs" style={{ color: 'var(--ou-text-dimmed)' }}>@{profile.handle}</Text>
-                      )}
-                    </Box>
-                  </Group>
-                </UnstyledButton>
-              ))}
-            </Stack>
-          )}
+                />
+              </div>
 
-          {!searching && query.length >= 2 && results.length === 0 && (
-            <Text fz="sm" ta="center" py="md" style={{ color: 'var(--ou-text-dimmed)' }}>
-              검색 결과가 없어요
-            </Text>
-          )}
-        </Stack>
-      </Modal>
+              {searching && (
+                <div style={{ display: 'flex', justifyContent: 'center', padding: 16 }}>
+                  <span style={{ color: 'var(--ou-text-dimmed)', fontSize: 13 }}>...</span>
+                </div>
+              )}
+
+              {!searching && results.length > 0 && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  {results.map(profile => (
+                    <button
+                      key={profile.id}
+                      onClick={() => createRoomWithUser(profile.id)}
+                      disabled={creating}
+                      style={{
+                        display: 'flex',
+                        gap: 12,
+                        alignItems: 'center',
+                        padding: '10px 8px',
+                        borderRadius: 'var(--ou-radius-card)',
+                        border: '0.5px solid transparent',
+                        background: 'none',
+                        cursor: creating ? 'wait' : 'pointer',
+                        transition: 'border-color var(--ou-transition), background var(--ou-transition)',
+                        fontFamily: 'inherit',
+                        width: '100%',
+                        textAlign: 'left',
+                      }}
+                      onMouseEnter={(e) => {
+                        (e.currentTarget as HTMLElement).style.borderColor = 'var(--ou-border-subtle)';
+                        (e.currentTarget as HTMLElement).style.background = 'var(--ou-surface-faint)';
+                      }}
+                      onMouseLeave={(e) => {
+                        (e.currentTarget as HTMLElement).style.borderColor = 'transparent';
+                        (e.currentTarget as HTMLElement).style.background = 'transparent';
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: 28,
+                          height: 28,
+                          borderRadius: '50%',
+                          border: '0.5px solid var(--ou-border-muted)',
+                          boxShadow: 'var(--ou-glow-xs)',
+                          overflow: 'hidden',
+                          flexShrink: 0,
+                          background: 'var(--ou-surface-muted)',
+                        }}
+                      >
+                        {profile.avatar_url && (
+                          <img src={profile.avatar_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        )}
+                      </div>
+                      <div>
+                        <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ou-text-strong)', display: 'block' }}>
+                          {profile.display_name || profile.handle}
+                        </span>
+                        {profile.handle && (
+                          <span style={{ fontSize: 12, color: 'var(--ou-text-dimmed)' }}>@{profile.handle}</span>
+                        )}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {!searching && query.length >= 2 && results.length === 0 && (
+                <span style={{ fontSize: 14, textAlign: 'center', padding: 16, color: 'var(--ou-text-dimmed)' }}>
+                  검색 결과가 없어요
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

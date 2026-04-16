@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useMemo, useCallback } from 'react';
-import { Stack, Text, Box, Button, Group, Progress } from '@mantine/core';
 import { ArrowRight, CheckCircle, XCircle, Trophy } from '@phosphor-icons/react';
 import type { ViewProps } from './registry';
 
@@ -86,26 +85,37 @@ export function QuizView({ nodes }: ViewProps) {
   if (nodes.length === 0) return null;
   if (questions.length === 0) {
     return (
-      <Stack p="md">
-        <Text fz="xs" c="dimmed">Not enough data to generate a quiz.</Text>
-      </Stack>
+      <div style={{ padding: 16 }}>
+        <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)' }}>Not enough data to generate a quiz.</span>
+      </div>
     );
   }
 
   if (finished) {
     return (
-      <Stack p="md" align="center" gap="md" style={{ paddingTop: 40 }}>
-        <Trophy size={40} weight="duotone" color="var(--mantine-color-gray-6)" />
-        <Text fz="lg" fw={600}>
+      <div style={{ padding: 16, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, paddingTop: 40 }}>
+        <Trophy size={40} weight="duotone" style={{ color: 'var(--ou-gray-6, #666)' }} />
+        <span style={{ fontSize: 18, fontWeight: 600 }}>
           {score} / {questions.length}
-        </Text>
-        <Text fz="sm" c="dimmed">
+        </span>
+        <span style={{ fontSize: 13, color: 'var(--ou-text-dimmed, #888)' }}>
           {score === questions.length ? 'Perfect!' : score >= questions.length * 0.7 ? 'Great job!' : 'Keep learning!'}
-        </Text>
-        <Button variant="default" size="xs" onClick={handleRestart}>
+        </span>
+        <button
+          onClick={handleRestart}
+          style={{
+            padding: '6px 16px',
+            border: '0.5px solid var(--ou-border, #333)',
+            borderRadius: 6,
+            background: 'none',
+            cursor: 'pointer',
+            fontSize: 13,
+            color: 'inherit',
+          }}
+        >
           Try Again
-        </Button>
-      </Stack>
+        </button>
+      </div>
     );
   }
 
@@ -113,38 +123,41 @@ export function QuizView({ nodes }: ViewProps) {
   const progress = ((current + 1) / questions.length) * 100;
 
   return (
-    <Stack gap="md" p="md">
-      <Group gap={8} justify="space-between">
-        <Text fz="xs" c="dimmed">Quiz</Text>
-        <Text fz={11} c="dimmed">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: 16 }}>
+      <div style={{ display: 'flex', gap: 8, justifyContent: 'space-between' }}>
+        <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)' }}>Quiz</span>
+        <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)' }}>
           {current + 1} / {questions.length}
-        </Text>
-      </Group>
+        </span>
+      </div>
 
-      <Progress value={progress} size={3} color="gray" />
+      {/* Progress bar */}
+      <div style={{ height: 3, borderRadius: 2, backgroundColor: 'var(--ou-bg-subtle, #e0e0e0)', overflow: 'hidden' }}>
+        <div style={{ height: '100%', width: `${progress}%`, backgroundColor: 'var(--ou-gray-5, #888)', borderRadius: 2, transition: 'width 0.3s ease' }} />
+      </div>
 
-      <Text fz="sm" fw={500} mt="xs">
+      <span style={{ fontSize: 13, fontWeight: 500, marginTop: 8 }}>
         {q.question}
-      </Text>
+      </span>
 
-      <Stack gap={6}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
         {q.choices.map((choice, i) => {
           const isSelected = selected === choice;
           const isCorrect = choice === q.correct;
-          let borderColor = 'var(--mantine-color-default-border)';
+          let borderColor = 'var(--ou-border, #333)';
           let bg = 'transparent';
 
           if (selected !== null) {
             if (isCorrect) {
-              borderColor = 'var(--mantine-color-gray-7)';
-              bg = 'var(--mantine-color-gray-1)';
+              borderColor = 'var(--ou-gray-7, #555)';
+              bg = 'var(--ou-bg-subtle, rgba(255,255,255,0.05))';
             } else if (isSelected && !isCorrect) {
-              borderColor = 'var(--mantine-color-gray-5)';
+              borderColor = 'var(--ou-gray-5, #888)';
             }
           }
 
           return (
-            <Box
+            <div
               key={i}
               onClick={() => handleSelect(choice)}
               style={{
@@ -156,34 +169,44 @@ export function QuizView({ nodes }: ViewProps) {
                 transition: 'all 0.15s',
               }}
             >
-              <Group gap={8} wrap="nowrap">
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'nowrap', alignItems: 'center' }}>
                 {selected !== null && isCorrect && (
-                  <CheckCircle size={16} weight="fill" color="var(--mantine-color-gray-7)" />
+                  <CheckCircle size={16} weight="fill" style={{ color: 'var(--ou-gray-7, #555)' }} />
                 )}
                 {selected !== null && isSelected && !isCorrect && (
-                  <XCircle size={16} weight="fill" color="var(--mantine-color-gray-5)" />
+                  <XCircle size={16} weight="fill" style={{ color: 'var(--ou-gray-5, #888)' }} />
                 )}
-                <Text fz={12} style={{ flex: 1 }}>
+                <span style={{ fontSize: 12, flex: 1 }}>
                   {choice}
-                </Text>
-              </Group>
-            </Box>
+                </span>
+              </div>
+            </div>
           );
         })}
-      </Stack>
+      </div>
 
       {selected !== null && (
-        <Group justify="flex-end">
-          <Button
-            variant="default"
-            size="xs"
-            rightSection={<ArrowRight size={14} />}
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <button
             onClick={handleNext}
+            style={{
+              padding: '6px 16px',
+              border: '0.5px solid var(--ou-border, #333)',
+              borderRadius: 6,
+              background: 'none',
+              cursor: 'pointer',
+              fontSize: 13,
+              color: 'inherit',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+            }}
           >
             {current + 1 >= questions.length ? 'Results' : 'Next'}
-          </Button>
-        </Group>
+            <ArrowRight size={14} />
+          </button>
+        </div>
       )}
-    </Stack>
+    </div>
   );
 }

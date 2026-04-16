@@ -1,6 +1,5 @@
 'use client';
 
-import { Box, Text } from '@mantine/core';
 import type { DocumentTemplate } from '@/types/document-template';
 
 interface PageHeaderProps {
@@ -22,7 +21,7 @@ export function PageHeader({ template, documentTitle, sectionTitle, pageNumber }
     : documentTitle;
 
   return (
-    <Box
+    <div
       style={{
         display: 'flex',
         alignItems: 'flex-end',
@@ -33,7 +32,7 @@ export function PageHeader({ template, documentTitle, sectionTitle, pageNumber }
           : {}),
       }}
     >
-      <Text
+      <span
         style={{
           fontFamily: font,
           fontSize: style.fontSize,
@@ -45,7 +44,7 @@ export function PageHeader({ template, documentTitle, sectionTitle, pageNumber }
         }}
       >
         {content}
-      </Text>
-    </Box>
+      </span>
+    </div>
   );
 }

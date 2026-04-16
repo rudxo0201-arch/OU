@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo, useRef } from 'react';
-import { Stack, Text, Box, Group, Button, Divider, ScrollArea } from '@mantine/core';
 import { DownloadSimple, Printer } from '@phosphor-icons/react';
 import dayjs from 'dayjs';
 import 'dayjs/locale/ko';
@@ -135,32 +134,35 @@ export function ExportView({ nodes, filters }: ExportViewProps) {
   if (entries.length === 0) return null;
 
   return (
-    <Stack gap="md" p="md">
-      {/* 상단 컨트롤 */}
-      <Group justify="space-between" className="no-print">
-        <Text fz="sm" c="dimmed">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: 16 }}>
+      {/* Top controls */}
+      <div className="no-print" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span style={{ fontSize: 13, color: 'var(--ou-text-dimmed, #888)' }}>
           {entries.length}개 기록 | {format === 'md' ? '마크다운' : format === 'txt' ? '텍스트' : '인쇄'}
-        </Text>
-        <Button
-          variant="default"
-          size="xs"
-          leftSection={format === 'pdf' ? <Printer size={14} /> : <DownloadSimple size={14} />}
+        </span>
+        <button
           onClick={handleDownload}
-          styles={{
-            root: {
-              border: '0.5px solid var(--mantine-color-default-border)',
-              color: 'var(--mantine-color-text)',
-            },
+          style={{
+            padding: '6px 12px',
+            border: '0.5px solid var(--ou-border, #333)',
+            borderRadius: 6,
+            background: 'none',
+            cursor: 'pointer',
+            fontSize: 12,
+            color: 'inherit',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
           }}
         >
+          {format === 'pdf' ? <Printer size={14} /> : <DownloadSimple size={14} />}
           {format === 'pdf' ? '인쇄하기' : '다운로드'}
-        </Button>
-      </Group>
+        </button>
+      </div>
 
-      {/* 미리보기 */}
+      {/* Preview */}
       {format === 'pdf' ? (
-        // PDF 모드: 문서 형태 미리보기 (인쇄용)
-        <Box
+        <div
           ref={previewRef}
           style={{
             maxWidth: 720,
@@ -169,55 +171,52 @@ export function ExportView({ nodes, filters }: ExportViewProps) {
           }}
         >
           {grouped.map(([dateKey, dayEntries], gi) => (
-            <Box key={dateKey} mb="lg">
-              {gi > 0 && <Divider mb="md" color="var(--mantine-color-default-border)" />}
-              <Text fz="md" fw={600} mb="sm">
+            <div key={dateKey} style={{ marginBottom: 24 }}>
+              {gi > 0 && <div style={{ borderTop: '0.5px solid var(--ou-border, #333)', marginBottom: 16 }} />}
+              <span style={{ fontSize: 16, fontWeight: 600, display: 'block', marginBottom: 12 }}>
                 {dateKey === '날짜 없음'
                   ? dateKey
                   : dayjs(dateKey).format('YYYY년 M월 D일 dddd')}
-              </Text>
-              <Stack gap="md">
+              </span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                 {dayEntries.map(entry => (
-                  <Box key={entry.id} pl="md" style={{ borderLeft: '2px solid var(--mantine-color-gray-3)' }}>
+                  <div key={entry.id} style={{ paddingLeft: 16, borderLeft: '2px solid var(--ou-gray-3, #ccc)' }}>
                     {entry.title && (
-                      <Text fz="sm" fw={600} mb={4}>{entry.title}</Text>
+                      <span style={{ fontSize: 13, fontWeight: 600, display: 'block', marginBottom: 4 }}>{entry.title}</span>
                     )}
-                    <Text fz="sm" style={{ lineHeight: 1.8, whiteSpace: 'pre-wrap' }}>
+                    <p style={{ fontSize: 13, lineHeight: 1.8, whiteSpace: 'pre-wrap', margin: 0 }}>
                       {entry.content}
-                    </Text>
+                    </p>
                     {entry.date && (
-                      <Text fz={10} c="dimmed" mt={4}>
+                      <span style={{ fontSize: 10, color: 'var(--ou-text-dimmed, #888)', display: 'block', marginTop: 4 }}>
                         {dayjs(entry.date).format('A h:mm')}
-                      </Text>
+                      </span>
                     )}
-                  </Box>
+                  </div>
                 ))}
-              </Stack>
-            </Box>
+              </div>
+            </div>
           ))}
-        </Box>
+        </div>
       ) : (
-        // MD/TXT 모드: 코드 블록 미리보기
-        <ScrollArea.Autosize mah={500}>
-          <Box
-            p="sm"
+        <div style={{ maxHeight: 500, overflowY: 'auto' }}>
+          <div
             style={{
+              padding: 12,
               background: 'rgba(255, 255, 255, 0.02)',
-              border: '0.5px solid var(--mantine-color-default-border)',
-              borderRadius: 'var(--mantine-radius-md)',
+              border: '0.5px solid var(--ou-border, #333)',
+              borderRadius: 8,
               fontFamily: 'monospace',
               fontSize: 12,
               lineHeight: 1.7,
               whiteSpace: 'pre-wrap',
-              color: 'var(--mantine-color-text)',
             }}
           >
             {previewContent}
-          </Box>
-        </ScrollArea.Autosize>
+          </div>
+        </div>
       )}
 
-      {/* 인쇄용 스타일 */}
       <style>{`
         @media print {
           .no-print { display: none !important; }
@@ -225,6 +224,6 @@ export function ExportView({ nodes, filters }: ExportViewProps) {
           .document-view, .document-view * { visibility: visible; }
         }
       `}</style>
-    </Stack>
+    </div>
   );
 }

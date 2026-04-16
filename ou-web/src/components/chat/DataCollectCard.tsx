@@ -1,6 +1,5 @@
 'use client';
 
-import { Box, Text, UnstyledButton, Group, TextInput } from '@mantine/core';
 import { useState } from 'react';
 
 interface DataCollectCardProps {
@@ -36,73 +35,93 @@ export function DataCollectCard({ recorded, fields, onSubmit }: DataCollectCardP
   };
 
   return (
-    <Box
-      mt="xs"
-      p="sm"
+    <div
       style={{
-        border: '0.5px solid var(--mantine-color-default-border)',
-        borderRadius: 'var(--mantine-radius-md)',
+        marginTop: 8,
+        padding: 12,
+        border: '0.5px solid var(--ou-border-subtle)',
+        borderRadius: 'var(--ou-radius-md)',
         background: 'rgba(255, 255, 255, 0.02)',
       }}
     >
-      <Text fz="xs" c="dimmed" mb={8}>기록됨: {recorded}</Text>
+      <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed)', display: 'block', marginBottom: 8 }}>기록됨: {recorded}</span>
 
-      <Text fz="xs" c="dimmed" mb={6}>추가 정보 (선택)</Text>
-      <Group gap={6} mb={activeField ? 8 : 0}>
+      <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed)', display: 'block', marginBottom: 6 }}>추가 정보 (선택)</span>
+      <div style={{ display: 'flex', flexDirection: 'row', gap: 6, flexWrap: 'wrap', marginBottom: activeField ? 8 : 0 }}>
         {fields.map(field => {
           const hasValue = !!values[field]?.trim();
           return (
-            <UnstyledButton
+            <button
               key={field}
               onClick={() => handleFieldClick(field)}
               style={{
                 padding: '4px 12px',
                 borderRadius: 16,
                 fontSize: 13,
-                border: '0.5px solid var(--mantine-color-default-border)',
+                border: '0.5px solid var(--ou-border-subtle)',
                 background: hasValue
                   ? 'rgba(255, 255, 255, 0.08)'
                   : activeField === field
                     ? 'rgba(255, 255, 255, 0.06)'
                     : 'transparent',
                 color: hasValue
-                  ? 'var(--mantine-color-text)'
-                  : 'var(--mantine-color-dimmed)',
+                  ? 'var(--ou-text-body)'
+                  : 'var(--ou-text-dimmed)',
                 transition: 'all 150ms',
+                cursor: 'pointer',
+                fontFamily: 'inherit',
               }}
             >
               {hasValue ? `${field}: ${values[field]}` : `+ ${field}`}
-            </UnstyledButton>
+            </button>
           );
         })}
-      </Group>
+      </div>
 
       {activeField && (
-        <TextInput
-          size="xs"
-          placeholder={`${activeField}을(를) 입력하세요`}
-          value={values[activeField] ?? ''}
-          onChange={e => setValues({ ...values, [activeField]: e.target.value })}
-          onKeyDown={handleKeyDown}
-          autoFocus
-          rightSection={
-            values[activeField]?.trim() ? (
-              <UnstyledButton
-                onClick={handleSubmit}
-                style={{ fontSize: 12, color: 'var(--mantine-color-text)', padding: '0 8px' }}
-              >
-                전송
-              </UnstyledButton>
-            ) : null
-          }
-          styles={{
-            input: {
+        <div style={{ position: 'relative' }}>
+          <input
+            type="text"
+            placeholder={`${activeField}을(를) 입력하세요`}
+            value={values[activeField] ?? ''}
+            onChange={e => setValues({ ...values, [activeField]: e.target.value })}
+            onKeyDown={handleKeyDown}
+            autoFocus
+            style={{
+              width: '100%',
+              boxSizing: 'border-box',
               background: 'rgba(255,255,255,0.04)',
-              border: '0.5px solid var(--mantine-color-default-border)',
-            },
-          }}
-        />
+              border: '0.5px solid var(--ou-border-subtle)',
+              borderRadius: 'var(--ou-radius-md)',
+              padding: '6px 10px',
+              fontSize: 12,
+              color: 'var(--ou-text-body)',
+              fontFamily: 'inherit',
+              outline: 'none',
+            }}
+          />
+          {values[activeField]?.trim() ? (
+            <button
+              onClick={handleSubmit}
+              style={{
+                position: 'absolute',
+                right: 8,
+                top: '50%',
+                transform: 'translateY(-50%)',
+                fontSize: 12,
+                color: 'var(--ou-text-body)',
+                padding: '0 8px',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+              }}
+            >
+              전송
+            </button>
+          ) : null}
+        </div>
       )}
-    </Box>
+    </div>
   );
 }

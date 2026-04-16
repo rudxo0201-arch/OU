@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
-import { Group, ActionIcon, Text, Box, Loader, Center } from '@mantine/core';
 import { CaretLeft, CaretRight } from '@phosphor-icons/react';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
@@ -20,32 +19,32 @@ export function PDFViewer({ url, highlightPage }: PDFViewerProps) {
   const [loading, setLoading] = useState(true);
 
   return (
-    <Box>
-      <Group justify="center" py="sm">
-        <ActionIcon
-          variant="subtle"
+    <div>
+      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', padding: '8px 0', gap: 8 }}>
+        <button
           disabled={pageNumber <= 1}
           onClick={() => setPageNumber(p => p - 1)}
+          style={{ background: 'transparent', border: 'none', cursor: pageNumber <= 1 ? 'not-allowed' : 'pointer', padding: 4, display: 'flex', alignItems: 'center', opacity: pageNumber <= 1 ? 0.3 : 1, color: 'inherit' }}
         >
           <CaretLeft size={16} />
-        </ActionIcon>
-        <Text fz="sm">{pageNumber} / {numPages || '?'}</Text>
-        <ActionIcon
-          variant="subtle"
+        </button>
+        <span style={{ fontSize: 'var(--mantine-font-size-sm)' }}>{pageNumber} / {numPages || '?'}</span>
+        <button
           disabled={numPages > 0 && pageNumber >= numPages}
           onClick={() => setPageNumber(p => p + 1)}
+          style={{ background: 'transparent', border: 'none', cursor: (numPages > 0 && pageNumber >= numPages) ? 'not-allowed' : 'pointer', padding: 4, display: 'flex', alignItems: 'center', opacity: (numPages > 0 && pageNumber >= numPages) ? 0.3 : 1, color: 'inherit' }}
         >
           <CaretRight size={16} />
-        </ActionIcon>
-      </Group>
+        </button>
+      </div>
 
       {loading && (
-        <Center py="xl">
-          <Loader size="sm" />
-        </Center>
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '24px 0' }}>
+          <span style={{ color: 'var(--mantine-color-dimmed)', fontSize: 'var(--mantine-font-size-sm)' }}>불러오는 중...</span>
+        </div>
       )}
 
-      <Box style={{ display: 'flex', justifyContent: 'center' }}>
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
         <Document
           file={url}
           onLoadSuccess={({ numPages }) => {
@@ -61,7 +60,7 @@ export function PDFViewer({ url, highlightPage }: PDFViewerProps) {
             renderAnnotationLayer
           />
         </Document>
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 }

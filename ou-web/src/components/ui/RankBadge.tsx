@@ -1,6 +1,5 @@
 'use client';
 
-import { Group, Text, Progress, Stack, Tooltip, Box } from '@mantine/core';
 import { getUserRank, getRankProgress, getNodesUntilNextRank } from '@/lib/utils/rank';
 
 interface RankBadgeProps {
@@ -16,55 +15,82 @@ export function RankBadge({ nodeCount, variant = 'compact' }: RankBadgeProps) {
 
   if (variant === 'compact') {
     return (
-      <Tooltip
-        label={
+      <div
+        title={
           remaining > 0
-            ? `${rank.description} · 다음 등급까지 ${remaining}개`
+            ? `${rank.description} \u00b7 다음 등급까지 ${remaining}개`
             : rank.description
         }
-        position="right"
-        multiline
-        w={200}
+        style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'nowrap', cursor: 'default' }}
       >
-        <Group gap={6} wrap="nowrap" style={{ cursor: 'default' }}>
-          <Text fz={14} lh={1}>{rank.emoji}</Text>
-          <Box flex={1} style={{ minWidth: 0 }}>
-            <Text fz={10} c="dimmed" lineClamp={1}>{rank.name}</Text>
-            <Progress
-              value={progress}
-              size={3}
-              color="gray"
-              mt={2}
-              radius="xl"
+        <span style={{ fontSize: 14, lineHeight: 1 }}>{rank.emoji}</span>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <span style={{ fontSize: 10, color: 'var(--ou-text-muted, rgba(255,255,255,0.5))', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{rank.name}</span>
+          <div
+            style={{
+              width: '100%',
+              height: 3,
+              borderRadius: 999,
+              background: 'rgba(255,255,255,0.1)',
+              marginTop: 2,
+              overflow: 'hidden',
+            }}
+          >
+            <div
+              style={{
+                width: `${progress}%`,
+                height: '100%',
+                borderRadius: 999,
+                background: 'var(--ou-text-muted, rgba(255,255,255,0.4))',
+                transition: 'width 300ms ease',
+              }}
             />
-          </Box>
-        </Group>
-      </Tooltip>
+          </div>
+        </div>
+      </div>
     );
   }
 
   // full variant
   return (
-    <Stack gap={6}>
-      <Group gap="xs" align="center">
-        <Text fz={20} lh={1}>{rank.emoji}</Text>
-        <Stack gap={0}>
-          <Text fz="sm" fw={600}>{rank.name}</Text>
-          <Text fz="xs" c="dimmed">{rank.nameEn}</Text>
-        </Stack>
-      </Group>
-      <Text fz="xs" c="dimmed">{rank.description}</Text>
-      <Stack gap={4}>
-        <Progress value={progress} size="sm" color="gray" radius="xl" />
-        <Group justify="space-between">
-          <Text fz={10} c="dimmed">{nodeCount}개 기록</Text>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <span style={{ fontSize: 20, lineHeight: 1 }}>{rank.emoji}</span>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+          <span style={{ fontSize: 14, fontWeight: 600 }}>{rank.name}</span>
+          <span style={{ fontSize: 12, color: 'var(--ou-text-muted, rgba(255,255,255,0.5))' }}>{rank.nameEn}</span>
+        </div>
+      </div>
+      <span style={{ fontSize: 12, color: 'var(--ou-text-muted, rgba(255,255,255,0.5))' }}>{rank.description}</span>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+        <div
+          style={{
+            width: '100%',
+            height: 6,
+            borderRadius: 999,
+            background: 'rgba(255,255,255,0.1)',
+            overflow: 'hidden',
+          }}
+        >
+          <div
+            style={{
+              width: `${progress}%`,
+              height: '100%',
+              borderRadius: 999,
+              background: 'var(--ou-text-muted, rgba(255,255,255,0.4))',
+              transition: 'width 300ms ease',
+            }}
+          />
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 10, color: 'var(--ou-text-muted, rgba(255,255,255,0.5))' }}>{nodeCount}개 기록</span>
           {remaining > 0 ? (
-            <Text fz={10} c="dimmed">다음 등급까지 {remaining}개</Text>
+            <span style={{ fontSize: 10, color: 'var(--ou-text-muted, rgba(255,255,255,0.5))' }}>다음 등급까지 {remaining}개</span>
           ) : (
-            <Text fz={10} c="dimmed">최고 등급 달성</Text>
+            <span style={{ fontSize: 10, color: 'var(--ou-text-muted, rgba(255,255,255,0.5))' }}>최고 등급 달성</span>
           )}
-        </Group>
-      </Stack>
-    </Stack>
+        </div>
+      </div>
+    </div>
   );
 }

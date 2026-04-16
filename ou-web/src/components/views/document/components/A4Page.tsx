@@ -1,6 +1,5 @@
 'use client';
 
-import { Box } from '@mantine/core';
 import type { DocumentTemplate } from '@/types/document-template';
 import { A4_WIDTH_PX, A4_HEIGHT_PX, MM_TO_PX } from '@/types/document-template';
 import { PageHeader } from './PageHeader';
@@ -35,7 +34,7 @@ export function A4Page({
   const contentHeight = A4_HEIGHT_PX - mt - mb - headerHeight - footerHeight;
 
   return (
-    <Box
+    <div
       className="a4-page"
       style={{
         width: A4_WIDTH_PX,
@@ -55,7 +54,7 @@ export function A4Page({
     >
       {/* 헤더 */}
       {template.layout.headerFooter.showHeader && (
-        <Box
+        <div
           style={{
             position: 'absolute',
             top: mt - 4,
@@ -70,11 +69,11 @@ export function A4Page({
             sectionTitle={sectionTitle}
             pageNumber={pageNumber}
           />
-        </Box>
+        </div>
       )}
 
       {/* 콘텐츠 영역 */}
-      <Box
+      <div
         style={{
           position: 'absolute',
           top: mt + headerHeight,
@@ -93,11 +92,11 @@ export function A4Page({
         }}
       >
         {children}
-      </Box>
+      </div>
 
       {/* 푸터 */}
       {template.layout.headerFooter.showFooter && (
-        <Box
+        <div
           style={{
             position: 'absolute',
             bottom: mb - 4,
@@ -112,8 +111,8 @@ export function A4Page({
             pageNumber={pageNumber}
             totalPages={totalPages}
           />
-        </Box>
+        </div>
       )}
-    </Box>
+    </div>
   );
 }

@@ -1,6 +1,5 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { Stack, Text, Center, Title, Button, Loader } from '@mantine/core';
 import { CheckCircle } from '@phosphor-icons/react';
 
 export default function VerifiedPage() {
@@ -21,22 +20,25 @@ export default function VerifiedPage() {
   }, []);
 
   return (
-    <Center h="100dvh">
-      <Stack align="center" gap="lg" maw={360} p="xl">
-        <CheckCircle size={56} weight="thin" color="var(--mantine-color-dark-6)" />
-        <Title order={3} fw={600}>인증이 완료되었어요</Title>
-        <Text c="dimmed" ta="center" fz="sm">
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100dvh' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, maxWidth: 360, padding: 24 }}>
+        <CheckCircle size={56} weight="thin" color="var(--color-dark-6)" />
+        <h3 style={{ fontWeight: 600, margin: 0 }}>인증이 완료되었어요</h3>
+        <span style={{ color: 'var(--color-dimmed)', textAlign: 'center', fontSize: 14 }}>
           이메일 인증이 성공적으로 완료되었어요.
           <br />잠시 후 자동으로 이동합니다.
-        </Text>
+        </span>
         {countdown > 0 ? (
-          <Loader size="sm" color="dark" />
+          <span style={{ fontSize: 14, color: 'var(--color-dimmed)' }}>이동 중...</span>
         ) : (
-          <Button variant="subtle" color="dark" onClick={() => { window.location.href = '/my'; }}>
+          <button
+            onClick={() => { window.location.href = '/my'; }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-dark-6)', fontSize: 14 }}
+          >
             지금 이동하기
-          </Button>
+          </button>
         )}
-      </Stack>
-    </Center>
+      </div>
+    </div>
   );
 }

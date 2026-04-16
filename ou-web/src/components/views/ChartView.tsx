@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo } from 'react';
-import { Box, Stack, Text, Group, Paper } from '@mantine/core';
 import dayjs from 'dayjs';
 import 'dayjs/locale/ko';
 import type { ViewProps } from './registry';
@@ -22,7 +21,6 @@ export function ChartView({ nodes }: ViewProps) {
       const result: SpendingItem[] = [];
       for (const n of nodes) {
         if (!n.domain_data) continue;
-        // 다건 items 배열 지원
         if (Array.isArray(n.domain_data.items)) {
           for (const it of n.domain_data.items) {
             result.push({
@@ -75,48 +73,48 @@ export function ChartView({ nodes }: ViewProps) {
   if (items.length === 0) return null;
 
   return (
-    <Stack gap="md" p="md">
-      <Group justify="space-between" align="baseline">
-        <Text fz="sm" fw={600}>{currentMonth} 지출</Text>
-        <Text fz="lg" fw={700}>{totalAmount.toLocaleString()}원</Text>
-      </Group>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: 16 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+        <span style={{ fontSize: 13, fontWeight: 600 }}>{currentMonth} 지출</span>
+        <span style={{ fontSize: 18, fontWeight: 700 }}>{totalAmount.toLocaleString()}원</span>
+      </div>
 
-      <Stack gap="sm">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         {byCategory.map(([category, amount]) => {
           const ratio = amount / maxAmount;
           const percent = totalAmount > 0 ? ((amount / totalAmount) * 100).toFixed(1) : '0';
           return (
-            <Paper key={category} p="xs" style={{ border: 'none' }}>
-              <Group justify="space-between" mb={4}>
-                <Text fz="xs" fw={500}>{category}</Text>
-                <Text fz="xs" c="dimmed">{amount.toLocaleString()}원 ({percent}%)</Text>
-              </Group>
-              <Box
+            <div key={category} style={{ padding: '4px 8px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                <span style={{ fontSize: 11, fontWeight: 500 }}>{category}</span>
+                <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)' }}>{amount.toLocaleString()}원 ({percent}%)</span>
+              </div>
+              <div
                 style={{
                   height: 8,
                   borderRadius: 4,
-                  backgroundColor: 'var(--mantine-color-gray-2)',
+                  backgroundColor: 'var(--ou-bg-subtle, #e0e0e0)',
                   overflow: 'hidden',
                 }}
               >
-                <Box
+                <div
                   style={{
                     height: '100%',
                     width: `${ratio * 100}%`,
                     borderRadius: 4,
-                    backgroundColor: 'var(--mantine-color-dark-4)',
+                    backgroundColor: 'var(--ou-text-secondary, #666)',
                     transition: 'width 0.3s ease',
                   }}
                 />
-              </Box>
-            </Paper>
+              </div>
+            </div>
           );
         })}
-      </Stack>
+      </div>
 
       {byCategory.length === 0 && (
-        <Text fz="xs" c="dimmed" ta="center" py="lg">기록된 지출이 없습니다</Text>
+        <p style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', textAlign: 'center', padding: '24px 0' }}>기록된 지출이 없습니다</p>
       )}
-    </Stack>
+    </div>
   );
 }

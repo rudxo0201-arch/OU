@@ -1,9 +1,6 @@
 'use client';
 
 import { useMemo } from 'react';
-import {
-  Box, Group, Text, Stack, Button, Divider,
-} from '@mantine/core';
 import { FilePdf } from '@phosphor-icons/react';
 import dayjs from 'dayjs';
 import 'dayjs/locale/ko';
@@ -78,71 +75,75 @@ export function ResumeView({ nodes }: ViewProps) {
   if (nodes.length === 0) return null;
 
   return (
-    <Box
+    <div
       className="resume-view-print"
-      p="xl"
-      mx="auto"
-      style={{ maxWidth: 720 }}
+      style={{ padding: 32, maxWidth: 720, margin: '0 auto' }}
     >
       {/* Header */}
-      <Stack gap={2} align="center" mb="xl">
-        <Text fz="xl" fw={700}>이름</Text>
-        <Text fz="xs" c="dimmed">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 2, alignItems: 'center', marginBottom: 32 }}>
+        <span style={{ fontSize: 20, fontWeight: 700 }}>이름</span>
+        <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)' }}>
           email@example.com · 010-0000-0000
-        </Text>
-      </Stack>
+        </span>
+      </div>
 
-      <Divider color="var(--mantine-color-dark-6)" size="sm" mb="lg" />
+      <div style={{ borderTop: '2px solid currentColor', marginBottom: 24 }} />
 
       {/* Sections */}
       {sections.map((section, si) => (
-        <Box key={section.title} mb="lg">
-          <Text fz="sm" fw={700} tt="uppercase" mb="sm"
-            style={{ letterSpacing: 1 }}
-          >
+        <div key={section.title} style={{ marginBottom: 24 }}>
+          <span style={{ fontSize: 13, fontWeight: 700, textTransform: 'uppercase', display: 'block', marginBottom: 12, letterSpacing: 1 }}>
             {section.title}
-          </Text>
+          </span>
 
-          <Stack gap="sm" pl="sm">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, paddingLeft: 12 }}>
             {section.items.map(item => (
-              <Group key={item.id} gap="md" align="flex-start" wrap="nowrap">
-                <Text fz={10} c="dimmed" style={{ width: 64, flexShrink: 0, paddingTop: 2 }}>
+              <div key={item.id} style={{ display: 'flex', gap: 16, alignItems: 'flex-start', flexWrap: 'nowrap' }}>
+                <span style={{ fontSize: 10, color: 'var(--ou-text-dimmed, #888)', width: 64, flexShrink: 0, paddingTop: 2 }}>
                   {item.date ? dayjs(item.date).format('YYYY.MM') : ''}
-                </Text>
-                <Box style={{ flex: 1 }}>
-                  <Text fz="sm" fw={500} lh={1.4}>
+                </span>
+                <div style={{ flex: 1 }}>
+                  <span style={{ fontSize: 13, fontWeight: 500, lineHeight: 1.4, display: 'block' }}>
                     {item.title}
-                  </Text>
+                  </span>
                   {item.description && item.description !== item.title && (
-                    <Text fz="xs" c="dimmed" mt={2} lineClamp={3} style={{ lineHeight: 1.6 }}>
+                    <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', marginTop: 2, lineHeight: 1.6, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                       {item.description}
-                    </Text>
+                    </span>
                   )}
-                </Box>
-              </Group>
+                </div>
+              </div>
             ))}
-          </Stack>
+          </div>
 
           {si < sections.length - 1 && (
-            <Divider color="var(--mantine-color-default-border)" mt="md" />
+            <div style={{ borderTop: '0.5px solid var(--ou-border, #333)', marginTop: 16 }} />
           )}
-        </Box>
+        </div>
       ))}
 
       {/* Print button */}
-      <Group justify="center" mt="xl">
-        <Button
-          variant="outline"
-          color="gray"
-          size="sm"
-          leftSection={<FilePdf size={16} />}
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: 32 }}>
+        <button
           onClick={handlePrint}
+          style={{
+            padding: '8px 20px',
+            border: '0.5px solid var(--ou-border, #333)',
+            borderRadius: 6,
+            background: 'none',
+            cursor: 'pointer',
+            fontSize: 13,
+            color: 'inherit',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+          }}
         >
+          <FilePdf size={16} />
           PDF 다운로드
-        </Button>
-      </Group>
+        </button>
+      </div>
 
-      {/* Print styles */}
       <style>{`
         @media print {
           body * { visibility: hidden; }
@@ -159,6 +160,6 @@ export function ResumeView({ nodes }: ViewProps) {
           .resume-view-print button { display: none !important; }
         }
       `}</style>
-    </Box>
+    </div>
   );
 }

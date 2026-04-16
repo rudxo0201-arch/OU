@@ -2,11 +2,7 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import {
-  Group, ActionIcon, Tooltip, Text, ScrollArea, Badge,
-  Menu, TextInput, Modal, Button, Stack,
-} from '@mantine/core';
-import {
-  Plus, MagnifyingGlass, DotsThree, PencilSimple, Trash, X,
+  Plus, MagnifyingGlass, X,
   SlidersHorizontal,
 } from '@phosphor-icons/react';
 import { useRouter } from 'next/navigation';
@@ -68,45 +64,35 @@ export function FloatingToolbar({ savedViews: initialViews, onViewClick, onSearc
 
   const handleRename = async () => {
     if (!renameId || !renameValue.trim()) return;
-
     try {
       const res = await fetch('/api/views', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: renameId, name: renameValue.trim() }),
       });
-
       if (res.ok) {
-        setViews(prev => prev.map(v =>
-          v.id === renameId ? { ...v, name: renameValue.trim() } : v
-        ));
+        setViews(prev => prev.map(v => v.id === renameId ? { ...v, name: renameValue.trim() } : v));
         renameSavedView(renameId, renameValue.trim());
       }
-    } catch {
-      // Silent fail
-    }
-
+    } catch { /* Silent fail */ }
     setRenameId(null);
     setRenameValue('');
   };
 
   const handleDelete = async () => {
     if (!deleteId) return;
-
     try {
       const res = await fetch(`/api/views?id=${deleteId}`, { method: 'DELETE' });
       if (res.ok) {
         setViews(prev => prev.filter(v => v.id !== deleteId));
         removeSavedView(deleteId);
       }
-    } catch {
-      // Silent fail
-    }
-
+    } catch { /* Silent fail */ }
     setDeleteId(null);
   };
 
   const viewToDelete = views.find(v => v.id === deleteId);
+  const btnStyle: React.CSSProperties = { background: 'transparent', border: 'none', cursor: 'pointer', padding: 4, display: 'flex', alignItems: 'center', color: 'var(--mantine-color-gray-6)' };
 
   return (
     <>
@@ -122,128 +108,66 @@ export function FloatingToolbar({ savedViews: initialViews, onViewClick, onSearc
           maxWidth: 'calc(100% - 32px)',
         }}
       >
-        <Group gap="sm" wrap="nowrap" className="floating-toolbar-inner">
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 8 }} className="floating-toolbar-inner">
           {views.length > 0 && (
-            <ScrollArea type="never" style={{ maxWidth: 400 }}>
-              <Group gap={6} wrap="nowrap">
+            <div style={{ maxWidth: 400, overflow: 'auto' }}>
+              <div style={{ display: 'flex', flexDirection: 'row', gap: 6, flexWrap: 'nowrap' }}>
                 {views.map(view => (
-                  <Menu key={view.id} position="bottom-start" withinPortal>
-                    <Menu.Target>
-                      <Badge
-                        variant="light"
-                        color="gray"
-                        size="lg"
-                        style={{ cursor: 'pointer', flexShrink: 0 }}
-                        onClick={() => onViewClick?.(view.id)}
-                        onContextMenu={e => {
-                          e.preventDefault();
-                          // Context menu opens via Mantine Menu
-                        }}
-                      >
-                        {view.icon ?? '◆'} {view.name}
-                      </Badge>
-                    </Menu.Target>
-                    <Menu.Dropdown>
-                      <Menu.Item
-                        leftSection={<PencilSimple size={14} />}
-                        onClick={() => {
-                          setRenameId(view.id);
-                          setRenameValue(view.name);
-                        }}
-                      >
-                        이름 변경
-                      </Menu.Item>
-                      <Menu.Item
-                        leftSection={<Trash size={14} />}
-                        color="red"
-                        onClick={() => setDeleteId(view.id)}
-                      >
-                        삭제
-                      </Menu.Item>
-                    </Menu.Dropdown>
-                  </Menu>
+                  <span
+                    key={view.id}
+                    onClick={() => onViewClick?.(view.id)}
+                    style={{
+                      fontSize: 'var(--mantine-font-size-sm)',
+                      padding: '4px 12px',
+                      borderRadius: 4,
+                      background: 'rgba(255,255,255,0.08)',
+                      color: 'var(--mantine-color-dimmed)',
+                      cursor: 'pointer',
+                      flexShrink: 0,
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {view.icon ?? '\u25C6'} {view.name}
+                  </span>
                 ))}
-              </Group>
-            </ScrollArea>
+              </div>
+            </div>
           )}
 
           {views.length === 0 && (
-            <Text fz="xs" c="dimmed">내 우주</Text>
+            <span style={{ fontSize: 'var(--mantine-font-size-xs)', color: 'var(--mantine-color-dimmed)' }}>내 우주</span>
           )}
 
-          <Group gap={4} ml="auto" wrap="nowrap">
+          <div style={{ display: 'flex', flexDirection: 'row', gap: 4, marginLeft: 'auto', flexWrap: 'nowrap' }}>
             {isAdmin && (
-              <Tooltip label="데이터뷰 관리">
-                <ActionIcon
-                  variant="subtle"
-                  color="gray"
-                  size="sm"
-                  onClick={onAdminModeToggle}
-                >
-                  <SlidersHorizontal size={16} />
-                </ActionIcon>
-              </Tooltip>
+              <button title="데이터뷰 관리" onClick={onAdminModeToggle} style={btnStyle}>
+                <SlidersHorizontal size={16} />
+              </button>
             )}
             {searchOpen ? (
-              <Group gap={4} wrap="nowrap">
-                <TextInput
+              <div style={{ display: 'flex', flexDirection: 'row', gap: 4, alignItems: 'center' }}>
+                <input
                   ref={searchInputRef}
                   value={searchText}
                   onChange={e => setSearchText(e.target.value)}
                   placeholder="검색..."
-                  size="xs"
-                  styles={{
-                    input: {
-                      width: 160,
-                      background: 'transparent',
-                      border: '0.5px solid var(--mantine-color-default-border)',
-                    },
-                  }}
-                  onKeyDown={e => {
-                    if (e.key === 'Escape') {
-                      setSearchOpen(false);
-                      setSearchText('');
-                      onSearchChange?.('');
-                    }
-                  }}
+                  style={{ width: 160, padding: '4px 8px', fontSize: 'var(--mantine-font-size-xs)', background: 'transparent', border: '0.5px solid var(--mantine-color-default-border)', borderRadius: 4, color: 'inherit' }}
+                  onKeyDown={e => { if (e.key === 'Escape') { setSearchOpen(false); setSearchText(''); onSearchChange?.(''); } }}
                 />
-                <ActionIcon
-                  variant="subtle"
-                  color="gray"
-                  size="sm"
-                  onClick={() => {
-                    setSearchOpen(false);
-                    setSearchText('');
-                    onSearchChange?.('');
-                  }}
-                >
+                <button onClick={() => { setSearchOpen(false); setSearchText(''); onSearchChange?.(''); }} style={btnStyle}>
                   <X size={14} />
-                </ActionIcon>
-              </Group>
+                </button>
+              </div>
             ) : (
-              <Tooltip label="검색">
-                <ActionIcon
-                  variant="subtle"
-                  color="gray"
-                  size="sm"
-                  onClick={() => setSearchOpen(true)}
-                >
-                  <MagnifyingGlass size={16} />
-                </ActionIcon>
-              </Tooltip>
+              <button title="검색" onClick={() => setSearchOpen(true)} style={btnStyle}>
+                <MagnifyingGlass size={16} />
+              </button>
             )}
-            <Tooltip label="뷰 만들기">
-              <ActionIcon
-                variant="subtle"
-                color="gray"
-                size="sm"
-                onClick={() => setCreateOpened(true)}
-              >
-                <Plus size={16} />
-              </ActionIcon>
-            </Tooltip>
-          </Group>
-        </Group>
+            <button title="뷰 만들기" onClick={() => setCreateOpened(true)} style={btnStyle}>
+              <Plus size={16} />
+            </button>
+          </div>
+        </div>
       </GlassCard>
 
       {/* Create View Modal */}
@@ -254,56 +178,38 @@ export function FloatingToolbar({ savedViews: initialViews, onViewClick, onSearc
       />
 
       {/* Rename Modal */}
-      <Modal
-        opened={!!renameId}
-        onClose={() => { setRenameId(null); setRenameValue(''); }}
-        title={<Text fw={600}>이름 변경</Text>}
-        centered
-        size="xs"
-      >
-        <Stack gap="md">
-          <TextInput
-            value={renameValue}
-            onChange={e => setRenameValue(e.target.value)}
-            placeholder="새 이름"
-            onKeyDown={e => {
-              if (e.key === 'Enter') handleRename();
-            }}
-            autoFocus
-          />
-          <Group justify="flex-end">
-            <Button variant="subtle" color="gray" onClick={() => setRenameId(null)}>
-              취소
-            </Button>
-            <Button color="gray" onClick={handleRename} disabled={!renameValue.trim()}>
-              변경
-            </Button>
-          </Group>
-        </Stack>
-      </Modal>
+      {renameId && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => { setRenameId(null); setRenameValue(''); }}>
+          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)' }} />
+          <div onClick={e => e.stopPropagation()} style={{ position: 'relative', background: 'var(--mantine-color-body)', border: '0.5px solid var(--mantine-color-default-border)', borderRadius: 12, padding: 24, width: '100%', maxWidth: 320, zIndex: 1 }}>
+            <span style={{ fontWeight: 600, display: 'block', marginBottom: 16 }}>이름 변경</span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <input value={renameValue} onChange={e => setRenameValue(e.target.value)} placeholder="새 이름" onKeyDown={e => { if (e.key === 'Enter') handleRename(); }} autoFocus style={{ width: '100%', padding: '8px 12px', fontSize: 'var(--mantine-font-size-sm)', border: '0.5px solid var(--mantine-color-default-border)', borderRadius: 'var(--mantine-radius-md)', background: 'transparent', color: 'inherit' }} />
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+                <button onClick={() => setRenameId(null)} style={{ padding: '6px 16px', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--mantine-color-dimmed)' }}>취소</button>
+                <button onClick={handleRename} disabled={!renameValue.trim()} style={{ padding: '6px 16px', border: '0.5px solid var(--mantine-color-default-border)', borderRadius: 'var(--mantine-radius-md)', background: 'rgba(255,255,255,0.06)', cursor: !renameValue.trim() ? 'not-allowed' : 'pointer', opacity: !renameValue.trim() ? 0.5 : 1, color: 'inherit' }}>변경</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Delete Confirmation Modal */}
-      <Modal
-        opened={!!deleteId}
-        onClose={() => setDeleteId(null)}
-        title={<Text fw={600}>뷰 삭제</Text>}
-        centered
-        size="xs"
-      >
-        <Stack gap="md">
-          <Text fz="sm">
-            <Text span fw={600}>{viewToDelete?.name}</Text> 뷰를 삭제하시겠어요?
-          </Text>
-          <Group justify="flex-end">
-            <Button variant="subtle" color="gray" onClick={() => setDeleteId(null)}>
-              취소
-            </Button>
-            <Button color="gray" onClick={handleDelete}>
-              삭제
-            </Button>
-          </Group>
-        </Stack>
-      </Modal>
+      {deleteId && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setDeleteId(null)}>
+          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)' }} />
+          <div onClick={e => e.stopPropagation()} style={{ position: 'relative', background: 'var(--mantine-color-body)', border: '0.5px solid var(--mantine-color-default-border)', borderRadius: 12, padding: 24, width: '100%', maxWidth: 320, zIndex: 1 }}>
+            <span style={{ fontWeight: 600, display: 'block', marginBottom: 16 }}>뷰 삭제</span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <span style={{ fontSize: 'var(--mantine-font-size-sm)' }}><strong>{viewToDelete?.name}</strong> 뷰를 삭제하시겠어요?</span>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+                <button onClick={() => setDeleteId(null)} style={{ padding: '6px 16px', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--mantine-color-dimmed)' }}>취소</button>
+                <button onClick={handleDelete} style={{ padding: '6px 16px', border: '0.5px solid var(--mantine-color-default-border)', borderRadius: 'var(--mantine-radius-md)', background: 'rgba(255,255,255,0.06)', cursor: 'pointer', color: 'inherit' }}>삭제</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

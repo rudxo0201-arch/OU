@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { UnstyledButton, Text, Stack } from '@mantine/core';
 import {
   ChatTeardrop, Planet, Newspaper, ChatCircle,
   DotsThree, Target, Storefront, Gear, Crown,
@@ -57,30 +56,32 @@ export function MobileNav() {
             const Icon = item.icon;
             const active = pathname.startsWith(item.href);
             return (
-              <UnstyledButton
+              <button
                 key={item.id}
                 className={classes.moreItem}
                 data-active={active || undefined}
                 onClick={() => navigate(item.href, item.isPrivate)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', width: '100%', padding: '8px 12px', fontSize: 14 }}
               >
                 <Icon size={20} weight={active ? 'fill' : 'light'} style={{ marginRight: 12 }} />
-                <Text fz="sm">{item.label}</Text>
-              </UnstyledButton>
+                <span>{item.label}</span>
+              </button>
             );
           })}
 
           {isAdmin && (
-            <UnstyledButton
+            <button
               className={classes.moreItem}
               data-active={pathname.startsWith('/admin') || undefined}
               onClick={() => navigate('/admin', true)}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', width: '100%', padding: '8px 12px', fontSize: 14 }}
             >
               <Crown size={20} weight={pathname.startsWith('/admin') ? 'fill' : 'light'} style={{ marginRight: 12 }} />
-              <Text fz="sm">관리자</Text>
-            </UnstyledButton>
+              <span>관리자</span>
+            </button>
           )}
 
-          <UnstyledButton
+          <button
             className={classes.moreItem}
             onClick={() => {
               if (user) {
@@ -90,13 +91,14 @@ export function MobileNav() {
               }
               setMoreOpen(false);
             }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', width: '100%', padding: '8px 12px', fontSize: 14 }}
           >
             {user
               ? <SignOut size={20} weight="light" style={{ marginRight: 12 }} />
               : <SignIn size={20} weight="light" style={{ marginRight: 12 }} />
             }
-            <Text fz="sm">{user ? '로그아웃' : '로그인'}</Text>
-          </UnstyledButton>
+            <span>{user ? '로그아웃' : '로그인'}</span>
+          </button>
         </div>
       )}
 
@@ -106,31 +108,33 @@ export function MobileNav() {
           const active = pathname.startsWith(tab.href);
           const Icon = tab.icon;
           return (
-            <UnstyledButton
+            <button
               key={tab.id}
               className={classes.tabButton}
               data-active={active || undefined}
               onClick={() => navigate(tab.href, tab.isPrivate)}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
             >
-              <Stack gap={2} align="center">
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
                 <Icon size={22} weight={active ? 'fill' : 'light'} />
-                <Text fz={10}>{tab.label}</Text>
-              </Stack>
-            </UnstyledButton>
+                <span style={{ fontSize: 10 }}>{tab.label}</span>
+              </div>
+            </button>
           );
         })}
 
         {/* 더보기 탭 */}
-        <UnstyledButton
+        <button
           className={classes.tabButton}
           data-active={moreOpen || undefined}
           onClick={() => setMoreOpen(!moreOpen)}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
         >
-          <Stack gap={2} align="center">
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
             <DotsThree size={22} weight={moreOpen ? 'fill' : 'light'} />
-            <Text fz={10}>더보기</Text>
-          </Stack>
-        </UnstyledButton>
+            <span style={{ fontSize: 10 }}>더보기</span>
+          </div>
+        </button>
       </div>
     </>
   );

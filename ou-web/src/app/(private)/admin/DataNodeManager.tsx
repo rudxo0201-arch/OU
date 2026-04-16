@@ -1,11 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import {
-  Stack, Group, TextInput, Select, Table, Badge, ActionIcon, Text,
-  Pagination, Modal, Textarea, Button, Collapse, Box, Paper,
-} from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
+import React, { useState, useEffect, useCallback } from 'react';
 import { MagnifyingGlass, PencilSimple, Archive, CaretDown, CaretUp } from '@phosphor-icons/react';
 import { createClient } from '@/lib/supabase/client';
 
@@ -24,21 +19,20 @@ export function DataNodeManager() {
   const supabase = createClient();
   const [nodes, setNodes] = useState<DataNode[]>([]);
   const [search, setSearch] = useState('');
-  const [domain, setDomain] = useState<string | null>(null);
-  const [confidence, setConfidence] = useState<string | null>(null);
+  const [domain, setDomain] = useState<string>('');
+  const [confidence, setConfidence] = useState<string>('');
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [editNode, setEditNode] = useState<DataNode | null>(null);
   const [editRaw, setEditRaw] = useState('');
-  const [editDomain, setEditDomain] = useState<string | null>(null);
-  const [editConfidence, setEditConfidence] = useState<string | null>(null);
+  const [editDomain, setEditDomain] = useState<string>('');
+  const [editConfidence, setEditConfidence] = useState<string>('');
   const [saving, setSaving] = useState(false);
-  const [editOpened, { open: openEdit, close: closeEdit }] = useDisclosure(false);
+  const [editOpened, setEditOpened] = useState(false);
   const [domains, setDomains] = useState<string[]>([]);
   const PAGE_SIZE = 20;
 
-  // Fetch available domains
   useEffect(() => {
     supabase
       .from('data_nodes')
@@ -69,8 +63,6 @@ export function DataNodeManager() {
   }, [search, domain, confidence, page]);
 
   useEffect(() => { fetchNodes(); }, [fetchNodes]);
-
-  // Reset page when filters change
   useEffect(() => { setPage(1); }, [search, domain, confidence]);
 
   const handleEdit = (node: DataNode) => {
@@ -78,7 +70,7 @@ export function DataNodeManager() {
     setEditRaw(node.raw ?? '');
     setEditDomain(node.domain);
     setEditConfidence(node.confidence);
-    openEdit();
+    setEditOpened(true);
   };
 
   const handleSave = async () => {
@@ -88,12 +80,12 @@ export function DataNodeManager() {
       .from('data_nodes')
       .update({
         raw: editRaw,
-        domain: editDomain,
-        confidence: editConfidence,
+        domain: editDomain || null,
+        confidence: editConfidence || null,
       })
       .eq('id', editNode.id);
     setSaving(false);
-    closeEdit();
+    setEditOpened(false);
     fetchNodes();
   };
 
@@ -105,151 +97,186 @@ export function DataNodeManager() {
     fetchNodes();
   };
 
-  const confidenceColor: Record<string, string> = { high: 'green', medium: 'yellow', low: 'red' };
+  const confidenceColor: Record<string, string> = { high: '#40c057', medium: '#fab005', low: '#fa5252' };
+  const totalPages = Math.ceil(total / PAGE_SIZE);
 
   return (
-    <Stack gap="md">
-      <Group>
-        <TextInput
-          placeholder="내용 검색..."
-          leftSection={<MagnifyingGlass size={16} />}
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          flex={1}
-        />
-        <Select
-          placeholder="분류"
-          data={domains ?? []}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div style={{ display: 'flex', gap: 8 }}>
+        <div style={{ position: 'relative', flex: 1 }}>
+          <MagnifyingGlass size={16} style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', color: '#868e96' }} />
+          <input
+            placeholder="내용 검색..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            style={{ width: '100%', padding: '6px 10px 6px 28px', border: '1px solid #dee2e6', borderRadius: 4, fontSize: 13 }}
+          />
+        </div>
+        <select
           value={domain}
-          onChange={setDomain}
-          clearable
-          w={160}
-        />
-        <Select
-          placeholder="신뢰도"
-          data={['high', 'medium', 'low']}
+          onChange={e => setDomain(e.target.value)}
+          style={{ width: 160, padding: '6px 10px', border: '1px solid #dee2e6', borderRadius: 4, fontSize: 13 }}
+        >
+          <option value="">분류</option>
+          {domains.map(d => <option key={d} value={d}>{d}</option>)}
+        </select>
+        <select
           value={confidence}
-          onChange={setConfidence}
-          clearable
-          w={120}
-        />
-      </Group>
+          onChange={e => setConfidence(e.target.value)}
+          style={{ width: 120, padding: '6px 10px', border: '1px solid #dee2e6', borderRadius: 4, fontSize: 13 }}
+        >
+          <option value="">신뢰도</option>
+          <option value="high">high</option>
+          <option value="medium">medium</option>
+          <option value="low">low</option>
+        </select>
+      </div>
 
-      <Text fz="xs" c="dimmed">총 {total.toLocaleString()}건</Text>
+      <span style={{ fontSize: 12, color: '#868e96' }}>총 {total.toLocaleString()}건</span>
 
-      <Table highlightOnHover>
-        <Table.Thead>
-          <Table.Tr>
-            <Table.Th w={30}></Table.Th>
-            <Table.Th>내용</Table.Th>
-            <Table.Th w={100}>분류</Table.Th>
-            <Table.Th w={80}>신뢰도</Table.Th>
-            <Table.Th w={100}>생성일</Table.Th>
-            <Table.Th w={80}></Table.Th>
-          </Table.Tr>
-        </Table.Thead>
-        <Table.Tbody>
+      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <thead>
+          <tr>
+            <th style={{ width: 30, padding: '8px', borderBottom: '2px solid #e0e0e0' }} />
+            <th style={{ textAlign: 'left', padding: '8px', borderBottom: '2px solid #e0e0e0', fontSize: 12 }}>내용</th>
+            <th style={{ textAlign: 'left', padding: '8px', borderBottom: '2px solid #e0e0e0', fontSize: 12, width: 100 }}>분류</th>
+            <th style={{ textAlign: 'left', padding: '8px', borderBottom: '2px solid #e0e0e0', fontSize: 12, width: 80 }}>신뢰도</th>
+            <th style={{ textAlign: 'left', padding: '8px', borderBottom: '2px solid #e0e0e0', fontSize: 12, width: 100 }}>생성일</th>
+            <th style={{ width: 80, padding: '8px', borderBottom: '2px solid #e0e0e0' }} />
+          </tr>
+        </thead>
+        <tbody>
           {nodes.map(node => (
-            <>
-              <Table.Tr
-                key={node.id}
-                style={{ cursor: 'pointer' }}
+            <React.Fragment key={node.id}>
+              <tr
+                style={{ cursor: 'pointer', borderBottom: '1px solid #f1f3f5' }}
                 onClick={() => setExpandedId(expandedId === node.id ? null : node.id)}
               >
-                <Table.Td>
+                <td style={{ padding: '8px' }}>
                   {expandedId === node.id
                     ? <CaretUp size={14} weight="bold" />
                     : <CaretDown size={14} weight="bold" />
                   }
-                </Table.Td>
-                <Table.Td><Text fz="sm" lineClamp={1} maw={400}>{node.raw ?? '-'}</Text></Table.Td>
-                <Table.Td><Badge variant="light" color="gray" size="sm">{node.domain}</Badge></Table.Td>
-                <Table.Td>
-                  <Badge variant="light" color={confidenceColor[node.confidence] ?? 'gray'} size="sm">
+                </td>
+                <td style={{ padding: '8px' }}>
+                  <span style={{ fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block', maxWidth: 400 }}>{node.raw ?? '-'}</span>
+                </td>
+                <td style={{ padding: '8px' }}>
+                  <span style={{ background: '#f1f3f5', padding: '2px 8px', borderRadius: 10, fontSize: 11 }}>{node.domain}</span>
+                </td>
+                <td style={{ padding: '8px' }}>
+                  <span style={{ background: `${confidenceColor[node.confidence] ?? '#868e96'}20`, color: confidenceColor[node.confidence] ?? '#868e96', padding: '2px 8px', borderRadius: 10, fontSize: 11 }}>
                     {node.confidence}
-                  </Badge>
-                </Table.Td>
-                <Table.Td>
-                  <Text fz="xs" c="dimmed">{new Date(node.created_at).toLocaleDateString('ko-KR')}</Text>
-                </Table.Td>
-                <Table.Td>
-                  <Group gap={4} wrap="nowrap" onClick={e => e.stopPropagation()}>
-                    <ActionIcon variant="subtle" size="sm" onClick={() => handleEdit(node)}>
+                  </span>
+                </td>
+                <td style={{ padding: '8px', fontSize: 12, color: '#868e96' }}>
+                  {new Date(node.created_at).toLocaleDateString('ko-KR')}
+                </td>
+                <td style={{ padding: '8px' }}>
+                  <div style={{ display: 'flex', gap: 4 }} onClick={e => e.stopPropagation()}>
+                    <button onClick={() => handleEdit(node)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}>
                       <PencilSimple size={14} />
-                    </ActionIcon>
-                    <ActionIcon variant="subtle" size="sm" color="red" onClick={() => handleArchive(node.id)}>
+                    </button>
+                    <button onClick={() => handleArchive(node.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: '#fa5252' }}>
                       <Archive size={14} />
-                    </ActionIcon>
-                  </Group>
-                </Table.Td>
-              </Table.Tr>
+                    </button>
+                  </div>
+                </td>
+              </tr>
               {expandedId === node.id && (
-                <Table.Tr key={`${node.id}-detail`}>
-                  <Table.Td colSpan={6}>
-                    <Paper p="sm" bg="var(--mantine-color-gray-0)">
-                      <Stack gap="xs">
-                        <Group gap="xs">
-                          <Text fz="xs" c="dimmed" fw={600}>ID:</Text>
-                          <Text fz="xs" c="dimmed" ff="monospace">{node.id}</Text>
-                        </Group>
-                        <Group gap="xs">
-                          <Text fz="xs" c="dimmed" fw={600}>사용자:</Text>
-                          <Text fz="xs" c="dimmed" ff="monospace">{node.user_id ?? '관리자'}</Text>
-                        </Group>
-                        <Group gap="xs">
-                          <Text fz="xs" c="dimmed" fw={600}>해결:</Text>
-                          <Text fz="xs">{node.resolution ?? '없음'}</Text>
-                        </Group>
-                        <Box>
-                          <Text fz="xs" c="dimmed" fw={600} mb={4}>전체 내용:</Text>
-                          <Text fz="sm" style={{ whiteSpace: 'pre-wrap' }}>{node.raw ?? '-'}</Text>
-                        </Box>
-                      </Stack>
-                    </Paper>
-                  </Table.Td>
-                </Table.Tr>
+                <tr key={`${node.id}-detail`}>
+                  <td colSpan={6} style={{ padding: 0 }}>
+                    <div style={{ padding: 12, background: '#f8f9fa', margin: '0 8px 8px 8px', borderRadius: 4 }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                        <div style={{ display: 'flex', gap: 8 }}>
+                          <span style={{ fontSize: 12, color: '#868e96', fontWeight: 600 }}>ID:</span>
+                          <span style={{ fontSize: 12, color: '#868e96', fontFamily: 'monospace' }}>{node.id}</span>
+                        </div>
+                        <div style={{ display: 'flex', gap: 8 }}>
+                          <span style={{ fontSize: 12, color: '#868e96', fontWeight: 600 }}>사용자:</span>
+                          <span style={{ fontSize: 12, color: '#868e96', fontFamily: 'monospace' }}>{node.user_id ?? '관리자'}</span>
+                        </div>
+                        <div style={{ display: 'flex', gap: 8 }}>
+                          <span style={{ fontSize: 12, color: '#868e96', fontWeight: 600 }}>해결:</span>
+                          <span style={{ fontSize: 12 }}>{node.resolution ?? '없음'}</span>
+                        </div>
+                        <div>
+                          <span style={{ fontSize: 12, color: '#868e96', fontWeight: 600, display: 'block', marginBottom: 4 }}>전체 내용:</span>
+                          <span style={{ fontSize: 13, whiteSpace: 'pre-wrap' }}>{node.raw ?? '-'}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
               )}
-            </>
+            </React.Fragment>
           ))}
-        </Table.Tbody>
-      </Table>
+        </tbody>
+      </table>
 
       {nodes.length === 0 && (
-        <Text c="dimmed" ta="center" py="xl" fz="sm">검색 결과가 없어요.</Text>
+        <p style={{ color: '#868e96', textAlign: 'center', padding: '24px 0', fontSize: 13 }}>검색 결과가 없어요.</p>
       )}
 
-      <Group justify="center">
-        <Pagination total={Math.ceil(total / PAGE_SIZE)} value={page} onChange={setPage} size="sm" />
-      </Group>
+      {totalPages > 1 && (
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 4 }}>
+          {Array.from({ length: totalPages }, (_, i) => i + 1).slice(Math.max(0, page - 3), page + 2).map(p => (
+            <button
+              key={p}
+              onClick={() => setPage(p)}
+              style={{
+                padding: '4px 10px', border: '1px solid #dee2e6', borderRadius: 4, cursor: 'pointer', fontSize: 12,
+                background: p === page ? '#333' : '#fff',
+                color: p === page ? '#fff' : '#333',
+              }}
+            >
+              {p}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Edit Modal */}
-      <Modal opened={editOpened} onClose={closeEdit} title="데이터 수정" centered>
-        <Stack gap="md">
-          <Textarea
-            label="내용"
-            value={editRaw}
-            onChange={e => setEditRaw(e.target.value)}
-            minRows={4}
-            autosize
-          />
-          <Select
-            label="분류"
-            data={domains ?? []}
-            value={editDomain}
-            onChange={setEditDomain}
-          />
-          <Select
-            label="신뢰도"
-            data={['high', 'medium', 'low']}
-            value={editConfidence}
-            onChange={setEditConfidence}
-          />
-          <Group justify="flex-end" gap="xs">
-            <Button variant="light" color="gray" onClick={closeEdit}>취소</Button>
-            <Button color="dark" loading={saving} onClick={handleSave}>저장</Button>
-          </Group>
-        </Stack>
-      </Modal>
-    </Stack>
+      {editOpened && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }} onClick={() => setEditOpened(false)}>
+          <div style={{ background: '#fff', borderRadius: 8, padding: 24, width: '90%', maxWidth: 500, maxHeight: '80vh', overflow: 'auto' }} onClick={e => e.stopPropagation()}>
+            <h3 style={{ margin: '0 0 16px 0', fontSize: 16 }}>데이터 수정</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 500, marginBottom: 4 }}>내용</label>
+                <textarea
+                  value={editRaw}
+                  onChange={e => setEditRaw(e.target.value)}
+                  rows={4}
+                  style={{ width: '100%', padding: '6px 10px', border: '1px solid #dee2e6', borderRadius: 4, fontSize: 13, resize: 'vertical' }}
+                />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 500, marginBottom: 4 }}>분류</label>
+                <select value={editDomain} onChange={e => setEditDomain(e.target.value)} style={{ width: '100%', padding: '6px 10px', border: '1px solid #dee2e6', borderRadius: 4, fontSize: 13 }}>
+                  <option value="">선택</option>
+                  {domains.map(d => <option key={d} value={d}>{d}</option>)}
+                </select>
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 500, marginBottom: 4 }}>신뢰도</label>
+                <select value={editConfidence} onChange={e => setEditConfidence(e.target.value)} style={{ width: '100%', padding: '6px 10px', border: '1px solid #dee2e6', borderRadius: 4, fontSize: 13 }}>
+                  <option value="">선택</option>
+                  <option value="high">high</option>
+                  <option value="medium">medium</option>
+                  <option value="low">low</option>
+                </select>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+                <button onClick={() => setEditOpened(false)} style={{ padding: '6px 14px', background: '#f8f9fa', border: '1px solid #dee2e6', borderRadius: 4, cursor: 'pointer', fontSize: 12 }}>취소</button>
+                <button disabled={saving} onClick={handleSave} style={{ padding: '6px 14px', background: '#343a40', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer', fontSize: 12 }}>
+                  {saving ? '...' : '저장'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

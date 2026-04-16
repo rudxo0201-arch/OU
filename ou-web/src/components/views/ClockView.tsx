@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { Stack, Text, Box, SimpleGrid } from '@mantine/core';
 import type { ViewProps } from './registry';
 
 const CX = 100;
@@ -58,23 +57,21 @@ function ClockFace({ time, label, size = 200 }: ClockFaceProps) {
   const scale = size / 200;
 
   return (
-    <Stack gap={8} align="center">
-      <Box style={{ width: size, height: size }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'center' }}>
+      <div style={{ width: size, height: size }}>
         <svg
           viewBox="0 0 200 200"
           width={size}
           height={size}
           style={{ display: 'block' }}
         >
-          {/* 외곽 원 */}
           <circle
             cx={CX} cy={CY} r={R}
             fill="none"
-            stroke="var(--ou-border-muted, var(--mantine-color-default-border))"
+            stroke="var(--ou-border, #333)"
             strokeWidth={0.5}
           />
 
-          {/* 눈금 */}
           {Array.from({ length: 60 }, (_, i) => {
             const angle = i * 6;
             const isMajor = i % 5 === 0;
@@ -88,15 +85,14 @@ function ClockFace({ time, label, size = 200 }: ClockFaceProps) {
                 x1={start.x} y1={start.y}
                 x2={end.x} y2={end.y}
                 stroke={isMajor
-                  ? 'var(--ou-text-secondary, var(--mantine-color-gray-5))'
-                  : 'var(--ou-text-muted, var(--mantine-color-gray-3))'}
+                  ? 'var(--ou-gray-5, #888)'
+                  : 'var(--ou-gray-3, #ccc)'}
                 strokeWidth={isMajor ? 1.5 : 0.5}
                 strokeLinecap="round"
               />
             );
           })}
 
-          {/* 숫자 */}
           {Array.from({ length: 12 }, (_, i) => {
             const num = i === 0 ? 12 : i;
             const pos = getHandCoords(CX, CY, i * 30, R - 24);
@@ -108,7 +104,7 @@ function ClockFace({ time, label, size = 200 }: ClockFaceProps) {
                 dominantBaseline="central"
                 fontSize={11}
                 fontWeight={500}
-                fill="var(--ou-text-secondary, var(--mantine-color-gray-5))"
+                fill="var(--ou-gray-5, #888)"
                 style={{ fontFamily: "'Orbitron', var(--ou-font-logo, sans-serif)" }}
               >
                 {num}
@@ -116,80 +112,75 @@ function ClockFace({ time, label, size = 200 }: ClockFaceProps) {
             );
           })}
 
-          {/* 시침 */}
           <line
             x1={CX} y1={CY}
             x2={hourEnd.x} y2={hourEnd.y}
-            stroke="var(--ou-text-strong, var(--mantine-color-gray-8))"
+            stroke="var(--ou-gray-8, #333)"
             strokeWidth={3}
             strokeLinecap="round"
           />
 
-          {/* 분침 */}
           <line
             x1={CX} y1={CY}
             x2={minuteEnd.x} y2={minuteEnd.y}
-            stroke="var(--ou-text-body, var(--mantine-color-gray-6))"
+            stroke="var(--ou-gray-6, #666)"
             strokeWidth={2}
             strokeLinecap="round"
           />
 
-          {/* 초침 */}
           <line
             x1={CX} y1={CY}
             x2={secondEnd.x} y2={secondEnd.y}
-            stroke="var(--ou-text-dimmed, var(--mantine-color-gray-4))"
+            stroke="var(--ou-gray-4, #aaa)"
             strokeWidth={0.8}
             strokeLinecap="round"
           />
 
-          {/* 중심점 */}
           <circle
             cx={CX} cy={CY} r={3}
-            fill="var(--ou-text-body, var(--mantine-color-gray-6))"
+            fill="var(--ou-gray-6, #666)"
           />
         </svg>
-      </Box>
+      </div>
 
-      {/* 디지털 시각 */}
-      <Text
-        fz={20 * scale}
-        fw={400}
-        ta="center"
+      <span
         style={{
+          fontSize: 20 * scale,
+          fontWeight: 400,
+          textAlign: 'center',
           fontFamily: "'Orbitron', var(--ou-font-logo, sans-serif)",
-          color: 'var(--ou-text-strong, var(--mantine-color-gray-8))',
+          color: 'var(--ou-gray-8, #333)',
           letterSpacing: 2,
         }}
       >
         {formatDigital(time)}
-      </Text>
+      </span>
 
-      {/* 날짜 */}
-      <Text
-        fz={11 * scale}
-        ta="center"
-        style={{ color: 'var(--ou-text-secondary, var(--mantine-color-gray-5))' }}
+      <span
+        style={{
+          fontSize: 11 * scale,
+          textAlign: 'center',
+          color: 'var(--ou-gray-5, #888)',
+        }}
       >
         {formatDate(time)}
-      </Text>
+      </span>
 
-      {/* 라벨 (월드클록용) */}
       {label && (
-        <Text
-          fz={10 * scale}
-          fw={500}
-          ta="center"
+        <span
           style={{
-            color: 'var(--ou-text-dimmed, var(--mantine-color-gray-4))',
+            fontSize: 10 * scale,
+            fontWeight: 500,
+            textAlign: 'center',
+            color: 'var(--ou-gray-4, #aaa)',
             letterSpacing: 1,
             textTransform: 'uppercase',
           }}
         >
           {label}
-        </Text>
+        </span>
       )}
-    </Stack>
+    </div>
   );
 }
 
@@ -212,13 +203,12 @@ export function ClockView({ nodes }: ViewProps) {
       }));
   }, [nodes]);
 
-  // 월드클록 모드
   if (timezones.length > 0) {
     const cols = timezones.length <= 2 ? timezones.length : timezones.length <= 4 ? 2 : 3;
     const clockSize = timezones.length <= 2 ? 180 : 140;
     return (
-      <Box p="md">
-        <SimpleGrid cols={cols} spacing="lg">
+      <div style={{ padding: 16 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: 24 }}>
           {timezones.map(tz => (
             <ClockFace
               key={tz.id}
@@ -227,15 +217,14 @@ export function ClockView({ nodes }: ViewProps) {
               size={clockSize}
             />
           ))}
-        </SimpleGrid>
-      </Box>
+        </div>
+      </div>
     );
   }
 
-  // 기본: 로컬 시계 1개
   return (
-    <Stack align="center" justify="center" p="md" gap="xs">
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 16, gap: 8 }}>
       <ClockFace time={now} size={200} />
-    </Stack>
+    </div>
   );
 }

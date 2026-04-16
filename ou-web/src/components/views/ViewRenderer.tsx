@@ -1,7 +1,6 @@
 'use client';
 
 import { Component, type ReactNode } from 'react';
-import { Box, Stack, Text, Button } from '@mantine/core';
 import { WarningCircle } from '@phosphor-icons/react';
 import * as Sentry from '@sentry/nextjs';
 import { VIEW_REGISTRY } from './registry';
@@ -37,22 +36,21 @@ class ViewErrorBoundary extends Component<
   render() {
     if (this.state.hasError) {
       return (
-        <Stack align="center" justify="center" h="100%" mih={200} gap="sm" p="xl">
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', minHeight: 200, gap: 8, padding: 24 }}>
           <WarningCircle size={32} color="var(--mantine-color-red-5)" />
-          <Text fz="sm" c="dimmed" ta="center">뷰를 표시할 수 없습니다</Text>
+          <span style={{ fontSize: 'var(--mantine-font-size-sm)', color: 'var(--mantine-color-dimmed)', textAlign: 'center' }}>뷰를 표시할 수 없습니다</span>
           {process.env.NODE_ENV === 'development' && this.state.error && (
-            <Text fz={10} c="red" ta="center" maw={400} style={{ fontFamily: 'monospace' }}>
+            <span style={{ fontSize: 10, color: 'var(--mantine-color-red-5)', textAlign: 'center', maxWidth: 400, fontFamily: 'monospace' }}>
               {this.state.error}
-            </Text>
+            </span>
           )}
-          <Button
-            size="xs"
-            variant="subtle"
+          <button
+            style={{ padding: '4px 12px', fontSize: 'var(--mantine-font-size-xs)', background: 'transparent', border: '0.5px solid var(--mantine-color-default-border)', borderRadius: 'var(--mantine-radius-md)', cursor: 'pointer', color: 'inherit' }}
             onClick={() => this.setState({ hasError: false, error: null })}
           >
             다시 시도
-          </Button>
-        </Stack>
+          </button>
+        </div>
       );
     }
     return this.props.children;
@@ -76,7 +74,7 @@ export function ViewRenderer({ viewType, nodes, filters, onSave, inline, layoutC
 
   return (
     <ViewErrorBoundary viewType={resolvedType}>
-      <Box
+      <div
         style={inline ? {
           border: '0.5px solid var(--mantine-color-default-border)',
           borderRadius: 8,
@@ -85,7 +83,7 @@ export function ViewRenderer({ viewType, nodes, filters, onSave, inline, layoutC
         } : undefined}
       >
         <View nodes={nodes} filters={filters} onSave={onSave} layoutConfig={layoutConfig} />
-      </Box>
+      </div>
     </ViewErrorBoundary>
   );
 }

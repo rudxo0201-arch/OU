@@ -2,11 +2,6 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  Drawer, Group, Text, Button, Stack, Box, ScrollArea,
-  TextInput, Textarea, Select, SimpleGrid, SegmentedControl,
-  Divider, Badge, ActionIcon, Tooltip,
-} from '@mantine/core';
-import {
   CalendarBlank, Kanban, ChartBar, Graph, TreeStructure,
   SquaresFour, BookOpen, Clock, Cards, BookBookmark,
   FileText, Table, Trash, X, FloppyDisk,
@@ -178,262 +173,305 @@ export function ViewEditorDrawer({ nodes, onSaved }: ViewEditorDrawerProps) {
     }
   };
 
+  if (!isOpen) return null;
+
   return (
-    <Drawer
-      opened={isOpen}
-      onClose={close}
-      position="right"
-      size="85%"
-      withCloseButton={false}
-      styles={{
-        body: { height: '100%', padding: 0, display: 'flex', flexDirection: 'column' },
-        content: { background: 'var(--mantine-color-body)' },
-      }}
-    >
-      {/* 상단 헤더 */}
-      <Group justify="space-between" px="lg" py="sm" style={{ borderBottom: '0.5px solid var(--mantine-color-default-border)' }}>
-        <Text fw={600}>
-          {editingView ? `편집: ${editingView.name}` : '새 뷰 만들기'}
-        </Text>
-        <Group gap="sm">
-          <Button
-            size="xs"
-            variant="light"
-            color="gray"
-            leftSection={<FloppyDisk size={14} />}
-            onClick={handleSave}
-            loading={saving}
-            disabled={!name.trim() || !viewType}
-          >
-            저장
-          </Button>
-          <ActionIcon variant="subtle" color="gray" onClick={close}>
-            <X size={18} />
-          </ActionIcon>
-        </Group>
-      </Group>
+    <>
+      {/* Overlay */}
+      <div
+        onClick={close}
+        style={{
+          position: 'fixed', inset: 0, zIndex: 999,
+          background: 'rgba(0,0,0,0.5)',
+        }}
+      />
+      {/* Drawer panel */}
+      <div
+        style={{
+          position: 'fixed', top: 0, right: 0, bottom: 0,
+          width: '85%', zIndex: 1000,
+          background: 'var(--mantine-color-body)',
+          display: 'flex', flexDirection: 'column',
+        }}
+      >
+        {/* 상단 헤더 */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 24px', borderBottom: '0.5px solid var(--mantine-color-default-border)' }}>
+          <span style={{ fontWeight: 600 }}>
+            {editingView ? `편집: ${editingView.name}` : '새 뷰 만들기'}
+          </span>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <button
+              onClick={handleSave}
+              disabled={saving || !name.trim() || !viewType}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 4,
+                fontSize: 12, padding: '4px 12px',
+                border: '1px solid var(--mantine-color-default-border)',
+                borderRadius: 4, background: 'var(--mantine-color-dark-6)',
+                color: 'inherit', cursor: 'pointer',
+                opacity: (saving || !name.trim() || !viewType) ? 0.5 : 1,
+              }}
+            >
+              <FloppyDisk size={14} />
+              {saving ? '저장 중...' : '저장'}
+            </button>
+            <button
+              onClick={close}
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                width: 28, height: 28, border: 'none',
+                background: 'transparent', color: 'inherit', cursor: 'pointer',
+                borderRadius: 4,
+              }}
+            >
+              <X size={18} />
+            </button>
+          </div>
+        </div>
 
-      {/* 본문: 좌측 설정 + 우측 미리보기 */}
-      <Box style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
-        {/* 좌측: 설정 (40%) */}
-        <ScrollArea style={{ width: '40%', borderRight: '0.5px solid var(--mantine-color-default-border)' }}>
-          <Stack gap="lg" p="lg">
-            {/* 기본 정보 */}
-            <Stack gap="xs">
-              <Text fz="xs" fw={600} c="dimmed" tt="uppercase">기본</Text>
-              <Group gap="sm" align="flex-end">
-                <TextInput
-                  label="아이콘"
-                  placeholder="📅"
-                  value={icon}
-                  onChange={e => setField('icon', e.target.value)}
-                  style={{ width: 70 }}
-                  size="xs"
-                />
-                <TextInput
-                  label="이름"
-                  placeholder="뷰 이름"
-                  value={name}
-                  onChange={e => setField('name', e.target.value)}
-                  style={{ flex: 1 }}
-                  size="xs"
-                />
-              </Group>
-              <Textarea
-                label="설명"
-                placeholder="이 뷰의 용도를 간단히"
-                value={description}
-                onChange={e => setField('description', e.target.value)}
-                minRows={2}
-                size="xs"
-              />
-            </Stack>
-
-            <Divider />
-
-            {/* 뷰 타입 선택 */}
-            <Stack gap="xs">
-              <Text fz="xs" fw={600} c="dimmed" tt="uppercase">뷰 타입</Text>
-              <SimpleGrid cols={3} spacing={6}>
-                {VIEW_SCHEMA_HINTS.map(hint => {
-                  const Icon = VIEW_TYPE_ICONS[hint.viewType];
-                  const isSelected = viewType === hint.viewType;
-                  return (
-                    <Box
-                      key={hint.viewType}
-                      onClick={() => setField('viewType', hint.viewType)}
-                      style={{
-                        padding: '8px 6px',
-                        borderRadius: 8,
-                        border: `1px solid ${isSelected ? 'var(--mantine-color-gray-5)' : 'var(--mantine-color-default-border)'}`,
-                        background: isSelected ? 'var(--mantine-color-dark-6)' : 'transparent',
-                        cursor: 'pointer',
-                        textAlign: 'center',
-                        transition: 'all 0.15s',
-                      }}
-                    >
-                      {Icon && <Icon size={18} weight={isSelected ? 'fill' : 'light'} />}
-                      <Text fz={10} mt={2} lineClamp={1}>{hint.label}</Text>
-                    </Box>
-                  );
-                })}
-              </SimpleGrid>
-              {currentHint && (
-                <Text fz="xs" c="dimmed">{currentHint.description}</Text>
-              )}
-            </Stack>
-
-            <Divider />
-
-            {/* 데이터 필터 */}
-            <Stack gap="xs">
-              <Text fz="xs" fw={600} c="dimmed" tt="uppercase">데이터 필터</Text>
-              <Select
-                label="도메인"
-                placeholder="전체"
-                data={availableDomainOptions.length > 0 ? availableDomainOptions : DOMAIN_OPTIONS}
-                value={(filterConfig.domain as string) ?? null}
-                onChange={v => v ? setFilterField('domain', v) : removeFilterField('domain')}
-                clearable
-                size="xs"
-              />
-            </Stack>
-
-            <Divider />
-
-            {/* 스키마 매핑 */}
-            {currentHint && allFields.length > 0 && (
-              <Stack gap="xs">
-                <Text fz="xs" fw={600} c="dimmed" tt="uppercase">스키마 매핑</Text>
-                <Text fz="xs" c="dimmed">뷰가 기대하는 필드를 실제 데이터 필드에 연결</Text>
-                {allFields.map(field => (
-                  <Group key={field} gap="xs" align="flex-end">
-                    <Text fz="xs" w={80} style={{ flexShrink: 0 }}>
-                      {field}
-                      {currentHint.requiredFields.includes(field) && (
-                        <Text span c="red" fz="xs"> *</Text>
-                      )}
-                    </Text>
-                    <Select
-                      placeholder="선택"
-                      data={availableDataFields}
-                      value={schemaMap[field] ?? null}
-                      onChange={v => v ? setSchemaField(field, v) : removeSchemaField(field)}
-                      clearable
-                      size="xs"
-                      style={{ flex: 1 }}
+        {/* 본문: 좌측 설정 + 우측 미리보기 */}
+        <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+          {/* 좌측: 설정 (40%) */}
+          <div style={{ width: '40%', borderRight: '0.5px solid var(--mantine-color-default-border)', overflowY: 'auto' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: 24 }}>
+              {/* 기본 정보 */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--mantine-color-dimmed)', textTransform: 'uppercase' }}>기본</span>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
+                  <div style={{ width: 70 }}>
+                    <label style={{ fontSize: 12, fontWeight: 500, display: 'block', marginBottom: 2 }}>아이콘</label>
+                    <input
+                      type="text"
+                      placeholder="📅"
+                      value={icon}
+                      onChange={e => setField('icon', e.target.value)}
+                      style={{ width: '100%', fontSize: 12, padding: '4px 8px', border: '1px solid var(--mantine-color-default-border)', borderRadius: 4, background: 'transparent', color: 'inherit', outline: 'none' }}
                     />
-                  </Group>
-                ))}
-              </Stack>
-            )}
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: 12, fontWeight: 500, display: 'block', marginBottom: 2 }}>이름</label>
+                    <input
+                      type="text"
+                      placeholder="뷰 이름"
+                      value={name}
+                      onChange={e => setField('name', e.target.value)}
+                      style={{ width: '100%', fontSize: 12, padding: '4px 8px', border: '1px solid var(--mantine-color-default-border)', borderRadius: 4, background: 'transparent', color: 'inherit', outline: 'none' }}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 500, display: 'block', marginBottom: 2 }}>설명</label>
+                  <textarea
+                    placeholder="이 뷰의 용도를 간단히"
+                    value={description}
+                    onChange={e => setField('description', e.target.value)}
+                    rows={2}
+                    style={{ width: '100%', fontSize: 12, padding: '4px 8px', border: '1px solid var(--mantine-color-default-border)', borderRadius: 4, background: 'transparent', color: 'inherit', outline: 'none', resize: 'vertical', fontFamily: 'inherit' }}
+                  />
+                </div>
+              </div>
 
-            <Divider />
+              <div style={{ borderTop: '1px solid var(--mantine-color-default-border)' }} />
 
-            {/* 디자인 에디터 */}
-            <LayoutDesignPanel viewType={viewType} />
-
-            <Divider />
-
-            {/* 공개 설정 */}
-            <Stack gap="xs">
-              <Text fz="xs" fw={600} c="dimmed" tt="uppercase">공개</Text>
-              <SegmentedControl
-                data={[
-                  { value: 'private', label: '비공개' },
-                  { value: 'link', label: '링크' },
-                  { value: 'public', label: '공개' },
-                ]}
-                value={visibility}
-                onChange={v => setField('visibility', v as 'private' | 'link' | 'public')}
-                size="xs"
-                color="gray"
-              />
-            </Stack>
-
-            {/* 삭제 */}
-            {editingView && (
-              <>
-                <Divider />
-                <Button
-                  variant="subtle"
-                  color="red"
-                  size="xs"
-                  leftSection={<Trash size={14} />}
-                  onClick={handleDelete}
-                >
-                  이 뷰 삭제
-                </Button>
-              </>
-            )}
-          </Stack>
-        </ScrollArea>
-
-        {/* 우측: 미리보기 (60%) */}
-        <Box style={{ width: '60%', display: 'flex', flexDirection: 'column' }}>
-          <Box px="lg" py="sm" style={{ borderBottom: '0.5px solid var(--mantine-color-default-border)' }}>
-            <Text fz="xs" fw={600} c="dimmed" tt="uppercase">미리보기</Text>
-          </Box>
-
-          <ScrollArea style={{ flex: 1 }} p="md">
-            {viewType && filteredNodes.length > 0 ? (
-              <Box style={{ border: '0.5px solid var(--mantine-color-default-border)', borderRadius: 8, overflow: 'hidden' }}>
-                <ViewRenderer
-                  viewType={viewType}
-                  nodes={filteredNodes}
-                  filters={filterConfig}
-                  layoutConfig={layoutConfig as LayoutConfig}
-                />
-              </Box>
-            ) : (
-              <Stack align="center" justify="center" h="100%" gap="sm">
-                <Text fz="sm" c="dimmed" ta="center">
-                  {!viewType ? '뷰 타입을 선택하면 미리보기가 표시됩니다' : '표시할 데이터가 없습니다'}
-                </Text>
-              </Stack>
-            )}
-
-            {/* 스키마 적합도 */}
-            {currentHint && Object.keys(fieldCoverage).length > 0 && (
-              <Box mt="md">
-                <Text fz="xs" fw={600} c="dimmed" tt="uppercase" mb="xs">스키마 적합도</Text>
-                <Stack gap={4}>
-                  {allFields.map(field => {
-                    const pct = fieldCoverage[field] ?? 0;
-                    const isReq = currentHint.requiredFields.includes(field);
+              {/* 뷰 타입 선택 */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--mantine-color-dimmed)', textTransform: 'uppercase' }}>뷰 타입</span>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6 }}>
+                  {VIEW_SCHEMA_HINTS.map(hint => {
+                    const Icon = VIEW_TYPE_ICONS[hint.viewType];
+                    const isSelected = viewType === hint.viewType;
                     return (
-                      <Group key={field} gap="xs">
-                        <Text fz="xs" c={pct > 0 ? undefined : 'dimmed'} w={80}>
-                          {pct > 0 ? '✓' : '○'} {field}
-                        </Text>
-                        <Box
-                          style={{
-                            flex: 1,
-                            height: 4,
-                            borderRadius: 2,
-                            background: 'var(--mantine-color-dark-6)',
-                            overflow: 'hidden',
-                          }}
-                        >
-                          <Box
-                            style={{
-                              width: `${pct}%`,
-                              height: '100%',
-                              background: 'var(--mantine-color-gray-5)',
-                              borderRadius: 2,
-                            }}
-                          />
-                        </Box>
-                        <Text fz="xs" c="dimmed" w={40} ta="right">{pct}%</Text>
-                      </Group>
+                      <div
+                        key={hint.viewType}
+                        onClick={() => setField('viewType', hint.viewType)}
+                        style={{
+                          padding: '8px 6px',
+                          borderRadius: 8,
+                          border: `1px solid ${isSelected ? 'var(--mantine-color-gray-5)' : 'var(--mantine-color-default-border)'}`,
+                          background: isSelected ? 'var(--mantine-color-dark-6)' : 'transparent',
+                          cursor: 'pointer',
+                          textAlign: 'center',
+                          transition: 'all 0.15s',
+                        }}
+                      >
+                        {Icon && <Icon size={18} weight={isSelected ? 'fill' : 'light'} />}
+                        <span style={{ fontSize: 10, marginTop: 2, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{hint.label}</span>
+                      </div>
                     );
                   })}
-                </Stack>
-              </Box>
-            )}
-          </ScrollArea>
-        </Box>
-      </Box>
-    </Drawer>
+                </div>
+                {currentHint && (
+                  <span style={{ fontSize: 12, color: 'var(--mantine-color-dimmed)' }}>{currentHint.description}</span>
+                )}
+              </div>
+
+              <div style={{ borderTop: '1px solid var(--mantine-color-default-border)' }} />
+
+              {/* 데이터 필터 */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--mantine-color-dimmed)', textTransform: 'uppercase' }}>데이터 필터</span>
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 500, display: 'block', marginBottom: 2 }}>도메인</label>
+                  <select
+                    value={(filterConfig.domain as string) ?? ''}
+                    onChange={e => e.target.value ? setFilterField('domain', e.target.value) : removeFilterField('domain')}
+                    style={{ width: '100%', fontSize: 12, padding: '4px 8px', border: '1px solid var(--mantine-color-default-border)', borderRadius: 4, background: 'transparent', color: 'inherit', outline: 'none' }}
+                  >
+                    <option value="">전체</option>
+                    {(availableDomainOptions.length > 0 ? availableDomainOptions : DOMAIN_OPTIONS).map(opt => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div style={{ borderTop: '1px solid var(--mantine-color-default-border)' }} />
+
+              {/* 스키마 매핑 */}
+              {currentHint && allFields.length > 0 && (
+                <>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--mantine-color-dimmed)', textTransform: 'uppercase' }}>스키마 매핑</span>
+                    <span style={{ fontSize: 12, color: 'var(--mantine-color-dimmed)' }}>뷰가 기대하는 필드를 실제 데이터 필드에 연결</span>
+                    {allFields.map(field => (
+                      <div key={field} style={{ display: 'flex', gap: 6, alignItems: 'flex-end' }}>
+                        <span style={{ fontSize: 12, width: 80, flexShrink: 0 }}>
+                          {field}
+                          {currentHint.requiredFields.includes(field) && (
+                            <span style={{ color: 'red', fontSize: 12 }}> *</span>
+                          )}
+                        </span>
+                        <select
+                          value={schemaMap[field] ?? ''}
+                          onChange={e => e.target.value ? setSchemaField(field, e.target.value) : removeSchemaField(field)}
+                          style={{ flex: 1, fontSize: 12, padding: '4px 8px', border: '1px solid var(--mantine-color-default-border)', borderRadius: 4, background: 'transparent', color: 'inherit', outline: 'none' }}
+                        >
+                          <option value="">선택</option>
+                          {availableDataFields.map(opt => (
+                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                          ))}
+                        </select>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div style={{ borderTop: '1px solid var(--mantine-color-default-border)' }} />
+                </>
+              )}
+
+              {/* 디자인 에디터 */}
+              <LayoutDesignPanel viewType={viewType} />
+
+              <div style={{ borderTop: '1px solid var(--mantine-color-default-border)' }} />
+
+              {/* 공개 설정 */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--mantine-color-dimmed)', textTransform: 'uppercase' }}>공개</span>
+                <div style={{ display: 'flex', border: '1px solid var(--mantine-color-default-border)', borderRadius: 4, overflow: 'hidden' }}>
+                  {[
+                    { value: 'private', label: '비공개' },
+                    { value: 'link', label: '링크' },
+                    { value: 'public', label: '공개' },
+                  ].map(opt => (
+                    <button
+                      key={opt.value}
+                      onClick={() => setField('visibility', opt.value as 'private' | 'link' | 'public')}
+                      style={{
+                        flex: 1, fontSize: 12, padding: '6px 8px', border: 'none', cursor: 'pointer',
+                        background: visibility === opt.value ? 'var(--mantine-color-gray-6)' : 'transparent',
+                        color: visibility === opt.value ? '#fff' : 'inherit',
+                      }}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* 삭제 */}
+              {editingView && (
+                <>
+                  <div style={{ borderTop: '1px solid var(--mantine-color-default-border)' }} />
+                  <button
+                    onClick={handleDelete}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 4,
+                      fontSize: 12, padding: '6px 12px', border: 'none',
+                      background: 'transparent', color: 'var(--mantine-color-red-6)',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <Trash size={14} />
+                    이 뷰 삭제
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* 우측: 미리보기 (60%) */}
+          <div style={{ width: '60%', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ padding: '10px 24px', borderBottom: '0.5px solid var(--mantine-color-default-border)' }}>
+              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--mantine-color-dimmed)', textTransform: 'uppercase' }}>미리보기</span>
+            </div>
+
+            <div style={{ flex: 1, overflowY: 'auto', padding: 16 }}>
+              {viewType && filteredNodes.length > 0 ? (
+                <div style={{ border: '0.5px solid var(--mantine-color-default-border)', borderRadius: 8, overflow: 'hidden' }}>
+                  <ViewRenderer
+                    viewType={viewType}
+                    nodes={filteredNodes}
+                    filters={filterConfig}
+                    layoutConfig={layoutConfig as LayoutConfig}
+                  />
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 8 }}>
+                  <span style={{ fontSize: 14, color: 'var(--mantine-color-dimmed)', textAlign: 'center' }}>
+                    {!viewType ? '뷰 타입을 선택하면 미리보기가 표시됩니다' : '표시할 데이터가 없습니다'}
+                  </span>
+                </div>
+              )}
+
+              {/* 스키마 적합도 */}
+              {currentHint && Object.keys(fieldCoverage).length > 0 && (
+                <div style={{ marginTop: 16 }}>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--mantine-color-dimmed)', textTransform: 'uppercase', display: 'block', marginBottom: 6 }}>스키마 적합도</span>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    {allFields.map(field => {
+                      const pct = fieldCoverage[field] ?? 0;
+                      const isReq = currentHint.requiredFields.includes(field);
+                      return (
+                        <div key={field} style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                          <span style={{ fontSize: 12, color: pct > 0 ? undefined : 'var(--mantine-color-dimmed)', width: 80 }}>
+                            {pct > 0 ? '✓' : '○'} {field}
+                          </span>
+                          <div
+                            style={{
+                              flex: 1, height: 4, borderRadius: 2,
+                              background: 'var(--mantine-color-dark-6)',
+                              overflow: 'hidden',
+                            }}
+                          >
+                            <div
+                              style={{
+                                width: `${pct}%`, height: '100%',
+                                background: 'var(--mantine-color-gray-5)',
+                                borderRadius: 2,
+                              }}
+                            />
+                          </div>
+                          <span style={{ fontSize: 12, color: 'var(--mantine-color-dimmed)', width: 40, textAlign: 'right' }}>{pct}%</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }

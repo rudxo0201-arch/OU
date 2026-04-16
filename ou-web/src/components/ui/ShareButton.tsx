@@ -1,9 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ActionIcon, Tooltip } from '@mantine/core';
 import { ShareNetwork } from '@phosphor-icons/react';
-import { notifications } from '@mantine/notifications';
 import { ShareModal } from './ShareModal';
 
 interface ShareButtonProps {
@@ -31,7 +29,7 @@ export function ShareButton({ nodeId, viewType, title }: ShareButtonProps) {
         });
         return;
       } catch {
-        // User cancelled or share failed — fall through to modal
+        // User cancelled or share failed -- fall through to modal
       }
     }
 
@@ -41,20 +39,25 @@ export function ShareButton({ nodeId, viewType, title }: ShareButtonProps) {
 
   return (
     <>
-      <Tooltip label="공유" position="bottom" withArrow>
-        <ActionIcon
-          variant="subtle"
-          color="gray"
-          size="lg"
-          onClick={handleClick}
-          style={{
-            border: '0.5px solid var(--mantine-color-default-border)',
-            borderRadius: 999,
-          }}
-        >
-          <ShareNetwork size={18} weight="light" />
-        </ActionIcon>
-      </Tooltip>
+      <button
+        title="공유"
+        onClick={handleClick}
+        style={{
+          background: 'none',
+          border: '0.5px solid var(--ou-border-muted, rgba(255,255,255,0.14))',
+          borderRadius: 999,
+          cursor: 'pointer',
+          color: 'var(--ou-text-muted, rgba(255,255,255,0.5))',
+          padding: 8,
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: 36,
+          height: 36,
+        }}
+      >
+        <ShareNetwork size={18} weight="light" />
+      </button>
 
       <ShareModal
         opened={modalOpened}

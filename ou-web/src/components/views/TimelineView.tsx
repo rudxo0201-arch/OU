@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo } from 'react';
-import { Stack, Text, Box, Group } from '@mantine/core';
 import dayjs from 'dayjs';
 import 'dayjs/locale/ko';
 import type { ViewProps } from './registry';
@@ -32,65 +31,65 @@ export function TimelineView({ nodes }: ViewProps) {
   if (items.length === 0) return null;
 
   return (
-    <Stack gap={0} p="md">
-      <Text fz="xs" c="dimmed" mb="md">타임라인</Text>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 0, padding: 16 }}>
+      <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', marginBottom: 16 }}>타임라인</span>
 
       {items.map((item, i) => {
         const isLast = i === items.length - 1;
         return (
-          <Group key={item.id} gap="md" align="flex-start" wrap="nowrap">
+          <div key={item.id} style={{ display: 'flex', gap: 16, alignItems: 'flex-start', flexWrap: 'nowrap' }}>
             {/* Date column */}
-            <Box style={{ width: 72, flexShrink: 0, textAlign: 'right', paddingTop: 2 }}>
+            <div style={{ width: 72, flexShrink: 0, textAlign: 'right', paddingTop: 2 }}>
               {item.date && (
                 <>
-                  <Text fz={11} fw={500} lh={1.2}>
+                  <span style={{ fontSize: 11, fontWeight: 500, lineHeight: 1.2, display: 'block' }}>
                     {dayjs(item.date).format('M월 D일')}
-                  </Text>
-                  <Text fz={9} c="dimmed">
+                  </span>
+                  <span style={{ fontSize: 9, color: 'var(--ou-text-dimmed, #888)', display: 'block' }}>
                     {dayjs(item.date).format('YYYY')}
-                  </Text>
+                  </span>
                 </>
               )}
-            </Box>
+            </div>
 
             {/* Dot + Line */}
-            <Box style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0 }}>
-              <Box
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0 }}>
+              <div
                 style={{
                   width: 10,
                   height: 10,
                   borderRadius: '50%',
-                  backgroundColor: i === 0 ? 'var(--mantine-color-text)' : 'var(--mantine-color-gray-5)',
+                  backgroundColor: i === 0 ? 'currentColor' : 'var(--ou-gray-5, #888)',
                   marginTop: 4,
                   flexShrink: 0,
                 }}
               />
               {!isLast && (
-                <Box
+                <div
                   style={{
                     width: 1,
                     flex: 1,
                     minHeight: 32,
-                    backgroundColor: 'var(--mantine-color-default-border)',
+                    backgroundColor: 'var(--ou-border, #333)',
                   }}
                 />
               )}
-            </Box>
+            </div>
 
             {/* Content */}
-            <Box style={{ flex: 1, paddingBottom: isLast ? 0 : 20 }}>
-              <Text fz="sm" fw={500} lh={1.4}>
+            <div style={{ flex: 1, paddingBottom: isLast ? 0 : 20 }}>
+              <span style={{ fontSize: 13, fontWeight: 500, lineHeight: 1.4, display: 'block' }}>
                 {item.title}
-              </Text>
+              </span>
               {item.description && item.description !== item.title && (
-                <Text fz="xs" c="dimmed" mt={2} lineClamp={3} style={{ lineHeight: 1.5 }}>
+                <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', marginTop: 2, lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                   {item.description}
-                </Text>
+                </span>
               )}
-            </Box>
-          </Group>
+            </div>
+          </div>
         );
       })}
-    </Stack>
+    </div>
   );
 }

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Box, Text, Group, Stack, Badge, UnstyledButton, TextInput, Loader, SimpleGrid } from '@mantine/core';
 import { Image as ImageIcon, Check, ArrowRight } from '@phosphor-icons/react';
 import { useRouter } from 'next/navigation';
 import { registerTool, type ToolProps } from './registry';
@@ -92,138 +91,136 @@ export function ImageTool({ rawInput, parsed, onSubmit }: ToolProps) {
   const totalEntries = entries.length || '여러';
 
   return (
-    <Box
-      mt="xs"
+    <div
       style={{
-        border: '0.5px solid var(--mantine-color-default-border)',
-        borderRadius: 'var(--mantine-radius-md)',
+        marginTop: 8,
+        border: '0.5px solid var(--color-default-border)',
+        borderRadius: 8,
         overflow: 'hidden',
         animation: 'ou-fade-in 300ms ease',
       }}
     >
       {/* 헤더 */}
-      <Group
-        gap="xs"
-        px="sm"
-        py={6}
+      <div
         style={{
+          display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px',
           background: 'rgba(255, 255, 255, 0.04)',
-          borderBottom: '0.5px solid var(--mantine-color-default-border)',
+          borderBottom: '0.5px solid var(--color-default-border)',
         }}
       >
         <ImageIcon size={14} weight="fill" />
-        <Badge variant="light" color="gray" size="xs">
+        <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 12, background: '#f3f4f6', color: '#6b7280' }}>
           {imageType === 'timetable' ? '시간표' : imageType === 'receipt' ? '영수증' : '이미지'} 인식 완료
-        </Badge>
+        </span>
         {Object.keys(answers).length >= missingFields.length && missingFields.length > 0 && (
-          <Check size={12} style={{ color: 'var(--mantine-color-green-5)' }} />
+          <Check size={12} style={{ color: '#22c55e' }} />
         )}
-      </Group>
+      </div>
 
       {/* 로딩 */}
       {loading && (
-        <Box px="sm" py="md" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Loader size={14} />
-          <Text fz="xs" c="dimmed">이미지를 읽고 있어요...</Text>
-        </Box>
+        <div style={{ padding: '12px', display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ fontSize: 12, color: 'var(--color-dimmed)' }}>이미지를 읽고 있어요...</span>
+        </div>
       )}
 
       {/* 시간표: 요약 */}
       {imageType === 'timetable' && entries.length > 0 && (
-        <Box px="sm" py="sm">
-          <Text fz="sm" fw={500} mb={8}>
+        <div style={{ padding: '8px 12px' }}>
+          <span style={{ fontSize: 14, fontWeight: 500, display: 'block', marginBottom: 8 }}>
             {totalEntries}개 수업을 읽었어요
-          </Text>
+          </span>
 
           {/* 미니 시간표 뷰 */}
-          <SimpleGrid cols={5} spacing={4} mb={8}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 4, marginBottom: 8 }}>
             {['월', '화', '수', '목', '금'].map(day => {
               const dayEntries = entries.filter(e => e.day === day);
               return (
-                <Stack key={day} gap={2}>
-                  <Text fz={10} fw={600} ta="center" c="dimmed">{day}</Text>
+                <div key={day} style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <span style={{ fontSize: 10, fontWeight: 600, textAlign: 'center', color: 'var(--color-dimmed)' }}>{day}</span>
                   {dayEntries.length > 0 ? dayEntries.slice(0, 3).map((e, i) => (
-                    <Box
+                    <div
                       key={i}
-                      px={4}
-                      py={2}
                       style={{
+                        padding: '2px 4px',
                         background: 'rgba(255,255,255,0.04)',
                         borderRadius: 4,
-                        border: '0.5px solid var(--mantine-color-default-border)',
+                        border: '0.5px solid var(--color-default-border)',
                       }}
                     >
-                      <Text fz={9} truncate>{e.subject}</Text>
-                    </Box>
+                      <span style={{ fontSize: 9, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>{e.subject}</span>
+                    </div>
                   )) : (
-                    <Text fz={9} c="dimmed" ta="center">-</Text>
+                    <span style={{ fontSize: 9, color: 'var(--color-dimmed)', textAlign: 'center' }}>-</span>
                   )}
                   {dayEntries.length > 3 && (
-                    <Text fz={8} c="dimmed" ta="center">+{dayEntries.length - 3}</Text>
+                    <span style={{ fontSize: 8, color: 'var(--color-dimmed)', textAlign: 'center' }}>+{dayEntries.length - 3}</span>
                   )}
-                </Stack>
+                </div>
               );
             })}
-          </SimpleGrid>
-        </Box>
+          </div>
+        </div>
       )}
 
       {/* 영수증/일반: 텍스트 요약 */}
       {imageType !== 'timetable' && ocrText && (
-        <Box px="sm" py="sm">
-          <Text fz="sm" lineClamp={3}>{ocrText.slice(0, 200)}</Text>
-        </Box>
+        <div style={{ padding: '8px 12px' }}>
+          <span style={{ fontSize: 14, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical' }}>{ocrText.slice(0, 200)}</span>
+        </div>
       )}
 
       {/* 확인 필요 필드들 */}
       {missingFields.length > 0 && (
-        <Box px="sm" pb="sm">
+        <div style={{ padding: '0 12px 8px' }}>
           {missingFields.filter(f => !answers[f.key]).length > 0 && (
-            <Text fz={10} c="dimmed" mb={6}>확인이 필요해요</Text>
+            <span style={{ fontSize: 10, color: 'var(--color-dimmed)', display: 'block', marginBottom: 6 }}>확인이 필요해요</span>
           )}
 
           {missingFields.map(field => {
             if (answers[field.key]) {
               return (
-                <Group key={field.key} gap={6} mb={4}>
-                  <Text fz={11} c="dimmed">{field.label}</Text>
-                  <Text fz={11} fw={500}>{answers[field.key]}</Text>
-                </Group>
+                <div key={field.key} style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+                  <span style={{ fontSize: 11, color: 'var(--color-dimmed)' }}>{field.label}</span>
+                  <span style={{ fontSize: 11, fontWeight: 500 }}>{answers[field.key]}</span>
+                </div>
               );
             }
 
             if (field.options) {
               return (
-                <Box key={field.key} mb={8}>
-                  <Text fz={11} c="dimmed" mb={4}>{field.label}</Text>
-                  <Group gap={4}>
+                <div key={field.key} style={{ marginBottom: 8 }}>
+                  <span style={{ fontSize: 11, color: 'var(--color-dimmed)', display: 'block', marginBottom: 4 }}>{field.label}</span>
+                  <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                     {field.options.map(opt => (
-                      <UnstyledButton
+                      <button
                         key={opt}
                         onClick={() => handleAnswer(field.key, opt)}
                         style={{
                           padding: '4px 12px',
                           borderRadius: 14,
                           fontSize: 12,
-                          border: '0.5px solid var(--mantine-color-default-border)',
-                          color: 'var(--mantine-color-dimmed)',
+                          border: '0.5px solid var(--color-default-border)',
+                          color: 'var(--color-dimmed)',
+                          background: 'none',
+                          cursor: 'pointer',
                           transition: 'all 150ms',
                         }}
                       >
                         {opt}
-                      </UnstyledButton>
+                      </button>
                     ))}
-                  </Group>
-                </Box>
+                  </div>
+                </div>
               );
             }
 
             return (
-              <Box key={field.key} mb={8}>
-                <Text fz={11} c="dimmed" mb={4}>{field.label}</Text>
+              <div key={field.key} style={{ marginBottom: 8 }}>
+                <span style={{ fontSize: 11, color: 'var(--color-dimmed)', display: 'block', marginBottom: 4 }}>{field.label}</span>
                 {editingField === field.key ? (
-                  <TextInput
-                    size="xs"
+                  <input
+                    type="text"
                     placeholder={`${field.label} 입력`}
                     value={fieldValue}
                     onChange={e => setFieldValue(e.target.value)}
@@ -235,51 +232,50 @@ export function ImageTool({ rawInput, parsed, onSubmit }: ToolProps) {
                       }
                     }}
                     autoFocus
-                    styles={{
-                      input: {
-                        background: 'rgba(255,255,255,0.04)',
-                        border: '0.5px solid var(--mantine-color-default-border)',
-                      },
+                    style={{
+                      width: '100%', padding: '4px 8px', fontSize: 12, borderRadius: 6,
+                      background: 'rgba(255,255,255,0.04)',
+                      border: '0.5px solid var(--color-default-border)',
+                      boxSizing: 'border-box',
                     }}
                   />
                 ) : (
-                  <UnstyledButton
+                  <button
                     onClick={() => { setEditingField(field.key); setFieldValue(''); }}
                     style={{
                       padding: '4px 12px',
                       borderRadius: 14,
                       fontSize: 12,
-                      border: '0.5px solid var(--mantine-color-default-border)',
-                      color: 'var(--mantine-color-dimmed)',
+                      border: '0.5px solid var(--color-default-border)',
+                      color: 'var(--color-dimmed)',
+                      background: 'none',
+                      cursor: 'pointer',
                     }}
                   >
                     + {field.label} 입력
-                  </UnstyledButton>
+                  </button>
                 )}
-              </Box>
+              </div>
             );
           })}
-        </Box>
+        </div>
       )}
 
       {/* 하단 */}
-      <Group
-        px="sm"
-        py={6}
-        justify="space-between"
-        style={{ borderTop: '0.5px solid var(--mantine-color-default-border)' }}
+      <div
+        style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 12px', borderTop: '0.5px solid var(--color-default-border)' }}
       >
-        <UnstyledButton
+        <button
           onClick={() => router.push('/my')}
-          style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'var(--mantine-color-dimmed)' }}
+          style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'var(--color-dimmed)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
         >
           내 우주에서 보기 <ArrowRight size={11} />
-        </UnstyledButton>
+        </button>
         {entries.length > 0 && (
-          <Text fz={10} c="dimmed">{entries.length}개 기록 예정</Text>
+          <span style={{ fontSize: 10, color: 'var(--color-dimmed)' }}>{entries.length}개 기록 예정</span>
         )}
-      </Group>
-    </Box>
+      </div>
+    </div>
   );
 }
 

@@ -1,10 +1,6 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import {
-  Box, Group, Text, Stack, Badge, SimpleGrid,
-  UnstyledButton, Collapse, TextInput,
-} from '@mantine/core';
 import { Users, SortAscending, CaretDown, CaretUp } from '@phosphor-icons/react';
 import dayjs from 'dayjs';
 import 'dayjs/locale/ko';
@@ -23,7 +19,7 @@ interface ContactCard {
   birthday: string;
   memo: string;
   raw: string;
-  isStale: boolean; // > 30 days
+  isStale: boolean;
 }
 
 export function RelationshipView({ nodes }: ViewProps) {
@@ -65,7 +61,6 @@ export function RelationshipView({ nodes }: ViewProps) {
     }
   }, [cards, sort]);
 
-  // Stats
   const totalContacts = cards.length;
 
   const thisMonth = useMemo(() => {
@@ -79,7 +74,6 @@ export function RelationshipView({ nodes }: ViewProps) {
     return cards.filter(c => {
       if (!c.birthday) return false;
       const bday = dayjs(c.birthday).year(today.year());
-      // If birthday already passed this year, check next year
       const checkDate = bday.isBefore(today) ? bday.add(1, 'year') : bday;
       return checkDate.isBefore(twoWeeksLater);
     }).length;
@@ -94,127 +88,117 @@ export function RelationshipView({ nodes }: ViewProps) {
   if (cards.length === 0) return null;
 
   return (
-    <Stack gap="md" p="md">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: 16 }}>
       {/* Stats */}
-      <SimpleGrid cols={3} spacing="xs">
-        <Box
-          px="sm" py="xs"
-          style={{ border: '0.5px solid var(--mantine-color-default-border)', borderRadius: 8 }}
-        >
-          <Text fz={10} c="dimmed">전체</Text>
-          <Text fz="lg" fw={700}>{totalContacts}</Text>
-        </Box>
-        <Box
-          px="sm" py="xs"
-          style={{ border: '0.5px solid var(--mantine-color-default-border)', borderRadius: 8 }}
-        >
-          <Text fz={10} c="dimmed">이번 달</Text>
-          <Text fz="lg" fw={700}>{thisMonth}</Text>
-        </Box>
-        <Box
-          px="sm" py="xs"
-          style={{ border: '0.5px solid var(--mantine-color-default-border)', borderRadius: 8 }}
-        >
-          <Text fz={10} c="dimmed">다가오는 생일</Text>
-          <Text fz="lg" fw={700}>{upcomingBirthdays}</Text>
-        </Box>
-      </SimpleGrid>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+        {[
+          { label: '전체', value: totalContacts },
+          { label: '이번 달', value: thisMonth },
+          { label: '다가오는 생일', value: upcomingBirthdays },
+        ].map(stat => (
+          <div key={stat.label} style={{ padding: '8px 12px', border: '0.5px solid var(--ou-border, #333)', borderRadius: 8 }}>
+            <span style={{ fontSize: 10, color: 'var(--ou-text-dimmed, #888)', display: 'block' }}>{stat.label}</span>
+            <span style={{ fontSize: 18, fontWeight: 700 }}>{stat.value}</span>
+          </div>
+        ))}
+      </div>
 
       {/* Sort controls */}
-      <Group gap="xs">
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
         <SortAscending size={14} />
         {SORT_OPTIONS.map(opt => (
-          <UnstyledButton
+          <button
             key={opt.value}
             onClick={() => setSort(opt.value)}
             style={{
               padding: '2px 10px',
               borderRadius: 14,
               fontSize: 12,
-              border: '0.5px solid var(--mantine-color-default-border)',
-              background: sort === opt.value ? 'var(--mantine-color-dark-6)' : 'transparent',
-              color: sort === opt.value ? '#fff' : 'var(--mantine-color-text)',
+              border: '0.5px solid var(--ou-border, #333)',
+              background: sort === opt.value ? 'var(--ou-gray-9, #222)' : 'transparent',
+              color: sort === opt.value ? '#fff' : 'inherit',
               transition: 'all 150ms',
+              cursor: 'pointer',
             }}
           >
             {opt.label}
-          </UnstyledButton>
+          </button>
         ))}
-      </Group>
+      </div>
 
       {/* Card grid */}
-      <SimpleGrid
-        cols={{ base: 1, sm: 2, lg: 3 }}
-        spacing="sm"
-      >
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 12 }}>
         {sorted.map(card => {
           const isExpanded = expandedId === card.id;
           return (
-            <UnstyledButton
+            <button
               key={card.id}
               onClick={() => setExpandedId(isExpanded ? null : card.id)}
               style={{
                 border: card.isStale
-                  ? '1px dashed var(--mantine-color-gray-5)'
-                  : '0.5px solid var(--mantine-color-default-border)',
+                  ? '1px dashed var(--ou-gray-5, #888)'
+                  : '0.5px solid var(--ou-border, #333)',
                 borderRadius: 8,
                 padding: 12,
                 transition: 'all 150ms',
                 textAlign: 'left',
+                background: 'none',
+                cursor: 'pointer',
+                color: 'inherit',
               }}
             >
-              <Group justify="space-between" mb={4}>
-                <Text fz="sm" fw={600}>{card.name}</Text>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                <span style={{ fontSize: 13, fontWeight: 600 }}>{card.name}</span>
                 {isExpanded ? <CaretUp size={12} /> : <CaretDown size={12} />}
-              </Group>
+              </div>
 
               {card.relationship && (
-                <Badge variant="light" color="gray" size="xs" mb={4}>
+                <span style={{ fontSize: 10, padding: '1px 6px', border: '0.5px solid var(--ou-border, #333)', borderRadius: 4, display: 'inline-block', marginBottom: 4 }}>
                   {card.relationship}
-                </Badge>
+                </span>
               )}
 
               {card.lastMentioned && (
-                <Text fz={10} c="dimmed">
+                <span style={{ fontSize: 10, color: 'var(--ou-text-dimmed, #888)', display: 'block' }}>
                   {dayjs(card.lastMentioned).format('YYYY.MM.DD')}
                   {card.isStale && ' · 30일 이상 연락 없음'}
-                </Text>
+                </span>
               )}
 
               {card.memo && !isExpanded && (
-                <Text fz="xs" c="dimmed" lineClamp={1} mt={4}>
+                <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden', marginTop: 4 }}>
                   {card.memo}
-                </Text>
+                </span>
               )}
 
-              <Collapse in={isExpanded}>
-                <Stack gap="xs" mt="sm" style={{ borderTop: '0.5px solid var(--mantine-color-default-border)', paddingTop: 8 }}>
+              {isExpanded && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 12, borderTop: '0.5px solid var(--ou-border, #333)', paddingTop: 8 }}>
                   {card.contact && (
-                    <Group gap={6}>
-                      <Text fz={10} c="dimmed">연락처</Text>
-                      <Text fz="xs">{card.contact}</Text>
-                    </Group>
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      <span style={{ fontSize: 10, color: 'var(--ou-text-dimmed, #888)' }}>연락처</span>
+                      <span style={{ fontSize: 11 }}>{card.contact}</span>
+                    </div>
                   )}
                   {card.birthday && (
-                    <Group gap={6}>
-                      <Text fz={10} c="dimmed">생일</Text>
-                      <Text fz="xs">{dayjs(card.birthday).format('M월 D일')}</Text>
-                    </Group>
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      <span style={{ fontSize: 10, color: 'var(--ou-text-dimmed, #888)' }}>생일</span>
+                      <span style={{ fontSize: 11 }}>{dayjs(card.birthday).format('M월 D일')}</span>
+                    </div>
                   )}
                   {card.memo && (
-                    <Box>
-                      <Text fz={10} c="dimmed" mb={2}>메모</Text>
-                      <Text fz="xs" style={{ lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
+                    <div>
+                      <span style={{ fontSize: 10, color: 'var(--ou-text-dimmed, #888)', display: 'block', marginBottom: 2 }}>메모</span>
+                      <span style={{ fontSize: 11, lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
                         {card.memo}
-                      </Text>
-                    </Box>
+                      </span>
+                    </div>
                   )}
-                </Stack>
-              </Collapse>
-            </UnstyledButton>
+                </div>
+              )}
+            </button>
           );
         })}
-      </SimpleGrid>
-    </Stack>
+      </div>
+    </div>
   );
 }

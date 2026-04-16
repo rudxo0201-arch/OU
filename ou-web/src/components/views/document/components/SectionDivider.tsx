@@ -1,6 +1,5 @@
 'use client';
 
-import { Box, Text } from '@mantine/core';
 import type { DecorationConfig } from '@/types/document-template';
 
 interface SectionDividerProps {
@@ -13,9 +12,9 @@ export function SectionDivider({ decoration }: SectionDividerProps) {
   switch (type) {
     case 'line':
       return (
-        <Box
-          my={20}
+        <div
           style={{
+            margin: '20px 0',
             borderBottom: `0.5px solid ${color}`,
           }}
         />
@@ -23,24 +22,24 @@ export function SectionDivider({ decoration }: SectionDividerProps) {
 
     case 'dots':
       return (
-        <Box my={20} style={{ textAlign: 'center' }}>
-          <Text span style={{ color, letterSpacing: '0.5em', fontSize: 12 }}>
+        <div style={{ margin: '20px 0', textAlign: 'center' }}>
+          <span style={{ color, letterSpacing: '0.5em', fontSize: 12 }}>
             · · ·
-          </Text>
-        </Box>
+          </span>
+        </div>
       );
 
     case 'ornament':
       return (
-        <Box my={24} style={{ textAlign: 'center' }}>
-          <Text span style={{ color, fontSize: 14, letterSpacing: '0.3em' }}>
+        <div style={{ margin: '24px 0', textAlign: 'center' }}>
+          <span style={{ color, fontSize: 14, letterSpacing: '0.3em' }}>
             ✦ ✦ ✦
-          </Text>
-        </Box>
+          </span>
+        </div>
       );
 
     case 'space':
-      return <Box my={32} />;
+      return <div style={{ margin: '32px 0' }} />;
 
     case 'none':
     default:

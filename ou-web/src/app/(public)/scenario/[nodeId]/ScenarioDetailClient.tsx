@@ -2,11 +2,6 @@
 
 import { useState } from 'react';
 import {
-  Box, Stack, Text, Paper, Group, Avatar, Button, Textarea,
-  ActionIcon, Divider, CopyButton, Tooltip,
-} from '@mantine/core';
-import { notifications } from '@mantine/notifications';
-import {
   CheckCircle, Heart, Copy, Check, ArrowLeft,
 } from '@phosphor-icons/react';
 import Link from 'next/link';
@@ -46,6 +41,7 @@ export function ScenarioDetailClient({
   const [story, setStory] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
+  const [linkCopied, setLinkCopied] = useState(false);
 
   const handleSubmit = async () => {
     if (!story.trim()) return;
@@ -78,22 +74,13 @@ export function ScenarioDetailClient({
           profiles: { display_name: '나', avatar_url: undefined },
         }, ...prev]);
         setStory('');
-        notifications.show({
-          message: '이야기가 공유되었어요!',
-          color: 'gray',
-        });
+        alert('이야기가 공유되었어요!');
       } else {
         const data = await res.json();
-        notifications.show({
-          message: data.error || '공유에 실패했어요. 다시 시도해주세요.',
-          color: 'gray',
-        });
+        alert(data.error || '공유에 실패했어요. 다시 시도해주세요.');
       }
     } catch {
-      notifications.show({
-        message: '공유에 실패했어요. 다시 시도해주세요.',
-        color: 'gray',
-      });
+      alert('공유에 실패했어요. 다시 시도해주세요.');
     } finally {
       setSubmitting(false);
     }
@@ -113,9 +100,15 @@ export function ScenarioDetailClient({
     });
   };
 
-  const shareUrl = typeof window !== 'undefined'
-    ? `${window.location.origin}/scenario/${scenario.id}`
-    : `/scenario/${scenario.id}`;
+  const handleCopyLink = () => {
+    const shareUrl = typeof window !== 'undefined'
+      ? `${window.location.origin}/scenario/${scenario.id}`
+      : `/scenario/${scenario.id}`;
+    navigator.clipboard.writeText(shareUrl).then(() => {
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 2000);
+    }).catch(() => {});
+  };
 
   /* ── Shared styles ── */
   const cardStyle: React.CSSProperties = {
@@ -134,180 +127,208 @@ export function ScenarioDetailClient({
   };
 
   return (
-    <Box maw={700} mx="auto" px="xl" py="xl" style={{ background: 'transparent' }}>
+    <div style={{ maxWidth: 700, margin: '0 auto', padding: '24px', background: 'transparent' }}>
       {/* Back button — pill-block */}
-      <Button
-        variant="subtle"
-        color="gray"
-        size="xs"
-        leftSection={<ArrowLeft size={14} />}
-        component={Link}
+      <Link
         href="/universe"
-        mb="lg"
-        style={{ color: 'var(--ou-text-dimmed)' }}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 4,
+          color: 'var(--ou-text-dimmed)',
+          textDecoration: 'none',
+          fontSize: 12,
+          marginBottom: 20,
+        }}
       >
+        <ArrowLeft size={14} />
         돌아가기
-      </Button>
+      </Link>
 
       {/* Scenario Content — floating-block */}
-      <Paper
-        p="xl"
+      <div
         style={{
           ...cardStyle,
           boxShadow: 'var(--ou-glow-md)',
+          padding: 24,
+          marginBottom: 20,
         }}
-        mb="lg"
       >
-        <Text fw={700} fz="xl" mb="sm" style={{ color: 'var(--ou-text-strong)' }}>
+        <span style={{ fontWeight: 700, fontSize: 20, marginBottom: 12, color: 'var(--ou-text-strong)', display: 'block' }}>
           {scenario.title}
-        </Text>
-        <Text fz="md" style={{ lineHeight: 1.8, color: 'var(--ou-text-body)' }}>
+        </span>
+        <span style={{ fontSize: 16, lineHeight: 1.8, color: 'var(--ou-text-body)' }}>
           {scenario.raw}
-        </Text>
+        </span>
 
-        <Divider my="md" color="var(--ou-border-faint)" />
+        <div style={{ borderTop: '0.5px solid var(--ou-border-faint)', margin: '16px 0' }} />
 
-        <Group justify="space-between">
-          <Group gap={6}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
             <CheckCircle size={16} weight="light" style={{ color: 'var(--ou-text-dimmed)' }} />
-            <Text fz="sm" fw={500} style={{ color: 'var(--ou-text-body)' }}>
+            <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ou-text-body)' }}>
               {realizations.length}명이 실현했어요
-            </Text>
-          </Group>
+            </span>
+          </div>
           {/* Share — pill-block */}
-          <CopyButton value={shareUrl}>
-            {({ copied, copy }) => (
-              <Tooltip label={copied ? '복사됨' : '링크 복사'}>
-                <ActionIcon
-                  variant="subtle"
-                  color="gray"
-                  onClick={copy}
-                  style={{
-                    border: '0.5px solid var(--ou-border-subtle)',
-                    borderRadius: 'var(--ou-radius-pill)',
-                    background: 'transparent',
-                  }}
-                >
-                  {copied ? <Check size={16} /> : <Copy size={16} weight="light" />}
-                </ActionIcon>
-              </Tooltip>
-            )}
-          </CopyButton>
-        </Group>
-      </Paper>
+          <button
+            onClick={handleCopyLink}
+            title={linkCopied ? '복사됨' : '링크 복사'}
+            style={{
+              background: 'transparent',
+              border: '0.5px solid var(--ou-border-subtle)',
+              borderRadius: 'var(--ou-radius-pill)',
+              cursor: 'pointer',
+              padding: 6,
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+            {linkCopied ? <Check size={16} /> : <Copy size={16} weight="light" />}
+          </button>
+        </div>
+      </div>
 
       {/* Write your story */}
-      <Paper
-        p="lg"
-        style={cardStyle}
-        mb="xl"
+      <div
+        style={{ ...cardStyle, padding: 20, marginBottom: 28 }}
       >
-        <Text fw={600} fz="sm" mb="sm" style={{ color: 'var(--ou-text-strong)' }}>
+        <span style={{ fontWeight: 600, fontSize: 14, marginBottom: 12, color: 'var(--ou-text-strong)', display: 'block' }}>
           나도 이랬어요!
-        </Text>
-        <Textarea
+        </span>
+        <textarea
           placeholder="당신의 이야기를 들려주세요"
           value={story}
           onChange={e => setStory(e.target.value)}
-          minRows={3}
-          maxRows={6}
-          autosize
-          mb="sm"
-          styles={{
-            input: {
-              border: '0.5px solid var(--ou-border-subtle)',
-              background: 'transparent',
-              color: 'var(--ou-text-body)',
-            },
+          rows={3}
+          style={{
+            width: '100%',
+            border: '0.5px solid var(--ou-border-subtle)',
+            background: 'transparent',
+            color: 'var(--ou-text-body)',
+            padding: '10px 14px',
+            fontSize: 14,
+            fontFamily: 'inherit',
+            borderRadius: 'var(--ou-radius-card)',
+            outline: 'none',
+            resize: 'vertical',
+            marginBottom: 12,
+            boxSizing: 'border-box',
           }}
         />
         {/* CTA button — filled style */}
-        <Button
-          color="dark"
-          fullWidth
-          radius="xl"
+        <button
           onClick={handleSubmit}
-          loading={submitting}
-          disabled={!story.trim()}
-          style={{ color: 'white' }}
+          disabled={submitting || !story.trim()}
+          style={{
+            width: '100%',
+            padding: '10px 20px',
+            borderRadius: 'var(--ou-radius-pill)',
+            background: 'rgba(255,255,255,0.9)',
+            color: '#111',
+            border: 'none',
+            fontSize: 14,
+            fontWeight: 600,
+            fontFamily: 'inherit',
+            cursor: submitting || !story.trim() ? 'not-allowed' : 'pointer',
+            opacity: submitting || !story.trim() ? 0.4 : 1,
+          }}
         >
           공유하기
-        </Button>
-      </Paper>
+        </button>
+      </div>
 
       {/* Realizations Feed */}
       {realizations.length > 0 && (
-        <Stack gap="sm">
-          <Text style={sectionTitleStyle} mb="xs">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <span style={{ ...sectionTitleStyle, marginBottom: 8 }}>
             실현 이야기
-          </Text>
+          </span>
           {realizations.map(r => (
-            <Paper
+            <div
               key={r.id}
-              p="md"
-              style={cardStyle}
+              style={{ ...cardStyle, padding: 16 }}
             >
-              <Group mb="sm">
+              <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
                 {r.profiles?.handle ? (
                   <Link
                     href={`/profile/${r.profiles.handle}`}
                     style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none', color: 'inherit' }}
                   >
-                    <Avatar
-                      src={r.profiles?.avatar_url ?? undefined}
-                      size="sm"
-                      radius="xl"
-                      style={{ border: '0.5px solid var(--ou-border-subtle)' }}
-                    />
+                    <div style={{
+                      width: 28,
+                      height: 28,
+                      borderRadius: '50%',
+                      border: '0.5px solid var(--ou-border-subtle)',
+                      overflow: 'hidden',
+                      background: 'var(--ou-surface-muted)',
+                      flexShrink: 0,
+                    }}>
+                      {r.profiles?.avatar_url && (
+                        <img src={r.profiles.avatar_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      )}
+                    </div>
                     <div>
-                      <Text fz="sm" fw={500} style={{ color: 'var(--ou-text-strong)' }}>
+                      <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ou-text-strong)', display: 'block' }}>
                         {r.profiles?.display_name ?? '익명'}
-                      </Text>
-                      <Text fz="xs" style={{ color: 'var(--ou-text-dimmed)' }}>
+                      </span>
+                      <span style={{ fontSize: 12, color: 'var(--ou-text-dimmed)' }}>
                         {new Date(r.created_at).toLocaleDateString('ko-KR')}
-                      </Text>
+                      </span>
                     </div>
                   </Link>
                 ) : (
-                  <Group gap={8}>
-                    <Avatar
-                      src={r.profiles?.avatar_url ?? undefined}
-                      size="sm"
-                      radius="xl"
-                      style={{ border: '0.5px solid var(--ou-border-subtle)' }}
-                    />
-                    <div>
-                      <Text fz="sm" fw={500} style={{ color: 'var(--ou-text-strong)' }}>
-                        {r.profiles?.display_name ?? '익명'}
-                      </Text>
-                      <Text fz="xs" style={{ color: 'var(--ou-text-dimmed)' }}>
-                        {new Date(r.created_at).toLocaleDateString('ko-KR')}
-                      </Text>
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                    <div style={{
+                      width: 28,
+                      height: 28,
+                      borderRadius: '50%',
+                      border: '0.5px solid var(--ou-border-subtle)',
+                      overflow: 'hidden',
+                      background: 'var(--ou-surface-muted)',
+                      flexShrink: 0,
+                    }}>
+                      {r.profiles?.avatar_url && (
+                        <img src={r.profiles.avatar_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      )}
                     </div>
-                  </Group>
+                    <div>
+                      <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ou-text-strong)', display: 'block' }}>
+                        {r.profiles?.display_name ?? '익명'}
+                      </span>
+                      <span style={{ fontSize: 12, color: 'var(--ou-text-dimmed)' }}>
+                        {new Date(r.created_at).toLocaleDateString('ko-KR')}
+                      </span>
+                    </div>
+                  </div>
                 )}
-              </Group>
-              <Text fz="sm" style={{ lineHeight: 1.6, color: 'var(--ou-text-body)' }} mb="sm">
+              </div>
+              <span style={{ fontSize: 14, lineHeight: 1.6, color: 'var(--ou-text-body)', display: 'block', marginBottom: 12 }}>
                 {r.raw}
-              </Text>
-              <Group gap={4}>
-                <ActionIcon
-                  variant="subtle"
-                  color="gray"
+              </span>
+              <div style={{ display: 'flex', gap: 4 }}>
+                <button
                   onClick={() => handleLike(r.id)}
-                  size="sm"
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    padding: 4,
+                    display: 'flex',
+                    alignItems: 'center',
+                  }}
                 >
                   <Heart
                     size={16}
                     weight={likedIds.has(r.id) ? 'fill' : 'light'}
                     style={{ color: likedIds.has(r.id) ? 'var(--ou-text-strong)' : 'var(--ou-text-dimmed)' }}
                   />
-                </ActionIcon>
-              </Group>
-            </Paper>
+                </button>
+              </div>
+            </div>
           ))}
-        </Stack>
+        </div>
       )}
-    </Box>
+    </div>
   );
 }

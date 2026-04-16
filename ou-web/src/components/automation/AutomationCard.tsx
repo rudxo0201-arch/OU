@@ -1,14 +1,11 @@
 'use client';
 
 import {
-  Paper, Group, Text, Switch, Badge, Stack,
-  ActionIcon, Menu,
-} from '@mantine/core';
-import {
   DotsThree, Play, PencilSimple, Trash,
   Lightning, Clock, MagnifyingGlass, Database, HashStraight,
   Eye, FileText, ShareNetwork, Bell, Robot, Globe,
 } from '@phosphor-icons/react';
+import { useState } from 'react';
 
 // ─── Labels ─────────────────────────────────────────────────
 
@@ -63,6 +60,7 @@ export function AutomationCard({
   const enabled = dd.enabled ?? false;
   const triggerType = dd.trigger?.type ?? 'node_created';
   const actions = dd.actions ?? [];
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const triggerInfo = TRIGGER_LABELS[triggerType] ?? { label: triggerType, icon: Lightning };
   const TriggerIcon = triggerInfo.icon;
@@ -75,103 +73,93 @@ export function AutomationCard({
     : null;
 
   return (
-    <Paper
-      p="md"
-      radius="md"
-      withBorder
+    <div
       style={{
-        borderColor: enabled
-          ? 'var(--mantine-color-dark-4)'
-          : 'var(--mantine-color-dark-6)',
+        padding: 16,
+        borderRadius: 'var(--mantine-radius-md)',
+        border: `0.5px solid ${enabled ? 'var(--mantine-color-dark-4)' : 'var(--mantine-color-dark-6)'}`,
         opacity: enabled ? 1 : 0.6,
       }}
     >
-      <Group justify="space-between" wrap="nowrap">
-        <Stack gap={6} style={{ flex: 1, minWidth: 0 }}>
-          <Group gap="xs">
-            <Text fw={600} fz="md" truncate>
-              {automation.title}
-            </Text>
-          </Group>
+      <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1, minWidth: 0 }}>
+          <span style={{ fontWeight: 600, fontSize: 'var(--mantine-font-size-md)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {automation.title}
+          </span>
 
-          <Group gap="xs">
-            <Badge
-              variant="light"
-              color="gray"
-              size="sm"
-              leftSection={<TriggerIcon size={12} />}
-            >
+          <div style={{ display: 'flex', flexDirection: 'row', gap: 4, flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 4, background: 'rgba(255,255,255,0.08)', color: 'var(--mantine-color-dimmed)', display: 'flex', alignItems: 'center', gap: 4 }}>
+              <TriggerIcon size={12} />
               {triggerInfo.label}
-            </Badge>
+            </span>
 
             {actions.map((action, i) => {
               const info = ACTION_LABELS[action.type] ?? { label: action.type, icon: Lightning };
               const ActionIcon_ = info.icon;
               return (
-                <Badge
-                  key={i}
-                  variant="dot"
-                  color="gray"
-                  size="sm"
-                  leftSection={<ActionIcon_ size={12} />}
-                >
+                <span key={i} style={{ fontSize: 11, padding: '2px 8px', borderRadius: 4, border: '1px dotted var(--mantine-color-default-border)', color: 'var(--mantine-color-dimmed)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <ActionIcon_ size={12} />
                   {info.label}
-                </Badge>
+                </span>
               );
             })}
-          </Group>
+          </div>
 
           {lastRun && (
-            <Text fz="xs" c="dimmed">
+            <span style={{ fontSize: 'var(--mantine-font-size-xs)', color: 'var(--mantine-color-dimmed)' }}>
               마지막 실행: {lastRun}
               {dd.lastRunStatus === 'error' && (
-                <Text span c="red" fz="xs" ml={4}>
-                  (실패)
-                </Text>
+                <span style={{ color: 'var(--mantine-color-red-5)', marginLeft: 4 }}>(실패)</span>
               )}
-            </Text>
+            </span>
           )}
-        </Stack>
+        </div>
 
-        <Group gap="xs" wrap="nowrap">
-          <Switch
-            checked={enabled}
-            onChange={() => onToggle(automation.id, !enabled)}
-            size="md"
-            color="dark"
-          />
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+            <input
+              type="checkbox"
+              checked={enabled}
+              onChange={() => onToggle(automation.id, !enabled)}
+              style={{ width: 18, height: 18 }}
+            />
+          </label>
 
-          <Menu position="bottom-end" withArrow>
-            <Menu.Target>
-              <ActionIcon variant="subtle" color="gray">
-                <DotsThree size={20} weight="bold" />
-              </ActionIcon>
-            </Menu.Target>
-            <Menu.Dropdown>
-              <Menu.Item
-                leftSection={<Play size={16} />}
-                onClick={() => onRun(automation.id)}
-              >
-                지금 실행
-              </Menu.Item>
-              <Menu.Item
-                leftSection={<PencilSimple size={16} />}
-                onClick={() => onEdit(automation.id)}
-              >
-                수정
-              </Menu.Item>
-              <Menu.Divider />
-              <Menu.Item
-                color="red"
-                leftSection={<Trash size={16} />}
-                onClick={() => onDelete(automation.id)}
-              >
-                삭제
-              </Menu.Item>
-            </Menu.Dropdown>
-          </Menu>
-        </Group>
-      </Group>
-    </Paper>
+          <div style={{ position: 'relative' }}>
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 4, display: 'flex', alignItems: 'center', color: 'inherit' }}
+            >
+              <DotsThree size={20} weight="bold" />
+            </button>
+            {menuOpen && (
+              <div style={{
+                position: 'absolute',
+                top: '100%',
+                right: 0,
+                marginTop: 4,
+                background: 'var(--mantine-color-dark-7)',
+                border: '0.5px solid var(--mantine-color-default-border)',
+                borderRadius: 8,
+                padding: 4,
+                zIndex: 20,
+                minWidth: 120,
+              }}>
+                <button onClick={() => { onRun(automation.id); setMenuOpen(false); }} style={{ width: '100%', padding: '6px 12px', background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, color: 'inherit', fontSize: 'var(--mantine-font-size-sm)' }}>
+                  <Play size={16} /> 지금 실행
+                </button>
+                <button onClick={() => { onEdit(automation.id); setMenuOpen(false); }} style={{ width: '100%', padding: '6px 12px', background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, color: 'inherit', fontSize: 'var(--mantine-font-size-sm)' }}>
+                  <PencilSimple size={16} /> 수정
+                </button>
+                <div style={{ height: 1, background: 'var(--mantine-color-default-border)', margin: '4px 0' }} />
+                <button onClick={() => { onDelete(automation.id); setMenuOpen(false); }} style={{ width: '100%', padding: '6px 12px', background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, color: 'var(--mantine-color-red-5)', fontSize: 'var(--mantine-font-size-sm)' }}>
+                  <Trash size={16} /> 삭제
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

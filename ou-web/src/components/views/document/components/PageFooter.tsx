@@ -1,6 +1,5 @@
 'use client';
 
-import { Box, Text } from '@mantine/core';
 import type { DocumentTemplate } from '@/types/document-template';
 
 interface PageFooterProps {
@@ -34,7 +33,7 @@ export function PageFooter({ template, documentTitle, pageNumber, totalPages }: 
   })();
 
   return (
-    <Box
+    <div
       style={{
         display: 'flex',
         alignItems: 'flex-start',
@@ -47,7 +46,7 @@ export function PageFooter({ template, documentTitle, pageNumber, totalPages }: 
       }}
     >
       {headerFooter.footerContent === 'title-pageNumber' ? (
-        <Text
+        <span
           style={{
             fontFamily: font,
             fontSize: style.fontSize,
@@ -57,9 +56,9 @@ export function PageFooter({ template, documentTitle, pageNumber, totalPages }: 
           }}
         >
           {documentTitle} — {pageNumStr}
-        </Text>
+        </span>
       ) : (
-        <Text
+        <span
           style={{
             fontFamily: font,
             fontSize: style.fontSize,
@@ -69,8 +68,8 @@ export function PageFooter({ template, documentTitle, pageNumber, totalPages }: 
           }}
         >
           {pageNumStr}
-        </Text>
+        </span>
       )}
-    </Box>
+    </div>
   );
 }

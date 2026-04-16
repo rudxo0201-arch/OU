@@ -1,6 +1,5 @@
 'use client';
 
-import { Box } from '@mantine/core';
 import { Sidebar } from './Sidebar';
 import { MobileNav } from './MobileNav';
 import { useNavigationStore } from '@/stores/navigationStore';
@@ -22,12 +21,12 @@ export function OUAppShell({ children }: OUAppShellProps) {
       </div>
 
       {/* 메인 컨텐츠 */}
-      <Box
+      <div
         className={classes.main}
         style={{ '--sidebar-width': sidebarWidth } as React.CSSProperties}
       >
         {children}
-      </Box>
+      </div>
 
       {/* 모바일 하단 탭 */}
       <MobileNav />

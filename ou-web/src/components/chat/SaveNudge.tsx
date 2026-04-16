@@ -1,6 +1,5 @@
 'use client';
 
-import { Box, Text, Stack } from '@mantine/core';
 import { useRouter } from 'next/navigation';
 import { useChatStore } from '@/stores/chatStore';
 import { Warning, X } from '@phosphor-icons/react';
@@ -67,7 +66,7 @@ export function SaveNudge({ trigger, nodeCount, onDismiss }: SaveNudgeProps) {
   // session_end: 풀스크린 모달 (dark overlay + floating-block)
   if (trigger === 'session_end') {
     return (
-      <Box
+      <div
         style={{
           position: 'fixed',
           inset: 0,
@@ -78,7 +77,7 @@ export function SaveNudge({ trigger, nodeCount, onDismiss }: SaveNudgeProps) {
         }}
       >
         {/* Dark overlay */}
-        <Box
+        <div
           style={{
             position: 'absolute',
             inset: 0,
@@ -89,7 +88,7 @@ export function SaveNudge({ trigger, nodeCount, onDismiss }: SaveNudgeProps) {
           onClick={onDismiss}
         />
         {/* Floating-block modal */}
-        <Box
+        <div
           style={{
             position: 'relative',
             zIndex: 1001,
@@ -102,20 +101,20 @@ export function SaveNudge({ trigger, nodeCount, onDismiss }: SaveNudgeProps) {
             padding: 32,
           }}
         >
-          <Stack align="center" gap="lg">
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
             <Warning size={40} weight="light" style={{ color: 'var(--ou-text-dimmed)' }} />
-            <Text style={{ color: 'var(--ou-text-strong)', fontSize: 18, fontWeight: 600 }} ta="center">
+            <p style={{ color: 'var(--ou-text-strong)', fontSize: 18, fontWeight: 600, textAlign: 'center', margin: 0 }}>
               {NUDGE_COPY.session_end}
-            </Text>
+            </p>
             {nodeCount != null && nodeCount > 0 && (
-              <Text style={{ color: 'var(--ou-text-dimmed)', fontSize: 13 }} ta="center">
+              <p style={{ color: 'var(--ou-text-dimmed)', fontSize: 13, textAlign: 'center', margin: 0 }}>
                 지금까지 쌓인 기록 {nodeCount}개가 모두 사라져요.
-              </Text>
+              </p>
             )}
-            <Text style={{ color: 'var(--ou-text-dimmed)', fontSize: 13 }} ta="center">
+            <p style={{ color: 'var(--ou-text-dimmed)', fontSize: 13, textAlign: 'center', margin: 0 }}>
               가입하면 모든 기록이 저장돼요.
-            </Text>
-            <Stack gap="xs" w="100%">
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, width: '100%' }}>
               <button
                 onClick={handleSignup}
                 style={filledBtnStyle}
@@ -140,17 +139,17 @@ export function SaveNudge({ trigger, nodeCount, onDismiss }: SaveNudgeProps) {
                   나중에
                 </button>
               )}
-            </Stack>
-          </Stack>
-        </Box>
-      </Box>
+            </div>
+          </div>
+        </div>
+      </div>
     );
   }
 
   // turn_limit: glass-block style bar
   if (trigger === 'turn_limit') {
     return (
-      <Box
+      <div
         style={{
           position: 'sticky' as const,
           top: 0,
@@ -166,9 +165,9 @@ export function SaveNudge({ trigger, nodeCount, onDismiss }: SaveNudgeProps) {
           gap: 12,
         }}
       >
-        <Text style={{ flex: 1, fontSize: 13, color: 'var(--ou-text-dimmed)' }}>
+        <span style={{ flex: 1, fontSize: 13, color: 'var(--ou-text-dimmed)' }}>
           {NUDGE_COPY[trigger]}
-        </Text>
+        </span>
         <button
           onClick={handleSignup}
           style={{
@@ -210,13 +209,13 @@ export function SaveNudge({ trigger, nodeCount, onDismiss }: SaveNudgeProps) {
             <X size={16} />
           </button>
         )}
-      </Box>
+      </div>
     );
   }
 
   // view_created: floating-block card
   return (
-    <Box
+    <div
       style={{
         padding: '14px 16px',
         background: 'transparent',
@@ -228,9 +227,9 @@ export function SaveNudge({ trigger, nodeCount, onDismiss }: SaveNudgeProps) {
         gap: 12,
       }}
     >
-      <Text style={{ flex: 1, fontSize: 13, color: 'var(--ou-text-dimmed)' }}>
+      <span style={{ flex: 1, fontSize: 13, color: 'var(--ou-text-dimmed)' }}>
         {NUDGE_COPY[trigger]}
-      </Text>
+      </span>
       <button
         onClick={handleSignup}
         style={{
@@ -272,6 +271,6 @@ export function SaveNudge({ trigger, nodeCount, onDismiss }: SaveNudgeProps) {
           <X size={16} />
         </button>
       )}
-    </Box>
+    </div>
   );
 }

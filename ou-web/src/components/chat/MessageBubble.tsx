@@ -1,6 +1,5 @@
 'use client';
 
-import { Box, Text, Image, Group, UnstyledButton } from '@mantine/core';
 import { FilePdf, FileText, Globe, Slideshow, ArrowRight } from '@phosphor-icons/react';
 import ReactMarkdown from 'react-markdown';
 import { useRouter } from 'next/navigation';
@@ -52,41 +51,51 @@ function FileCard({ fileResult }: { fileResult: NonNullable<ChatMessage['fileRes
   const hasLink = !!fileResult.nodeId;
 
   return (
-    <UnstyledButton
+    <button
       onClick={() => {
         if (hasLink) router.push(`/view/${fileResult.nodeId}`);
       }}
-      style={{ cursor: hasLink ? 'pointer' : 'default', width: '100%' }}
+      style={{
+        cursor: hasLink ? 'pointer' : 'default',
+        width: '100%',
+        background: 'none',
+        border: 'none',
+        padding: 0,
+        fontFamily: 'inherit',
+        textAlign: 'left',
+      }}
     >
-      <Group
-        gap="sm"
-        px="sm"
-        py={8}
+      <div
         style={{
+          display: 'flex',
+          flexDirection: 'row',
+          gap: 8,
+          alignItems: 'center',
+          padding: '8px 12px',
           border: '0.5px solid var(--ou-border-subtle)',
           borderRadius: 'var(--ou-radius-md)',
           background: 'transparent',
           transition: 'var(--ou-transition)',
         }}
       >
-        <Box style={{ flexShrink: 0, color: 'var(--ou-text-dimmed)' }}>
+        <div style={{ flexShrink: 0, color: 'var(--ou-text-dimmed)' }}>
           {iconMap[fileResult.fileType] ?? <FileText size={20} />}
-        </Box>
-        <Box style={{ flex: 1, minWidth: 0 }}>
-          <Text style={{ fontSize: 12, fontWeight: 500, color: 'var(--ou-text-body)' }} truncate>
+        </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--ou-text-body)', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {fileResult.fileName}
-          </Text>
-          <Text style={{ fontSize: 10, color: 'var(--ou-text-dimmed)' }}>
+          </span>
+          <span style={{ fontSize: 10, color: 'var(--ou-text-dimmed)', display: 'block' }}>
             {fileResult.pageCount
               ? `${labelMap[fileResult.fileType]} · ${fileResult.pageCount}쪽`
               : labelMap[fileResult.fileType]}
-          </Text>
-        </Box>
+          </span>
+        </div>
         {hasLink && (
           <ArrowRight size={12} style={{ color: 'var(--ou-text-dimmed)', flexShrink: 0 }} />
         )}
-      </Group>
-    </UnstyledButton>
+      </div>
+    </button>
   );
 }
 
@@ -122,10 +131,10 @@ export function MessageBubble({ message, userMessage, prevUserMessage, onAddInfo
     : null;
 
   return (
-    <Box style={{ display: 'flex', flexDirection: 'column', alignItems: isUser ? 'flex-end' : 'flex-start' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: isUser ? 'flex-end' : 'flex-start' }}>
       {isUser ? (
-        /* ── User bubble: bubble-block.user ── */
-        <Box
+        /* -- User bubble: bubble-block.user -- */
+        <div
           style={{
             maxWidth: '70%',
             padding: '14px 16px',
@@ -138,23 +147,21 @@ export function MessageBubble({ message, userMessage, prevUserMessage, onAddInfo
         >
           {/* 이미지 미리보기 */}
           {message.imagePreview && (
-            <Box mb="xs">
-              <Image
+            <div style={{ marginBottom: 8 }}>
+              <img
                 src={message.imagePreview}
                 alt="업로드 이미지"
-                radius="sm"
-                maw={240}
-                style={{ borderRadius: 12 }}
+                style={{ borderRadius: 12, maxWidth: 240, display: 'block' }}
               />
-            </Box>
+            </div>
           )}
           {/* 파일 카드 */}
           {message.fileResult && (
-            <Box mb="xs">
+            <div style={{ marginBottom: 8 }}>
               <FileCard fileResult={message.fileResult} />
-            </Box>
+            </div>
           )}
-          <Text style={{
+          <span style={{
             whiteSpace: 'pre-wrap',
             wordBreak: 'break-word',
             fontSize: 13,
@@ -162,18 +169,18 @@ export function MessageBubble({ message, userMessage, prevUserMessage, onAddInfo
             lineHeight: 1.6,
           }}>
             {cleanDisplayText(message.content, !!message.imagePreview, !!message.fileResult) || message.content}
-          </Text>
-        </Box>
+          </span>
+        </div>
       ) : (
-        /* ── Assistant: bubble-block.assistant ── */
-        <Box
+        /* -- Assistant: bubble-block.assistant -- */
+        <div
           style={{
             maxWidth: '90%',
             paddingLeft: 14,
             borderLeft: '1.5px solid var(--ou-border-muted)',
           }}
         >
-          <Box
+          <div
             className="ou-markdown"
             style={{
               fontSize: 13,
@@ -184,8 +191,7 @@ export function MessageBubble({ message, userMessage, prevUserMessage, onAddInfo
           >
             <ReactMarkdown>{message.content}</ReactMarkdown>
             {message.streaming && (
-              <Box
-                component="span"
+              <span
                 style={{
                   display: 'inline-flex',
                   gap: 3,
@@ -194,9 +200,8 @@ export function MessageBubble({ message, userMessage, prevUserMessage, onAddInfo
                 }}
               >
                 {[0, 1, 2].map(i => (
-                  <Box
+                  <span
                     key={i}
-                    component="span"
                     style={{
                       display: 'inline-block',
                       width: 4,
@@ -207,9 +212,9 @@ export function MessageBubble({ message, userMessage, prevUserMessage, onAddInfo
                     }}
                   />
                 ))}
-              </Box>
+              </span>
             )}
-          </Box>
+          </div>
 
           {/* Tool이 매칭되면 Tool UI, 아니면 기본 NodeCreatedBadge */}
           {!message.streaming && message.nodeCreated && (
@@ -229,8 +234,8 @@ export function MessageBubble({ message, userMessage, prevUserMessage, onAddInfo
               />
             )
           )}
-        </Box>
+        </div>
       )}
-    </Box>
+    </div>
   );
 }

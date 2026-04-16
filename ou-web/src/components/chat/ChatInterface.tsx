@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useRef, useEffect, useMemo } from 'react';
-import { Stack, Box, ScrollArea } from '@mantine/core';
 import { ChatInput, type ImageUploadResult, type FileUploadResult } from './ChatInput';
 import { MessageBubble } from './MessageBubble';
 import { TokenGauge } from './TokenGauge';
@@ -355,14 +354,13 @@ export function ChatInterface({ onboarding, graphNodes = [], initialScenarioId, 
   }, [user, nudgeDismissed]);
 
   return (
-    <Box style={{ display: 'flex', height: embedded ? '100%' : '100vh' }}>
+    <div style={{ display: 'flex', height: embedded ? '100%' : '100vh' }}>
       {/* 채팅 영역 */}
-      <Stack
-        gap={0}
-        style={{ flex: 1, minWidth: 0 }}
+      <div
+        style={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0 }}
       >
-        <ScrollArea flex={1} viewportRef={viewport}>
-          <Stack gap="md" p="md" maw={720} mx="auto" pb="xl">
+        <div ref={viewport} style={{ flex: 1, overflow: 'auto' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: 16, maxWidth: 720, margin: '0 auto', paddingBottom: 32 }}>
             {showScenarios && (
               <ScenarioSuggestions scenarios={scenarios} onSelect={handleScenarioSelect} />
             )}
@@ -382,7 +380,7 @@ export function ChatInterface({ onboarding, graphNodes = [], initialScenarioId, 
               const shouldShowViewNudge = shouldShowViewRecommend && !user && !nudgeDismissed['view_created'];
 
               return (
-                <Box key={msg.id}>
+                <div key={msg.id}>
                   <MessageBubble
                     message={msg}
                     userMessage={prevUserMsg?.content}
@@ -390,7 +388,7 @@ export function ChatInterface({ onboarding, graphNodes = [], initialScenarioId, 
                     onAddInfo={handleSend}
                   />
                   {shouldShowViewRecommend && viewRecommendation && (
-                    <Box mt="xs">
+                    <div style={{ marginTop: 8 }}>
                       <ViewRecommendBadge
                         domain={viewRecommendation.domain}
                         viewType={viewRecommendation.viewType}
@@ -398,25 +396,25 @@ export function ChatInterface({ onboarding, graphNodes = [], initialScenarioId, 
                           .filter(m => m.nodeCreated?.domain === viewRecommendation.domain)
                           .map(m => ({ id: m.nodeCreated?.nodeId, domain: m.nodeCreated?.domain, raw: m.content, domain_data: m.nodeCreated?.domain_data }))}
                       />
-                    </Box>
+                    </div>
                   )}
                   {shouldShowViewNudge && (
-                    <Box mt="xs">
+                    <div style={{ marginTop: 8 }}>
                       <SaveNudge trigger="view_created" onDismiss={() => handleDismissNudge('view_created')} />
-                    </Box>
+                    </div>
                   )}
-                </Box>
+                </div>
               );
             })}
-          </Stack>
-        </ScrollArea>
+          </div>
+        </div>
 
         {!user && turnCount >= 8 && !nudgeDismissed['turn_limit'] && (
           <SaveNudge trigger="turn_limit" onDismiss={() => handleDismissNudge('turn_limit')} />
         )}
 
-        <Box p="md" maw={720} mx="auto" w="100%">
-          <Stack gap={4}>
+        <div style={{ padding: 16, maxWidth: 720, margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             <ChatInput
               onSend={handleSend}
               onStop={handleStop}
@@ -425,27 +423,27 @@ export function ChatInterface({ onboarding, graphNodes = [], initialScenarioId, 
               loggedIn={!!user}
             />
             <TokenGauge />
-          </Stack>
-        </Box>
-      </Stack>
+          </div>
+        </div>
+      </div>
 
-      {/* 라이브 그래프 패널 — 데스크톱 ≥1024px만 */}
+      {/* 라이브 그래프 패널 -- 데스크톱만 표시 (CSS media query로 제어) */}
       {showGraph && (
-        <Box
+        <div
+          className="ou-desktop-only"
           style={{
             width: '40%',
             maxWidth: 480,
             minWidth: 280,
             height: '100vh',
           }}
-          visibleFrom="md"
         >
           <ChatGraphPanel
             ref={graphPanelRef}
             initialNodes={graphNodes}
             onClose={() => setShowGraph(false)}
           />
-        </Box>
+        </div>
       )}
       {/* 게스트 이탈 시 session_end 모달 */}
       {showSessionEnd && !nudgeDismissed['session_end'] && (
@@ -458,6 +456,6 @@ export function ChatInterface({ onboarding, graphNodes = [], initialScenarioId, 
           }}
         />
       )}
-    </Box>
+    </div>
   );
 }

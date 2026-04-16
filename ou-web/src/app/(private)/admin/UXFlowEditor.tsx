@@ -1,8 +1,6 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Stack, Group, Text, Button, Loader, Paper, TextInput, Select, Modal } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
 import { FloppyDisk, Plus, Export, ArrowCounterClockwise } from '@phosphor-icons/react';
 import {
   ReactFlow,
@@ -42,9 +40,9 @@ function PageNode({ data }: NodeProps) {
       minWidth: 140,
     }}>
       <Handle type="target" position={Position.Top} style={{ background: '#333' }} />
-      <Text fz="xs" fw={700} mb={2}>{String(data.label ?? '')}</Text>
-      {data.route ? <Text fz={10} c="dimmed" ff="monospace">{String(data.route)}</Text> : null}
-      {data.description ? <Text fz={10} c="dimmed" mt={2}>{String(data.description)}</Text> : null}
+      <span style={{ fontSize: 12, fontWeight: 700, display: 'block', marginBottom: 2 }}>{String(data.label ?? '')}</span>
+      {data.route ? <span style={{ fontSize: 10, color: '#868e96', fontFamily: 'monospace', display: 'block' }}>{String(data.route)}</span> : null}
+      {data.description ? <span style={{ fontSize: 10, color: '#868e96', display: 'block', marginTop: 2 }}>{String(data.description)}</span> : null}
       <Handle type="source" position={Position.Bottom} style={{ background: '#333' }} />
     </div>
   );
@@ -61,8 +59,8 @@ function ComponentNode({ data }: NodeProps) {
       minWidth: 120,
     }}>
       <Handle type="target" position={Position.Top} style={{ background: '#666' }} />
-      <Text fz="xs" fw={600}>{String(data.label ?? '')}</Text>
-      {data.description ? <Text fz={10} c="dimmed" mt={2}>{String(data.description)}</Text> : null}
+      <span style={{ fontSize: 12, fontWeight: 600 }}>{String(data.label ?? '')}</span>
+      {data.description ? <span style={{ fontSize: 10, color: '#868e96', display: 'block', marginTop: 2 }}>{String(data.description)}</span> : null}
       <Handle type="source" position={Position.Bottom} style={{ background: '#666' }} />
     </div>
   );
@@ -79,8 +77,8 @@ function ModalNode({ data }: NodeProps) {
       minWidth: 100,
     }}>
       <Handle type="target" position={Position.Top} style={{ background: '#999' }} />
-      <Text fz="xs" fw={500} c="dimmed">{String(data.label ?? '')}</Text>
-      {data.description ? <Text fz={10} c="dimmed" mt={2}>{String(data.description)}</Text> : null}
+      <span style={{ fontSize: 12, fontWeight: 500, color: '#868e96' }}>{String(data.label ?? '')}</span>
+      {data.description ? <span style={{ fontSize: 10, color: '#868e96', display: 'block', marginTop: 2 }}>{String(data.description)}</span> : null}
       <Handle type="source" position={Position.Bottom} style={{ background: '#999' }} />
     </div>
   );
@@ -147,7 +145,6 @@ const edgeTypes: EdgeTypes = {
   labeled: LabeledEdge,
 };
 
-/** UX 플로우 데이터 → React Flow 노드/엣지 변환 */
 function toFlowNodes(data: UXFlowData): Node[] {
   return data.nodes.map(n => ({
     id: n.id,
@@ -168,7 +165,6 @@ function toFlowEdges(data: UXFlowData): Edge[] {
   }));
 }
 
-/** React Flow → UX 플로우 데이터 변환 */
 function fromFlow(nodes: Node[], edges: Edge[]): UXFlowData {
   return {
     nodes: nodes.map(n => ({
@@ -195,9 +191,9 @@ export function UXFlowEditor() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<string | null>(null);
-  const [addNodeOpened, { open: openAddNode, close: closeAddNode }] = useDisclosure(false);
+  const [addNodeOpened, setAddNodeOpened] = useState(false);
   const [newNodeLabel, setNewNodeLabel] = useState('');
-  const [newNodeType, setNewNodeType] = useState<string | null>('page');
+  const [newNodeType, setNewNodeType] = useState<string>('page');
   const [newNodeRoute, setNewNodeRoute] = useState('');
 
   useEffect(() => {
@@ -258,23 +254,19 @@ export function UXFlowEditor() {
     setNodes(nds => [...nds, newNode]);
     setNewNodeLabel('');
     setNewNodeRoute('');
-    closeAddNode();
+    setAddNodeOpened(false);
   };
 
   const handleExportPNG = () => {
     const svgEl = document.querySelector('.react-flow__viewport');
     if (!svgEl) return;
 
-    // HTML to Canvas export using built-in toPng
-    const a = document.createElement('a');
-    a.href = '#';
-    a.download = 'ux-flow.svg';
-
     const svg = document.querySelector('.react-flow svg');
     if (svg) {
       const serializer = new XMLSerializer();
       const svgStr = serializer.serializeToString(svg);
       const blob = new Blob([svgStr], { type: 'image/svg+xml' });
+      const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
       a.download = 'ux-flow.svg';
       a.click();
@@ -282,47 +274,47 @@ export function UXFlowEditor() {
   };
 
   if (loading) {
-    return <Group justify="center" py="xl"><Loader size="sm" /></Group>;
+    return <div style={{ display: 'flex', justifyContent: 'center', padding: '24px 0' }}>...</div>;
   }
 
   return (
-    <Stack gap="md" h="100%">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, height: '100%' }}>
       {/* Toolbar */}
-      <Group justify="space-between">
-        <Group gap="xs">
-          <Button size="xs" variant="light" color="dark" leftSection={<FloppyDisk size={14} />} loading={saving} onClick={handleSave}>
-            저장
-          </Button>
-          <Button size="xs" variant="light" color="gray" leftSection={<Plus size={14} />} onClick={openAddNode}>
-            노드 추가
-          </Button>
-          <Button size="xs" variant="light" color="gray" leftSection={<ArrowCounterClockwise size={14} />} onClick={handleReset}>
-            초기화
-          </Button>
-          <Button size="xs" variant="light" color="gray" leftSection={<Export size={14} />} onClick={handleExportPNG}>
-            내보내기
-          </Button>
-        </Group>
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button disabled={saving} onClick={handleSave} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '4px 12px', background: '#343a40', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer', fontSize: 12 }}>
+            <FloppyDisk size={14} /> {saving ? '...' : '저장'}
+          </button>
+          <button onClick={() => setAddNodeOpened(true)} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '4px 12px', background: '#f8f9fa', border: '1px solid #dee2e6', borderRadius: 4, cursor: 'pointer', fontSize: 12 }}>
+            <Plus size={14} /> 노드 추가
+          </button>
+          <button onClick={handleReset} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '4px 12px', background: '#f8f9fa', border: '1px solid #dee2e6', borderRadius: 4, cursor: 'pointer', fontSize: 12 }}>
+            <ArrowCounterClockwise size={14} /> 초기화
+          </button>
+          <button onClick={handleExportPNG} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '4px 12px', background: '#f8f9fa', border: '1px solid #dee2e6', borderRadius: 4, cursor: 'pointer', fontSize: 12 }}>
+            <Export size={14} /> 내보내기
+          </button>
+        </div>
         {lastSaved && (
-          <Text fz="xs" c="dimmed">
+          <span style={{ fontSize: 12, color: '#868e96' }}>
             마지막 저장: {new Date(lastSaved).toLocaleString('ko-KR')}
-          </Text>
+          </span>
         )}
-      </Group>
+      </div>
 
       {/* Legend */}
-      <Group gap="md">
-        <Group gap={4}><div style={{ width: 12, height: 12, border: '2px solid #333', borderRadius: 3, background: '#fff' }} /><Text fz={10} c="dimmed">페이지</Text></Group>
-        <Group gap={4}><div style={{ width: 12, height: 12, border: '2px solid #666', borderRadius: 8, background: '#f5f5f5' }} /><Text fz={10} c="dimmed">컴포넌트</Text></Group>
-        <Group gap={4}><div style={{ width: 12, height: 12, border: '2px dashed #999', borderRadius: 3, background: '#fafafa' }} /><Text fz={10} c="dimmed">모달</Text></Group>
-        <Text fz={10} c="dimmed">|</Text>
-        <Group gap={4}><div style={{ width: 20, height: 0, borderTop: '2px solid #555' }} /><Text fz={10} c="dimmed">이동</Text></Group>
-        <Group gap={4}><div style={{ width: 20, height: 0, borderTop: '2px dotted #555' }} /><Text fz={10} c="dimmed">데이터</Text></Group>
-        <Group gap={4}><div style={{ width: 20, height: 0, borderTop: '2px dashed #555' }} /><Text fz={10} c="dimmed">호버</Text></Group>
-      </Group>
+      <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}><div style={{ width: 12, height: 12, border: '2px solid #333', borderRadius: 3, background: '#fff' }} /><span style={{ fontSize: 10, color: '#868e96' }}>페이지</span></div>
+        <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}><div style={{ width: 12, height: 12, border: '2px solid #666', borderRadius: 8, background: '#f5f5f5' }} /><span style={{ fontSize: 10, color: '#868e96' }}>컴포넌트</span></div>
+        <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}><div style={{ width: 12, height: 12, border: '2px dashed #999', borderRadius: 3, background: '#fafafa' }} /><span style={{ fontSize: 10, color: '#868e96' }}>모달</span></div>
+        <span style={{ fontSize: 10, color: '#868e96' }}>|</span>
+        <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}><div style={{ width: 20, height: 0, borderTop: '2px solid #555' }} /><span style={{ fontSize: 10, color: '#868e96' }}>이동</span></div>
+        <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}><div style={{ width: 20, height: 0, borderTop: '2px dotted #555' }} /><span style={{ fontSize: 10, color: '#868e96' }}>데이터</span></div>
+        <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}><div style={{ width: 20, height: 0, borderTop: '2px dashed #555' }} /><span style={{ fontSize: 10, color: '#868e96' }}>호버</span></div>
+      </div>
 
       {/* Flow Canvas */}
-      <Paper style={{ height: 600, border: '1px solid var(--mantine-color-gray-3)', borderRadius: 8 }}>
+      <div style={{ height: 600, border: '1px solid #dee2e6', borderRadius: 8 }}>
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -347,29 +339,38 @@ export function UXFlowEditor() {
             style={{ border: '1px solid #ddd' }}
           />
         </ReactFlow>
-      </Paper>
+      </div>
 
       {/* Add Node Modal */}
-      <Modal opened={addNodeOpened} onClose={closeAddNode} title="노드 추가" centered size="sm">
-        <Stack gap="md">
-          <TextInput label="이름" value={newNodeLabel} onChange={e => setNewNodeLabel(e.target.value)} placeholder="예: 프로필 페이지" />
-          <Select
-            label="타입"
-            data={[
-              { value: 'page', label: '페이지' },
-              { value: 'component', label: '컴포넌트' },
-              { value: 'modal', label: '모달' },
-            ]}
-            value={newNodeType}
-            onChange={setNewNodeType}
-          />
-          <TextInput label="라우트 (선택)" value={newNodeRoute} onChange={e => setNewNodeRoute(e.target.value)} placeholder="/profile" />
-          <Group justify="flex-end" gap="xs">
-            <Button variant="light" color="gray" onClick={closeAddNode}>취소</Button>
-            <Button color="dark" onClick={handleAddNode}>추가</Button>
-          </Group>
-        </Stack>
-      </Modal>
-    </Stack>
+      {addNodeOpened && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }} onClick={() => setAddNodeOpened(false)}>
+          <div style={{ background: '#fff', borderRadius: 8, padding: 24, width: '90%', maxWidth: 400 }} onClick={e => e.stopPropagation()}>
+            <h3 style={{ margin: '0 0 16px 0', fontSize: 16 }}>노드 추가</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 500, marginBottom: 4 }}>이름</label>
+                <input value={newNodeLabel} onChange={e => setNewNodeLabel(e.target.value)} placeholder="예: 프로필 페이지" style={{ width: '100%', padding: '6px 10px', border: '1px solid #dee2e6', borderRadius: 4, fontSize: 13 }} />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 500, marginBottom: 4 }}>타입</label>
+                <select value={newNodeType} onChange={e => setNewNodeType(e.target.value)} style={{ width: '100%', padding: '6px 10px', border: '1px solid #dee2e6', borderRadius: 4, fontSize: 13 }}>
+                  <option value="page">페이지</option>
+                  <option value="component">컴포넌트</option>
+                  <option value="modal">모달</option>
+                </select>
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 500, marginBottom: 4 }}>라우트 (선택)</label>
+                <input value={newNodeRoute} onChange={e => setNewNodeRoute(e.target.value)} placeholder="/profile" style={{ width: '100%', padding: '6px 10px', border: '1px solid #dee2e6', borderRadius: 4, fontSize: 13 }} />
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+                <button onClick={() => setAddNodeOpened(false)} style={{ padding: '6px 14px', background: '#f8f9fa', border: '1px solid #dee2e6', borderRadius: 4, cursor: 'pointer', fontSize: 12 }}>취소</button>
+                <button onClick={handleAddNode} style={{ padding: '6px 14px', background: '#343a40', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer', fontSize: 12 }}>추가</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

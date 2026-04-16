@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
-import { Box, Text, Stack, Paper, Group, Badge } from '@mantine/core';
 import type { ViewProps } from './registry';
 import { tripleToSentence } from '@/lib/triples/sentence-templates';
 import type { TriplePredicate } from '@/types';
@@ -20,7 +19,6 @@ function buildGraph(nodes: any[]): { gNodes: GNode[]; gEdges: GEdge[] } {
   const display = nodes.slice(0, 40);
   display.forEach(n => { idSet.add(n.id); connCount[n.id] = 0; });
 
-  // Build edges from triples
   display.forEach(n => {
     const triples = n.triples ?? n.domain_data?.triples ?? [];
     triples.forEach((t: any) => {
@@ -57,7 +55,6 @@ function simulate(nodes: GNode[], edges: GEdge[], iterations = 50) {
   const nodeMap = new Map(nodes.map(n => [n.id, n]));
   for (let iter = 0; iter < iterations; iter++) {
     const alpha = 1 - iter / iterations;
-    // Repulsion
     for (let i = 0; i < nodes.length; i++) {
       for (let j = i + 1; j < nodes.length; j++) {
         let dx = nodes[j].x - nodes[i].x;
@@ -70,7 +67,6 @@ function simulate(nodes: GNode[], edges: GEdge[], iterations = 50) {
         nodes[j].vx += fx; nodes[j].vy += fy;
       }
     }
-    // Attraction along edges
     edges.forEach(e => {
       const s = nodeMap.get(e.source);
       const t = nodeMap.get(e.target);
@@ -84,7 +80,6 @@ function simulate(nodes: GNode[], edges: GEdge[], iterations = 50) {
       s.vx += fx; s.vy += fy;
       t.vx -= fx; t.vy -= fy;
     });
-    // Center gravity
     nodes.forEach(n => {
       n.vx += (300 - n.x) * 0.01 * alpha;
       n.vy += (250 - n.y) * 0.01 * alpha;
@@ -166,9 +161,9 @@ export function KnowledgeGraphView({ nodes }: ViewProps) {
   if (nodes.length === 0) return null;
 
   return (
-    <Stack gap="xs" p="sm">
-      <Text fz="xs" c="dimmed">지식 그래프 ({gNodes.length}개, {gEdges.length}개 연결)</Text>
-      <Box style={{ border: '0.5px solid var(--mantine-color-default-border)', borderRadius: 8, overflow: 'hidden' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 12 }}>
+      <span style={{ fontSize: 12, color: 'var(--ou-text-dimmed, #888)' }}>지식 그래프 ({gNodes.length}개, {gEdges.length}개 연결)</span>
+      <div style={{ border: '0.5px solid var(--ou-border, #333)', borderRadius: 8, overflow: 'hidden' }}>
         <svg
           ref={svgRef}
           width="100%"
@@ -183,7 +178,6 @@ export function KnowledgeGraphView({ nodes }: ViewProps) {
         >
           <rect x={viewBox.x} y={viewBox.y} width={viewBox.w} height={viewBox.h} fill="transparent" />
 
-          {/* Edges */}
           {gEdges.map((e, i) => {
             const s = nodeMap.get(e.source);
             const t = nodeMap.get(e.target);
@@ -193,7 +187,7 @@ export function KnowledgeGraphView({ nodes }: ViewProps) {
               <line
                 key={i}
                 x1={s.x} y1={s.y} x2={t.x} y2={t.y}
-                stroke="var(--mantine-color-default-border)"
+                stroke="var(--ou-border, #333)"
                 strokeWidth={hl ? 1 : 0.5}
                 opacity={hl ? 0.6 : 0.15}
                 style={{ transition: 'opacity 200ms' }}
@@ -201,7 +195,6 @@ export function KnowledgeGraphView({ nodes }: ViewProps) {
             );
           })}
 
-          {/* Nodes */}
           {gNodes.map(n => {
             const hl = isHighlighted(n.id);
             const isHover = hoverId === n.id;
@@ -219,9 +212,9 @@ export function KnowledgeGraphView({ nodes }: ViewProps) {
               >
                 <circle
                   cx={n.x} cy={n.y} r={baseR}
-                  fill="var(--mantine-color-text)"
+                  fill="currentColor"
                   opacity={fillOpacity}
-                  stroke={isSelected ? 'var(--mantine-color-text)' : 'none'}
+                  stroke={isSelected ? 'currentColor' : 'none'}
                   strokeWidth={isSelected ? 1.5 : 0}
                 />
                 <text
@@ -244,24 +237,26 @@ export function KnowledgeGraphView({ nodes }: ViewProps) {
             );
           })}
         </svg>
-      </Box>
+      </div>
 
       {/* Selected node info panel */}
       {selectedNode && selectedRaw && (
-        <Paper p="sm" style={{ border: '0.5px solid var(--mantine-color-default-border)' }}>
-          <Group gap="xs" mb={4}>
-            <Text fz="sm" fw={600}>{selectedNode.label}</Text>
-            <Badge size="xs" variant="light" color="gray">연결 {selectedNode.conns}개</Badge>
-          </Group>
+        <div style={{ padding: 12, border: '0.5px solid var(--ou-border, #333)', borderRadius: 8 }}>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 4 }}>
+            <span style={{ fontSize: 13, fontWeight: 600 }}>{selectedNode.label}</span>
+            <span style={{ fontSize: 10, padding: '1px 6px', borderRadius: 4, backgroundColor: 'var(--ou-bg-subtle, rgba(255,255,255,0.06))', color: 'var(--ou-text-dimmed, #888)' }}>
+              연결 {selectedNode.conns}개
+            </span>
+          </div>
           {selectedRaw.domain_data?.description && (
-            <Text fz="xs" c="dimmed" lineClamp={3}>{selectedRaw.domain_data.description}</Text>
+            <p style={{ fontSize: 12, color: 'var(--ou-text-dimmed, #888)', margin: 0, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical' }}>{selectedRaw.domain_data.description}</p>
           )}
           {selectedRaw.raw && !selectedRaw.domain_data?.description && (
-            <Text fz="xs" c="dimmed" lineClamp={3}>{selectedRaw.raw.slice(0, 200)}</Text>
+            <p style={{ fontSize: 12, color: 'var(--ou-text-dimmed, #888)', margin: 0, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical' }}>{selectedRaw.raw.slice(0, 200)}</p>
           )}
           {gEdges.filter(e => e.source === selectedId || e.target === selectedId).length > 0 && (
-            <Stack gap={2} mt={8}>
-              <Text fz={11} fw={500}>연결:</Text>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 2, marginTop: 8 }}>
+              <span style={{ fontSize: 11, fontWeight: 500 }}>연결:</span>
               {gEdges.filter(e => e.source === selectedId || e.target === selectedId).slice(0, 5).map((e, i) => {
                 const otherId = e.source === selectedId ? e.target : e.source;
                 const other = nodeMap.get(otherId);
@@ -271,15 +266,15 @@ export function KnowledgeGraphView({ nodes }: ViewProps) {
                   object: e.source === selectedId ? (other?.label ?? '?') : selectedNode.label,
                 });
                 return (
-                  <Text key={i} fz={11} c="dimmed">
+                  <span key={i} style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)' }}>
                     {sentence}
-                  </Text>
+                  </span>
                 );
               })}
-            </Stack>
+            </div>
           )}
-        </Paper>
+        </div>
       )}
-    </Stack>
+    </div>
   );
 }

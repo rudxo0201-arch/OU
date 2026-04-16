@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
-import { Box, Stack, ScrollArea, ActionIcon, Text } from '@mantine/core';
 import { CaretRight, CaretLeft } from '@phosphor-icons/react';
 import { ChatInput, type ImageUploadResult, type FileUploadResult } from './ChatInput';
 import { MessageBubble } from './MessageBubble';
@@ -271,7 +270,7 @@ export function ChatPanel({ onNodeCreated }: ChatPanelProps) {
   // Collapsed state — show toggle button only
   if (!chatPanelOpen) {
     return (
-      <Box
+      <div
         style={{
           width: 40,
           height: '100%',
@@ -280,35 +279,40 @@ export function ChatPanel({ onNodeCreated }: ChatPanelProps) {
           justifyContent: 'center',
         }}
       >
-        <ActionIcon
-          variant="subtle"
-          color="gray"
-          size="lg"
+        <button
           onClick={toggleChatPanel}
           style={{
             background: 'var(--ou-glass-bg)',
             backdropFilter: 'blur(var(--ou-glass-blur))',
             border: '0.5px solid var(--ou-glass-border)',
-            borderRadius: 'var(--mantine-radius-md)',
+            borderRadius: 'var(--ou-radius-md)',
+            width: 34,
+            height: 34,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            color: 'var(--ou-text-dimmed)',
+            padding: 0,
           }}
         >
           <CaretRight size={18} />
-        </ActionIcon>
-      </Box>
+        </button>
+      </div>
     );
   }
 
   // YouTube 워크스페이스 모드
   if (youtubeMode) {
     return (
-      <Box style={{ width: 360, minWidth: 300, height: '100%' }}>
+      <div style={{ width: 360, minWidth: 300, height: '100%' }}>
         <YouTubeWorkspace
           data={youtubeMode}
           onClose={() => setYoutubeMode(null)}
         >
           {/* 워크스페이스 내 채팅 영역 */}
-          <ScrollArea style={{ maxHeight: 200 }} viewportRef={viewport}>
-            <Stack gap="xs" px="sm" py="xs">
+          <div ref={viewport} style={{ maxHeight: 200, overflow: 'auto' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: '8px 12px' }}>
               {messages.filter(m => m.id !== 'onboarding').slice(-10).map(msg => (
                 <MessageBubble
                   key={msg.id}
@@ -316,9 +320,9 @@ export function ChatPanel({ onNodeCreated }: ChatPanelProps) {
                   onAddInfo={handleSend}
                 />
               ))}
-            </Stack>
-          </ScrollArea>
-          <Box px="sm" pb="sm" pt={4}>
+            </div>
+          </div>
+          <div style={{ padding: '4px 12px 12px' }}>
             <ChatInput
               onSend={handleSend}
               onStop={handleStop}
@@ -326,14 +330,14 @@ export function ChatPanel({ onNodeCreated }: ChatPanelProps) {
               disabled={guestLimitReached}
               loggedIn={!!user}
             />
-          </Box>
+          </div>
         </YouTubeWorkspace>
-      </Box>
+      </div>
     );
   }
 
   return (
-    <Box
+    <div
       style={{
         width: 360,
         minWidth: 300,
@@ -349,7 +353,7 @@ export function ChatPanel({ onNodeCreated }: ChatPanelProps) {
       }}
     >
       {/* Header */}
-      <Box
+      <div
         style={{
           padding: '12px 16px',
           display: 'flex',
@@ -358,15 +362,27 @@ export function ChatPanel({ onNodeCreated }: ChatPanelProps) {
           borderBottom: '0.5px solid var(--ou-glass-border)',
         }}
       >
-        <Text size="sm" fw={600}>Chat</Text>
-        <ActionIcon variant="subtle" color="gray" size="sm" onClick={toggleChatPanel}>
+        <span style={{ fontSize: 13, fontWeight: 600 }}>Chat</span>
+        <button
+          onClick={toggleChatPanel}
+          style={{
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            color: 'var(--ou-text-dimmed)',
+            padding: 4,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
           <CaretRight size={16} />
-        </ActionIcon>
-      </Box>
+        </button>
+      </div>
 
       {/* Messages */}
-      <ScrollArea flex={1} viewportRef={viewport}>
-        <Stack gap="md" p="md" pb="xl">
+      <div ref={viewport} style={{ flex: 1, overflow: 'auto' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: 16, paddingBottom: 32 }}>
           {showScenarios && (
             <ScenarioSuggestions scenarios={scenarios} onSelect={handleScenarioSelect} />
           )}
@@ -375,13 +391,13 @@ export function ChatPanel({ onNodeCreated }: ChatPanelProps) {
             const shouldShowViewRecommend = isLastAssistant && showViewRecommend;
 
             return (
-              <Box key={msg.id}>
+              <div key={msg.id}>
                 <MessageBubble
                   message={msg}
                   onAddInfo={handleSend}
                 />
                 {shouldShowViewRecommend && viewRecommendation && (
-                  <Box mt="xs">
+                  <div style={{ marginTop: 8 }}>
                     <ViewRecommendBadge
                       domain={viewRecommendation.domain}
                       viewType={viewRecommendation.viewType}
@@ -389,17 +405,17 @@ export function ChatPanel({ onNodeCreated }: ChatPanelProps) {
                         .filter(m => m.nodeCreated?.domain === viewRecommendation.domain)
                         .map(m => ({ id: m.nodeCreated?.nodeId, domain: m.nodeCreated?.domain, raw: m.content, domain_data: m.nodeCreated?.domain_data }))}
                     />
-                  </Box>
+                  </div>
                 )}
-              </Box>
+              </div>
             );
           })}
-        </Stack>
-      </ScrollArea>
+        </div>
+      </div>
 
       {/* Input */}
-      <Box p="sm" style={{ borderTop: '0.5px solid var(--ou-glass-border)' }}>
-        <Stack gap={4}>
+      <div style={{ padding: 12, borderTop: '0.5px solid var(--ou-glass-border)' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           <ChatInput
             onSend={handleSend}
             onStop={handleStop}
@@ -408,8 +424,8 @@ export function ChatPanel({ onNodeCreated }: ChatPanelProps) {
             loggedIn={!!user}
           />
           <TokenGauge />
-        </Stack>
-      </Box>
-    </Box>
+        </div>
+      </div>
+    </div>
   );
 }

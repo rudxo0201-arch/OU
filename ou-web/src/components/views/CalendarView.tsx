@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { Box, Grid, Text, Stack, Group, Badge, ActionIcon, Paper } from '@mantine/core';
 import { CaretLeft, CaretRight } from '@phosphor-icons/react';
 import dayjs from 'dayjs';
 import 'dayjs/locale/ko';
@@ -37,62 +36,78 @@ export function CalendarView({ nodes }: ViewProps) {
   const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
   return (
-    <Stack gap="sm" p="md">
-      <Group justify="space-between">
-        <ActionIcon variant="subtle" color="gray" onClick={() => setCurrentMonth(m => m.subtract(1, 'month'))}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: 16 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <button
+          onClick={() => setCurrentMonth(m => m.subtract(1, 'month'))}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, display: 'flex', alignItems: 'center', color: 'inherit' }}
+        >
           <CaretLeft size={16} />
-        </ActionIcon>
-        <Text fw={600}>{currentMonth.format('YYYY년 M월')}</Text>
-        <ActionIcon variant="subtle" color="gray" onClick={() => setCurrentMonth(m => m.add(1, 'month'))}>
+        </button>
+        <span style={{ fontWeight: 600 }}>{currentMonth.format('YYYY년 M월')}</span>
+        <button
+          onClick={() => setCurrentMonth(m => m.add(1, 'month'))}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, display: 'flex', alignItems: 'center', color: 'inherit' }}
+        >
           <CaretRight size={16} />
-        </ActionIcon>
-      </Group>
+        </button>
+      </div>
 
-      <Grid columns={7} gutter={4}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 4 }}>
         {WEEKDAYS.map(day => (
-          <Grid.Col key={day} span={1}>
-            <Text ta="center" fz={11} c="dimmed">{day}</Text>
-          </Grid.Col>
+          <span key={day} style={{ textAlign: 'center', fontSize: 11, color: 'var(--ou-text-dimmed, #888)' }}>{day}</span>
         ))}
-      </Grid>
+      </div>
 
-      <Grid columns={7} gutter={4}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 4 }}>
         {days.map((day, i) => {
-          if (!day) return <Grid.Col key={`empty-${i}`} span={1} />;
+          if (!day) return <div key={`empty-${i}`} />;
           const dayEvents = getEventsForDate(day);
           const isToday = day.format('YYYY-MM-DD') === dayjs().format('YYYY-MM-DD');
 
           return (
-            <Grid.Col key={day.format('YYYY-MM-DD')} span={1}>
-              <Paper
-                p={4}
-                style={{
-                  minHeight: 60,
-                  border: isToday
-                    ? '1px solid var(--mantine-color-default-border)'
-                    : '0.5px solid var(--mantine-color-default-border)',
-                  borderRadius: 4,
-                  boxShadow: isToday ? '0 0 0 1px var(--mantine-color-default-border)' : undefined,
-                }}
-              >
-                <Text fz={11} fw={isToday ? 700 : 400}>
-                  {day.date()}
-                </Text>
-                <Stack gap={2} mt={2}>
-                  {dayEvents.slice(0, 2).map(e => (
-                    <Badge key={e.id} size="xs" variant="light" color="gray" style={{ fontSize: 9, maxWidth: '100%' }}>
-                      {e.title}
-                    </Badge>
-                  ))}
-                  {dayEvents.length > 2 && (
-                    <Text fz={9} c="dimmed">+{dayEvents.length - 2}</Text>
-                  )}
-                </Stack>
-              </Paper>
-            </Grid.Col>
+            <div
+              key={day.format('YYYY-MM-DD')}
+              style={{
+                padding: 4,
+                minHeight: 60,
+                border: isToday
+                  ? '1px solid var(--ou-border, #333)'
+                  : '0.5px solid var(--ou-border, #333)',
+                borderRadius: 4,
+                boxShadow: isToday ? '0 0 0 1px var(--ou-border, #333)' : undefined,
+              }}
+            >
+              <span style={{ fontSize: 11, fontWeight: isToday ? 700 : 400 }}>
+                {day.date()}
+              </span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 2, marginTop: 2 }}>
+                {dayEvents.slice(0, 2).map(e => (
+                  <span
+                    key={e.id}
+                    style={{
+                      fontSize: 9,
+                      maxWidth: '100%',
+                      padding: '1px 6px',
+                      borderRadius: 4,
+                      border: '0.5px solid var(--ou-border, #333)',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      display: 'block',
+                    }}
+                  >
+                    {e.title}
+                  </span>
+                ))}
+                {dayEvents.length > 2 && (
+                  <span style={{ fontSize: 9, color: 'var(--ou-text-dimmed, #888)' }}>+{dayEvents.length - 2}</span>
+                )}
+              </div>
+            </div>
           );
         })}
-      </Grid>
-    </Stack>
+      </div>
+    </div>
   );
 }

@@ -1,6 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
-import { Box, Stack, Title, Text, Paper, Group, Badge, Button, SimpleGrid } from '@mantine/core';
 import { UsersThree, Plus } from '@phosphor-icons/react/dist/ssr';
 import Link from 'next/link';
 
@@ -36,71 +35,65 @@ export default async function GroupsPage() {
   });
 
   return (
-    <Box px="xl" py="lg" maw={960} mx="auto">
-      <Group justify="space-between" mb="xl">
-        <Title order={2} fw={600}>그룹</Title>
-        <Button
-          component={Link}
+    <div style={{ padding: '16px 24px', maxWidth: 960, margin: '0 auto' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+        <h2 style={{ margin: 0, fontWeight: 600 }}>그룹</h2>
+        <Link
           href="/groups/new"
-          variant="outline"
-          color="dark"
-          size="sm"
-          leftSection={<Plus size={16} />}
-          style={{ borderWidth: '0.5px' }}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 14px',
+            border: '0.5px solid #1a1a1a', borderRadius: 6, fontSize: 14, color: '#1a1a1a',
+            textDecoration: 'none',
+          }}
         >
-          새 그룹 만들기
-        </Button>
-      </Group>
+          <Plus size={16} /> 새 그룹 만들기
+        </Link>
+      </div>
 
       {groups.length === 0 ? (
-        <Stack align="center" py={80} gap="sm">
-          <UsersThree size={48} weight="thin" color="var(--mantine-color-gray-5)" />
-          <Text c="dimmed" size="sm">아직 그룹이 없어요</Text>
-        </Stack>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '80px 0', gap: 8 }}>
+          <UsersThree size={48} weight="thin" color="#9ca3af" />
+          <span style={{ color: 'var(--color-dimmed)', fontSize: 14 }}>아직 그룹이 없어요</span>
+        </div>
       ) : (
-        <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
           {groups.map((group) => (
-            <Paper
+            <Link
               key={group.id}
-              component={Link}
               href={`/groups/${group.id}`}
-              p="lg"
-              radius="md"
               style={{
-                border: '0.5px solid var(--mantine-color-gray-3)',
+                padding: 20,
+                borderRadius: 8,
+                border: '0.5px solid #d1d5db',
                 textDecoration: 'none',
                 color: 'inherit',
                 cursor: 'pointer',
+                display: 'block',
               }}
             >
-              <Stack gap="xs">
-                <Group justify="space-between">
-                  <Text fw={600} size="md">{group.name}</Text>
-                  <Badge
-                    variant="outline"
-                    color="gray"
-                    size="sm"
-                    style={{ borderWidth: '0.5px' }}
-                  >
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontWeight: 600 }}>{group.name}</span>
+                  <span style={{ fontSize: 12, padding: '2px 10px', borderRadius: 12, border: '0.5px solid #9ca3af', color: '#6b7280' }}>
                     {group.role}
-                  </Badge>
-                </Group>
+                  </span>
+                </div>
                 {group.description && (
-                  <Text size="sm" c="dimmed" lineClamp={2}>
+                  <span style={{ fontSize: 14, color: 'var(--color-dimmed)', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
                     {group.description}
-                  </Text>
+                  </span>
                 )}
-                <Group gap="xs">
-                  <UsersThree size={14} color="var(--mantine-color-gray-6)" />
-                  <Text size="xs" c="dimmed">
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <UsersThree size={14} color="#9ca3af" />
+                  <span style={{ fontSize: 12, color: 'var(--color-dimmed)' }}>
                     {countMap[group.id] || 0}명
-                  </Text>
-                </Group>
-              </Stack>
-            </Paper>
+                  </span>
+                </div>
+              </div>
+            </Link>
           ))}
-        </SimpleGrid>
+        </div>
       )}
-    </Box>
+    </div>
   );
 }

@@ -1,14 +1,7 @@
-import '@mantine/core/styles.css';
-import '@mantine/notifications/styles.css';
-import '@mantine/dates/styles.css';
 import 'xterm/css/xterm.css';
 import './globals.css';
 
-import { ColorSchemeScript, MantineProvider } from '@mantine/core';
-import { Notifications } from '@mantine/notifications';
-import { ModalsProvider } from '@mantine/modals';
 import { Orbitron } from 'next/font/google';
-import { theme } from '@/theme';
 import { AuthProvider } from '@/components/ui/AuthProvider';
 
 const orbitron = Orbitron({
@@ -25,9 +18,8 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ko" suppressHydrationWarning className={orbitron.variable}>
+    <html lang="ko" className={orbitron.variable} data-theme="dark">
       <head>
-        <ColorSchemeScript defaultColorScheme="dark" />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" sizes="any" />
         <link rel="icon" href="/favicon.svg" />
         <link rel="manifest" href="/manifest.json" />
@@ -36,15 +28,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
-      <body>
-        <MantineProvider theme={theme} defaultColorScheme="dark">
-          <ModalsProvider>
-            <Notifications position="top-right" />
-            <AuthProvider>
-              {children}
-            </AuthProvider>
-          </ModalsProvider>
-        </MantineProvider>
+      <body style={{ background: '#060810', color: 'rgba(255,255,255,0.85)', margin: 0, fontFamily: "'Pretendard Variable', -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}>
+        <AuthProvider>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );

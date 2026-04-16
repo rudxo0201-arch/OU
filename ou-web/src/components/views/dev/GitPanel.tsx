@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useCallback, useState } from 'react';
-import { Box, Group, Text, Stack, ActionIcon, Badge, Tooltip, ScrollArea, Loader, TextInput } from '@mantine/core';
 import { GitBranch, GitCommit, ArrowClockwise, Plus, Check, Eye } from '@phosphor-icons/react';
 import { useDevWorkspaceStore, type GitChange } from '@/stores/devWorkspaceStore';
 
@@ -124,66 +123,64 @@ export function GitPanel() {
   const unstagedFiles = gitChanges.filter(c => c.unstaged !== ' ' || c.staged === '?');
 
   return (
-    <Box style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* 헤더: 브랜치 */}
-      <Group gap="xs" p="xs" style={{ borderBottom: '1px solid var(--mantine-color-dark-4)', flexShrink: 0 }} wrap="nowrap" justify="space-between">
-        <Group gap={6} wrap="nowrap">
+      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 8, borderBottom: '1px solid var(--mantine-color-dark-4)', flexShrink: 0 }}>
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 6 }}>
           <GitBranch size={14} color="var(--mantine-color-green-5)" />
-          <Text fz={12} fw={600}>{gitBranch || '...'}</Text>
-        </Group>
-        <ActionIcon size="xs" variant="subtle" onClick={refreshGitStatus} loading={gitLoading}>
+          <span style={{ fontSize: 12, fontWeight: 600 }}>{gitBranch || '...'}</span>
+        </div>
+        <button onClick={refreshGitStatus} disabled={gitLoading} style={{ background: 'transparent', border: 'none', cursor: gitLoading ? 'not-allowed' : 'pointer', padding: 2, display: 'flex', alignItems: 'center', color: 'inherit', opacity: gitLoading ? 0.5 : 1 }}>
           <ArrowClockwise size={12} />
-        </ActionIcon>
-      </Group>
+        </button>
+      </div>
 
       {/* 탭 전환 */}
-      <Group gap={0} style={{ borderBottom: '1px solid var(--mantine-color-dark-4)', flexShrink: 0 }}>
-        <Box
-          px="sm"
-          py={6}
+      <div style={{ display: 'flex', flexDirection: 'row', gap: 0, borderBottom: '1px solid var(--mantine-color-dark-4)', flexShrink: 0 }}>
+        <div
+          onClick={() => setTab('changes')}
           style={{
+            padding: '6px 12px',
             cursor: 'pointer',
             borderBottom: tab === 'changes' ? '2px solid var(--mantine-color-blue-5)' : '2px solid transparent',
           }}
-          onClick={() => setTab('changes')}
         >
-          <Text fz={11} fw={tab === 'changes' ? 600 : 400} c={tab === 'changes' ? 'white' : 'dimmed'}>
+          <span style={{ fontSize: 11, fontWeight: tab === 'changes' ? 600 : 400, color: tab === 'changes' ? 'white' : 'var(--mantine-color-dimmed)' }}>
             변경 {gitChanges.length > 0 && `(${gitChanges.length})`}
-          </Text>
-        </Box>
-        <Box
-          px="sm"
-          py={6}
+          </span>
+        </div>
+        <div
+          onClick={() => setTab('log')}
           style={{
+            padding: '6px 12px',
             cursor: 'pointer',
             borderBottom: tab === 'log' ? '2px solid var(--mantine-color-blue-5)' : '2px solid transparent',
           }}
-          onClick={() => setTab('log')}
         >
-          <Text fz={11} fw={tab === 'log' ? 600 : 400} c={tab === 'log' ? 'white' : 'dimmed'}>
+          <span style={{ fontSize: 11, fontWeight: tab === 'log' ? 600 : 400, color: tab === 'log' ? 'white' : 'var(--mantine-color-dimmed)' }}>
             로그
-          </Text>
-        </Box>
-      </Group>
+          </span>
+        </div>
+      </div>
 
       {/* 컨텐츠 */}
-      <ScrollArea style={{ flex: 1 }}>
+      <div style={{ flex: 1, overflow: 'auto' }}>
         {tab === 'changes' ? (
-          <Stack gap={0} p="xs">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 0, padding: 8 }}>
             {gitLoading && gitChanges.length === 0 && (
-              <Group justify="center" py="md">
-                <Loader size={16} />
-              </Group>
+              <div style={{ display: 'flex', justifyContent: 'center', padding: 16 }}>
+                <span style={{ fontSize: 11, color: 'var(--mantine-color-dimmed)' }}>...</span>
+              </div>
             )}
 
             {!gitLoading && gitChanges.length === 0 && (
-              <Text fz={11} c="dimmed" ta="center" py="md">변경 사항 없음</Text>
+              <span style={{ fontSize: 11, color: 'var(--mantine-color-dimmed)', textAlign: 'center', display: 'block', padding: 16 }}>변경 사항 없음</span>
             )}
 
             {/* Staged 섹션 */}
             {stagedFiles.length > 0 && (
               <>
-                <Text fz={10} fw={600} c="dimmed" mb={4}>STAGED</Text>
+                <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--mantine-color-dimmed)', marginBottom: 4, display: 'block' }}>STAGED</span>
                 {stagedFiles.map(c => (
                   <ChangeRow key={`s-${c.path}`} change={c} onDiff={handleViewDiff} diffOpen={diffPath === c.path} />
                 ))}
@@ -193,14 +190,12 @@ export function GitPanel() {
             {/* Unstaged 섹션 */}
             {unstagedFiles.length > 0 && (
               <>
-                <Group justify="space-between" mt={stagedFiles.length > 0 ? 'sm' : 0}>
-                  <Text fz={10} fw={600} c="dimmed">CHANGES</Text>
-                  <Tooltip label="모두 스테이지">
-                    <ActionIcon size="xs" variant="subtle" onClick={handleStageAll}>
-                      <Plus size={10} />
-                    </ActionIcon>
-                  </Tooltip>
-                </Group>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: stagedFiles.length > 0 ? 8 : 0 }}>
+                  <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--mantine-color-dimmed)' }}>CHANGES</span>
+                  <button title="모두 스테이지" onClick={handleStageAll} style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 2, display: 'flex', alignItems: 'center', color: 'inherit' }}>
+                    <Plus size={10} />
+                  </button>
+                </div>
                 {unstagedFiles.map(c => (
                   <ChangeRow
                     key={`u-${c.path}`}
@@ -215,66 +210,71 @@ export function GitPanel() {
 
             {/* Diff 미리보기 */}
             {diffPath && diffContent && (
-              <Box
-                mt="xs"
-                p="xs"
+              <div
                 style={{
+                  marginTop: 4,
+                  padding: 8,
                   borderRadius: 4,
                   background: 'var(--mantine-color-dark-8)',
                   maxHeight: 200,
                   overflow: 'auto',
                 }}
               >
-                <Text fz={10} style={{ fontFamily: 'monospace', whiteSpace: 'pre-wrap' }}>
+                <span style={{ fontSize: 10, fontFamily: 'monospace', whiteSpace: 'pre-wrap' }}>
                   {diffContent.slice(0, 3000)}
                   {diffContent.length > 3000 && '\n...'}
-                </Text>
-              </Box>
+                </span>
+              </div>
             )}
 
             {/* 커밋 입력 */}
             {gitChanges.length > 0 && (
-              <Group gap={4} mt="sm" wrap="nowrap">
-                <TextInput
+              <div style={{ display: 'flex', flexDirection: 'row', gap: 4, marginTop: 8 }}>
+                <input
                   value={commitMsg}
-                  onChange={e => setCommitMsg(e.currentTarget.value)}
+                  onChange={e => setCommitMsg(e.target.value)}
                   placeholder="커밋 메시지..."
-                  size="xs"
-                  style={{ flex: 1 }}
-                  styles={{ input: { fontSize: 11 } }}
+                  style={{ flex: 1, padding: '4px 8px', fontSize: 11, border: '0.5px solid var(--mantine-color-default-border)', borderRadius: 4, background: 'transparent', color: 'inherit' }}
                   onKeyDown={e => { if (e.key === 'Enter') handleCommit(); }}
                   disabled={committing}
                 />
-                <ActionIcon
-                  size="sm"
-                  variant="filled"
-                  color="green"
+                <button
                   onClick={handleCommit}
                   disabled={!commitMsg.trim() || committing}
-                  loading={committing}
+                  style={{
+                    padding: '4px 8px',
+                    background: 'var(--mantine-color-green-7)',
+                    border: 'none',
+                    borderRadius: 4,
+                    cursor: !commitMsg.trim() || committing ? 'not-allowed' : 'pointer',
+                    opacity: !commitMsg.trim() || committing ? 0.5 : 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    color: 'white',
+                  }}
                 >
                   <Check size={12} />
-                </ActionIcon>
-              </Group>
+                </button>
+              </div>
             )}
-          </Stack>
+          </div>
         ) : (
           /* 로그 탭 */
-          <Stack gap={2} p="xs">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 2, padding: 8 }}>
             {gitLog.map(entry => (
-              <Group key={entry.hash} gap={6} wrap="nowrap" py={2}>
+              <div key={entry.hash} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 6, padding: '2px 0' }}>
                 <GitCommit size={10} color="var(--mantine-color-dimmed)" style={{ flexShrink: 0 }} />
-                <Text fz={10} c="dimmed" style={{ fontFamily: 'monospace', flexShrink: 0 }}>{entry.hash}</Text>
-                <Text fz={10} lineClamp={1} style={{ flex: 1 }}>{entry.message}</Text>
-              </Group>
+                <span style={{ fontSize: 10, color: 'var(--mantine-color-dimmed)', fontFamily: 'monospace', flexShrink: 0 }}>{entry.hash}</span>
+                <span style={{ fontSize: 10, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{entry.message}</span>
+              </div>
             ))}
             {gitLog.length === 0 && (
-              <Text fz={11} c="dimmed" ta="center" py="md">커밋 이력 없음</Text>
+              <span style={{ fontSize: 11, color: 'var(--mantine-color-dimmed)', textAlign: 'center', display: 'block', padding: 16 }}>커밋 이력 없음</span>
             )}
-          </Stack>
+          </div>
         )}
-      </ScrollArea>
-    </Box>
+      </div>
+    </div>
   );
 }
 
@@ -294,38 +294,42 @@ function ChangeRow({
   const fileName = change.path.split('/').pop() || change.path;
 
   return (
-    <Group
-      gap={4}
-      wrap="nowrap"
-      py={3}
-      px={4}
+    <div
+      onClick={() => onDiff(change.path)}
       style={{
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 4,
+        padding: '3px 4px',
         borderRadius: 4,
         background: diffOpen ? 'var(--mantine-color-dark-6)' : 'transparent',
         cursor: 'pointer',
       }}
-      onClick={() => onDiff(change.path)}
     >
-      <Badge size="xs" variant="light" color={color} style={{ flexShrink: 0 }}>
+      <span style={{
+        fontSize: 10,
+        padding: '1px 6px',
+        borderRadius: 4,
+        background: 'rgba(255,255,255,0.08)',
+        color: `var(--mantine-color-${color}-5)`,
+        flexShrink: 0,
+      }}>
         {text}
-      </Badge>
-      <Tooltip label={change.path} openDelay={500}>
-        <Text fz={10} lineClamp={1} style={{ flex: 1 }}>{fileName}</Text>
-      </Tooltip>
-      <Group gap={2} style={{ flexShrink: 0 }}>
+      </span>
+      <span title={change.path} style={{ fontSize: 10, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{fileName}</span>
+      <div style={{ display: 'flex', flexDirection: 'row', gap: 2, flexShrink: 0 }}>
         {diffOpen && <Eye size={10} color="var(--mantine-color-blue-4)" />}
         {onStage && (
-          <Tooltip label="스테이지">
-            <ActionIcon
-              size="xs"
-              variant="subtle"
-              onClick={e => { e.stopPropagation(); onStage(change.path); }}
-            >
-              <Plus size={10} />
-            </ActionIcon>
-          </Tooltip>
+          <button
+            title="스테이지"
+            onClick={e => { e.stopPropagation(); onStage(change.path); }}
+            style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 2, display: 'flex', alignItems: 'center', color: 'inherit' }}
+          >
+            <Plus size={10} />
+          </button>
         )}
-      </Group>
-    </Group>
+      </div>
+    </div>
   );
 }

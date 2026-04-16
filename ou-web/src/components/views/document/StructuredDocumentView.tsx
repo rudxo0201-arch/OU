@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { Box, Text, Stack, ScrollArea, Loader } from '@mantine/core';
 import type { Annotation } from '@/hooks/useAnnotations';
 
 // ── 타입 ──
@@ -196,9 +195,8 @@ function SentenceSpan({
     }
     if (m.annotation) {
       parts.push(
-        <Text
+        <span
           key={`a-${i}`}
-          span
           style={{
             background: m.annotation.color.startsWith('var(')
               ? m.annotation.color
@@ -213,13 +211,12 @@ function SentenceSpan({
           }}
         >
           {text.slice(m.start, m.end)}
-        </Text>
+        </span>
       );
     } else if (m.isSearch) {
       parts.push(
-        <Text
+        <span
           key={`s-${i}`}
-          span
           style={{
             background: 'var(--mantine-color-yellow-3)',
             borderRadius: 2,
@@ -227,7 +224,7 @@ function SentenceSpan({
           }}
         >
           {text.slice(m.start, m.end)}
-        </Text>
+        </span>
       );
     }
     pos = m.end;
@@ -306,10 +303,10 @@ export function StructuredDocumentView({
 
   if (loading) {
     return (
-      <Stack align="center" py="xl">
-        <Loader size="sm" color="gray" />
-        <Text fz="xs" c="dimmed">문서 구조를 불러오는 중...</Text>
-      </Stack>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '24px 0' }}>
+        <span style={{ color: 'var(--mantine-color-dimmed)', fontSize: 'var(--mantine-font-size-sm)' }}>불러오는 중...</span>
+        <span style={{ fontSize: 'var(--mantine-font-size-xs)', color: 'var(--mantine-color-dimmed)' }}>문서 구조를 불러오는 중...</span>
+      </div>
     );
   }
 
@@ -325,8 +322,8 @@ export function StructuredDocumentView({
   }
 
   return (
-    <ScrollArea h={500}>
-      <Box
+    <div style={{ height: 500, overflow: 'auto' }}>
+      <div
         ref={containerRef}
         data-document-container
         onMouseUp={handleMouseUp}
@@ -336,7 +333,7 @@ export function StructuredDocumentView({
         }}
       >
         {sections.map((section, sIdx) => (
-          <Box
+          <div
             key={section.id}
             data-section-id={section.id}
             style={{
@@ -350,17 +347,21 @@ export function StructuredDocumentView({
             }}
           >
             {section.heading && (
-              <Text
-                fw={700} fz="md"
-                mb="sm"
-                style={{ lineHeight: 1.6 }}
+              <span
+                style={{
+                  fontWeight: 700,
+                  fontSize: 'var(--mantine-font-size-md)',
+                  display: 'block',
+                  marginBottom: 8,
+                  lineHeight: 1.6,
+                }}
               >
                 {section.heading}
-              </Text>
+              </span>
             )}
-            <Text
-              fz="sm"
+            <span
               style={{
+                fontSize: 'var(--mantine-font-size-sm)',
                 lineHeight: 1.8,
                 whiteSpace: 'pre-wrap',
               }}
@@ -374,10 +375,10 @@ export function StructuredDocumentView({
                   onAnnotationClick={onAnnotationClick}
                 />
               ))}
-            </Text>
-          </Box>
+            </span>
+          </div>
         ))}
-      </Box>
-    </ScrollArea>
+      </div>
+    </div>
   );
 }

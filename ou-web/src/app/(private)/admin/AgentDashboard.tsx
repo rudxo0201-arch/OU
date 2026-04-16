@@ -1,10 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import {
-  Stack, Text, Paper, Group, Badge, Button, Textarea,
-  Select, Accordion, Loader, Code, Box, SimpleGrid,
-} from '@mantine/core';
 import { Robot, Play, Stop, FloppyDisk, GitBranch } from '@phosphor-icons/react';
 
 /** Agent definitions (client-side mirror of registry) */
@@ -46,6 +42,7 @@ export function AgentDashboard() {
   const [running, setRunning] = useState(false);
   const [result, setResult] = useState<PipelineResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [openAccordion, setOpenAccordion] = useState<string | null>(null);
 
   const runPipeline = async () => {
     if (!scenarioText.trim()) return;
@@ -81,255 +78,177 @@ export function AgentDashboard() {
 
   const savePlanAsNode = async () => {
     if (!result?.plan) return;
-    // TODO: POST to data_nodes API to save as DataNode
     alert('기획서가 DataNode로 저장되었습니다. (구현 예정)');
   };
 
   const createIssuesFromGaps = async () => {
     if (!result?.plan?.gaps?.length) return;
-    // TODO: Create task DataNodes from gaps
     alert(`${result.plan.gaps.length}개 이슈가 생성되었습니다. (구현 예정)`);
   };
 
+  const statusColor = (s: string) => s === 'complete' ? '#40c057' : s === 'partial' ? '#fab005' : '#fa5252';
+  const statusLabel = (s: string) => s === 'complete' ? '완료' : s === 'partial' ? '부분 완료' : '실패';
+
   return (
-    <Stack gap="lg">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       {/* Agent Registry */}
-      <Paper p="md">
-        <Text fw={600} fz="sm" mb="md">등록된 에이전트</Text>
-        <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="sm">
+      <div style={{ padding: 16, background: '#fff', borderRadius: 8, border: '1px solid #e0e0e0' }}>
+        <p style={{ fontWeight: 600, fontSize: 13, margin: '0 0 16px 0' }}>등록된 에이전트</p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 8 }}>
           {AGENTS.map(agent => (
-            <Paper key={agent.id} p="sm" withBorder>
-              <Group gap="xs" mb={4}>
+            <div key={agent.id} style={{ padding: 8, border: '1px solid #e0e0e0', borderRadius: 6 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
                 <Robot size={16} weight="light" />
-                <Text fz="sm" fw={500}>{agent.nameKo}</Text>
-                <Badge size="xs" variant="light" color={agent.model === 'sonnet' ? 'dark' : 'gray'}>
+                <span style={{ fontSize: 13, fontWeight: 500 }}>{agent.nameKo}</span>
+                <span style={{ background: agent.model === 'sonnet' ? '#343a40' : '#f1f3f5', color: agent.model === 'sonnet' ? '#fff' : '#495057', padding: '1px 6px', borderRadius: 10, fontSize: 10 }}>
                   {agent.model}
-                </Badge>
-              </Group>
-              <Text fz="xs" c="dimmed">{agent.description}</Text>
-            </Paper>
+                </span>
+              </div>
+              <span style={{ fontSize: 12, color: '#868e96' }}>{agent.description}</span>
+            </div>
           ))}
-        </SimpleGrid>
-      </Paper>
+        </div>
+      </div>
 
       {/* Pipeline Runner */}
-      <Paper p="md">
-        <Text fw={600} fz="sm" mb="md">시나리오 파이프라인 실행</Text>
-        <Stack gap="sm">
-          <Textarea
+      <div style={{ padding: 16, background: '#fff', borderRadius: 8, border: '1px solid #e0e0e0' }}>
+        <p style={{ fontWeight: 600, fontSize: 13, margin: '0 0 16px 0' }}>시나리오 파이프라인 실행</p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <textarea
             placeholder="시나리오 텍스트를 입력하세요..."
-            minRows={4}
-            maxRows={10}
-            autosize
+            rows={4}
             value={scenarioText}
             onChange={(e) => setScenarioText(e.currentTarget.value)}
             disabled={running}
+            style={{ width: '100%', padding: '8px 10px', border: '1px solid #dee2e6', borderRadius: 4, fontSize: 13, resize: 'vertical' }}
           />
 
-          <Group gap="sm">
-            <Select
-              data={STAGE_OPTIONS}
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <select
               value={stopAfter}
-              onChange={(v) => setStopAfter(v ?? 'all')}
-              size="xs"
-              w={160}
+              onChange={(e) => setStopAfter(e.target.value)}
               disabled={running}
-            />
-            <Button
-              leftSection={running ? <Loader size={14} /> : <Play size={14} weight="fill" />}
+              style={{ width: 160, padding: '4px 8px', border: '1px solid #dee2e6', borderRadius: 4, fontSize: 12 }}
+            >
+              {STAGE_OPTIONS.map(opt => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
+            </select>
+            <button
               onClick={runPipeline}
               disabled={running || !scenarioText.trim()}
-              size="xs"
-              color="dark"
+              style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '4px 14px', background: '#343a40', color: '#fff', border: 'none', borderRadius: 4, cursor: running || !scenarioText.trim() ? 'default' : 'pointer', fontSize: 12, opacity: running || !scenarioText.trim() ? 0.5 : 1 }}
             >
+              {running ? '...' : <Play size={14} weight="fill" />}
               {running ? '실행 중...' : '파이프라인 실행'}
-            </Button>
-          </Group>
-        </Stack>
-      </Paper>
+            </button>
+          </div>
+        </div>
+      </div>
 
       {/* Error */}
       {error && (
-        <Paper p="md" bg="var(--mantine-color-red-0)">
-          <Text fz="sm" c="red">{error}</Text>
-        </Paper>
+        <div style={{ padding: 16, background: '#fff5f5', borderRadius: 8, border: '1px solid #ffc9c9' }}>
+          <span style={{ fontSize: 13, color: '#c92a2a' }}>{error}</span>
+        </div>
       )}
 
       {/* Results */}
       {result && (
-        <Paper p="md">
-          <Group justify="space-between" mb="md">
-            <Group gap="xs">
-              <Text fw={600} fz="sm">결과</Text>
-              <Badge
-                size="xs"
-                color={result.status === 'complete' ? 'green' : result.status === 'partial' ? 'yellow' : 'red'}
-                variant="light"
-              >
-                {result.status === 'complete' ? '완료' : result.status === 'partial' ? '부분 완료' : '실패'}
-              </Badge>
+        <div style={{ padding: 16, background: '#fff', borderRadius: 8, border: '1px solid #e0e0e0' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontWeight: 600, fontSize: 13 }}>결과</span>
+              <span style={{ background: `${statusColor(result.status)}20`, color: statusColor(result.status), padding: '1px 8px', borderRadius: 10, fontSize: 10 }}>
+                {statusLabel(result.status)}
+              </span>
               {result.costSummary.totalTokens > 0 && (
-                <Badge size="xs" variant="light" color="gray">
+                <span style={{ background: '#f1f3f5', padding: '1px 8px', borderRadius: 10, fontSize: 10 }}>
                   {result.costSummary.totalTokens.toLocaleString()} tokens
-                </Badge>
+                </span>
               )}
-            </Group>
-            <Group gap="xs">
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
               {result.plan && (
                 <>
-                  <Button
-                    size="xs"
-                    variant="light"
-                    color="gray"
-                    leftSection={<FloppyDisk size={14} />}
-                    onClick={savePlanAsNode}
-                  >
-                    기획서 저장
-                  </Button>
+                  <button onClick={savePlanAsNode} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '4px 12px', background: '#f8f9fa', border: '1px solid #dee2e6', borderRadius: 4, cursor: 'pointer', fontSize: 12 }}>
+                    <FloppyDisk size={14} /> 기획서 저장
+                  </button>
                   {result.plan.gaps?.length > 0 && (
-                    <Button
-                      size="xs"
-                      variant="light"
-                      color="gray"
-                      leftSection={<GitBranch size={14} />}
-                      onClick={createIssuesFromGaps}
-                    >
-                      이슈 생성 ({result.plan.gaps.length})
-                    </Button>
+                    <button onClick={createIssuesFromGaps} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '4px 12px', background: '#f8f9fa', border: '1px solid #dee2e6', borderRadius: 4, cursor: 'pointer', fontSize: 12 }}>
+                      <GitBranch size={14} /> 이슈 생성 ({result.plan.gaps.length})
+                    </button>
                   )}
                 </>
               )}
-            </Group>
-          </Group>
+            </div>
+          </div>
 
-          <Accordion variant="separated">
-            {result.analysis && (
-              <Accordion.Item value="analysis">
-                <Accordion.Control>
-                  <Group gap="xs">
-                    <Text fz="sm" fw={500}>1. 시나리오 분석</Text>
-                    {result.costSummary.stages.analyze && (
-                      <Badge size="xs" variant="light" color="gray">
-                        {result.costSummary.stages.analyze.toLocaleString()} tokens
-                      </Badge>
+          {/* Accordion items */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {[
+              { key: 'analysis', label: '1. 시나리오 분석', data: result.analysis, stageKey: 'analyze' },
+              { key: 'plan', label: '2. 기능 기획', data: result.plan, stageKey: 'plan' },
+              { key: 'spec', label: '3. 기술 설계', data: result.spec, stageKey: 'spec' },
+              { key: 'implementation', label: '4. 구현 가이드', data: result.implementation, stageKey: 'implement' },
+              { key: 'qa', label: '5. QA 검증', data: result.qa, stageKey: 'qa' },
+            ].filter(item => item.data).map(item => (
+              <div key={item.key} style={{ border: '1px solid #e0e0e0', borderRadius: 6, overflow: 'hidden' }}>
+                <button
+                  onClick={() => setOpenAccordion(openAccordion === item.key ? null : item.key)}
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', padding: '10px 14px', border: 'none', background: openAccordion === item.key ? '#f8f9fa' : '#fff', cursor: 'pointer', fontSize: 13 }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{ fontWeight: 500 }}>{item.label}</span>
+                    {item.key === 'qa' && item.data?.score != null && (
+                      <span style={{ background: item.data.score >= 90 ? '#d3f9d8' : item.data.score >= 70 ? '#fff9db' : '#ffe3e3', color: item.data.score >= 90 ? '#2b8a3e' : item.data.score >= 70 ? '#e67700' : '#c92a2a', padding: '1px 8px', borderRadius: 10, fontSize: 10 }}>
+                        {item.data.score}점
+                      </span>
                     )}
-                  </Group>
-                </Accordion.Control>
-                <Accordion.Panel>
-                  <StageResult data={result.analysis} />
-                </Accordion.Panel>
-              </Accordion.Item>
-            )}
-
-            {result.plan && (
-              <Accordion.Item value="plan">
-                <Accordion.Control>
-                  <Group gap="xs">
-                    <Text fz="sm" fw={500}>2. 기능 기획</Text>
-                    {result.costSummary.stages.plan && (
-                      <Badge size="xs" variant="light" color="gray">
-                        {result.costSummary.stages.plan.toLocaleString()} tokens
-                      </Badge>
+                    {result.costSummary.stages[item.stageKey] && (
+                      <span style={{ background: '#f1f3f5', padding: '1px 8px', borderRadius: 10, fontSize: 10 }}>
+                        {result.costSummary.stages[item.stageKey].toLocaleString()} tokens
+                      </span>
                     )}
-                  </Group>
-                </Accordion.Control>
-                <Accordion.Panel>
-                  <StageResult data={result.plan} />
-                </Accordion.Panel>
-              </Accordion.Item>
-            )}
-
-            {result.spec && (
-              <Accordion.Item value="spec">
-                <Accordion.Control>
-                  <Group gap="xs">
-                    <Text fz="sm" fw={500}>3. 기술 설계</Text>
-                    {result.costSummary.stages.spec && (
-                      <Badge size="xs" variant="light" color="gray">
-                        {result.costSummary.stages.spec.toLocaleString()} tokens
-                      </Badge>
-                    )}
-                  </Group>
-                </Accordion.Control>
-                <Accordion.Panel>
-                  <StageResult data={result.spec} />
-                </Accordion.Panel>
-              </Accordion.Item>
-            )}
-
-            {result.implementation && (
-              <Accordion.Item value="implementation">
-                <Accordion.Control>
-                  <Group gap="xs">
-                    <Text fz="sm" fw={500}>4. 구현 가이드</Text>
-                    {result.costSummary.stages.implement && (
-                      <Badge size="xs" variant="light" color="gray">
-                        {result.costSummary.stages.implement.toLocaleString()} tokens
-                      </Badge>
-                    )}
-                  </Group>
-                </Accordion.Control>
-                <Accordion.Panel>
-                  <StageResult data={result.implementation} />
-                </Accordion.Panel>
-              </Accordion.Item>
-            )}
-
-            {result.qa && (
-              <Accordion.Item value="qa">
-                <Accordion.Control>
-                  <Group gap="xs">
-                    <Text fz="sm" fw={500}>5. QA 검증</Text>
-                    {result.qa.score != null && (
-                      <Badge
-                        size="xs"
-                        variant="light"
-                        color={result.qa.score >= 90 ? 'green' : result.qa.score >= 70 ? 'yellow' : 'red'}
-                      >
-                        {result.qa.score}점
-                      </Badge>
-                    )}
-                    {result.costSummary.stages.qa && (
-                      <Badge size="xs" variant="light" color="gray">
-                        {result.costSummary.stages.qa.toLocaleString()} tokens
-                      </Badge>
-                    )}
-                  </Group>
-                </Accordion.Control>
-                <Accordion.Panel>
-                  <StageResult data={result.qa} />
-                </Accordion.Panel>
-              </Accordion.Item>
-            )}
-          </Accordion>
+                  </div>
+                  <span>{openAccordion === item.key ? '-' : '+'}</span>
+                </button>
+                {openAccordion === item.key && (
+                  <div style={{ padding: '12px 14px', borderTop: '1px solid #e0e0e0' }}>
+                    <StageResult data={item.data} />
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
 
           {result.error && (
-            <Box mt="sm">
-              <Text fz="xs" c="red">오류: {result.error}</Text>
-            </Box>
+            <div style={{ marginTop: 8 }}>
+              <span style={{ fontSize: 12, color: '#fa5252' }}>오류: {result.error}</span>
+            </div>
           )}
-        </Paper>
+        </div>
       )}
-    </Stack>
+    </div>
   );
 }
 
 /** JSON 결과를 보기 좋게 렌더링 */
 function StageResult({ data }: { data: any }) {
-  if (!data) return <Text fz="xs" c="dimmed">결과 없음</Text>;
+  if (!data) return <span style={{ fontSize: 12, color: '#868e96' }}>결과 없음</span>;
 
   if (data.parseError) {
     return (
-      <Stack gap="xs">
-        <Badge size="xs" color="yellow" variant="light">JSON 파싱 실패 — 원문 표시</Badge>
-        <Code block fz="xs">{data.raw}</Code>
-      </Stack>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <span style={{ background: '#fff9db', padding: '1px 8px', borderRadius: 10, fontSize: 10, width: 'fit-content' }}>JSON 파싱 실패 — 원문 표시</span>
+        <pre style={{ fontSize: 12, background: '#f8f9fa', padding: 12, borderRadius: 4, overflow: 'auto', margin: 0, whiteSpace: 'pre-wrap' }}>{data.raw}</pre>
+      </div>
     );
   }
 
   return (
-    <Code block fz="xs" style={{ whiteSpace: 'pre-wrap', maxHeight: 400, overflow: 'auto' }}>
+    <pre style={{ fontSize: 12, background: '#f8f9fa', padding: 12, borderRadius: 4, overflow: 'auto', maxHeight: 400, margin: 0, whiteSpace: 'pre-wrap' }}>
       {JSON.stringify(data, null, 2)}
-    </Code>
+    </pre>
   );
 }

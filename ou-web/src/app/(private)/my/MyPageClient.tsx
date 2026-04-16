@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useCallback, useRef } from 'react';
-import { Box } from '@mantine/core';
 import dynamic from 'next/dynamic';
 import type { GraphViewHandle } from '@/components/graph/GraphView';
 import { useAuth } from '@/hooks/useAuth';
@@ -145,9 +144,9 @@ export function MyPageClient({ savedViews: initialSavedViews, nodes: initialNode
 
   // Unified layout — graph background + glass chat left + orb dock right
   return (
-    <Box style={{ position: 'relative', width: '100%', height: '100vh', overflow: 'hidden' }}>
+    <div style={{ position: 'relative', width: '100%', height: '100vh', overflow: 'hidden' }}>
       {/* Layer 0: Background — the universe itself */}
-      <Box style={{ position: 'absolute', inset: 0, background: 'var(--ou-space)' }} />
+      <div style={{ position: 'absolute', inset: 0, background: 'var(--ou-space)' }} />
 
       {/* Layer 1: Graph (full screen, no borders — the graph IS the universe) */}
       {nodes.length > 0 ? (
@@ -164,7 +163,7 @@ export function MyPageClient({ savedViews: initialSavedViews, nodes: initialNode
       )}
 
       {/* Layer 2: Chat panel — left side, glass-block */}
-      <Box style={{
+      <div style={{
         position: 'absolute',
         left: 16,
         top: 16,
@@ -180,7 +179,7 @@ export function MyPageClient({ savedViews: initialSavedViews, nodes: initialNode
         overflow: 'hidden',
       }}>
         <ChatPanel onNodeCreated={handleNodeCreated} />
-      </Box>
+      </div>
 
       {/* Layer 3: Orb Dock — right side, fixed */}
       {orbItems.length > 0 && (
@@ -238,6 +237,6 @@ export function MyPageClient({ savedViews: initialSavedViews, nodes: initialNode
           onClose={() => setFullscreenViewId(null)}
         />
       )}
-    </Box>
+    </div>
   );
 }

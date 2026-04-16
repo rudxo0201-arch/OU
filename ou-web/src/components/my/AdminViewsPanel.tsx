@@ -1,13 +1,7 @@
 'use client';
 
 import { useState, useMemo, useCallback } from 'react';
-import {
-  Box, Group, Text, Badge, ActionIcon, Tooltip, Select,
-  Button, Stack, ScrollArea, Menu, Loader,
-} from '@mantine/core';
-import {
-  Plus, PencilSimple, Trash, DotsThree, X, Sparkle,
-} from '@phosphor-icons/react';
+import { Plus, PencilSimple, Trash, X, Sparkle } from '@phosphor-icons/react';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { useViewEditorStore } from '@/stores/viewEditorStore';
 import type { SavedViewRow } from '@/types/admin';
@@ -19,63 +13,35 @@ interface AdminViewsPanelProps {
 }
 
 const VIEW_TYPE_LABELS: Record<string, string> = {
-  calendar: '캘린더',
-  task: '보드',
-  knowledge_graph: '그래프',
-  chart: '차트',
-  mindmap: '마인드맵',
-  heatmap: '히트맵',
-  journal: '일기',
-  timeline: '타임라인',
-  flashcard: '플래시카드',
-  dictionary: '사전',
-  document: '문서',
-  table: '표',
-  export: '내보내기',
-  custom: '커스텀',
+  calendar: '캘린더', task: '보드', knowledge_graph: '그래프', chart: '차트',
+  mindmap: '마인드맵', heatmap: '히트맵', journal: '일기', timeline: '타임라인',
+  flashcard: '플래시카드', dictionary: '사전', document: '문서', table: '표',
+  export: '내보내기', custom: '커스텀',
 };
 
 const DOMAIN_LABELS: Record<string, string> = {
-  schedule: '일정',
-  task: '할 일',
-  habit: '습관',
-  knowledge: '지식',
-  idea: '아이디어',
-  relation: '관계',
-  emotion: '감정',
-  finance: '가계',
-  product: '상품',
-  broadcast: '방송',
-  education: '교육',
-  media: '미디어',
-  location: '장소',
+  schedule: '일정', task: '할 일', habit: '습관', knowledge: '지식',
+  idea: '아이디어', relation: '관계', emotion: '감정', finance: '가계',
+  product: '상품', broadcast: '방송', education: '교육', media: '미디어', location: '장소',
 };
 
 export function AdminViewsPanel({ views, onClose, onViewsChange }: AdminViewsPanelProps) {
-  const [typeFilter, setTypeFilter] = useState<string | null>(null);
-  const [domainFilter, setDomainFilter] = useState<string | null>(null);
-  const [visFilter, setVisFilter] = useState<string | null>(null);
+  const [typeFilter, setTypeFilter] = useState<string>('');
+  const [domainFilter, setDomainFilter] = useState<string>('');
+  const [visFilter, setVisFilter] = useState<string>('');
   const [seeding, setSeeding] = useState(false);
-  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const openEditor = useViewEditorStore(s => s.open);
 
-  // 존재하는 타입/도메인만 필터에 표시 (빈 필터 원칙)
   const availableTypes = useMemo(() => {
     const types = new Set(views.map(v => v.view_type));
-    return Array.from(types)
-      .map(t => ({ value: t, label: VIEW_TYPE_LABELS[t] ?? t }))
-      .sort((a, b) => a.label.localeCompare(b.label));
+    return Array.from(types).map(t => ({ value: t, label: VIEW_TYPE_LABELS[t] ?? t })).sort((a, b) => a.label.localeCompare(b.label));
   }, [views]);
 
   const availableDomains = useMemo(() => {
     const domains = new Set<string>();
-    for (const v of views) {
-      const d = (v.filter_config as any)?.domain;
-      if (d) domains.add(d);
-    }
-    return Array.from(domains)
-      .map(d => ({ value: d, label: DOMAIN_LABELS[d] ?? d }));
+    for (const v of views) { const d = (v.filter_config as any)?.domain; if (d) domains.add(d); }
+    return Array.from(domains).map(d => ({ value: d, label: DOMAIN_LABELS[d] ?? d }));
   }, [views]);
 
   const filteredViews = useMemo(() => {
@@ -93,209 +59,107 @@ export function AdminViewsPanel({ views, onClose, onViewsChange }: AdminViewsPan
     try {
       const res = await fetch('/api/views/defaults', { method: 'POST' });
       if (res.ok) {
-        // 뷰 목록 새로고침
         const listRes = await fetch('/api/views');
-        if (listRes.ok) {
-          const { views: freshViews } = await listRes.json();
-          onViewsChange(freshViews);
-        }
+        if (listRes.ok) { const { views: freshViews } = await listRes.json(); onViewsChange(freshViews); }
       }
-    } catch {
-      // Silent fail
-    } finally {
-      setSeeding(false);
-    }
+    } catch { /* Silent fail */ } finally { setSeeding(false); }
   };
 
   const handleDelete = async (id: string) => {
-    try {
-      const res = await fetch(`/api/views?id=${id}`, { method: 'DELETE' });
-      if (res.ok) {
-        onViewsChange(views.filter(v => v.id !== id));
-      }
-    } catch {
-      // Silent fail
-    }
-    setDeleteId(null);
+    try { const res = await fetch(`/api/views?id=${id}`, { method: 'DELETE' }); if (res.ok) onViewsChange(views.filter(v => v.id !== id)); } catch { /* Silent fail */ }
   };
 
+  const selectStyle: React.CSSProperties = { padding: '4px 8px', fontSize: 'var(--mantine-font-size-xs)', border: '0.5px solid var(--mantine-color-default-border)', borderRadius: 4, background: 'transparent', color: 'inherit' };
+
   return (
-    <Box
-      style={{
-        position: 'absolute',
-        inset: 0,
-        zIndex: 20,
-        background: 'rgba(6, 8, 16, 0.85)',
-        backdropFilter: 'blur(20px)',
-        display: 'flex',
-        flexDirection: 'column',
-        padding: 24,
-      }}
-    >
+    <div style={{ position: 'absolute', inset: 0, zIndex: 20, background: 'rgba(6, 8, 16, 0.85)', backdropFilter: 'blur(20px)', display: 'flex', flexDirection: 'column', padding: 24 }}>
       {/* 헤더 */}
-      <Group justify="space-between" mb="lg">
-        <Text fw={600} fz="lg">데이터뷰 관리</Text>
-        <Group gap="sm">
-          <Button
-            size="xs"
-            variant="light"
-            color="gray"
-            leftSection={<Plus size={14} />}
-            onClick={() => openEditor()}
-          >
-            새 뷰
-          </Button>
-          <ActionIcon variant="subtle" color="gray" onClick={onClose}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+        <span style={{ fontWeight: 600, fontSize: 'var(--mantine-font-size-lg)' }}>데이터뷰 관리</span>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <button onClick={() => openEditor()} style={{ padding: '4px 12px', fontSize: 'var(--mantine-font-size-xs)', border: '0.5px solid var(--mantine-color-default-border)', borderRadius: 'var(--mantine-radius-md)', background: 'rgba(255,255,255,0.06)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, color: 'inherit' }}>
+            <Plus size={14} /> 새 뷰
+          </button>
+          <button onClick={onClose} style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 4, display: 'flex', alignItems: 'center', color: 'var(--mantine-color-gray-6)' }}>
             <X size={18} />
-          </ActionIcon>
-        </Group>
-      </Group>
+          </button>
+        </div>
+      </div>
 
       {/* 필터 */}
-      <Group gap="sm" mb="md">
+      <div style={{ display: 'flex', gap: 8, marginBottom: 16, alignItems: 'center' }}>
         {availableTypes.length > 1 && (
-          <Select
-            placeholder="전체 타입"
-            data={availableTypes}
-            value={typeFilter}
-            onChange={setTypeFilter}
-            clearable
-            size="xs"
-            style={{ width: 130 }}
-          />
+          <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)} style={{ ...selectStyle, width: 130 }}>
+            <option value="">전체 타입</option>
+            {availableTypes.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+          </select>
         )}
         {availableDomains.length > 1 && (
-          <Select
-            placeholder="전체 도메인"
-            data={availableDomains}
-            value={domainFilter}
-            onChange={setDomainFilter}
-            clearable
-            size="xs"
-            style={{ width: 130 }}
-          />
+          <select value={domainFilter} onChange={e => setDomainFilter(e.target.value)} style={{ ...selectStyle, width: 130 }}>
+            <option value="">전체 도메인</option>
+            {availableDomains.map(d => <option key={d.value} value={d.value}>{d.label}</option>)}
+          </select>
         )}
-        <Select
-          placeholder="공개 상태"
-          data={[
-            { value: 'private', label: '비공개' },
-            { value: 'link', label: '링크' },
-            { value: 'public', label: '공개' },
-          ]}
-          value={visFilter}
-          onChange={setVisFilter}
-          clearable
-          size="xs"
-          style={{ width: 110 }}
-        />
-        <Text fz="xs" c="dimmed">{filteredViews.length}개</Text>
-      </Group>
+        <select value={visFilter} onChange={e => setVisFilter(e.target.value)} style={{ ...selectStyle, width: 110 }}>
+          <option value="">공개 상태</option>
+          <option value="private">비공개</option>
+          <option value="link">링크</option>
+          <option value="public">공개</option>
+        </select>
+        <span style={{ fontSize: 'var(--mantine-font-size-xs)', color: 'var(--mantine-color-dimmed)' }}>{filteredViews.length}개</span>
+      </div>
 
       {/* 뷰 목록 */}
-      <ScrollArea style={{ flex: 1 }}>
-        <Stack gap={2}>
+      <div style={{ flex: 1, overflow: 'auto' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           {filteredViews.map(view => (
-            <GlassCard
-              key={view.id}
-              px="md"
-              py="sm"
-              style={{ cursor: 'pointer' }}
-              onClick={() => openEditor(view)}
-            >
-              <Group justify="space-between" wrap="nowrap">
-                <Group gap="sm" wrap="nowrap" style={{ flex: 1, minWidth: 0 }}>
-                  <Text fz="md">{view.icon || '◆'}</Text>
-                  <Box style={{ minWidth: 0 }}>
-                    <Text fz="sm" fw={500} lineClamp={1}>{view.name}</Text>
-                    {view.description && (
-                      <Text fz="xs" c="dimmed" lineClamp={1}>{view.description}</Text>
-                    )}
-                  </Box>
-                </Group>
-                <Group gap={6} wrap="nowrap">
-                  <Badge variant="light" color="gray" size="xs">
-                    {VIEW_TYPE_LABELS[view.view_type] ?? view.view_type}
-                  </Badge>
-                  {(view.filter_config as any)?.domain && (
-                    <Badge variant="outline" color="gray" size="xs">
-                      {DOMAIN_LABELS[(view.filter_config as any).domain] ?? (view.filter_config as any).domain}
-                    </Badge>
-                  )}
-                  <Badge
-                    variant="dot"
-                    color={view.visibility === 'public' ? 'gray' : 'dark'}
-                    size="xs"
-                  >
+            <GlassCard key={view.id} px="md" py="sm" style={{ cursor: 'pointer' }} onClick={() => openEditor(view)}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 0 }}>
+                  <span style={{ fontSize: 'var(--mantine-font-size-md)' }}>{view.icon || '\u25C6'}</span>
+                  <div style={{ minWidth: 0 }}>
+                    <span style={{ fontSize: 'var(--mantine-font-size-sm)', fontWeight: 500, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{view.name}</span>
+                    {view.description && <span style={{ fontSize: 'var(--mantine-font-size-xs)', color: 'var(--mantine-color-dimmed)', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{view.description}</span>}
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexShrink: 0 }}>
+                  <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 4, background: 'rgba(255,255,255,0.08)', color: 'var(--mantine-color-dimmed)' }}>{VIEW_TYPE_LABELS[view.view_type] ?? view.view_type}</span>
+                  <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 4, border: '1px dotted var(--mantine-color-default-border)', color: 'var(--mantine-color-dimmed)' }}>
                     {view.visibility === 'public' ? '공개' : view.visibility === 'link' ? '링크' : '비공개'}
-                  </Badge>
-                  <Menu position="bottom-end" withinPortal>
-                    <Menu.Target>
-                      <ActionIcon
-                        variant="subtle"
-                        color="gray"
-                        size="sm"
-                        onClick={e => e.stopPropagation()}
-                      >
-                        <DotsThree size={16} />
-                      </ActionIcon>
-                    </Menu.Target>
-                    <Menu.Dropdown>
-                      <Menu.Item
-                        leftSection={<PencilSimple size={14} />}
-                        onClick={e => { e.stopPropagation(); openEditor(view); }}
-                      >
-                        편집
-                      </Menu.Item>
-                      <Menu.Item
-                        leftSection={<Trash size={14} />}
-                        color="red"
-                        onClick={e => { e.stopPropagation(); handleDelete(view.id); }}
-                      >
-                        삭제
-                      </Menu.Item>
-                    </Menu.Dropdown>
-                  </Menu>
-                </Group>
-              </Group>
+                  </span>
+                  <button onClick={e => { e.stopPropagation(); openEditor(view); }} style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 4, display: 'flex', alignItems: 'center', color: 'var(--mantine-color-gray-6)' }}>
+                    <PencilSimple size={14} />
+                  </button>
+                  <button onClick={e => { e.stopPropagation(); handleDelete(view.id); }} style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 4, display: 'flex', alignItems: 'center', color: 'var(--mantine-color-red-5)' }}>
+                    <Trash size={14} />
+                  </button>
+                </div>
+              </div>
             </GlassCard>
           ))}
-        </Stack>
+        </div>
 
         {filteredViews.length === 0 && (
-          <Stack align="center" gap="md" py="xl">
-            <Text fz="sm" c="dimmed">
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, padding: '24px 0' }}>
+            <span style={{ fontSize: 'var(--mantine-font-size-sm)', color: 'var(--mantine-color-dimmed)' }}>
               {views.length === 0 ? '아직 뷰가 없습니다' : '조건에 맞는 뷰가 없습니다'}
-            </Text>
+            </span>
             {!hasDefaults && (
-              <Button
-                variant="light"
-                color="gray"
-                leftSection={seeding ? <Loader size={14} /> : <Sparkle size={14} />}
-                onClick={handleSeedDefaults}
-                loading={seeding}
-              >
-                기본 뷰 생성하기
-              </Button>
+              <button onClick={handleSeedDefaults} disabled={seeding} style={{ padding: '8px 16px', border: '0.5px solid var(--mantine-color-default-border)', borderRadius: 'var(--mantine-radius-md)', background: 'rgba(255,255,255,0.06)', cursor: seeding ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 6, color: 'inherit' }}>
+                <Sparkle size={14} /> {seeding ? '생성 중...' : '기본 뷰 생성하기'}
+              </button>
             )}
-          </Stack>
+          </div>
         )}
-      </ScrollArea>
+      </div>
 
-      {/* 하단: 기본 뷰 없을 때 시드 버튼 */}
       {views.length > 0 && !hasDefaults && (
-        <Group justify="center" mt="md">
-          <Button
-            variant="subtle"
-            color="gray"
-            size="xs"
-            leftSection={<Sparkle size={14} />}
-            onClick={handleSeedDefaults}
-            loading={seeding}
-          >
-            기본 뷰 추가하기
-          </Button>
-        </Group>
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16 }}>
+          <button onClick={handleSeedDefaults} disabled={seeding} style={{ padding: '4px 12px', background: 'transparent', border: 'none', cursor: seeding ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 6, color: 'var(--mantine-color-dimmed)', fontSize: 'var(--mantine-font-size-xs)' }}>
+            <Sparkle size={14} /> {seeding ? '생성 중...' : '기본 뷰 추가하기'}
+          </button>
+        </div>
       )}
-    </Box>
+    </div>
   );
 }

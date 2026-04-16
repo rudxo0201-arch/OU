@@ -272,10 +272,8 @@ export function LandingDemo() {
         }} />
         {/* 로고 */}
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-          <div style={{ fontFamily: "var(--font-orbitron, 'Orbitron'), sans-serif", fontSize: 48, fontWeight: 900, lineHeight: 1, color: '#fff', letterSpacing: '2px' }}>
-            OU
-          </div>
-          <div style={{ fontFamily: "var(--font-orbitron, 'Orbitron'), sans-serif", fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.35)', letterSpacing: '5px', textTransform: 'uppercase' as const }}>
+          <img src="/ou-logo.png" alt="OU" style={{ width: 120, height: 'auto', objectFit: 'contain', filter: 'brightness(0.9)' }} />
+          <div style={{ fontFamily: "var(--font-orbitron, 'Orbitron'), sans-serif", fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.35)', letterSpacing: '5px', textTransform: 'uppercase' as const, marginTop: 8 }}>
             OWN UNIVERSE
           </div>
           <div style={{ fontFamily: "var(--font-orbitron, 'Orbitron'), sans-serif", fontSize: 14, color: 'rgba(255,255,255,0.25)', letterSpacing: '3px', marginTop: 8 }}>

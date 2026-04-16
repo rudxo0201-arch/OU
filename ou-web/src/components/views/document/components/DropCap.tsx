@@ -1,7 +1,5 @@
 'use client';
 
-import { Box } from '@mantine/core';
-
 interface DropCapProps {
   char: string;
   fontFamily: string;
@@ -19,8 +17,7 @@ export function DropCap({ char, fontFamily, bodyFontSize, bodyLineHeight, color 
   const dropSize = lineH * dropLines;
 
   return (
-    <Box
-      component="span"
+    <span
       style={{
         float: 'left',
         fontFamily,
@@ -36,6 +33,6 @@ export function DropCap({ char, fontFamily, bodyFontSize, bodyLineHeight, color 
       }}
     >
       {char}
-    </Box>
+    </span>
   );
 }

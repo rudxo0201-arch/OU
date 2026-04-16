@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useMemo, useCallback } from 'react';
-import { Stack, Text, Box, Group, UnstyledButton } from '@mantine/core';
 import { CaretRight, CaretDown, User } from '@phosphor-icons/react';
 import type { ViewProps } from './registry';
 
@@ -45,64 +44,61 @@ function OrgNode({ node, depth }: { node: TreeNode; depth: number }) {
   const toggle = useCallback(() => setExpanded(p => !p), []);
 
   return (
-    <Box>
-      <Group
-        gap={6}
-        align="center"
-        wrap="nowrap"
-        style={{ paddingLeft: depth * 24, minHeight: 36 }}
+    <div>
+      <div
+        style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'nowrap', paddingLeft: depth * 24, minHeight: 36 }}
       >
         {hasChildren ? (
-          <UnstyledButton onClick={toggle} style={{ display: 'flex', alignItems: 'center' }}>
+          <button onClick={toggle} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 0, color: 'inherit' }}>
             {expanded
-              ? <CaretDown size={14} weight="bold" color="var(--mantine-color-dimmed)" />
-              : <CaretRight size={14} weight="bold" color="var(--mantine-color-dimmed)" />}
-          </UnstyledButton>
+              ? <CaretDown size={14} weight="bold" style={{ color: 'var(--ou-text-dimmed, #888)' }} />
+              : <CaretRight size={14} weight="bold" style={{ color: 'var(--ou-text-dimmed, #888)' }} />}
+          </button>
         ) : (
-          <Box style={{ width: 14 }} />
+          <div style={{ width: 14 }} />
         )}
 
-        <Box
+        <div
           style={{
             width: 28,
             height: 28,
             borderRadius: '50%',
-            border: '0.5px solid var(--mantine-color-default-border)',
+            border: '0.5px solid var(--ou-border, #333)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             flexShrink: 0,
-            backgroundColor: depth === 0 ? 'var(--mantine-color-gray-1)' : 'transparent',
+            backgroundColor: depth === 0 ? 'var(--ou-bg-subtle, #222)' : 'transparent',
           }}
         >
-          <User size={14} color="var(--mantine-color-dimmed)" />
-        </Box>
+          <User size={14} style={{ color: 'var(--ou-text-dimmed, #888)' }} />
+        </div>
 
-        <Box style={{ flex: 1, minWidth: 0 }}>
-          <Text fz="sm" fw={500} truncate>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <span style={{ fontSize: 13, fontWeight: 500, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {node.name}
-          </Text>
+          </span>
           {node.role && (
-            <Text fz={11} c="dimmed" truncate>
+            <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {node.role}
-            </Text>
+            </span>
           )}
-        </Box>
-      </Group>
+        </div>
+      </div>
 
       {expanded && hasChildren && (
-        <Box
+        <div
           style={{
-            borderLeft: '0.5px solid var(--mantine-color-default-border)',
+            borderLeft: '0.5px solid var(--ou-border, #333)',
             marginLeft: depth * 24 + 7,
           }}
         >
           {node.children.map(child => (
             <OrgNode key={child.id} node={child} depth={depth + 1} />
           ))}
-        </Box>
+        </div>
       )}
-    </Box>
+    </div>
   );
 }
 
@@ -112,11 +108,11 @@ export function OrgChartView({ nodes }: ViewProps) {
   if (nodes.length === 0) return null;
 
   return (
-    <Stack gap={0} p="md">
-      <Text fz="xs" c="dimmed" mb="md">Organization</Text>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 0, padding: 16 }}>
+      <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', marginBottom: 16 }}>Organization</span>
       {tree.map(root => (
         <OrgNode key={root.id} node={root} depth={0} />
       ))}
-    </Stack>
+    </div>
   );
 }

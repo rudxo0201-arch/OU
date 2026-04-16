@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo } from 'react';
-import { Box, Stack, Text, Group } from '@mantine/core';
 import dayjs from 'dayjs';
 import 'dayjs/locale/ko';
 import type { ViewProps } from './registry';
@@ -48,19 +47,17 @@ export function HeatmapView({ nodes }: ViewProps) {
 
   const today = dayjs();
   const startDate = today.subtract(WEEKS * 7 - 1, 'day');
-  // Adjust to start on Sunday
   const gridStart = startDate.subtract(startDate.day(), 'day');
 
   const getIntensity = (count: number): string => {
-    if (count === 0) return 'var(--mantine-color-gray-1)';
+    if (count === 0) return 'var(--ou-gray-1, #f0f0f0)';
     const ratio = count / maxCount;
-    if (ratio <= 0.25) return 'var(--mantine-color-gray-3)';
-    if (ratio <= 0.5) return 'var(--mantine-color-gray-5)';
-    if (ratio <= 0.75) return 'var(--mantine-color-gray-7)';
-    return 'var(--mantine-color-dark-6)';
+    if (ratio <= 0.25) return 'var(--ou-gray-3, #ccc)';
+    if (ratio <= 0.5) return 'var(--ou-gray-5, #888)';
+    if (ratio <= 0.75) return 'var(--ou-gray-7, #555)';
+    return 'var(--ou-gray-9, #222)';
   };
 
-  // Generate month labels
   const monthLabels: { label: string; week: number }[] = useMemo(() => {
     const labels: { label: string; week: number }[] = [];
     let lastMonth = -1;
@@ -79,18 +76,17 @@ export function HeatmapView({ nodes }: ViewProps) {
   const svgHeight = DAYS * (CELL_SIZE + CELL_GAP) + 20;
 
   return (
-    <Stack gap="sm" p="md">
-      <Group justify="space-between" align="baseline">
-        <Text fz="sm" fw={600}>활동 기록</Text>
-        <Group gap="sm">
-          {streak > 0 && <Text fz="xs" fw={600}>{streak}일 연속</Text>}
-          <Text fz="xs" c="dimmed">{totalDays}일 기록됨</Text>
-        </Group>
-      </Group>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: 16 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+        <span style={{ fontSize: 13, fontWeight: 600 }}>활동 기록</span>
+        <div style={{ display: 'flex', gap: 12 }}>
+          {streak > 0 && <span style={{ fontSize: 11, fontWeight: 600 }}>{streak}일 연속</span>}
+          <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)' }}>{totalDays}일 기록됨</span>
+        </div>
+      </div>
 
-      <Box style={{ overflowX: 'auto' }}>
+      <div style={{ overflowX: 'auto' }}>
         <svg width={svgWidth} height={svgHeight} style={{ display: 'block' }}>
-          {/* Month labels */}
           {monthLabels.map(({ label, week }) => (
             <text
               key={`month-${week}`}
@@ -104,7 +100,6 @@ export function HeatmapView({ nodes }: ViewProps) {
             </text>
           ))}
 
-          {/* Day labels */}
           {DAY_LABELS.map((label, i) => (
             label && (
               <text
@@ -120,7 +115,6 @@ export function HeatmapView({ nodes }: ViewProps) {
             )
           ))}
 
-          {/* Cells */}
           {Array.from({ length: WEEKS }, (_, w) =>
             Array.from({ length: DAYS }, (_, d) => {
               const cellDate = gridStart.add(w * 7 + d, 'day');
@@ -143,14 +137,13 @@ export function HeatmapView({ nodes }: ViewProps) {
             }),
           )}
         </svg>
-      </Box>
+      </div>
 
-      {/* Legend */}
-      <Group gap={4} justify="flex-end">
-        <Text fz={9} c="dimmed">적음</Text>
-        {['var(--mantine-color-gray-1)', 'var(--mantine-color-gray-3)', 'var(--mantine-color-gray-5)', 'var(--mantine-color-gray-7)', 'var(--mantine-color-dark-6)'].map(
+      <div style={{ display: 'flex', gap: 4, justifyContent: 'flex-end', alignItems: 'center' }}>
+        <span style={{ fontSize: 9, color: 'var(--ou-text-dimmed, #888)' }}>적음</span>
+        {['var(--ou-gray-1, #f0f0f0)', 'var(--ou-gray-3, #ccc)', 'var(--ou-gray-5, #888)', 'var(--ou-gray-7, #555)', 'var(--ou-gray-9, #222)'].map(
           (color, i) => (
-            <Box
+            <div
               key={i}
               style={{
                 width: 10,
@@ -161,8 +154,8 @@ export function HeatmapView({ nodes }: ViewProps) {
             />
           ),
         )}
-        <Text fz={9} c="dimmed">많음</Text>
-      </Group>
-    </Stack>
+        <span style={{ fontSize: 9, color: 'var(--ou-text-dimmed, #888)' }}>많음</span>
+      </div>
+    </div>
   );
 }

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useMemo, useCallback } from 'react';
-import { Stack, Text, Box, Group, ActionIcon, Paper } from '@mantine/core';
 import { CaretLeft, CaretRight } from '@phosphor-icons/react';
 import type { ViewProps } from './registry';
 
@@ -18,7 +17,6 @@ export function FlashcardView({ nodes }: ViewProps) {
   const cards: Flashcard[] = useMemo(
     () =>
       nodes.map(n => {
-        // Try triples first (subject → object)
         const triples = n.triples ?? n.domain_data?.triples ?? [];
         if (triples.length > 0) {
           const t = triples[0];
@@ -53,14 +51,14 @@ export function FlashcardView({ nodes }: ViewProps) {
   const card = cards[currentIndex];
 
   return (
-    <Stack gap="md" p="md" align="center">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: 16, alignItems: 'center' }}>
       {/* Progress */}
-      <Text fz="xs" c="dimmed">
+      <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)' }}>
         {currentIndex + 1} / {cards.length}
-      </Text>
+      </span>
 
       {/* Card */}
-      <Box
+      <div
         onClick={() => setFlipped(f => !f)}
         style={{
           width: '100%',
@@ -70,14 +68,13 @@ export function FlashcardView({ nodes }: ViewProps) {
           perspective: '1000px',
         }}
       >
-        <Paper
-          p="xl"
+        <div
           style={{
             minHeight: 200,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            border: '1px solid var(--mantine-color-default-border)',
+            border: '1px solid var(--ou-border, #333)',
             borderRadius: 12,
             transition: 'transform 0.4s ease',
             transformStyle: 'preserve-3d',
@@ -86,7 +83,7 @@ export function FlashcardView({ nodes }: ViewProps) {
           }}
         >
           {/* Front */}
-          <Box
+          <div
             style={{
               position: 'absolute',
               inset: 0,
@@ -97,21 +94,18 @@ export function FlashcardView({ nodes }: ViewProps) {
               backfaceVisibility: 'hidden',
             }}
           >
-            <Stack gap="xs" align="center">
-              <Text fz={10} c="dimmed" tt="uppercase">눌러서 뒤집기</Text>
-              <Text
-                fz="lg"
-                fw={600}
-                ta="center"
-                style={{ lineHeight: 1.5, wordBreak: 'keep-all' }}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'center' }}>
+              <span style={{ fontSize: 10, color: 'var(--ou-text-dimmed, #888)', textTransform: 'uppercase' }}>눌러서 뒤집기</span>
+              <span
+                style={{ fontSize: 18, fontWeight: 600, textAlign: 'center', lineHeight: 1.5, wordBreak: 'keep-all' }}
               >
                 {card.front}
-              </Text>
-            </Stack>
-          </Box>
+              </span>
+            </div>
+          </div>
 
           {/* Back */}
-          <Box
+          <div
             style={{
               position: 'absolute',
               inset: 0,
@@ -123,61 +117,55 @@ export function FlashcardView({ nodes }: ViewProps) {
               transform: 'rotateY(180deg)',
             }}
           >
-            <Text
-              fz="sm"
-              ta="center"
-              style={{ lineHeight: 1.7, whiteSpace: 'pre-wrap', wordBreak: 'keep-all' }}
+            <span
+              style={{ fontSize: 13, textAlign: 'center', lineHeight: 1.7, whiteSpace: 'pre-wrap', wordBreak: 'keep-all' }}
             >
               {card.back}
-            </Text>
-          </Box>
-        </Paper>
-      </Box>
+            </span>
+          </div>
+        </div>
+      </div>
 
       {/* Navigation */}
-      <Group gap="lg">
-        <ActionIcon
-          variant="subtle"
-          color="gray"
-          size="lg"
+      <div style={{ display: 'flex', gap: 24 }}>
+        <button
           onClick={goPrev}
           disabled={currentIndex === 0}
+          style={{ background: 'none', border: 'none', cursor: currentIndex === 0 ? 'default' : 'pointer', padding: 8, display: 'flex', alignItems: 'center', color: 'inherit', opacity: currentIndex === 0 ? 0.3 : 1 }}
         >
           <CaretLeft size={20} />
-        </ActionIcon>
+        </button>
 
-        <ActionIcon
-          variant="subtle"
-          color="gray"
-          size="lg"
+        <button
           onClick={goNext}
           disabled={currentIndex === cards.length - 1}
+          style={{ background: 'none', border: 'none', cursor: currentIndex === cards.length - 1 ? 'default' : 'pointer', padding: 8, display: 'flex', alignItems: 'center', color: 'inherit', opacity: currentIndex === cards.length - 1 ? 0.3 : 1 }}
         >
           <CaretRight size={20} />
-        </ActionIcon>
-      </Group>
+        </button>
+      </div>
 
       {/* Progress bar */}
-      <Box
+      <div
         style={{
           width: '100%',
           maxWidth: 400,
           height: 3,
           borderRadius: 2,
-          backgroundColor: 'var(--mantine-color-gray-2)',
+          backgroundColor: 'var(--ou-bg-subtle, #e0e0e0)',
           overflow: 'hidden',
         }}
       >
-        <Box
+        <div
           style={{
             height: '100%',
             width: `${((currentIndex + 1) / cards.length) * 100}%`,
-            backgroundColor: 'var(--mantine-color-dark-4)',
+            backgroundColor: 'var(--ou-text-secondary, #666)',
             borderRadius: 2,
             transition: 'width 0.3s ease',
           }}
         />
-      </Box>
-    </Stack>
+      </div>
+    </div>
   );
 }

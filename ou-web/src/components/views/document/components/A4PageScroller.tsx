@@ -1,7 +1,6 @@
 'use client';
 
 import { useRef, useEffect, useState, useCallback } from 'react';
-import { Box, ScrollArea } from '@mantine/core';
 import { A4_WIDTH_PX, A4_HEIGHT_PX } from '@/types/document-template';
 
 interface A4PageScrollerProps {
@@ -34,9 +33,9 @@ export function A4PageScroller({ children }: A4PageScrollerProps) {
   }, [updateScale]);
 
   return (
-    <Box ref={containerRef} style={{ width: '100%' }}>
-      <ScrollArea h="calc(100vh - 200px)" type="auto">
-        <Box
+    <div ref={containerRef} style={{ width: '100%' }}>
+      <div style={{ height: 'calc(100vh - 200px)', overflow: 'auto' }}>
+        <div
           style={{
             display: 'flex',
             flexDirection: 'column',
@@ -45,7 +44,7 @@ export function A4PageScroller({ children }: A4PageScrollerProps) {
             padding: '24px 0',
           }}
         >
-          <Box
+          <div
             style={{
               transformOrigin: 'top center',
               transform: `scale(${scale})`,
@@ -55,9 +54,9 @@ export function A4PageScroller({ children }: A4PageScrollerProps) {
             }}
           >
             {children}
-          </Box>
-        </Box>
-      </ScrollArea>
+          </div>
+        </div>
+      </div>
 
       {/* 페이지 그림자 스타일 */}
       <style>{`
@@ -68,6 +67,6 @@ export function A4PageScroller({ children }: A4PageScrollerProps) {
           .a4-page { box-shadow: none; }
         }
       `}</style>
-    </Box>
+    </div>
   );
 }

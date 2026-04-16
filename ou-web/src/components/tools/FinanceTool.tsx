@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { Box, Text, Group, Stack, UnstyledButton, TextInput, Badge } from '@mantine/core';
 import { CurrencyCircleDollar, Check, ArrowRight } from '@phosphor-icons/react';
 import { useRouter } from 'next/navigation';
 import { registerTool, type ToolProps } from './registry';
@@ -31,53 +30,52 @@ export function FinanceTool({ rawInput, parsed, onSubmit }: ToolProps) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   return (
-    <Box
-      mt="xs"
+    <div
       style={{
-        border: '0.5px solid var(--mantine-color-default-border)',
-        borderRadius: 'var(--mantine-radius-md)',
+        marginTop: 8,
+        border: '0.5px solid var(--color-default-border)',
+        borderRadius: 8,
         overflow: 'hidden',
         animation: 'ou-fade-in 300ms ease',
       }}
     >
-      <Group
-        gap="xs" px="sm" py={6}
-        style={{ background: 'rgba(255, 255, 255, 0.04)', borderBottom: '0.5px solid var(--mantine-color-default-border)' }}
+      <div
+        style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px', background: 'rgba(255, 255, 255, 0.04)', borderBottom: '0.5px solid var(--color-default-border)' }}
       >
         <CurrencyCircleDollar size={14} weight="fill" />
-        <Badge variant="light" color="gray" size="xs">지출</Badge>
-        {selectedCategory && <Check size={12} style={{ color: 'var(--mantine-color-green-5)' }} />}
-      </Group>
+        <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 12, background: '#f3f4f6', color: '#6b7280' }}>지출</span>
+        {selectedCategory && <Check size={12} style={{ color: '#22c55e' }} />}
+      </div>
 
-      <Box px="sm" py="sm">
-        <Stack gap={4}>
+      <div style={{ padding: '8px 12px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           {parsed.amount && (
-            <Group gap={6}>
-              <Text fz={11} c="dimmed">금액</Text>
-              <Text fz="sm" fw={600}>{parsed.amount}</Text>
-            </Group>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ fontSize: 11, color: 'var(--color-dimmed)' }}>금액</span>
+              <span style={{ fontSize: 14, fontWeight: 600 }}>{parsed.amount}</span>
+            </div>
           )}
           {parsed.item && (
-            <Group gap={6}>
-              <Text fz={11} c="dimmed">항목</Text>
-              <Text fz="sm">{parsed.item}</Text>
-            </Group>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ fontSize: 11, color: 'var(--color-dimmed)' }}>항목</span>
+              <span style={{ fontSize: 14 }}>{parsed.item}</span>
+            </div>
           )}
           {selectedCategory && (
-            <Group gap={6}>
-              <Text fz={11} c="dimmed">카테고리</Text>
-              <Text fz="sm">{selectedCategory}</Text>
-            </Group>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ fontSize: 11, color: 'var(--color-dimmed)' }}>카테고리</span>
+              <span style={{ fontSize: 14 }}>{selectedCategory}</span>
+            </div>
           )}
-        </Stack>
-      </Box>
+        </div>
+      </div>
 
       {!selectedCategory && (
-        <Box px="sm" pb="sm">
-          <Text fz={10} c="dimmed" mb={4}>카테고리</Text>
-          <Group gap={4}>
+        <div style={{ padding: '0 12px 8px' }}>
+          <span style={{ fontSize: 10, color: 'var(--color-dimmed)', display: 'block', marginBottom: 4 }}>카테고리</span>
+          <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
             {CATEGORIES.map(cat => (
-              <UnstyledButton
+              <button
                 key={cat}
                 onClick={() => {
                   setSelectedCategory(cat);
@@ -87,30 +85,31 @@ export function FinanceTool({ rawInput, parsed, onSubmit }: ToolProps) {
                   padding: '2px 10px',
                   borderRadius: 14,
                   fontSize: 11,
-                  border: '0.5px solid var(--mantine-color-default-border)',
-                  color: 'var(--mantine-color-dimmed)',
+                  border: '0.5px solid var(--color-default-border)',
+                  color: 'var(--color-dimmed)',
+                  background: 'none',
+                  cursor: 'pointer',
                   transition: 'all 150ms',
                 }}
               >
                 {cat}
-              </UnstyledButton>
+              </button>
             ))}
-          </Group>
-        </Box>
+          </div>
+        </div>
       )}
 
-      <Group
-        px="sm" py={6}
-        style={{ borderTop: '0.5px solid var(--mantine-color-default-border)' }}
+      <div
+        style={{ display: 'flex', alignItems: 'center', padding: '6px 12px', borderTop: '0.5px solid var(--color-default-border)' }}
       >
-        <UnstyledButton
+        <button
           onClick={() => router.push('/my')}
-          style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'var(--mantine-color-dimmed)' }}
+          style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'var(--color-dimmed)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
         >
           내 우주에서 보기 <ArrowRight size={11} />
-        </UnstyledButton>
-      </Group>
-    </Box>
+        </button>
+      </div>
+    </div>
   );
 }
 

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Stack, Table, Text, Group, Select, Pagination, Badge, Paper } from '@mantine/core';
 import { createClient } from '@/lib/supabase/client';
 
 interface AuditEntry {
@@ -24,7 +23,7 @@ export function AuditLog() {
   const [entries, setEntries] = useState<AuditEntry[]>([]);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
-  const [actionFilter, setActionFilter] = useState<string | null>(null);
+  const [actionFilter, setActionFilter] = useState<string>('');
   const [actions, setActions] = useState<string[]>([]);
   const PAGE_SIZE = 20;
 
@@ -59,77 +58,92 @@ export function AuditLog() {
 
   useEffect(() => { setPage(1); }, [actionFilter]);
 
-  return (
-    <Stack gap="md">
-      <Group justify="space-between" align="flex-end">
-        <Text fz="xs" c="dimmed">총 {total.toLocaleString()}건</Text>
-        <Select
-          placeholder="작업 유형 필터"
-          data={actions ?? []}
-          value={actionFilter}
-          onChange={setActionFilter}
-          clearable
-          size="xs"
-          w={200}
-        />
-      </Group>
+  const totalPages = Math.ceil(total / PAGE_SIZE);
 
-      <Table highlightOnHover>
-        <Table.Thead>
-          <Table.Tr>
-            <Table.Th>시각</Table.Th>
-            <Table.Th>관리자</Table.Th>
-            <Table.Th>작업</Table.Th>
-            <Table.Th>대상</Table.Th>
-            <Table.Th>IP</Table.Th>
-          </Table.Tr>
-        </Table.Thead>
-        <Table.Tbody>
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+        <span style={{ fontSize: 12, color: '#868e96' }}>총 {total.toLocaleString()}건</span>
+        <select
+          value={actionFilter}
+          onChange={e => setActionFilter(e.target.value)}
+          style={{ width: 200, padding: '4px 8px', border: '1px solid #dee2e6', borderRadius: 4, fontSize: 12 }}
+        >
+          <option value="">작업 유형 필터</option>
+          {actions.map(a => <option key={a} value={a}>{a}</option>)}
+        </select>
+      </div>
+
+      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <thead>
+          <tr>
+            <th style={{ textAlign: 'left', padding: '8px', borderBottom: '2px solid #e0e0e0', fontSize: 12 }}>시각</th>
+            <th style={{ textAlign: 'left', padding: '8px', borderBottom: '2px solid #e0e0e0', fontSize: 12 }}>관리자</th>
+            <th style={{ textAlign: 'left', padding: '8px', borderBottom: '2px solid #e0e0e0', fontSize: 12 }}>작업</th>
+            <th style={{ textAlign: 'left', padding: '8px', borderBottom: '2px solid #e0e0e0', fontSize: 12 }}>대상</th>
+            <th style={{ textAlign: 'left', padding: '8px', borderBottom: '2px solid #e0e0e0', fontSize: 12 }}>IP</th>
+          </tr>
+        </thead>
+        <tbody>
           {entries.map(entry => (
-            <Table.Tr key={entry.id}>
-              <Table.Td>
-                <Text fz="xs" c="dimmed" style={{ whiteSpace: 'nowrap' }}>
+            <tr key={entry.id} style={{ borderBottom: '1px solid #f1f3f5' }}>
+              <td style={{ padding: '8px' }}>
+                <span style={{ fontSize: 12, color: '#868e96', whiteSpace: 'nowrap' }}>
                   {new Date(entry.created_at).toLocaleString('ko-KR')}
-                </Text>
-              </Table.Td>
-              <Table.Td>
-                <Text fz="xs" lineClamp={1}>
+                </span>
+              </td>
+              <td style={{ padding: '8px' }}>
+                <span style={{ fontSize: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {entry.profiles?.display_name ?? entry.profiles?.email ?? entry.admin_id?.slice(0, 8)}
-                </Text>
-              </Table.Td>
-              <Table.Td>
-                <Badge variant="light" color="gray" size="sm">{entry.action}</Badge>
-              </Table.Td>
-              <Table.Td>
-                <Group gap={4} wrap="nowrap">
+                </span>
+              </td>
+              <td style={{ padding: '8px' }}>
+                <span style={{ background: '#f1f3f5', padding: '2px 8px', borderRadius: 10, fontSize: 11 }}>{entry.action}</span>
+              </td>
+              <td style={{ padding: '8px' }}>
+                <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
                   {entry.target_type && (
-                    <Badge variant="outline" color="gray" size="xs">{entry.target_type}</Badge>
+                    <span style={{ border: '1px solid #dee2e6', padding: '1px 6px', borderRadius: 10, fontSize: 10 }}>{entry.target_type}</span>
                   )}
                   {entry.target_id && (
-                    <Text fz="xs" c="dimmed" ff="monospace" lineClamp={1}>
+                    <span style={{ fontSize: 12, color: '#868e96', fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {entry.target_id.slice(0, 12)}...
-                    </Text>
+                    </span>
                   )}
                   {!entry.target_type && !entry.target_id && (
-                    <Text fz="xs" c="dimmed">-</Text>
+                    <span style={{ fontSize: 12, color: '#868e96' }}>-</span>
                   )}
-                </Group>
-              </Table.Td>
-              <Table.Td>
-                <Text fz="xs" c="dimmed" ff="monospace">{entry.ip_address ?? '-'}</Text>
-              </Table.Td>
-            </Table.Tr>
+                </div>
+              </td>
+              <td style={{ padding: '8px' }}>
+                <span style={{ fontSize: 12, color: '#868e96', fontFamily: 'monospace' }}>{entry.ip_address ?? '-'}</span>
+              </td>
+            </tr>
           ))}
-        </Table.Tbody>
-      </Table>
+        </tbody>
+      </table>
 
       {entries.length === 0 && (
-        <Text c="dimmed" ta="center" py="xl" fz="sm">감사 로그가 없어요.</Text>
+        <p style={{ color: '#868e96', textAlign: 'center', padding: '24px 0', fontSize: 13 }}>감사 로그가 없어요.</p>
       )}
 
-      <Group justify="center">
-        <Pagination total={Math.ceil(total / PAGE_SIZE)} value={page} onChange={setPage} size="sm" />
-      </Group>
-    </Stack>
+      {totalPages > 1 && (
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 4 }}>
+          {Array.from({ length: totalPages }, (_, i) => i + 1).slice(Math.max(0, page - 3), page + 2).map(p => (
+            <button
+              key={p}
+              onClick={() => setPage(p)}
+              style={{
+                padding: '4px 10px', border: '1px solid #dee2e6', borderRadius: 4, cursor: 'pointer', fontSize: 12,
+                background: p === page ? '#333' : '#fff',
+                color: p === page ? '#fff' : '#333',
+              }}
+            >
+              {p}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }

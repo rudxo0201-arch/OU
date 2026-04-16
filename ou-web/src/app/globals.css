@@ -381,3 +381,10 @@
     grid-template-columns: 1fr !important;
   }
 }
+
+/* 데스크톱 전용 요소 (Mantine visibleFrom="md" 대체) */
+@media (max-width: 1023px) {
+  .ou-desktop-only {
+    display: none !important;
+  }
+}

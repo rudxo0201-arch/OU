@@ -1,10 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback, useMemo } from 'react';
-import {
-  Stack, Table, Text, Group, Badge, Paper, SimpleGrid,
-  Pagination, NumberInput, Button, Select,
-} from '@mantine/core';
+import { useEffect, useState, useCallback } from 'react';
 import { CurrencyDollar, Warning } from '@phosphor-icons/react';
 import { createClient } from '@/lib/supabase/client';
 
@@ -43,11 +39,10 @@ export function CostMonitor() {
   const [modelBreakdown, setModelBreakdown] = useState<Record<string, { cost: number; count: number }>>({});
   const [alertThreshold, setAlertThreshold] = useState<number>(10);
   const [savedThreshold, setSavedThreshold] = useState<number>(10);
-  const [filterOp, setFilterOp] = useState<string | null>(null);
+  const [filterOp, setFilterOp] = useState<string>('');
   const [operations, setOperations] = useState<string[]>([]);
   const PAGE_SIZE = 20;
 
-  // Fetch period summaries
   const fetchSummary = useCallback(async () => {
     const periods: Period[] = ['today', 'week', 'month'];
     const results: Record<Period, number> = { today: 0, week: 0, month: 0 };
@@ -65,7 +60,6 @@ export function CostMonitor() {
     setPeriodCosts(results);
   }, []);
 
-  // Fetch operation + model breakdown for this month
   const fetchBreakdown = useCallback(async () => {
     const { data } = await supabase
       .from('api_cost_log')
@@ -77,11 +71,8 @@ export function CostMonitor() {
     const ops = new Set<string>();
 
     data?.forEach(log => {
-      // Operation breakdown
       opSums[log.operation] = (opSums[log.operation] ?? 0) + (log.cost_usd ?? 0);
       ops.add(log.operation);
-
-      // Model breakdown
       const model = log.model ?? 'unknown';
       if (!mdlSums[model]) mdlSums[model] = { cost: 0, count: 0 };
       mdlSums[model].cost += log.cost_usd ?? 0;
@@ -93,7 +84,6 @@ export function CostMonitor() {
     setOperations(Array.from(ops));
   }, []);
 
-  // Fetch recent logs (paginated)
   const fetchLogs = useCallback(async () => {
     let query = supabase
       .from('api_cost_log')
@@ -111,7 +101,6 @@ export function CostMonitor() {
   useEffect(() => { fetchSummary(); fetchBreakdown(); }, [fetchSummary, fetchBreakdown]);
   useEffect(() => { fetchLogs(); }, [fetchLogs]);
 
-  // Load threshold from localStorage
   useEffect(() => {
     const stored = localStorage.getItem('ou_cost_alert_threshold');
     if (stored) {
@@ -127,158 +116,169 @@ export function CostMonitor() {
   };
 
   const isOverBudget = periodCosts.today > savedThreshold;
+  const totalPages = Math.ceil(total / PAGE_SIZE);
 
   return (
-    <Stack gap="md">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       {/* Period summaries */}
-      <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="md">
-        <Paper p="md">
-          <Group justify="space-between" mb="xs">
-            <Text fz="xs" c="dimmed">오늘</Text>
-            {isOverBudget && <Warning size={16} color="var(--mantine-color-red-6)" />}
-          </Group>
-          <Text fz="xl" fw={700} c={isOverBudget ? 'red' : undefined}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 16 }}>
+        <div style={{ padding: 16, background: '#fff', borderRadius: 8, border: '1px solid #e0e0e0' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+            <span style={{ fontSize: 12, color: '#868e96' }}>오늘</span>
+            {isOverBudget && <Warning size={16} color="#fa5252" />}
+          </div>
+          <span style={{ fontSize: 20, fontWeight: 700, color: isOverBudget ? 'red' : undefined }}>
             ${periodCosts.today.toFixed(4)}
-          </Text>
-        </Paper>
-        <Paper p="md">
-          <Text fz="xs" c="dimmed" mb="xs">이번 주</Text>
-          <Text fz="xl" fw={700}>${periodCosts.week.toFixed(4)}</Text>
-        </Paper>
-        <Paper p="md">
-          <Text fz="xs" c="dimmed" mb="xs">이번 달</Text>
-          <Text fz="xl" fw={700}>${periodCosts.month.toFixed(4)}</Text>
-        </Paper>
-      </SimpleGrid>
+          </span>
+        </div>
+        <div style={{ padding: 16, background: '#fff', borderRadius: 8, border: '1px solid #e0e0e0' }}>
+          <span style={{ fontSize: 12, color: '#868e96', display: 'block', marginBottom: 8 }}>이번 주</span>
+          <span style={{ fontSize: 20, fontWeight: 700 }}>${periodCosts.week.toFixed(4)}</span>
+        </div>
+        <div style={{ padding: 16, background: '#fff', borderRadius: 8, border: '1px solid #e0e0e0' }}>
+          <span style={{ fontSize: 12, color: '#868e96', display: 'block', marginBottom: 8 }}>이번 달</span>
+          <span style={{ fontSize: 20, fontWeight: 700 }}>${periodCosts.month.toFixed(4)}</span>
+        </div>
+      </div>
 
       {/* Operation breakdown */}
-      <Paper p="md">
-        <Text fw={600} fz="sm" mb="sm">작업별 비용 (이번 달)</Text>
-        <Group gap="xs" wrap="wrap">
+      <div style={{ padding: 16, background: '#fff', borderRadius: 8, border: '1px solid #e0e0e0' }}>
+        <p style={{ fontWeight: 600, fontSize: 13, margin: '0 0 8px 0' }}>작업별 비용 (이번 달)</p>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           {Object.entries(operationBreakdown)
             .sort(([, a], [, b]) => b - a)
             .map(([op, cost]) => (
-              <Badge key={op} variant="light" color="gray" size="lg">
+              <span key={op} style={{ background: '#f1f3f5', padding: '4px 10px', borderRadius: 10, fontSize: 12 }}>
                 {op}: ${cost.toFixed(4)}
-              </Badge>
+              </span>
             ))}
           {Object.keys(operationBreakdown).length === 0 && (
-            <Text fz="sm" c="dimmed">데이터 없음</Text>
+            <span style={{ fontSize: 13, color: '#868e96' }}>데이터 없음</span>
           )}
-        </Group>
-      </Paper>
+        </div>
+      </div>
 
       {/* Model breakdown */}
-      <Paper p="md">
-        <Text fw={600} fz="sm" mb="sm">모델별 비용 (이번 달)</Text>
-        <Table highlightOnHover>
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th>모델</Table.Th>
-              <Table.Th>호출 수</Table.Th>
-              <Table.Th>비용(USD)</Table.Th>
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>
+      <div style={{ padding: 16, background: '#fff', borderRadius: 8, border: '1px solid #e0e0e0' }}>
+        <p style={{ fontWeight: 600, fontSize: 13, margin: '0 0 8px 0' }}>모델별 비용 (이번 달)</p>
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <thead>
+            <tr>
+              <th style={{ textAlign: 'left', padding: '8px', borderBottom: '2px solid #e0e0e0', fontSize: 12 }}>모델</th>
+              <th style={{ textAlign: 'left', padding: '8px', borderBottom: '2px solid #e0e0e0', fontSize: 12 }}>호출 수</th>
+              <th style={{ textAlign: 'left', padding: '8px', borderBottom: '2px solid #e0e0e0', fontSize: 12 }}>비용(USD)</th>
+            </tr>
+          </thead>
+          <tbody>
             {Object.entries(modelBreakdown)
               .sort(([, a], [, b]) => b.cost - a.cost)
               .map(([model, { cost, count }]) => (
-                <Table.Tr key={model}>
-                  <Table.Td><Text fz="xs">{model}</Text></Table.Td>
-                  <Table.Td><Text fz="xs">{count.toLocaleString()}</Text></Table.Td>
-                  <Table.Td>
-                    <Text fz="xs" fw={600}>${cost.toFixed(4)}</Text>
-                  </Table.Td>
-                </Table.Tr>
+                <tr key={model} style={{ borderBottom: '1px solid #f1f3f5' }}>
+                  <td style={{ padding: '8px', fontSize: 12 }}>{model}</td>
+                  <td style={{ padding: '8px', fontSize: 12 }}>{count.toLocaleString()}</td>
+                  <td style={{ padding: '8px', fontSize: 12, fontWeight: 600 }}>${cost.toFixed(4)}</td>
+                </tr>
               ))}
             {Object.keys(modelBreakdown).length === 0 && (
-              <Table.Tr>
-                <Table.Td colSpan={3}>
-                  <Text fz="sm" c="dimmed" ta="center">데이터 없음</Text>
-                </Table.Td>
-              </Table.Tr>
+              <tr>
+                <td colSpan={3} style={{ padding: '8px', textAlign: 'center' }}>
+                  <span style={{ fontSize: 13, color: '#868e96' }}>데이터 없음</span>
+                </td>
+              </tr>
             )}
-          </Table.Tbody>
-        </Table>
-      </Paper>
+          </tbody>
+        </table>
+      </div>
 
       {/* Alert threshold */}
-      <Paper p="md">
-        <Text fw={600} fz="sm" mb="sm">일일 비용 알림 기준</Text>
-        <Group gap="sm">
-          <NumberInput
-            value={alertThreshold}
-            onChange={v => setAlertThreshold(typeof v === 'number' ? v : 10)}
-            prefix="$"
-            min={0}
-            step={1}
-            decimalScale={2}
-            w={120}
-            size="xs"
-          />
-          <Button
-            size="xs"
-            variant="light"
-            color="dark"
+      <div style={{ padding: 16, background: '#fff', borderRadius: 8, border: '1px solid #e0e0e0' }}>
+        <p style={{ fontWeight: 600, fontSize: 13, margin: '0 0 8px 0' }}>일일 비용 알림 기준</p>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #dee2e6', borderRadius: 4, overflow: 'hidden', width: 120 }}>
+            <span style={{ padding: '4px 6px', background: '#f8f9fa', fontSize: 12 }}>$</span>
+            <input
+              type="number"
+              value={alertThreshold}
+              onChange={e => setAlertThreshold(parseFloat(e.target.value) || 10)}
+              min={0}
+              step={1}
+              style={{ padding: '4px 8px', border: 'none', outline: 'none', width: '100%', fontSize: 12 }}
+            />
+          </div>
+          <button
             onClick={saveThreshold}
             disabled={alertThreshold === savedThreshold}
+            style={{ padding: '4px 12px', background: alertThreshold === savedThreshold ? '#e9ecef' : '#343a40', color: alertThreshold === savedThreshold ? '#868e96' : '#fff', border: 'none', borderRadius: 4, cursor: alertThreshold === savedThreshold ? 'default' : 'pointer', fontSize: 12 }}
           >
             저장
-          </Button>
-          <Text fz="xs" c="dimmed">현재 기준: ${savedThreshold}</Text>
-        </Group>
-      </Paper>
+          </button>
+          <span style={{ fontSize: 12, color: '#868e96' }}>현재 기준: ${savedThreshold}</span>
+        </div>
+      </div>
 
       {/* Recent calls table */}
-      <Group justify="space-between" align="flex-end">
-        <Text fw={600} fz="sm">최근 API 호출</Text>
-        <Select
-          placeholder="작업 필터"
-          data={operations ?? []}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+        <span style={{ fontWeight: 600, fontSize: 13 }}>최근 API 호출</span>
+        <select
           value={filterOp}
-          onChange={setFilterOp}
-          clearable
-          size="xs"
-          w={160}
-        />
-      </Group>
+          onChange={e => setFilterOp(e.target.value)}
+          style={{ width: 160, padding: '4px 8px', border: '1px solid #dee2e6', borderRadius: 4, fontSize: 12 }}
+        >
+          <option value="">작업 필터</option>
+          {operations.map(op => <option key={op} value={op}>{op}</option>)}
+        </select>
+      </div>
 
-      <Table highlightOnHover>
-        <Table.Thead>
-          <Table.Tr>
-            <Table.Th>작업</Table.Th>
-            <Table.Th>모델</Table.Th>
-            <Table.Th>토큰</Table.Th>
-            <Table.Th>비용(USD)</Table.Th>
-            <Table.Th>시각</Table.Th>
-          </Table.Tr>
-        </Table.Thead>
-        <Table.Tbody>
+      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <thead>
+          <tr>
+            <th style={{ textAlign: 'left', padding: '8px', borderBottom: '2px solid #e0e0e0', fontSize: 12 }}>작업</th>
+            <th style={{ textAlign: 'left', padding: '8px', borderBottom: '2px solid #e0e0e0', fontSize: 12 }}>모델</th>
+            <th style={{ textAlign: 'left', padding: '8px', borderBottom: '2px solid #e0e0e0', fontSize: 12 }}>토큰</th>
+            <th style={{ textAlign: 'left', padding: '8px', borderBottom: '2px solid #e0e0e0', fontSize: 12 }}>비용(USD)</th>
+            <th style={{ textAlign: 'left', padding: '8px', borderBottom: '2px solid #e0e0e0', fontSize: 12 }}>시각</th>
+          </tr>
+        </thead>
+        <tbody>
           {logs.map(log => (
-            <Table.Tr key={log.id}>
-              <Table.Td><Badge variant="light" color="gray" size="xs">{log.operation}</Badge></Table.Td>
-              <Table.Td><Text fz="xs">{log.model}</Text></Table.Td>
-              <Table.Td><Text fz="xs">{log.tokens?.toLocaleString()}</Text></Table.Td>
-              <Table.Td>
-                <Text fz="xs" c={log.cost_usd > 0.01 ? 'red' : undefined}>
-                  ${log.cost_usd?.toFixed(6)}
-                </Text>
-              </Table.Td>
-              <Table.Td>
-                <Text fz="xs" c="dimmed">{new Date(log.created_at).toLocaleString('ko-KR')}</Text>
-              </Table.Td>
-            </Table.Tr>
+            <tr key={log.id} style={{ borderBottom: '1px solid #f1f3f5' }}>
+              <td style={{ padding: '8px' }}>
+                <span style={{ background: '#f1f3f5', padding: '1px 8px', borderRadius: 10, fontSize: 10 }}>{log.operation}</span>
+              </td>
+              <td style={{ padding: '8px', fontSize: 12 }}>{log.model}</td>
+              <td style={{ padding: '8px', fontSize: 12 }}>{log.tokens?.toLocaleString()}</td>
+              <td style={{ padding: '8px', fontSize: 12, color: log.cost_usd > 0.01 ? 'red' : undefined }}>
+                ${log.cost_usd?.toFixed(6)}
+              </td>
+              <td style={{ padding: '8px', fontSize: 12, color: '#868e96' }}>
+                {new Date(log.created_at).toLocaleString('ko-KR')}
+              </td>
+            </tr>
           ))}
-        </Table.Tbody>
-      </Table>
+        </tbody>
+      </table>
 
       {logs.length === 0 && (
-        <Text c="dimmed" ta="center" py="xl" fz="sm">기록이 없어요.</Text>
+        <p style={{ color: '#868e96', textAlign: 'center', padding: '24px 0', fontSize: 13 }}>기록이 없어요.</p>
       )}
 
-      <Group justify="center">
-        <Pagination total={Math.ceil(total / PAGE_SIZE)} value={page} onChange={setPage} size="sm" />
-      </Group>
-    </Stack>
+      {totalPages > 1 && (
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 4 }}>
+          {Array.from({ length: totalPages }, (_, i) => i + 1).slice(Math.max(0, page - 3), page + 2).map(p => (
+            <button
+              key={p}
+              onClick={() => setPage(p)}
+              style={{
+                padding: '4px 10px', border: '1px solid #dee2e6', borderRadius: 4, cursor: 'pointer', fontSize: 12,
+                background: p === page ? '#333' : '#fff',
+                color: p === page ? '#fff' : '#333',
+              }}
+            >
+              {p}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }

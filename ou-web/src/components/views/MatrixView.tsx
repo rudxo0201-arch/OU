@@ -1,13 +1,12 @@
 'use client';
 
 import { useMemo } from 'react';
-import { Stack, Text, Box, SimpleGrid } from '@mantine/core';
 import type { ViewProps } from './registry';
 
 interface MatrixItem {
   id: string;
   title: string;
-  quadrant: number; // 0=top-left, 1=top-right, 2=bottom-left, 3=bottom-right
+  quadrant: number;
 }
 
 const QUADRANT_LABELS = [
@@ -45,59 +44,58 @@ export function MatrixView({ nodes }: ViewProps) {
   if (nodes.length === 0) return null;
 
   return (
-    <Stack gap={0} p="md">
-      <Text fz="xs" c="dimmed" mb="md">Matrix</Text>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 0, padding: 16 }}>
+      <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', marginBottom: 16 }}>Matrix</span>
 
-      {/* Axis labels */}
-      <Box style={{ position: 'relative' }}>
-        <Text fz={10} c="dimmed" ta="center" mb={4}>
+      <div style={{ position: 'relative' }}>
+        <p style={{ fontSize: 10, color: 'var(--ou-text-dimmed, #888)', textAlign: 'center', marginBottom: 4, marginTop: 0 }}>
           ← Urgent &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Not Urgent →
-        </Text>
+        </p>
 
-        <SimpleGrid cols={2} spacing={1}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1 }}>
           {QUADRANT_LABELS.map((q, i) => (
-            <Box
+            <div
               key={i}
               style={{
-                border: '0.5px solid var(--mantine-color-default-border)',
+                border: '0.5px solid var(--ou-border, #333)',
                 borderRadius: 4,
                 padding: 12,
                 minHeight: 140,
               }}
             >
-              <Text fz={10} c="dimmed" fw={500} mb={8}>
+              <span style={{ fontSize: 10, color: 'var(--ou-text-dimmed, #888)', fontWeight: 500, display: 'block', marginBottom: 8 }}>
                 {q.label}
-              </Text>
+              </span>
 
-              <Stack gap={4}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 {quadrants[i].map(item => (
-                  <Box
+                  <div
                     key={item.id}
                     style={{
                       padding: '4px 8px',
                       borderRadius: 4,
-                      border: '0.5px solid var(--mantine-color-default-border)',
+                      border: '0.5px solid var(--ou-border, #333)',
                     }}
                   >
-                    <Text fz={12} truncate>
+                    <span style={{ fontSize: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>
                       {item.title}
-                    </Text>
-                  </Box>
+                    </span>
+                  </div>
                 ))}
                 {quadrants[i].length === 0 && (
-                  <Text fz={11} c="dimmed" fs="italic">
+                  <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', fontStyle: 'italic' }}>
                     No items
-                  </Text>
+                  </span>
                 )}
-              </Stack>
-            </Box>
+              </div>
+            </div>
           ))}
-        </SimpleGrid>
+        </div>
 
-        <Text fz={10} c="dimmed" ta="center" mt={4}>
+        <p style={{ fontSize: 10, color: 'var(--ou-text-dimmed, #888)', textAlign: 'center', marginTop: 4, marginBottom: 0 }}>
           ↑ Important &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Not Important ↓
-        </Text>
-      </Box>
-    </Stack>
+        </p>
+      </div>
+    </div>
   );
 }

@@ -1,10 +1,6 @@
 'use client';
 
 import { useEffect, useState, useRef, useCallback } from 'react';
-import {
-  Stack, TextInput, ActionIcon, Box, Paper, Text, Group,
-  UnstyledButton, Avatar, Loader, Center,
-} from '@mantine/core';
 import { PaperPlaneRight, ArrowLeft } from '@phosphor-icons/react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
@@ -161,49 +157,44 @@ export function ChatRoom({ roomId, userId }: { roomId: string; userId: string })
   const headerName = otherMember?.display_name || '대화방';
 
   return (
-    <Stack h="100vh" gap={0}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
       {/* Header */}
-      <Group
-        p="md"
-        gap="sm"
-        style={{ borderBottom: '0.5px solid var(--mantine-color-default-border)' }}
+      <div
+        style={{ display: 'flex', alignItems: 'center', gap: 8, padding: 16, borderBottom: '0.5px solid var(--color-default-border)' }}
       >
-        <UnstyledButton onClick={() => router.push('/messages')}>
+        <button onClick={() => router.push('/messages')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
           <ArrowLeft size={22} weight="light" />
-        </UnstyledButton>
+        </button>
         {otherMember?.avatar_url && (
-          <Avatar src={otherMember.avatar_url} size="sm" radius="xl" />
+          <img src={otherMember.avatar_url} alt="" style={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover' }} />
         )}
-        <Text fw={600} fz="sm">{headerName}</Text>
-      </Group>
+        <span style={{ fontWeight: 600, fontSize: 14 }}>{headerName}</span>
+      </div>
 
       {/* Messages */}
-      <Stack
+      <div
         ref={scrollRef}
-        flex={1}
-        gap="sm"
-        p="md"
-        style={{ overflowY: 'auto' }}
         onScroll={handleScroll}
+        style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8, padding: 16, overflowY: 'auto' }}
       >
         {loading && (
-          <Center py="xl">
-            <Loader size="sm" color="gray" />
-          </Center>
+          <div style={{ display: 'flex', justifyContent: 'center', padding: 24 }}>
+            <span style={{ fontSize: 14, color: 'var(--color-dimmed)' }}>불러오는 중...</span>
+          </div>
         )}
 
         {!loading && hasMore && (
-          <Center>
-            <UnstyledButton onClick={loadMore}>
-              <Text fz="xs" c="dimmed">이전 메시지 불러오기</Text>
-            </UnstyledButton>
-          </Center>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <button onClick={loadMore} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, color: 'var(--color-dimmed)' }}>
+              이전 메시지 불러오기
+            </button>
+          </div>
         )}
 
         {!loading && messages.length === 0 && (
-          <Box ta="center" py="xl">
-            <Text c="dimmed" fz="sm">아직 메시지가 없어요. 첫 메시지를 보내보세요!</Text>
-          </Box>
+          <div style={{ textAlign: 'center', padding: 24 }}>
+            <span style={{ color: 'var(--color-dimmed)', fontSize: 14 }}>아직 메시지가 없어요. 첫 메시지를 보내보세요!</span>
+          </div>
         )}
 
         {messages.map((msg, idx) => {
@@ -212,7 +203,7 @@ export function ChatRoom({ roomId, userId }: { roomId: string; userId: string })
             messages[idx + 1]?.sender_id !== msg.sender_id;
 
           return (
-            <Box
+            <div
               key={msg.id}
               style={{
                 display: 'flex',
@@ -221,36 +212,35 @@ export function ChatRoom({ roomId, userId }: { roomId: string; userId: string })
               }}
             >
               {!isMine && showTime && otherMember && (
-                <Text fz={10} c="dimmed" mb={2} px={4}>
+                <span style={{ fontSize: 10, color: 'var(--color-dimmed)', marginBottom: 2, padding: '0 4px' }}>
                   {otherMember.display_name || '회원'}
-                </Text>
+                </span>
               )}
-              <Paper
-                p="sm"
-                maw={320}
+              <div
                 style={{
-                  background: isMine
-                    ? 'var(--mantine-color-dark-4)'
-                    : 'var(--mantine-color-default)',
+                  padding: 10,
+                  maxWidth: 320,
+                  background: isMine ? '#374151' : 'var(--color-default)',
                   borderRadius: 12,
+                  color: isMine ? '#fff' : 'inherit',
                 }}
               >
-                {msg.content && <Text fz="sm">{msg.content}</Text>}
-              </Paper>
+                {msg.content && <span style={{ fontSize: 14 }}>{msg.content}</span>}
+              </div>
               {showTime && (
-                <Text fz={10} c="dimmed" mt={2} px={4}>
+                <span style={{ fontSize: 10, color: 'var(--color-dimmed)', marginTop: 2, padding: '0 4px' }}>
                   {formatTime(msg.created_at)}
-                </Text>
+                </span>
               )}
-            </Box>
+            </div>
           );
         })}
-      </Stack>
+      </div>
 
       {/* Input */}
-      <Group p="md" gap="sm" style={{ borderTop: '0.5px solid var(--mantine-color-default-border)' }}>
-        <TextInput
-          flex={1}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: 16, borderTop: '0.5px solid var(--color-default-border)' }}>
+        <input
+          type="text"
           placeholder="메시지 입력..."
           value={input}
           onChange={e => setInput(e.target.value)}
@@ -260,21 +250,21 @@ export function ChatRoom({ roomId, userId }: { roomId: string; userId: string })
               sendMessage();
             }
           }}
-          radius="xl"
-          size="md"
+          style={{ flex: 1, padding: '10px 16px', borderRadius: 24, border: '1px solid var(--color-default-border)', fontSize: 14, outline: 'none' }}
         />
-        <ActionIcon
-          size="lg"
-          radius="xl"
-          variant="light"
-          color="gray"
+        <button
           onClick={sendMessage}
           disabled={!input.trim() || sending}
-          loading={sending}
+          style={{
+            width: 40, height: 40, borderRadius: '50%', border: '1px solid var(--color-default-border)',
+            background: '#f3f4f6', cursor: !input.trim() || sending ? 'default' : 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            opacity: !input.trim() || sending ? 0.5 : 1,
+          }}
         >
           <PaperPlaneRight size={18} />
-        </ActionIcon>
-      </Group>
-    </Stack>
+        </button>
+      </div>
+    </div>
   );
 }

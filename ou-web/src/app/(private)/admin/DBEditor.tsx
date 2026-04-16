@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { Stack, Select, Group, Text } from '@mantine/core';
 import { Database } from '@phosphor-icons/react';
 import { TABLE_SCHEMAS } from '@/lib/admin/table-schemas';
 import { DBTableView } from './DBTableView';
@@ -15,30 +14,43 @@ export function DBEditor() {
     group: getTableGroup(t.name),
   }));
 
-  return (
-    <Stack gap="md">
-      <Group gap="sm">
-        <Database size={18} weight="light" />
-        <Text fw={600} fz="sm">DB 에디터</Text>
-      </Group>
+  // Group options by group
+  const grouped = tableOptions.reduce<Record<string, typeof tableOptions>>((acc, opt) => {
+    if (!acc[opt.group]) acc[opt.group] = [];
+    acc[opt.group].push(opt);
+    return acc;
+  }, {});
 
-      <Select
-        placeholder="테이블을 선택하세요"
-        data={tableOptions}
-        value={selectedTable}
-        onChange={setSelectedTable}
-        searchable
-        w={360}
-      />
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <Database size={18} weight="light" />
+        <span style={{ fontWeight: 600, fontSize: 13 }}>DB 에디터</span>
+      </div>
+
+      <select
+        value={selectedTable ?? ''}
+        onChange={e => setSelectedTable(e.target.value || null)}
+        style={{ width: 360, padding: '8px 10px', border: '1px solid #dee2e6', borderRadius: 4, fontSize: 13 }}
+      >
+        <option value="">테이블을 선택하세요</option>
+        {Object.entries(grouped).map(([group, opts]) => (
+          <optgroup key={group} label={group}>
+            {opts.map(opt => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
+          </optgroup>
+        ))}
+      </select>
 
       {selectedTable ? (
         <DBTableView tableName={selectedTable} key={selectedTable} />
       ) : (
-        <Text c="dimmed" ta="center" py="xl" fz="sm">
+        <p style={{ color: '#868e96', textAlign: 'center', padding: '24px 0', fontSize: 13 }}>
           테이블을 선택하면 데이터를 조회하고 편집할 수 있어요.
-        </Text>
+        </p>
       )}
-    </Stack>
+    </div>
   );
 }
 

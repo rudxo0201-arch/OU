@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo } from 'react';
-import { Stack, Text, Box, Divider, Group } from '@mantine/core';
 import dayjs from 'dayjs';
 import 'dayjs/locale/ko';
 import type { ViewProps } from './registry';
@@ -31,7 +30,6 @@ export function JournalView({ nodes }: ViewProps) {
     [nodes],
   );
 
-  // Group by date
   const grouped = useMemo(() => {
     const map: Record<string, JournalEntry[]> = {};
     for (const entry of entries) {
@@ -45,48 +43,47 @@ export function JournalView({ nodes }: ViewProps) {
   if (entries.length === 0) return null;
 
   return (
-    <Stack gap="lg" p="md">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24, padding: 16 }}>
       {grouped.map(([dateKey, dayEntries], gi) => (
-        <Box key={dateKey}>
-          {gi > 0 && <Divider mb="md" color="var(--mantine-color-default-border)" />}
+        <div key={dateKey}>
+          {gi > 0 && <div style={{ borderTop: '0.5px solid var(--ou-border, #333)', marginBottom: 16 }} />}
 
-          <Group gap="xs" mb="sm">
-            <Text fz="sm" fw={600}>
+          <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+            <span style={{ fontSize: 13, fontWeight: 600 }}>
               {dateKey === '날짜 없음'
                 ? dateKey
                 : dayjs(dateKey).format('M월 D일 dddd')}
-            </Text>
-          </Group>
+            </span>
+          </div>
 
-          <Stack gap="md" pl="sm" style={{ borderLeft: '1px solid var(--mantine-color-default-border)' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16, paddingLeft: 12, borderLeft: '1px solid var(--ou-border, #333)' }}>
             {dayEntries.map(entry => (
-              <Box key={entry.id} pl="md">
+              <div key={entry.id} style={{ paddingLeft: 16 }}>
                 {entry.mood && (
-                  <Text fz="xs" c="dimmed" mb={2}>
+                  <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', display: 'block', marginBottom: 2 }}>
                     {entry.mood}
-                  </Text>
+                  </span>
                 )}
                 {entry.title && (
-                  <Text fz="sm" fw={500} mb={4}>
+                  <span style={{ fontSize: 13, fontWeight: 500, display: 'block', marginBottom: 4 }}>
                     {entry.title}
-                  </Text>
+                  </span>
                 )}
-                <Text
-                  fz="sm"
-                  style={{ lineHeight: 1.7, whiteSpace: 'pre-wrap' }}
+                <p
+                  style={{ fontSize: 13, lineHeight: 1.7, whiteSpace: 'pre-wrap', margin: 0 }}
                 >
                   {entry.content}
-                </Text>
+                </p>
                 {entry.date && (
-                  <Text fz={10} c="dimmed" mt={4}>
+                  <span style={{ fontSize: 10, color: 'var(--ou-text-dimmed, #888)', display: 'block', marginTop: 4 }}>
                     {dayjs(entry.date).format('A h:mm')}
-                  </Text>
+                  </span>
                 )}
-              </Box>
+              </div>
             ))}
-          </Stack>
-        </Box>
+          </div>
+        </div>
       ))}
-    </Stack>
+    </div>
   );
 }

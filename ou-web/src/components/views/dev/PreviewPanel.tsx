@@ -1,6 +1,5 @@
 'use client';
 
-import { Box, Group, Text, ActionIcon, Stack } from '@mantine/core';
 import { ArrowClockwise, Globe, ArrowSquareOut } from '@phosphor-icons/react';
 import { useRef } from 'react';
 import { useDevWorkspaceStore } from '@/stores/devWorkspaceStore';
@@ -15,49 +14,43 @@ export function PreviewPanel() {
 
   if (!previewUrl) {
     return (
-      <Stack align="center" justify="center" h="100%" gap="xs">
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 4 }}>
         <Globe size={28} color="var(--mantine-color-dark-3)" />
-        <Text fz={11} c="dimmed" ta="center" maw={200}>
+        <span style={{ fontSize: 11, color: 'var(--mantine-color-dimmed)', textAlign: 'center', maxWidth: 200 }}>
           {webcontainerStatus === 'ready'
             ? '터미널에서 dev server를 실행하면 여기에 표시됩니다'
             : '프로젝트 로드 중...'}
-        </Text>
-      </Stack>
+        </span>
+      </div>
     );
   }
 
   return (
-    <Box style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* 주소 바 */}
-      <Group
-        gap="xs"
-        px="xs"
-        py={4}
-        style={{ borderBottom: '1px solid var(--mantine-color-dark-4)', flexShrink: 0 }}
-        wrap="nowrap"
+      <div
+        style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 4, padding: '4px 8px', borderBottom: '1px solid var(--mantine-color-dark-4)', flexShrink: 0 }}
       >
         <Globe size={12} color="var(--mantine-color-green-5)" />
-        <Text fz={10} c="dimmed" style={{ flex: 1 }} truncate>
+        <span style={{ fontSize: 10, color: 'var(--mantine-color-dimmed)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {previewUrl}
-        </Text>
-        <ActionIcon
-          size="xs"
-          variant="subtle"
+        </span>
+        <button
           onClick={() => iframeRef.current?.contentWindow?.location.reload()}
+          style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 2, display: 'flex', alignItems: 'center', color: 'inherit' }}
         >
           <ArrowClockwise size={10} />
-        </ActionIcon>
-        <ActionIcon
-          size="xs"
-          variant="subtle"
+        </button>
+        <button
           onClick={() => window.open(previewUrl, '_blank')}
+          style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 2, display: 'flex', alignItems: 'center', color: 'inherit' }}
         >
           <ArrowSquareOut size={10} />
-        </ActionIcon>
-      </Group>
+        </button>
+      </div>
 
       {/* 프리뷰 iframe */}
-      <Box style={{ flex: 1, minHeight: 0 }}>
+      <div style={{ flex: 1, minHeight: 0 }}>
         <iframe
           ref={iframeRef}
           src={previewUrl}
@@ -70,7 +63,7 @@ export function PreviewPanel() {
           }}
           sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
         />
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 }

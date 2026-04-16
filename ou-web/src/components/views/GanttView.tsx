@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo } from 'react';
-import { Stack, Text, Box, Group } from '@mantine/core';
 import type { ViewProps } from './registry';
 
 interface GanttTask {
@@ -49,34 +48,34 @@ export function GanttView({ nodes }: ViewProps) {
   const CHART_W = 500;
 
   return (
-    <Stack gap={0} p="md">
-      <Text fz="xs" c="dimmed" mb="md">Gantt</Text>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 0, padding: 16 }}>
+      <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', marginBottom: 16 }}>Gantt</span>
 
       {/* Header dates */}
-      <Group gap={0} wrap="nowrap" mb={4}>
-        <Box style={{ width: LABEL_W, flexShrink: 0 }} />
-        <Box style={{ width: CHART_W, position: 'relative' }}>
-          <Text fz={10} c="dimmed" style={{ position: 'absolute', left: 0 }}>
+      <div style={{ display: 'flex', flexWrap: 'nowrap', marginBottom: 4 }}>
+        <div style={{ width: LABEL_W, flexShrink: 0 }} />
+        <div style={{ width: CHART_W, position: 'relative' }}>
+          <span style={{ fontSize: 10, color: 'var(--ou-text-dimmed, #888)', position: 'absolute', left: 0 }}>
             {new Date(minDate).toLocaleDateString()}
-          </Text>
-          <Text fz={10} c="dimmed" style={{ position: 'absolute', right: 0 }}>
+          </span>
+          <span style={{ fontSize: 10, color: 'var(--ou-text-dimmed, #888)', position: 'absolute', right: 0 }}>
             {new Date(maxDate).toLocaleDateString()}
-          </Text>
-        </Box>
-      </Group>
+          </span>
+        </div>
+      </div>
 
-      <Box style={{ overflowX: 'auto' }}>
-        <Box style={{ position: 'relative', minWidth: LABEL_W + CHART_W }}>
+      <div style={{ overflowX: 'auto' }}>
+        <div style={{ position: 'relative', minWidth: LABEL_W + CHART_W }}>
           {/* Today marker */}
           {todayOffset >= 0 && todayOffset <= 1 && (
-            <Box
+            <div
               style={{
                 position: 'absolute',
                 left: LABEL_W + todayOffset * CHART_W,
                 top: 0,
                 bottom: 0,
                 width: 1,
-                backgroundColor: 'var(--mantine-color-gray-6)',
+                backgroundColor: 'var(--ou-gray-6, #666)',
                 zIndex: 2,
               }}
             />
@@ -88,55 +87,55 @@ export function GanttView({ nodes }: ViewProps) {
             const widthPct = (task.end - task.start) / range;
 
             return (
-              <Group key={task.id} gap={0} wrap="nowrap" style={{ height: ROW_H }} align="center">
+              <div key={task.id} style={{ display: 'flex', flexWrap: 'nowrap', height: ROW_H, alignItems: 'center' }}>
                 {/* Label */}
-                <Box style={{ width: LABEL_W, flexShrink: 0, paddingRight: 8 }}>
-                  <Text fz={12} truncate fw={400}>
+                <div style={{ width: LABEL_W, flexShrink: 0, paddingRight: 8 }}>
+                  <span style={{ fontSize: 12, fontWeight: 400, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {task.title}
-                  </Text>
-                </Box>
+                  </span>
+                </div>
 
                 {/* Bar area */}
-                <Box
+                <div
                   style={{
                     width: CHART_W,
                     position: 'relative',
                     height: BAR_H,
-                    backgroundColor: i % 2 === 0 ? 'transparent' : 'var(--mantine-color-gray-0)',
+                    backgroundColor: i % 2 === 0 ? 'transparent' : 'var(--ou-bg-subtle, rgba(255,255,255,0.02))',
                     borderRadius: 4,
                   }}
                 >
                   {/* Background bar */}
-                  <Box
+                  <div
                     style={{
                       position: 'absolute',
                       left: `${leftPct * 100}%`,
                       width: `${widthPct * 100}%`,
                       top: 4,
                       height: BAR_H - 8,
-                      backgroundColor: 'var(--mantine-color-gray-3)',
+                      backgroundColor: 'var(--ou-gray-3, #ccc)',
                       borderRadius: 3,
                       overflow: 'hidden',
                     }}
                   >
                     {/* Progress fill */}
                     {task.progress > 0 && (
-                      <Box
+                      <div
                         style={{
                           width: `${task.progress}%`,
                           height: '100%',
-                          backgroundColor: 'var(--mantine-color-gray-6)',
+                          backgroundColor: 'var(--ou-gray-6, #666)',
                           borderRadius: 3,
                         }}
                       />
                     )}
-                  </Box>
-                </Box>
-              </Group>
+                  </div>
+                </div>
+              </div>
             );
           })}
-        </Box>
-      </Box>
-    </Stack>
+        </div>
+      </div>
+    </div>
   );
 }

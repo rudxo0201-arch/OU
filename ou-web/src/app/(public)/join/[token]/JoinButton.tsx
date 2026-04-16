@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { Button } from '@mantine/core';
 import { useRouter } from 'next/navigation';
 
 export function JoinButton({ groupId }: { groupId: string }) {
@@ -30,15 +29,20 @@ export function JoinButton({ groupId }: { groupId: string }) {
   };
 
   return (
-    <Button
-      variant="outline"
-      color="dark"
-      size="md"
-      style={{ borderWidth: '0.5px' }}
-      loading={loading}
+    <button
       onClick={handleJoin}
+      disabled={loading}
+      style={{
+        padding: '10px 24px',
+        border: '0.5px solid #1a1a1a',
+        borderRadius: 6,
+        background: 'transparent',
+        cursor: loading ? 'default' : 'pointer',
+        fontSize: 14,
+        opacity: loading ? 0.5 : 1,
+      }}
     >
-      참가하기
-    </Button>
+      {loading ? '...' : '참가하기'}
+    </button>
   );
 }

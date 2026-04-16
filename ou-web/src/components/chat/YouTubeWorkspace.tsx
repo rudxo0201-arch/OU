@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Box, Text, ScrollArea, ActionIcon, Stack, Loader, Divider } from '@mantine/core';
 import { X } from '@phosphor-icons/react';
 
 // ─── Types ─────────────────────────────────────────────────────────────────
@@ -147,7 +146,7 @@ export function YouTubeWorkspace({ data, onClose, children }: YouTubeWorkspacePr
   );
 
   return (
-    <Box
+    <div
       style={{
         width: '100%',
         height: '100%',
@@ -162,7 +161,7 @@ export function YouTubeWorkspace({ data, onClose, children }: YouTubeWorkspacePr
       }}
     >
       {/* 헤더 */}
-      <Box
+      <div
         style={{
           padding: '10px 16px',
           display: 'flex',
@@ -172,21 +171,24 @@ export function YouTubeWorkspace({ data, onClose, children }: YouTubeWorkspacePr
           gap: 8,
         }}
       >
-        <Box style={{ flex: 1, minWidth: 0 }}>
-          <Text size="sm" fw={600} truncate>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <span style={{ fontSize: 'var(--mantine-font-size-sm)', fontWeight: 600, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {metadata.title}
-          </Text>
-          <Text fz={11} c="dimmed" truncate>
+          </span>
+          <span style={{ fontSize: 11, color: 'var(--mantine-color-dimmed)', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {metadata.channelName}
-          </Text>
-        </Box>
-        <ActionIcon variant="subtle" color="gray" size="sm" onClick={onClose}>
+          </span>
+        </div>
+        <button
+          onClick={onClose}
+          style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 4, display: 'flex', alignItems: 'center', color: 'var(--mantine-color-gray-6)' }}
+        >
           <X size={16} />
-        </ActionIcon>
-      </Box>
+        </button>
+      </div>
 
       {/* 플레이어 */}
-      <Box
+      <div
         style={{
           width: '100%',
           aspectRatio: '16 / 9',
@@ -195,16 +197,15 @@ export function YouTubeWorkspace({ data, onClose, children }: YouTubeWorkspacePr
         }}
       >
         <div ref={playerContainerRef} style={{ width: '100%', height: '100%' }} />
-      </Box>
+      </div>
 
       {/* 스크립트 패널 */}
       {transcript.length > 0 ? (
-        <ScrollArea
-          flex={1}
-          style={{ minHeight: 0 }}
-          viewportRef={scriptViewportRef}
+        <div
+          ref={scriptViewportRef}
+          style={{ flex: 1, minHeight: 0, overflow: 'auto' }}
         >
-          <Stack gap={0} py="xs">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 0, paddingTop: 8, paddingBottom: 8 }}>
             {transcript.map((line, i) => {
               const isActive = i === activeIdx;
               // 이 라인이 새 챕터의 시작인지 체크
@@ -213,24 +214,19 @@ export function YouTubeWorkspace({ data, onClose, children }: YouTubeWorkspacePr
               );
 
               return (
-                <Box key={i}>
+                <div key={i}>
                   {chapter && (
-                    <Box px="sm" pt={i > 0 ? 'sm' : 0} pb={4}>
-                      <Divider
-                        label={
-                          <Text fz={11} fw={600} c="dimmed">
-                            {chapter.title}
-                          </Text>
-                        }
-                        labelPosition="left"
-                      />
-                    </Box>
+                    <div style={{ padding: '0 12px', paddingTop: i > 0 ? 12 : 0, paddingBottom: 4 }}>
+                      <div style={{ borderBottom: '0.5px solid var(--mantine-color-default-border)', paddingBottom: 4, display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--mantine-color-dimmed)' }}>
+                          {chapter.title}
+                        </span>
+                      </div>
+                    </div>
                   )}
-                  <Box
+                  <div
                     ref={isActive ? activeLineRef : undefined}
                     onClick={() => handleSeek(line.startTime)}
-                    px="sm"
-                    py={3}
                     style={{
                       display: 'flex',
                       gap: 8,
@@ -238,12 +234,13 @@ export function YouTubeWorkspace({ data, onClose, children }: YouTubeWorkspacePr
                       cursor: 'pointer',
                       background: isActive ? 'rgba(255,255,255,0.06)' : 'transparent',
                       transition: 'background 150ms',
+                      padding: '3px 12px',
                     }}
                   >
-                    <Text
-                      fz={11}
-                      c="dimmed"
+                    <span
                       style={{
+                        fontSize: 11,
+                        color: 'var(--mantine-color-dimmed)',
                         width: 40,
                         flexShrink: 0,
                         fontVariantNumeric: 'tabular-nums',
@@ -252,32 +249,35 @@ export function YouTubeWorkspace({ data, onClose, children }: YouTubeWorkspacePr
                       }}
                     >
                       {formatTime(line.startTime)}
-                    </Text>
-                    <Text
-                      fz={13}
-                      fw={isActive ? 500 : 400}
-                      style={{ flex: 1, lineHeight: 1.6 }}
+                    </span>
+                    <span
+                      style={{
+                        fontSize: 13,
+                        fontWeight: isActive ? 500 : 400,
+                        flex: 1,
+                        lineHeight: 1.6,
+                      }}
                     >
                       {line.text}
-                    </Text>
-                  </Box>
-                </Box>
+                    </span>
+                  </div>
+                </div>
               );
             })}
-          </Stack>
-        </ScrollArea>
+          </div>
+        </div>
       ) : (
-        <Box flex={1} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <Text fz="sm" c="dimmed">자막이 없는 영상이에요</Text>
-        </Box>
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <span style={{ fontSize: 'var(--mantine-font-size-sm)', color: 'var(--mantine-color-dimmed)' }}>자막이 없는 영상이에요</span>
+        </div>
       )}
 
       {/* 채팅 영역 (ChatPanel에서 children으로 전달) */}
       {children && (
-        <Box style={{ borderTop: '0.5px solid var(--ou-glass-border)' }}>
+        <div style={{ borderTop: '0.5px solid var(--ou-glass-border)' }}>
           {children}
-        </Box>
+        </div>
       )}
-    </Box>
+    </div>
   );
 }

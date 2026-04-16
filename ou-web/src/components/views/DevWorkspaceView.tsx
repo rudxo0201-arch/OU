@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useRef, useState } from 'react';
-import { Box, Group, Text, Badge } from '@mantine/core';
 import { Terminal, Globe } from '@phosphor-icons/react';
 import type { ViewProps } from './registry';
 import { CodeView } from './CodeView';
@@ -18,7 +17,6 @@ const MIN_PANEL = 200;
 export function DevWorkspaceView({ nodes, filters, onSave, layoutConfig }: ViewProps) {
   const { projectId, isAdminMode } = useDevWorkspaceStore();
 
-  // 프로젝트 미선택 + 비 admin → ProjectSelector 표시
   if (!projectId && !isAdminMode) {
     return <ProjectSelector />;
   }
@@ -27,16 +25,13 @@ export function DevWorkspaceView({ nodes, filters, onSave, layoutConfig }: ViewP
 }
 
 function DevWorkspaceLayout({ nodes, filters, onSave, layoutConfig }: ViewProps) {
-  // WebContainer 부팅 (프로젝트 모드에서만 활성)
   useWebContainer();
 
-  // 패널 비율 (%) — 좌측 영역 너비, 좌측 내 에디터 높이
   const [leftWidth, setLeftWidth] = useState(65);
   const [editorHeight, setEditorHeight] = useState(65);
-  const [rightSplit, setRightSplit] = useState(65); // AI Dev(상) : Git Panel(하)
+  const [rightSplit, setRightSplit] = useState(65);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // 좌/우 수평 리사이즈
   const handleHorizontalDrag = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     const container = containerRef.current;
@@ -59,7 +54,6 @@ function DevWorkspaceLayout({ nodes, filters, onSave, layoutConfig }: ViewProps)
     document.addEventListener('mouseup', onUp);
   }, [leftWidth]);
 
-  // 에디터/터미널 수직 리사이즈
   const handleVerticalDrag = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     const container = containerRef.current;
@@ -82,7 +76,6 @@ function DevWorkspaceLayout({ nodes, filters, onSave, layoutConfig }: ViewProps)
     document.addEventListener('mouseup', onUp);
   }, [editorHeight]);
 
-  // 우측 AI/Git 수직 리사이즈
   const handleRightVerticalDrag = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     const container = containerRef.current;
@@ -108,126 +101,116 @@ function DevWorkspaceLayout({ nodes, filters, onSave, layoutConfig }: ViewProps)
   const viewProps: ViewProps = { nodes, filters, onSave, layoutConfig };
 
   return (
-    <Box
+    <div
       ref={containerRef}
       style={{
         display: 'flex',
         height: '100%',
         minHeight: 600,
-        background: 'var(--mantine-color-dark-8)',
+        background: 'var(--ou-bg-deep, #0a0a0a)',
         borderRadius: 8,
         overflow: 'hidden',
       }}
     >
-      {/* 좌측: 코드 + 터미널 */}
-      <Box style={{ width: `${leftWidth}%`, display: 'flex', flexDirection: 'column', minWidth: MIN_PANEL }}>
-        {/* 코드 에디터 */}
-        <Box style={{ height: `${editorHeight}%`, minHeight: MIN_PANEL, overflow: 'hidden' }}>
+      {/* Left: code + terminal */}
+      <div style={{ width: `${leftWidth}%`, display: 'flex', flexDirection: 'column', minWidth: MIN_PANEL }}>
+        <div style={{ height: `${editorHeight}%`, minHeight: MIN_PANEL, overflow: 'hidden' }}>
           <CodeView {...viewProps} />
-        </Box>
+        </div>
 
-        {/* 수직 드래그 핸들 */}
-        <Box
+        <div
           onMouseDown={handleVerticalDrag}
           style={{
             height: 4,
             cursor: 'row-resize',
-            background: 'var(--mantine-color-dark-5)',
+            background: 'var(--ou-border-muted, #222)',
             flexShrink: 0,
           }}
         />
 
-        {/* 터미널 / 프리뷰 */}
         <BottomPanel viewProps={viewProps} />
-      </Box>
+      </div>
 
-      {/* 수평 드래그 핸들 */}
-      <Box
+      {/* Horizontal drag handle */}
+      <div
         onMouseDown={handleHorizontalDrag}
         style={{
           width: 4,
           cursor: 'col-resize',
-          background: 'var(--mantine-color-dark-5)',
+          background: 'var(--ou-border-muted, #222)',
           flexShrink: 0,
         }}
       />
 
-      {/* 우측: AI Dev + Git Panel */}
-      <Box style={{ flex: 1, minWidth: MIN_PANEL, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-        {/* AI Dev */}
-        <Box style={{ height: `${rightSplit}%`, overflow: 'hidden' }}>
+      {/* Right: AI Dev + Git Panel */}
+      <div style={{ flex: 1, minWidth: MIN_PANEL, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <div style={{ height: `${rightSplit}%`, overflow: 'hidden' }}>
           <AIDevView {...viewProps} />
-        </Box>
+        </div>
 
-        {/* 수직 드래그 핸들 */}
-        <Box
+        <div
           onMouseDown={handleRightVerticalDrag}
           style={{
             height: 4,
             cursor: 'row-resize',
-            background: 'var(--mantine-color-dark-5)',
+            background: 'var(--ou-border-muted, #222)',
             flexShrink: 0,
           }}
         />
 
-        {/* Git Panel */}
-        <Box style={{ flex: 1, minHeight: 100, overflow: 'hidden' }}>
+        <div style={{ flex: 1, minHeight: 100, overflow: 'hidden' }}>
           <GitPanel />
-        </Box>
-      </Box>
-    </Box>
+        </div>
+      </div>
+    </div>
   );
 }
 
-/** 터미널 + 프리뷰 탭 패널 */
 function BottomPanel({ viewProps }: { viewProps: ViewProps }) {
   const [tab, setTab] = useState<'terminal' | 'preview'>('terminal');
   const { previewUrl } = useDevWorkspaceStore();
 
   return (
-    <Box style={{ flex: 1, minHeight: 120, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-      {/* 탭 헤더 */}
-      <Group gap={0} style={{ borderBottom: '1px solid var(--mantine-color-dark-5)', flexShrink: 0 }}>
-        <Group
-          gap={4}
-          px="sm"
-          py={4}
-          style={{
-            cursor: 'pointer',
-            borderBottom: tab === 'terminal' ? '2px solid var(--mantine-color-green-5)' : '2px solid transparent',
-          }}
+    <div style={{ flex: 1, minHeight: 120, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+      {/* Tab header */}
+      <div style={{ display: 'flex', gap: 0, borderBottom: '1px solid var(--ou-border-muted, #222)', flexShrink: 0 }}>
+        <div
           onClick={() => setTab('terminal')}
-        >
-          <Terminal size={11} color={tab === 'terminal' ? 'var(--mantine-color-green-5)' : undefined} />
-          <Text fz={10} fw={tab === 'terminal' ? 600 : 400} c={tab === 'terminal' ? undefined : 'dimmed'}>
-            터미널
-          </Text>
-        </Group>
-        <Group
-          gap={4}
-          px="sm"
-          py={4}
           style={{
+            display: 'flex', gap: 4, alignItems: 'center',
+            padding: '4px 12px',
             cursor: 'pointer',
-            borderBottom: tab === 'preview' ? '2px solid var(--mantine-color-blue-5)' : '2px solid transparent',
+            borderBottom: tab === 'terminal' ? '2px solid var(--ou-green, #4caf50)' : '2px solid transparent',
           }}
-          onClick={() => setTab('preview')}
         >
-          <Globe size={11} color={tab === 'preview' ? 'var(--mantine-color-blue-5)' : undefined} />
-          <Text fz={10} fw={tab === 'preview' ? 600 : 400} c={tab === 'preview' ? undefined : 'dimmed'}>
+          <Terminal size={11} color={tab === 'terminal' ? 'var(--ou-green, #4caf50)' : undefined} />
+          <span style={{ fontSize: 10, fontWeight: tab === 'terminal' ? 600 : 400, color: tab === 'terminal' ? undefined : 'var(--ou-text-dimmed, #888)' }}>
+            터미널
+          </span>
+        </div>
+        <div
+          onClick={() => setTab('preview')}
+          style={{
+            display: 'flex', gap: 4, alignItems: 'center',
+            padding: '4px 12px',
+            cursor: 'pointer',
+            borderBottom: tab === 'preview' ? '2px solid var(--ou-blue, #2196f3)' : '2px solid transparent',
+          }}
+        >
+          <Globe size={11} color={tab === 'preview' ? 'var(--ou-blue, #2196f3)' : undefined} />
+          <span style={{ fontSize: 10, fontWeight: tab === 'preview' ? 600 : 400, color: tab === 'preview' ? undefined : 'var(--ou-text-dimmed, #888)' }}>
             프리뷰
-          </Text>
-          {previewUrl && <Badge size="xs" color="green" variant="dot" />}
-        </Group>
-      </Group>
+          </span>
+          {previewUrl && <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: 'var(--ou-green, #4caf50)' }} />}
+        </div>
+      </div>
 
-      {/* 탭 컨텐츠 */}
-      <Box style={{ flex: 1, minHeight: 0, display: tab === 'terminal' ? 'block' : 'none' }}>
+      <div style={{ flex: 1, minHeight: 0, display: tab === 'terminal' ? 'block' : 'none' }}>
         <TerminalView {...viewProps} />
-      </Box>
-      <Box style={{ flex: 1, minHeight: 0, display: tab === 'preview' ? 'block' : 'none' }}>
+      </div>
+      <div style={{ flex: 1, minHeight: 0, display: tab === 'preview' ? 'block' : 'none' }}>
         <PreviewPanel />
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 }

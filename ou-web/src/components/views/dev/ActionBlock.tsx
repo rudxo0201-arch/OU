@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { Box, Group, Text, ActionIcon, Badge, Loader } from '@mantine/core';
 import { Play, Check, X, File, Terminal, GitBranch, GitCommit, Plus, GitDiff } from '@phosphor-icons/react';
 import type { DevAction, ActionResult } from '@/lib/dev/action-executor';
 import { executeFileEdit, executeTerminal, executeGit } from '@/lib/dev/action-executor';
@@ -111,111 +110,111 @@ export function ActionBlock({ action, onExecuted }: ActionBlockProps) {
   const git = isGit ? gitStyle(action.operation) : null;
 
   return (
-    <Box
-      my="xs"
-      p="xs"
+    <div
       style={{
+        margin: '4px 0',
+        padding: 8,
         borderRadius: 6,
         border: `1px solid ${isGit ? 'var(--mantine-color-dark-3)' : 'var(--mantine-color-dark-4)'}`,
         background: isGit ? 'var(--mantine-color-dark-6)' : 'var(--mantine-color-dark-7)',
       }}
     >
       {/* 헤더 */}
-      <Group gap="xs" wrap="nowrap" justify="space-between">
-        <Group gap={6} wrap="nowrap">
+      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 4 }}>
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 6 }}>
           {isFileEdit && <File size={12} color="var(--mantine-color-blue-4)" />}
           {isTerminal && <Terminal size={12} color="var(--mantine-color-green-5)" />}
           {isGit && git?.icon}
-          <Text fz={11} fw={500} c="dimmed">
+          <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--mantine-color-dimmed)' }}>
             {isFileEdit && action.path}
             {isTerminal && `$ ${action.command}`}
             {isGit && gitLabel(action as DevAction & { type: 'git' })}
-          </Text>
-        </Group>
+          </span>
+        </div>
 
-        <Group gap={4}>
+        <div style={{ display: 'flex', flexDirection: 'row', gap: 4 }}>
           {status === 'pending' && (
-            <ActionIcon size="sm" variant="light" color={isGit ? 'green' : 'blue'} onClick={handleExecute}>
+            <button onClick={handleExecute} style={{ background: 'rgba(255,255,255,0.06)', border: 'none', borderRadius: 4, cursor: 'pointer', padding: 4, display: 'flex', alignItems: 'center', color: isGit ? 'var(--mantine-color-green-5)' : 'var(--mantine-color-blue-4)' }}>
               <Play size={12} weight="fill" />
-            </ActionIcon>
+            </button>
           )}
-          {status === 'running' && <Loader size={14} color={isGit ? 'green' : 'blue'} />}
+          {status === 'running' && <span style={{ fontSize: 11, color: 'var(--mantine-color-dimmed)' }}>...</span>}
           {status === 'success' && (
-            <Badge size="xs" color="green" variant="light" leftSection={<Check size={8} />}>
-              완료
-            </Badge>
+            <span style={{ fontSize: 11, padding: '1px 6px', borderRadius: 4, background: 'rgba(0,255,0,0.1)', color: 'var(--mantine-color-green-5)', display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Check size={8} /> 완료
+            </span>
           )}
           {status === 'error' && (
-            <Badge size="xs" color="red" variant="light" leftSection={<X size={8} />}>
-              실패
-            </Badge>
+            <span style={{ fontSize: 11, padding: '1px 6px', borderRadius: 4, background: 'rgba(255,0,0,0.1)', color: 'var(--mantine-color-red-5)', display: 'flex', alignItems: 'center', gap: 2 }}>
+              <X size={8} /> 실패
+            </span>
           )}
-        </Group>
-      </Group>
+        </div>
+      </div>
 
       {/* 파일 수정: 미리보기 */}
       {isFileEdit && status === 'pending' && (
-        <Box mt={6}>
-          <Text fz={10} c="dimmed" mb={2}>변경 내용:</Text>
-          <Box
-            p={6}
+        <div style={{ marginTop: 6 }}>
+          <span style={{ fontSize: 10, color: 'var(--mantine-color-dimmed)', display: 'block', marginBottom: 2 }}>변경 내용:</span>
+          <div
             style={{
+              padding: 6,
               borderRadius: 4,
               background: 'var(--mantine-color-dark-8)',
               maxHeight: 150,
               overflow: 'auto',
             }}
           >
-            <Text fz={10} style={{ fontFamily: 'monospace', whiteSpace: 'pre-wrap' }}>
+            <span style={{ fontSize: 10, fontFamily: 'monospace', whiteSpace: 'pre-wrap' }}>
               {action.content.slice(0, 1000)}
               {action.content.length > 1000 && '\n...'}
-            </Text>
-          </Box>
-        </Box>
+            </span>
+          </div>
+        </div>
       )}
 
       {/* Git commit: 메시지 미리보기 */}
       {isGit && action.operation === 'commit' && action.message && status === 'pending' && (
-        <Box mt={6}>
-          <Text fz={10} c="dimmed" mb={2}>커밋 메시지:</Text>
-          <Box
-            p={6}
+        <div style={{ marginTop: 6 }}>
+          <span style={{ fontSize: 10, color: 'var(--mantine-color-dimmed)', display: 'block', marginBottom: 2 }}>커밋 메시지:</span>
+          <div
             style={{
+              padding: 6,
               borderRadius: 4,
               background: 'var(--mantine-color-dark-8)',
             }}
           >
-            <Text fz={10} style={{ fontFamily: 'monospace', whiteSpace: 'pre-wrap' }}>
+            <span style={{ fontSize: 10, fontFamily: 'monospace', whiteSpace: 'pre-wrap' }}>
               {action.message}
-            </Text>
-          </Box>
-        </Box>
+            </span>
+          </div>
+        </div>
       )}
 
       {/* Git diff 결과 */}
       {resultOutput && (
-        <Box mt={6}>
-          <Box
-            p={6}
+        <div style={{ marginTop: 6 }}>
+          <div
             style={{
+              padding: 6,
               borderRadius: 4,
               background: 'var(--mantine-color-dark-8)',
               maxHeight: 200,
               overflow: 'auto',
             }}
           >
-            <Text fz={10} style={{ fontFamily: 'monospace', whiteSpace: 'pre-wrap' }}>
+            <span style={{ fontSize: 10, fontFamily: 'monospace', whiteSpace: 'pre-wrap' }}>
               {resultOutput.slice(0, 3000)}
               {resultOutput.length > 3000 && '\n...'}
-            </Text>
-          </Box>
-        </Box>
+            </span>
+          </div>
+        </div>
       )}
 
       {/* 에러 메시지 */}
       {error && (
-        <Text fz={10} c="red" mt={4}>{error}</Text>
+        <span style={{ fontSize: 10, color: 'var(--mantine-color-red-5)', display: 'block', marginTop: 4 }}>{error}</span>
       )}
-    </Box>
+    </div>
   );
 }

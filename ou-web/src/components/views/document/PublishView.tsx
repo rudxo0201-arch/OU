@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Box, Stack, Text, Loader } from '@mantine/core';
 import type { PageContent } from '@/types/document-template';
 import { getTemplate, DEFAULT_TEMPLATE_ID } from './templates';
 import { loadNotoSerifKR } from './templates/fonts';
@@ -79,24 +78,24 @@ export function PublishView({ nodeId, title, subtitle }: PublishViewProps) {
 
   if (loading) {
     return (
-      <Stack align="center" py="xl">
-        <Loader size="sm" color="gray" />
-        <Text fz="xs" c="dimmed">문서를 준비하는 중...</Text>
-      </Stack>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '24px 0' }}>
+        <span style={{ color: 'var(--mantine-color-dimmed)', fontSize: 'var(--mantine-font-size-sm)' }}>불러오는 중...</span>
+        <span style={{ fontSize: 'var(--mantine-font-size-xs)', color: 'var(--mantine-color-dimmed)' }}>문서를 준비하는 중...</span>
+      </div>
     );
   }
 
   if (sections.length === 0) {
     return (
-      <Stack align="center" py="xl">
-        <Text fz="sm" c="dimmed">구조화된 콘텐츠가 없습니다</Text>
-        <Text fz="xs" c="dimmed">텍스트 탭에서 먼저 문서를 확인해주세요</Text>
-      </Stack>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '24px 0' }}>
+        <span style={{ fontSize: 'var(--mantine-font-size-sm)', color: 'var(--mantine-color-dimmed)' }}>구조화된 콘텐츠가 없습니다</span>
+        <span style={{ fontSize: 'var(--mantine-font-size-xs)', color: 'var(--mantine-color-dimmed)' }}>텍스트 탭에서 먼저 문서를 확인해주세요</span>
+      </div>
     );
   }
 
   return (
-    <Box>
+    <div>
       {/* 템플릿 선택 */}
       <TemplatePicker selectedId={templateId} onSelect={setTemplateId} />
 
@@ -144,6 +143,6 @@ export function PublishView({ nodeId, title, subtitle }: PublishViewProps) {
           </A4Page>
         ))}
       </A4PageScroller>
-    </Box>
+    </div>
   );
 }

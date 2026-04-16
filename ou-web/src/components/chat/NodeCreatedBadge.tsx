@@ -1,6 +1,5 @@
 'use client';
 
-import { Box, Text, Group, Badge, UnstyledButton, Stack, TextInput } from '@mantine/core';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import {
@@ -92,12 +91,12 @@ export function NodeCreatedBadge({ domain, nodeId, userMessage, confidence, onAd
   };
 
   return (
-    <Box
+    <div
       ref={containerRef}
-      mt="xs"
       style={{
-        border: '0.5px solid var(--mantine-color-default-border)',
-        borderRadius: 'var(--mantine-radius-md)',
+        marginTop: 8,
+        border: '0.5px solid var(--ou-border-subtle)',
+        borderRadius: 'var(--ou-radius-md)',
         overflow: 'hidden',
         animation: 'ou-fade-in 300ms ease',
         opacity: faded ? 0 : 1,
@@ -106,81 +105,83 @@ export function NodeCreatedBadge({ domain, nodeId, userMessage, confidence, onAd
       }}
     >
       {/* 헤더 */}
-      <Group
-        gap="xs"
-        px="sm"
-        py={6}
+      <div
         style={{
+          display: 'flex',
+          flexDirection: 'row',
+          gap: 4,
+          alignItems: 'center',
+          padding: '6px 12px',
           background: 'rgba(255, 255, 255, 0.04)',
-          borderBottom: '0.5px solid var(--mantine-color-default-border)',
+          borderBottom: '0.5px solid var(--ou-border-subtle)',
         }}
       >
         <Icon size={14} weight="fill" />
-        <Badge
-          variant="light"
-          color="gray"
-          size="xs"
+        <span
           style={{
             borderStyle: domainStyle.borderStyle,
             borderWidth: domainStyle.borderWidth,
-            borderColor: 'var(--mantine-color-default-border)',
+            borderColor: 'var(--ou-border-subtle)',
             borderRadius: domainStyle.borderRadius,
             fontWeight: domainStyle.fontWeight,
+            fontSize: 10,
+            padding: '2px 8px',
+            background: 'rgba(255,255,255,0.06)',
+            color: 'var(--ou-text-dimmed)',
           }}
         >
           {domainLabel} 기록됨
-        </Badge>
+        </span>
         {/* Confidence dot */}
         {confidence && (() => {
           const numericVal = getConfidenceNumeric(confidence);
           const isHigh = numericVal > 0.8;
           const isMedium = numericVal >= 0.5 && numericVal <= 0.8;
           return (
-            <Box
-              component="span"
+            <span
               title={`신뢰도: ${getConfidenceLabel(confidence)}`}
               style={{
                 display: 'inline-block',
                 width: 8,
                 height: 8,
                 borderRadius: '50%',
-                border: '1.5px solid var(--mantine-color-gray-5)',
+                border: '1.5px solid var(--ou-text-dimmed)',
                 background: isHigh
-                  ? 'var(--mantine-color-gray-5)'
+                  ? 'var(--ou-text-dimmed)'
                   : isMedium
-                    ? 'linear-gradient(to top, var(--mantine-color-gray-5) 50%, transparent 50%)'
+                    ? 'linear-gradient(to top, var(--ou-text-dimmed) 50%, transparent 50%)'
                     : 'transparent',
               }}
             />
           );
         })()}
         {missingFields.length === 0 && (
-          <Check size={12} style={{ color: 'var(--mantine-color-green-5)' }} />
+          <Check size={12} style={{ color: 'var(--ou-text-dimmed)' }} />
         )}
-      </Group>
+      </div>
 
       {/* 기록된 내용 */}
-      <Box px="sm" py="sm">
-        <Text fz="xs" c="dimmed" mb={4}>기록됨</Text>
-        <Text fz="sm" fw={500} mb={filledFields && Object.keys(filledFields).length > 0 ? 8 : 0}>
+      <div style={{ padding: '8px 12px' }}>
+        <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed)', display: 'block', marginBottom: 4 }}>기록됨</span>
+        <span style={{ fontSize: 13, fontWeight: 500, display: 'block', color: 'var(--ou-text-body)', marginBottom: filledFields && Object.keys(filledFields).length > 0 ? 8 : 0 }}>
           {userMessage ?? '데이터 기록됨'}
-        </Text>
+        </span>
 
         {/* 채워진 추가 필드 */}
         {Object.entries(filledFields).map(([key, val]) => (
-          <Group key={key} gap={4} mb={2}>
-            <Text fz={11} c="dimmed">{key}:</Text>
-            <Text fz={11}>{val}</Text>
-          </Group>
+          <div key={key} style={{ display: 'flex', flexDirection: 'row', gap: 4, alignItems: 'center', marginBottom: 2 }}>
+            <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed)' }}>{key}:</span>
+            <span style={{ fontSize: 11, color: 'var(--ou-text-body)' }}>{val}</span>
+          </div>
         ))}
-      </Box>
+      </div>
 
       {/* 추가 가능한 필드 — 이미 입력된 건 안 보임 */}
       {missingFields.length > 0 && (
-        <Box px="sm" pb="sm">
-          <Group gap={6} mb={editingField ? 8 : 0}>
+        <div style={{ padding: '0 12px 8px' }}>
+          <div style={{ display: 'flex', flexDirection: 'row', gap: 6, flexWrap: 'wrap', marginBottom: editingField ? 8 : 0 }}>
             {missingFields.map(field => (
-              <UnstyledButton
+              <button
                 key={field}
                 onClick={() => {
                   setEditingField(editingField === field ? null : field);
@@ -190,20 +191,22 @@ export function NodeCreatedBadge({ domain, nodeId, userMessage, confidence, onAd
                   padding: '3px 10px',
                   borderRadius: 14,
                   fontSize: 12,
-                  border: '0.5px solid var(--mantine-color-default-border)',
+                  border: '0.5px solid var(--ou-border-subtle)',
                   background: editingField === field ? 'rgba(255,255,255,0.06)' : 'transparent',
-                  color: 'var(--mantine-color-dimmed)',
+                  color: 'var(--ou-text-dimmed)',
                   transition: 'all 150ms',
+                  cursor: 'pointer',
+                  fontFamily: 'inherit',
                 }}
               >
                 + {field}
-              </UnstyledButton>
+              </button>
             ))}
-          </Group>
+          </div>
 
           {editingField && (
-            <TextInput
-              size="xs"
+            <input
+              type="text"
               placeholder={`${editingField} 입력`}
               value={fieldValue}
               onChange={e => setFieldValue(e.target.value)}
@@ -211,36 +214,51 @@ export function NodeCreatedBadge({ domain, nodeId, userMessage, confidence, onAd
                 if (e.key === 'Enter') handleFieldSubmit(editingField);
               }}
               autoFocus
-              styles={{
-                input: {
-                  background: 'rgba(255,255,255,0.04)',
-                  border: '0.5px solid var(--mantine-color-default-border)',
-                },
+              style={{
+                width: '100%',
+                boxSizing: 'border-box',
+                background: 'rgba(255,255,255,0.04)',
+                border: '0.5px solid var(--ou-border-subtle)',
+                borderRadius: 'var(--ou-radius-md)',
+                padding: '6px 10px',
+                fontSize: 12,
+                color: 'var(--ou-text-body)',
+                fontFamily: 'inherit',
+                outline: 'none',
               }}
             />
           )}
-        </Box>
+        </div>
       )}
 
       {/* 하단 */}
-      <Group
-        px="sm"
-        py={6}
-        style={{ borderTop: '0.5px solid var(--mantine-color-default-border)' }}
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          padding: '6px 12px',
+          borderTop: '0.5px solid var(--ou-border-subtle)',
+        }}
       >
-        <UnstyledButton
+        <button
           onClick={() => router.push('/my')}
           style={{
             display: 'flex',
             alignItems: 'center',
             gap: 4,
             fontSize: 11,
-            color: 'var(--mantine-color-dimmed)',
+            color: 'var(--ou-text-dimmed)',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: 0,
+            fontFamily: 'inherit',
           }}
         >
           내 우주에서 보기 <ArrowRight size={11} />
-        </UnstyledButton>
-      </Group>
-    </Box>
+        </button>
+      </div>
+    </div>
   );
 }

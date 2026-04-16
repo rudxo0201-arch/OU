@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef, useMemo } from 'react';
-import { Box, Stack, Text } from '@mantine/core';
 import type { ViewProps } from './registry';
 
 interface MindmapNode {
@@ -34,7 +33,6 @@ export function MindmapView({ nodes }: ViewProps) {
 
     svg.innerHTML = '';
 
-    // Central label
     const centerText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     centerText.setAttribute('x', String(cx));
     centerText.setAttribute('y', String(cy + 4));
@@ -50,7 +48,7 @@ export function MindmapView({ nodes }: ViewProps) {
     centerCircle.setAttribute('cy', String(cy));
     centerCircle.setAttribute('r', '28');
     centerCircle.setAttribute('fill', 'none');
-    centerCircle.setAttribute('stroke', 'var(--mantine-color-text)');
+    centerCircle.setAttribute('stroke', 'currentColor');
     centerCircle.setAttribute('stroke-width', '1.5');
     svg.appendChild(centerCircle);
 
@@ -62,37 +60,33 @@ export function MindmapView({ nodes }: ViewProps) {
       const nx = cx + primaryRadius * Math.cos(angle);
       const ny = cy + primaryRadius * Math.sin(angle);
 
-      // Branch line
       const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
       line.setAttribute('x1', String(cx));
       line.setAttribute('y1', String(cy));
       line.setAttribute('x2', String(nx));
       line.setAttribute('y2', String(ny));
-      line.setAttribute('stroke', 'var(--mantine-color-default-border)');
+      line.setAttribute('stroke', 'var(--ou-border, #333)');
       line.setAttribute('stroke-width', '1');
       svg.appendChild(line);
 
-      // Node circle
       const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
       circle.setAttribute('cx', String(nx));
       circle.setAttribute('cy', String(ny));
       circle.setAttribute('r', '22');
-      circle.setAttribute('fill', 'var(--mantine-color-body)');
-      circle.setAttribute('stroke', 'var(--mantine-color-text)');
+      circle.setAttribute('fill', 'var(--ou-bg, #000)');
+      circle.setAttribute('stroke', 'currentColor');
       circle.setAttribute('stroke-width', '1');
       svg.appendChild(circle);
 
-      // Node label
       const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
       label.setAttribute('x', String(nx));
       label.setAttribute('y', String(ny + 4));
       label.setAttribute('text-anchor', 'middle');
       label.setAttribute('font-size', '9');
       label.setAttribute('fill', 'currentColor');
-      label.textContent = node.title.length > 8 ? node.title.slice(0, 8) + '…' : node.title;
+      label.textContent = node.title.length > 8 ? node.title.slice(0, 8) + '...' : node.title;
       svg.appendChild(label);
 
-      // Sub-branches
       const subRadius = 50;
       const subCount = Math.min(node.children.length, 3);
       const spreadAngle = Math.PI * 0.4;
@@ -107,7 +101,7 @@ export function MindmapView({ nodes }: ViewProps) {
         subLine.setAttribute('y1', String(ny));
         subLine.setAttribute('x2', String(sx));
         subLine.setAttribute('y2', String(sy));
-        subLine.setAttribute('stroke', 'var(--mantine-color-default-border)');
+        subLine.setAttribute('stroke', 'var(--ou-border, #333)');
         subLine.setAttribute('stroke-width', '0.5');
         svg.appendChild(subLine);
 
@@ -115,7 +109,7 @@ export function MindmapView({ nodes }: ViewProps) {
         subCircle.setAttribute('cx', String(sx));
         subCircle.setAttribute('cy', String(sy));
         subCircle.setAttribute('r', '4');
-        subCircle.setAttribute('fill', 'var(--mantine-color-text)');
+        subCircle.setAttribute('fill', 'currentColor');
         subCircle.setAttribute('opacity', '0.4');
         svg.appendChild(subCircle);
       }
@@ -125,11 +119,11 @@ export function MindmapView({ nodes }: ViewProps) {
   if (mindmapNodes.length === 0) return null;
 
   return (
-    <Stack gap="xs" p="sm">
-      <Text fz="xs" c="dimmed">마인드맵</Text>
-      <Box style={{ border: '0.5px solid var(--mantine-color-default-border)', borderRadius: 8 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 12 }}>
+      <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)' }}>마인드맵</span>
+      <div style={{ border: '0.5px solid var(--ou-border, #333)', borderRadius: 8 }}>
         <svg ref={svgRef} width="100%" height={360} style={{ display: 'block' }} />
-      </Box>
-    </Stack>
+      </div>
+    </div>
   );
 }

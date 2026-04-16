@@ -1,12 +1,7 @@
 'use client';
 
 import { useState, useMemo, useCallback, useRef } from 'react';
-import {
-  Box, Tabs, Text, Stack, ScrollArea, Group, Badge,
-  ActionIcon, Tooltip, TextInput, Textarea,
-  Modal, Button, Divider, ColorSwatch, SegmentedControl,
-  Title,
-} from '@mantine/core';
+// All UI uses native HTML + inline styles (no component library imports)
 import {
   TextAa, ListBullets, Planet, Lightbulb, Article,
   HighlighterCircle, NotePencil, BookmarkSimple,
@@ -34,10 +29,10 @@ const PublishView = dynamic(
 // ── 상수 ──
 
 const HIGHLIGHT_COLORS = [
-  { value: 'var(--mantine-color-yellow-2)', dbValue: 'yellow-2', label: '노랑' },
-  { value: 'var(--mantine-color-gray-3)', dbValue: 'gray-3', label: '회색' },
-  { value: 'var(--mantine-color-gray-5)', dbValue: 'gray-5', label: '진회색' },
-  { value: 'var(--mantine-color-dark-3)', dbValue: 'dark-3', label: '어두운' },
+  { value: 'var(--ou-yellow-2, #fff3bf)', dbValue: 'yellow-2', label: '노랑' },
+  { value: 'var(--ou-gray-3, #ccc)', dbValue: 'gray-3', label: '회색' },
+  { value: 'var(--ou-gray-5, #888)', dbValue: 'gray-5', label: '진회색' },
+  { value: 'var(--ou-gray-7, #444)', dbValue: 'dark-3', label: '어두운' },
 ];
 
 const CHARS_PER_PAGE = 3000;
@@ -183,37 +178,30 @@ function RichDocumentView({ node, allNodes, onSave }: { node: any; allNodes: any
     deleteAnnotation,
   } = useAnnotations(nodeId);
 
+  const [reviewConfirmOpen, setReviewConfirmOpen] = useState(false);
+
   // 검토 완료
   const handleReviewComplete = useCallback(async () => {
-    const { modals } = await import('@mantine/modals');
-    modals.openConfirmModal({
-      title: '검토를 완료하시겠어요?',
-      children: (
-        <Text fz="xs" c="dimmed">
-          꼼꼼히 확인하실수록, OU가 더 정확해집니다
-        </Text>
-      ),
-      labels: { confirm: '완료', cancel: '취소' },
-      confirmProps: { color: 'dark', size: 'xs' },
-      cancelProps: { variant: 'subtle', color: 'gray', size: 'xs' },
-      onConfirm: async () => {
-        const { createClient } = await import('@/lib/supabase/client');
-        const supabase = createClient();
-        await supabase
-          .from('data_nodes')
-          .update({
-            domain_data: {
-              ...domainData,
-              pdf_reviewed: true,
-              pdf_reviewed_at: new Date().toISOString(),
-            },
-            confidence: 'high',
-          })
-          .eq('id', nodeId);
-        setReviewDismissed(true);
-        onSave?.();
-      },
-    });
+    setReviewConfirmOpen(true);
+  }, []);
+
+  const handleReviewConfirm = useCallback(async () => {
+    const { createClient } = await import('@/lib/supabase/client');
+    const supabase = createClient();
+    await supabase
+      .from('data_nodes')
+      .update({
+        domain_data: {
+          ...domainData,
+          pdf_reviewed: true,
+          pdf_reviewed_at: new Date().toISOString(),
+        },
+        confidence: 'high',
+      })
+      .eq('id', nodeId);
+    setReviewDismissed(true);
+    setReviewConfirmOpen(false);
+    onSave?.();
   }, [nodeId, domainData, onSave]);
 
   // 폴백용 페이지 분할
@@ -420,617 +408,228 @@ function RichDocumentView({ node, allNodes, onSave }: { node: any; allNodes: any
     setExportOpen(false);
   }, [allNodes]);
 
-  return (
-    <Box p="md">
-      {/* 상단 툴바: 캔버스 모드 + 액션 */}
-      <Group justify="space-between" mb="xs">
-        <SegmentedControl
-          size="xs"
-          value={canvasMode}
-          onChange={(v) => setCanvasMode(v as 'infinite' | 'paged')}
-          data={[
-            { value: 'infinite', label: <Group gap={4}><ArrowsOutSimple size={14} /><Text fz="xs">연속</Text></Group> },
-            { value: 'paged', label: <Group gap={4}><File size={14} /><Text fz="xs">페이지</Text></Group> },
-          ]}
-          styles={{
-            root: { border: '0.5px solid var(--mantine-color-default-border)', background: 'transparent' },
-          }}
-        />
-        <Group gap={4}>
-          {fileUrl && (
-            <Tooltip label="원본 보기">
-              <ActionIcon
-                variant="subtle" color="gray" size="sm"
-                component="a" href={fileUrl} target="_blank"
-              >
-                <ArrowSquareOut size={16} />
-              </ActionIcon>
-            </Tooltip>
-          )}
-          <Tooltip label="내보내기">
-            <ActionIcon variant="subtle" color="gray" size="sm" onClick={() => setExportOpen(true)}>
-              <DownloadSimple size={16} />
-            </ActionIcon>
-          </Tooltip>
-        </Group>
-      </Group>
+  const TAB_ITEMS = [
+    { value: 'text', icon: <TextAa size={14} />, label: '텍스트' },
+    { value: 'summary', icon: <Article size={14} />, label: '요약' },
+    { value: 'toc', icon: <ListBullets size={14} />, label: '목차' },
+    { value: 'planets', icon: <Planet size={14} />, label: '연결' },
+    { value: 'insight', icon: <Lightbulb size={14} />, label: '인사이트' },
+    { value: 'annotations', icon: <NotePencil size={14} />, label: '내 메모', badge: annotations.length > 0 ? annotations.length : undefined },
+  ];
 
-      {/* 페이지 모드 */}
+  return (
+    <div style={{ padding: 16 }}>
+      {/* 상단 툴바 */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+        <div style={{ display: 'flex', gap: 0, border: '0.5px solid var(--ou-border, #333)', borderRadius: 6, overflow: 'hidden' }}>
+          {(['infinite', 'paged'] as const).map(mode => (
+            <button key={mode} onClick={() => setCanvasMode(mode)} style={{
+              display: 'flex', gap: 4, alignItems: 'center', padding: '4px 12px', fontSize: 12, border: 'none',
+              background: canvasMode === mode ? 'var(--ou-bg-subtle, rgba(255,255,255,0.08))' : 'transparent',
+              cursor: 'pointer', color: 'inherit',
+            }}>
+              {mode === 'infinite' ? <ArrowsOutSimple size={14} /> : <File size={14} />}
+              <span>{mode === 'infinite' ? '연속' : '페이지'}</span>
+            </button>
+          ))}
+        </div>
+        <div style={{ display: 'flex', gap: 4 }}>
+          {fileUrl && (
+            <a href={fileUrl} target="_blank" rel="noreferrer" title="원본 보기" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: 'inherit', display: 'flex', alignItems: 'center' }}>
+              <ArrowSquareOut size={16} />
+            </a>
+          )}
+          <button onClick={() => setExportOpen(true)} title="내보내기" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: 'inherit', display: 'flex', alignItems: 'center' }}>
+            <DownloadSimple size={16} />
+          </button>
+        </div>
+      </div>
+
       {canvasMode === 'paged' ? (
-        <PublishView
-          nodeId={nodeId}
-          title={domainData.title ?? node.raw?.slice(0, 50) ?? 'Untitled'}
-          subtitle={domainData.subtitle}
-        />
+        <PublishView nodeId={nodeId} title={domainData.title ?? node.raw?.slice(0, 50) ?? 'Untitled'} subtitle={domainData.subtitle} />
       ) : (
-        /* 연속 모드: 탭 인터페이스 */
-        <Tabs value={activeTab} onChange={setActiveTab} variant="outline" color="gray">
-          <Tabs.List>
-            <Tabs.Tab value="text" leftSection={<TextAa size={14} />}>텍스트</Tabs.Tab>
-            <Tabs.Tab value="summary" leftSection={<Article size={14} />}>요약</Tabs.Tab>
-            <Tabs.Tab value="toc" leftSection={<ListBullets size={14} />}>목차</Tabs.Tab>
-            <Tabs.Tab value="planets" leftSection={<Planet size={14} />}>연결</Tabs.Tab>
-            <Tabs.Tab value="insight" leftSection={<Lightbulb size={14} />}>인사이트</Tabs.Tab>
-            <Tabs.Tab
-              value="annotations"
-              leftSection={<NotePencil size={14} />}
-              rightSection={annotations.length > 0 ? <Badge size="xs" variant="light" color="gray">{annotations.length}</Badge> : null}
-            >
-              내 메모
-            </Tabs.Tab>
-          </Tabs.List>
+        <div>
+          {/* Tabs */}
+          <div style={{ display: 'flex', gap: 0, borderBottom: '0.5px solid var(--ou-border, #333)', marginBottom: 0 }}>
+            {TAB_ITEMS.map(t => (
+              <button key={t.value} onClick={() => setActiveTab(t.value)} style={{
+                display: 'flex', gap: 4, alignItems: 'center', padding: '8px 12px', fontSize: 12, border: 'none',
+                borderBottom: activeTab === t.value ? '2px solid currentColor' : '2px solid transparent',
+                background: 'none', cursor: 'pointer', color: activeTab === t.value ? 'inherit' : 'var(--ou-text-dimmed, #888)',
+              }}>
+                {t.icon}
+                <span>{t.label}</span>
+                {t.badge && <span style={{ fontSize: 10, padding: '0 4px', borderRadius: 4, backgroundColor: 'var(--ou-bg-subtle, rgba(255,255,255,0.06))', marginLeft: 4 }}>{t.badge}</span>}
+              </button>
+            ))}
+          </div>
 
           {/* 검토 배너 */}
           {domainData.pdf_reviewed === false && !reviewDismissed && (
-            <Group
-              gap="xs" px="sm" py={6} mt="xs"
-              style={{
-                border: '0.5px solid var(--mantine-color-default-border)',
-                borderRadius: 8,
-              }}
-            >
-              <Badge size="xs" variant="outline" color="gray">beta</Badge>
-              <Box style={{ flex: 1 }}>
-                <Text fz="xs" c="dimmed">
-                  자동 변환된 내용을 확인해 보세요.
-                </Text>
-                <Text fz={10} c="dimmed" mt={2}>
-                  정확하게 검토할수록 앞으로 OU가 문서를 더 잘 이해합니다
-                </Text>
-              </Box>
-              <Tooltip label="검토 완료">
-                <ActionIcon variant="subtle" color="gray" size="xs" onClick={handleReviewComplete}>
-                  <Check size={12} />
-                </ActionIcon>
-              </Tooltip>
-              <ActionIcon variant="subtle" color="gray" size="xs" onClick={() => setReviewDismissed(true)}>
-                <X size={12} />
-              </ActionIcon>
-            </Group>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center', padding: '6px 12px', marginTop: 8, border: '0.5px solid var(--ou-border, #333)', borderRadius: 8 }}>
+              <span style={{ fontSize: 10, padding: '1px 6px', borderRadius: 4, border: '0.5px solid var(--ou-border, #333)' }}>beta</span>
+              <div style={{ flex: 1 }}>
+                <span style={{ fontSize: 12, color: 'var(--ou-text-dimmed, #888)', display: 'block' }}>자동 변환된 내용을 확인해 보세요.</span>
+                <span style={{ fontSize: 10, color: 'var(--ou-text-dimmed, #888)', display: 'block', marginTop: 2 }}>정확하게 검토할수록 앞으로 OU가 문서를 더 잘 이해합니다</span>
+              </div>
+              <button onClick={handleReviewComplete} title="검토 완료" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: 'inherit', display: 'flex', alignItems: 'center' }}><Check size={12} /></button>
+              <button onClick={() => setReviewDismissed(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: 'inherit', display: 'flex', alignItems: 'center' }}><X size={12} /></button>
+            </div>
           )}
 
-          {/* 도구바 (텍스트 탭) */}
+          {/* Toolbar (text tab) */}
           {activeTab === 'text' && (
-            <Stack gap={4} mt="xs">
-              <Group
-                gap="xs" px="sm" py={6}
-                style={{ border: '0.5px solid var(--mantine-color-default-border)', borderRadius: 8 }}
-              >
-                <Tooltip label="텍스트 하이라이트">
-                  <ActionIcon
-                    variant={activeTool === 'highlight' ? 'filled' : 'subtle'}
-                    color="gray" size="sm"
-                    onClick={() => setActiveTool(activeTool === 'highlight' ? null : 'highlight')}
-                  >
-                    <HighlighterCircle size={16} weight={activeTool === 'highlight' ? 'fill' : 'regular'} />
-                  </ActionIcon>
-                </Tooltip>
-                <Tooltip label="메모 추가">
-                  <ActionIcon
-                    variant={activeTool === 'note' ? 'filled' : 'subtle'}
-                    color="gray" size="sm"
-                    onClick={() => setActiveTool(activeTool === 'note' ? null : 'note')}
-                  >
-                    <NotePencil size={16} weight={activeTool === 'note' ? 'fill' : 'regular'} />
-                  </ActionIcon>
-                </Tooltip>
-                <Tooltip label="북마크">
-                  <ActionIcon variant="subtle" color="gray" size="sm" onClick={handleAddBookmark}>
-                    <BookmarkSimple size={16} />
-                  </ActionIcon>
-                </Tooltip>
-
-                <Divider orientation="vertical" />
-
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginTop: 8 }}>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center', padding: '6px 12px', border: '0.5px solid var(--ou-border, #333)', borderRadius: 8, flexWrap: 'wrap' }}>
+                <button onClick={() => setActiveTool(activeTool === 'highlight' ? null : 'highlight')} title="텍스트 하이라이트" style={{ background: activeTool === 'highlight' ? 'var(--ou-bg-subtle, rgba(255,255,255,0.1))' : 'none', border: 'none', cursor: 'pointer', padding: 4, borderRadius: 4, color: 'inherit', display: 'flex', alignItems: 'center' }}><HighlighterCircle size={16} weight={activeTool === 'highlight' ? 'fill' : 'regular'} /></button>
+                <button onClick={() => setActiveTool(activeTool === 'note' ? null : 'note')} title="메모 추가" style={{ background: activeTool === 'note' ? 'var(--ou-bg-subtle, rgba(255,255,255,0.1))' : 'none', border: 'none', cursor: 'pointer', padding: 4, borderRadius: 4, color: 'inherit', display: 'flex', alignItems: 'center' }}><NotePencil size={16} weight={activeTool === 'note' ? 'fill' : 'regular'} /></button>
+                <button onClick={handleAddBookmark} title="북마크" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: 'inherit', display: 'flex', alignItems: 'center' }}><BookmarkSimple size={16} /></button>
+                <div style={{ width: 1, height: 16, backgroundColor: 'var(--ou-border, #333)' }} />
                 {activeTool === 'highlight' && (
-                  <Group gap={4}>
+                  <>
                     {HIGHLIGHT_COLORS.map(c => (
-                      <ColorSwatch
-                        key={c.value} color={c.value} size={16}
-                        style={{
-                          cursor: 'pointer',
-                          border: activeColor.value === c.value
-                            ? '2px solid var(--mantine-color-gray-3)'
-                            : '1px solid var(--mantine-color-default-border)',
-                        }}
-                        onClick={() => setActiveColor(c)}
-                      />
+                      <div key={c.value} onClick={() => setActiveColor(c)} style={{ width: 16, height: 16, borderRadius: '50%', backgroundColor: c.value, cursor: 'pointer', border: activeColor.value === c.value ? '2px solid var(--ou-gray-3, #ccc)' : '1px solid var(--ou-border, #333)' }} />
                     ))}
-                    <Divider orientation="vertical" />
-                  </Group>
+                    <div style={{ width: 1, height: 16, backgroundColor: 'var(--ou-border, #333)' }} />
+                  </>
                 )}
-
-                <Tooltip label="검색">
-                  <ActionIcon
-                    variant={searchOpen ? 'filled' : 'subtle'}
-                    color="gray" size="sm"
-                    onClick={() => { setSearchOpen(o => !o); if (searchOpen) setSearchQuery(''); }}
-                  >
-                    <MagnifyingGlass size={16} />
-                  </ActionIcon>
-                </Tooltip>
-
+                <button onClick={() => { setSearchOpen(o => !o); if (searchOpen) setSearchQuery(''); }} title="검색" style={{ background: searchOpen ? 'var(--ou-bg-subtle, rgba(255,255,255,0.1))' : 'none', border: 'none', cursor: 'pointer', padding: 4, borderRadius: 4, color: 'inherit', display: 'flex', alignItems: 'center' }}><MagnifyingGlass size={16} /></button>
                 {searchOpen && (
-                  <TextInput
-                    placeholder="검색..."
-                    value={searchQuery}
-                    onChange={e => setSearchQuery(e.target.value)}
-                    size="xs"
-                    style={{ width: 140 }}
-                    styles={{ input: { background: 'transparent', border: '0.5px solid var(--mantine-color-default-border)' } }}
-                    rightSection={
-                      searchResults.length > 0
-                        ? <Text fz={10} c="dimmed">{searchResults.length}건</Text>
-                        : null
-                    }
-                    onKeyDown={e => {
-                      if (e.key === 'Escape') { setSearchOpen(false); setSearchQuery(''); }
-                      if (e.key === 'Enter' && searchResults.length > 0) {
-                        const nextPage = searchResults.find(p => p > currentPage) ?? searchResults[0];
-                        if (nextPage !== undefined) goToPage(nextPage);
-                      }
-                    }}
-                  />
+                  <input placeholder="검색..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} onKeyDown={e => { if (e.key === 'Escape') { setSearchOpen(false); setSearchQuery(''); } if (e.key === 'Enter' && searchResults.length > 0) { const nextPage = searchResults.find(p => p > currentPage) ?? searchResults[0]; if (nextPage !== undefined) goToPage(nextPage); } }} style={{ width: 140, fontSize: 12, padding: '2px 8px', border: '0.5px solid var(--ou-border, #333)', borderRadius: 4, background: 'transparent', color: 'inherit', outline: 'none' }} />
                 )}
-
-                <Group gap={4} ml="auto">
-                  <Text fz="xs" c="dimmed">
-                    {highlightCount > 0 && `${highlightCount} 하이라이트`}
-                    {noteCount > 0 && ` · ${noteCount} 메모`}
-                    {bookmarkCount > 0 && ` · ${bookmarkCount} 북마크`}
-                  </Text>
-                </Group>
-              </Group>
-
+                <span style={{ fontSize: 12, color: 'var(--ou-text-dimmed, #888)', marginLeft: 'auto' }}>
+                  {highlightCount > 0 && `${highlightCount} 하이라이트`}{noteCount > 0 && ` · ${noteCount} 메모`}{bookmarkCount > 0 && ` · ${bookmarkCount} 북마크`}
+                </span>
+              </div>
               <CanvasToolbar />
-
-              {/* 폴백 모드 페이지 네비게이션 */}
               {!useStructured && totalPages > 0 && (
-                <Group justify="center" gap="xs">
-                  <ActionIcon
-                    variant="subtle" color="gray" size="sm"
-                    disabled={currentPage === 0}
-                    onClick={() => goToPage(currentPage - 1)}
-                  >
-                    <CaretLeft size={14} />
-                  </ActionIcon>
-                  <Text fz="xs" c="dimmed">{currentPage + 1} / {totalPages}</Text>
-                  <ActionIcon
-                    variant="subtle" color="gray" size="sm"
-                    disabled={currentPage >= totalPages - 1}
-                    onClick={() => goToPage(currentPage + 1)}
-                  >
-                    <CaretRight size={14} />
-                  </ActionIcon>
-                </Group>
+                <div style={{ display: 'flex', justifyContent: 'center', gap: 8, alignItems: 'center' }}>
+                  <button disabled={currentPage === 0} onClick={() => goToPage(currentPage - 1)} style={{ background: 'none', border: 'none', cursor: currentPage === 0 ? 'default' : 'pointer', padding: 4, color: 'inherit', opacity: currentPage === 0 ? 0.3 : 1, display: 'flex', alignItems: 'center' }}><CaretLeft size={14} /></button>
+                  <span style={{ fontSize: 12, color: 'var(--ou-text-dimmed, #888)' }}>{currentPage + 1} / {totalPages}</span>
+                  <button disabled={currentPage >= totalPages - 1} onClick={() => goToPage(currentPage + 1)} style={{ background: 'none', border: 'none', cursor: currentPage >= totalPages - 1 ? 'default' : 'pointer', padding: 4, color: 'inherit', opacity: currentPage >= totalPages - 1 ? 0.3 : 1, display: 'flex', alignItems: 'center' }}><CaretRight size={14} /></button>
+                </div>
               )}
-            </Stack>
+            </div>
           )}
 
-          {/* ── 텍스트 탭 ── */}
-          <Tabs.Panel value="text" pt="md">
-            {useStructured ? (
-              <CanvasAnnotationOverlay nodeId={nodeId}>
-                <StructuredDocumentView
-                  nodeId={nodeId}
-                  annotations={annotations}
-                  activeTool={activeTool}
-                  activeColor={activeColor.value}
-                  searchQuery={searchQuery}
-                  onTextSelection={handleStructuredSelection}
-                  onAnnotationClick={handleAnnotationClick}
-                  onEmpty={handleStructuredEmpty}
-                />
-              </CanvasAnnotationOverlay>
-            ) : null}
-
-            {!useStructured && (
-              <ScrollArea h={500}>
-                {currentPageText ? (
-                  <Box
-                    ref={textRef}
-                    onMouseUp={handleFallbackSelection}
-                    style={{
-                      whiteSpace: 'pre-wrap',
-                      lineHeight: 1.8,
-                      fontSize: 'var(--mantine-font-size-sm)',
-                      cursor: activeTool ? 'text' : 'default',
-                      userSelect: activeTool ? 'text' : 'auto',
-                    }}
-                  >
-                    {Array.isArray(renderedPageContent) ? (
-                      renderedPageContent.map((part, idx) => {
-                        if (part.annotation) {
-                          const color = part.annotation.color.startsWith('var(')
-                            ? part.annotation.color
-                            : `var(--mantine-color-${part.annotation.color})`;
-                          return (
-                            <Tooltip key={idx} label={part.annotation.note_text ?? '클릭하여 메모 추가'} position="top">
-                              <Text
-                                span
-                                style={{
-                                  background: color,
-                                  borderRadius: 2,
-                                  padding: '0 2px',
-                                  cursor: 'pointer',
-                                }}
-                                onClick={() => handleAnnotationClick(part.annotation!)}
-                              >
-                                {part.text}
-                              </Text>
-                            </Tooltip>
-                          );
-                        }
-                        if (part.isSearch) {
-                          return (
-                            <Text
-                              key={idx}
-                              span
-                              style={{
-                                background: 'var(--mantine-color-yellow-3)',
-                                borderRadius: 2,
-                                padding: '0 2px',
-                              }}
-                            >
-                              {part.text}
-                            </Text>
-                          );
-                        }
-                        return <Text span key={idx}>{part.text}</Text>;
-                      })
-                    ) : (
-                      <Text>{renderedPageContent}</Text>
-                    )}
-                  </Box>
-                ) : (
-                  <EmptyState icon={TextAa} message={
-                    extractedText
-                      ? '이 페이지에 텍스트가 없습니다'
-                      : '텍스트 추출이 진행 중이거나 아직 처리되지 않았습니다'
-                  } />
-                )}
-              </ScrollArea>
-            )}
-          </Tabs.Panel>
-
-          {/* ── 요약 ── */}
-          <Tabs.Panel value="summary" pt="md">
-            <ScrollArea h={500}>
-              {summary ? (
-                <Text fz="sm" style={{ whiteSpace: 'pre-wrap', lineHeight: 1.8 }}>{summary}</Text>
-              ) : (
-                <EmptyState icon={Article} message="요약이 아직 생성되지 않았습니다" />
+          {/* Tab panels */}
+          {activeTab === 'text' && (
+            <div style={{ paddingTop: 16 }}>
+              {useStructured ? (<CanvasAnnotationOverlay nodeId={nodeId}><StructuredDocumentView nodeId={nodeId} annotations={annotations} activeTool={activeTool} activeColor={activeColor.value} searchQuery={searchQuery} onTextSelection={handleStructuredSelection} onAnnotationClick={handleAnnotationClick} onEmpty={handleStructuredEmpty} /></CanvasAnnotationOverlay>) : null}
+              {!useStructured && (
+                <div style={{ maxHeight: 500, overflow: 'auto' }}>
+                  {currentPageText ? (
+                    <div ref={textRef} onMouseUp={handleFallbackSelection} style={{ whiteSpace: 'pre-wrap', lineHeight: 1.8, fontSize: 13, cursor: activeTool ? 'text' : 'default', userSelect: activeTool ? 'text' : 'auto' }}>
+                      {Array.isArray(renderedPageContent) ? renderedPageContent.map((part, idx) => {
+                        if (part.annotation) { const color = part.annotation.color.startsWith('var(') ? part.annotation.color : `var(--ou-color-${part.annotation.color})`; return (<span key={idx} title={part.annotation.note_text ?? '클릭하여 메모 추가'} onClick={() => handleAnnotationClick(part.annotation!)} style={{ background: color, borderRadius: 2, padding: '0 2px', cursor: 'pointer' }}>{part.text}</span>); }
+                        if (part.isSearch) return (<span key={idx} style={{ background: 'var(--ou-yellow-3, #ffd43b)', borderRadius: 2, padding: '0 2px' }}>{part.text}</span>);
+                        return <span key={idx}>{part.text}</span>;
+                      }) : <span>{renderedPageContent}</span>}
+                    </div>
+                  ) : (<EmptyState icon={TextAa} message={extractedText ? '이 페이지에 텍스트가 없습니다' : '텍스트 추출이 진행 중이거나 아직 처리되지 않았습니다'} />)}
+                </div>
               )}
-            </ScrollArea>
-          </Tabs.Panel>
-
-          {/* ── 목차 ── */}
-          <Tabs.Panel value="toc" pt="md">
-            {Array.isArray(toc) && toc.length > 0 ? (
-              <Stack gap={2}>
-                {toc.map((item: any, idx: number) => {
-                  const heading = typeof item === 'string' ? item : item.heading ?? item.title ?? '';
-                  const level = typeof item === 'object' ? (item.level ?? 1) : 1;
-                  return (
-                    <Group
-                      key={idx} gap="xs"
-                      pl={level > 1 ? (level - 1) * 16 : 0}
-                      py={4}
-                      style={{ borderBottom: '0.5px solid var(--mantine-color-default-border)', cursor: 'pointer' }}
-                    >
-                      <Text fz="xs" c="dimmed" w={24} ta="right">{idx + 1}</Text>
-                      <Text fz="sm" fw={level === 1 ? 600 : 400}>{heading}</Text>
-                    </Group>
-                  );
-                })}
-              </Stack>
-            ) : (
-              <EmptyState icon={ListBullets} message="목차가 아직 추출되지 않았습니다" />
-            )}
-          </Tabs.Panel>
-
-          {/* ── 연결 ── */}
-          <Tabs.Panel value="planets" pt="md">
-            {allNodes.length > 1 ? (
-              <Stack gap="xs">
-                {allNodes.slice(1).map((relNode: any) => (
-                  <Group key={relNode.id} px="md" py="sm" style={{ border: '0.5px solid var(--mantine-color-default-border)', borderRadius: 8 }}>
-                    <Badge variant="light" color="gray" size="xs">{relNode.domain ?? '-'}</Badge>
-                    <Text fz="sm" lineClamp={1} style={{ flex: 1 }}>
-                      {relNode.raw ?? relNode.domain_data?.title ?? '(제목 없음)'}
-                    </Text>
-                  </Group>
-                ))}
-              </Stack>
-            ) : (
-              <EmptyState icon={Planet} message="이 문서에서 파생된 데이터가 아직 없습니다" />
-            )}
-          </Tabs.Panel>
-
-          {/* ── 인사이트 ── */}
-          <Tabs.Panel value="insight" pt="md">
-            {Array.isArray(insights) && insights.length > 0 ? (
-              <Stack gap="md">
-                {insights.map((insight: any, idx: number) => (
-                  <Box key={idx} p="md" style={{ border: '0.5px solid var(--mantine-color-default-border)', borderRadius: 8 }}>
-                    <Text fz="sm" style={{ lineHeight: 1.8 }}>
-                      {typeof insight === 'string' ? insight : insight.text ?? JSON.stringify(insight)}
-                    </Text>
-                  </Box>
-                ))}
-              </Stack>
-            ) : (
-              <EmptyState icon={Lightbulb} message="데이터가 더 쌓이면 나만의 인사이트가 생성됩니다" />
-            )}
-          </Tabs.Panel>
-
-          {/* ── 내 메모 ── */}
-          <Tabs.Panel value="annotations" pt="md">
-            <ScrollArea h={500}>
-              {annotations.length > 0 ? (
-                <Stack gap="xs">
-                  {annotations.map(ann => (
-                    <Box
-                      key={ann.id} px="md" py="sm"
-                      style={{
-                        border: '0.5px solid var(--mantine-color-default-border)',
-                        borderRadius: 8,
-                        cursor: 'pointer',
-                      }}
-                      onClick={() => setActiveTab('text')}
-                    >
-                      <Group justify="space-between" mb={4}>
-                        <Group gap={6}>
-                          <Badge variant="light" color="gray" size="xs">
-                            {ann.type === 'highlight' ? '하이라이트' : ann.type === 'note' ? '메모' : '북마크'}
-                          </Badge>
-                          {ann.type === 'highlight' && (
-                            <ColorSwatch
-                              color={ann.color.startsWith('var(') ? ann.color : `var(--mantine-color-${ann.color})`}
-                              size={10}
-                            />
-                          )}
-                        </Group>
-                        <Group gap={4} onClick={e => e.stopPropagation()}>
-                          <ActionIcon
-                            variant="subtle"
-                            color={ann.importance > 0 ? 'yellow' : 'gray'}
-                            size="xs"
-                            onClick={() => handleToggleImportance(ann.id)}
-                          >
-                            <Star size={12} weight={ann.importance > 0 ? 'fill' : 'regular'} />
-                          </ActionIcon>
-                          {ann.type !== 'bookmark' && (
-                            <ActionIcon
-                              variant="subtle" color="gray" size="xs"
-                              onClick={() => {
-                                setNoteModal({ open: true, selectedText: ann.selected_text ?? '', editId: ann.id });
-                                setNoteInput(ann.note_text ?? '');
-                              }}
-                            >
-                              <PencilSimple size={12} />
-                            </ActionIcon>
-                          )}
-                          <ActionIcon variant="subtle" color="gray" size="xs" onClick={() => handleDeleteAnnotation(ann.id)}>
-                            <Trash size={12} />
-                          </ActionIcon>
-                        </Group>
-                      </Group>
-
-                      {ann.type !== 'bookmark' && ann.selected_text && (
-                        <Text
-                          fz="sm" lineClamp={2}
-                          style={{
-                            background: ann.type === 'highlight'
-                              ? (ann.color.startsWith('var(') ? ann.color : `var(--mantine-color-${ann.color})`)
-                              : undefined,
-                            borderRadius: 2,
-                            padding: ann.type === 'highlight' ? '0 4px' : undefined,
-                          }}
-                        >
-                          {ann.selected_text}
-                        </Text>
-                      )}
-                      {ann.note_text && (
-                        <Text fz="xs" c="dimmed" mt={4} style={{ fontStyle: 'italic' }}>{ann.note_text}</Text>
-                      )}
-                      <Text fz="xs" c="dimmed" mt={4}>{new Date(ann.created_at).toLocaleString('ko-KR')}</Text>
-                    </Box>
-                  ))}
-                </Stack>
-              ) : (
-                <EmptyState icon={NotePencil} message="아직 메모가 없습니다. 텍스트 탭에서 하이라이트하거나 메모를 추가해보세요" />
-              )}
-            </ScrollArea>
-          </Tabs.Panel>
-        </Tabs>
+            </div>
+          )}
+          {activeTab === 'summary' && (<div style={{ paddingTop: 16, maxHeight: 500, overflow: 'auto' }}>{summary ? (<p style={{ fontSize: 13, whiteSpace: 'pre-wrap', lineHeight: 1.8, margin: 0 }}>{summary}</p>) : (<EmptyState icon={Article} message="요약이 아직 생성되지 않았습니다" />)}</div>)}
+          {activeTab === 'toc' && (<div style={{ paddingTop: 16 }}>{Array.isArray(toc) && toc.length > 0 ? (<div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>{toc.map((item: any, idx: number) => { const heading = typeof item === 'string' ? item : item.heading ?? item.title ?? ''; const level = typeof item === 'object' ? (item.level ?? 1) : 1; return (<div key={idx} style={{ display: 'flex', gap: 8, paddingLeft: level > 1 ? (level - 1) * 16 : 0, padding: '4px 0', borderBottom: '0.5px solid var(--ou-border, #333)', cursor: 'pointer' }}><span style={{ fontSize: 12, color: 'var(--ou-text-dimmed, #888)', width: 24, textAlign: 'right' }}>{idx + 1}</span><span style={{ fontSize: 13, fontWeight: level === 1 ? 600 : 400 }}>{heading}</span></div>); })}</div>) : (<EmptyState icon={ListBullets} message="목차가 아직 추출되지 않았습니다" />)}</div>)}
+          {activeTab === 'planets' && (<div style={{ paddingTop: 16 }}>{allNodes.length > 1 ? (<div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>{allNodes.slice(1).map((relNode: any) => (<div key={relNode.id} style={{ display: 'flex', gap: 8, alignItems: 'center', padding: '8px 16px', border: '0.5px solid var(--ou-border, #333)', borderRadius: 8 }}><span style={{ fontSize: 10, padding: '1px 6px', borderRadius: 4, backgroundColor: 'var(--ou-bg-subtle, rgba(255,255,255,0.06))', color: 'var(--ou-text-dimmed, #888)' }}>{relNode.domain ?? '-'}</span><span style={{ fontSize: 13, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{relNode.raw ?? relNode.domain_data?.title ?? '(제목 없음)'}</span></div>))}</div>) : (<EmptyState icon={Planet} message="이 문서에서 파생된 데이터가 아직 없습니다" />)}</div>)}
+          {activeTab === 'insight' && (<div style={{ paddingTop: 16 }}>{Array.isArray(insights) && insights.length > 0 ? (<div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>{insights.map((insight: any, idx: number) => (<div key={idx} style={{ padding: 16, border: '0.5px solid var(--ou-border, #333)', borderRadius: 8 }}><p style={{ fontSize: 13, lineHeight: 1.8, margin: 0 }}>{typeof insight === 'string' ? insight : insight.text ?? JSON.stringify(insight)}</p></div>))}</div>) : (<EmptyState icon={Lightbulb} message="데이터가 더 쌓이면 나만의 인사이트가 생성됩니다" />)}</div>)}
+          {activeTab === 'annotations' && (<div style={{ paddingTop: 16, maxHeight: 500, overflow: 'auto' }}>{annotations.length > 0 ? (<div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>{annotations.map(ann => (<div key={ann.id} onClick={() => setActiveTab('text')} style={{ padding: '8px 16px', border: '0.5px solid var(--ou-border, #333)', borderRadius: 8, cursor: 'pointer' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+              <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                <span style={{ fontSize: 10, padding: '1px 6px', borderRadius: 4, backgroundColor: 'var(--ou-bg-subtle, rgba(255,255,255,0.06))', color: 'var(--ou-text-dimmed, #888)' }}>{ann.type === 'highlight' ? '하이라이트' : ann.type === 'note' ? '메모' : '북마크'}</span>
+                {ann.type === 'highlight' && (<div style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: ann.color.startsWith('var(') ? ann.color : `var(--ou-color-${ann.color})` }} />)}
+              </div>
+              <div style={{ display: 'flex', gap: 4 }} onClick={e => e.stopPropagation()}>
+                <button onClick={() => handleToggleImportance(ann.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: ann.importance > 0 ? 'var(--mantine-color-yellow-5, #ffd43b)' : 'inherit', display: 'flex', alignItems: 'center' }}><Star size={12} weight={ann.importance > 0 ? 'fill' : 'regular'} /></button>
+                {ann.type !== 'bookmark' && (<button onClick={() => { setNoteModal({ open: true, selectedText: ann.selected_text ?? '', editId: ann.id }); setNoteInput(ann.note_text ?? ''); }} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: 'inherit', display: 'flex', alignItems: 'center' }}><PencilSimple size={12} /></button>)}
+                <button onClick={() => handleDeleteAnnotation(ann.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: 'inherit', display: 'flex', alignItems: 'center' }}><Trash size={12} /></button>
+              </div>
+            </div>
+            {ann.type !== 'bookmark' && ann.selected_text && (<p style={{ fontSize: 13, margin: 0, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', background: ann.type === 'highlight' ? (ann.color.startsWith('var(') ? ann.color : `var(--ou-color-${ann.color})`) : undefined, borderRadius: 2, padding: ann.type === 'highlight' ? '0 4px' : undefined }}>{ann.selected_text}</p>)}
+            {ann.note_text && (<p style={{ fontSize: 12, color: 'var(--ou-text-dimmed, #888)', marginTop: 4, fontStyle: 'italic', margin: '4px 0 0' }}>{ann.note_text}</p>)}
+            <span style={{ fontSize: 12, color: 'var(--ou-text-dimmed, #888)', display: 'block', marginTop: 4 }}>{new Date(ann.created_at).toLocaleString('ko-KR')}</span>
+          </div>))}</div>) : (<EmptyState icon={NotePencil} message="아직 메모가 없습니다. 텍스트 탭에서 하이라이트하거나 메모를 추가해보세요" />)}</div>)}
+        </div>
       )}
 
-      {/* 메모 입력 모달 */}
-      <Modal
-        opened={noteModal.open}
-        onClose={() => { setNoteModal({ open: false, selectedText: '' }); setNoteInput(''); pendingSelectionRef.current = null; }}
-        title={<Text fw={600} fz="sm">{noteModal.editId ? '메모 수정' : '메모 추가'}</Text>}
-        centered size="sm"
-      >
-        <Stack gap="md">
-          {noteModal.selectedText && (
-            <Box
-              p="sm"
-              style={{
-                background: 'var(--mantine-color-dark-6)',
-                borderRadius: 8,
-                borderLeft: `3px solid ${activeColor.value}`,
-              }}
-            >
-              <Text fz="xs" lineClamp={3}>{noteModal.selectedText}</Text>
-            </Box>
-          )}
-          <Textarea
-            placeholder="이 부분에 대한 생각, 연결되는 지식, 질문 등..."
-            value={noteInput}
-            onChange={e => setNoteInput(e.target.value)}
-            minRows={3}
-            autoFocus
-          />
-          <Group justify="flex-end">
-            <Button variant="subtle" color="gray" size="xs"
-              onClick={() => { setNoteModal({ open: false, selectedText: '' }); setNoteInput(''); pendingSelectionRef.current = null; }}
-            >
-              취소
-            </Button>
-            <Button color="gray" size="xs" leftSection={<Check size={14} />} onClick={handleSaveNote}>
-              저장
-            </Button>
-          </Group>
-        </Stack>
-      </Modal>
+      {/* Note modal */}
+      {noteModal.open && (<div onClick={() => { setNoteModal({ open: false, selectedText: '' }); setNoteInput(''); pendingSelectionRef.current = null; }} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+        <div onClick={e => e.stopPropagation()} style={{ background: 'var(--ou-bg, #111)', borderRadius: 12, width: '90%', maxWidth: 400, border: '0.5px solid var(--ou-border, #333)', padding: 16 }}>
+          <span style={{ fontSize: 13, fontWeight: 600, display: 'block', marginBottom: 12 }}>{noteModal.editId ? '메모 수정' : '메모 추가'}</span>
+          {noteModal.selectedText && (<div style={{ padding: 12, background: 'var(--ou-bg-subtle, rgba(255,255,255,0.04))', borderRadius: 8, borderLeft: `3px solid ${activeColor.value}`, marginBottom: 12 }}><p style={{ fontSize: 12, margin: 0, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical' }}>{noteModal.selectedText}</p></div>)}
+          <textarea placeholder="이 부분에 대한 생각, 연결되는 지식, 질문 등..." value={noteInput} onChange={e => setNoteInput(e.target.value)} autoFocus rows={3} style={{ width: '100%', fontSize: 13, padding: 8, border: '0.5px solid var(--ou-border, #333)', borderRadius: 6, background: 'transparent', color: 'inherit', resize: 'vertical', outline: 'none', fontFamily: 'inherit', marginBottom: 12 }} />
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+            <button onClick={() => { setNoteModal({ open: false, selectedText: '' }); setNoteInput(''); pendingSelectionRef.current = null; }} style={{ padding: '6px 16px', fontSize: 12, border: 'none', background: 'none', cursor: 'pointer', color: 'var(--ou-text-dimmed, #888)' }}>취소</button>
+            <button onClick={handleSaveNote} style={{ padding: '6px 16px', fontSize: 12, border: '0.5px solid var(--ou-border, #333)', borderRadius: 6, background: 'transparent', cursor: 'pointer', color: 'inherit', display: 'flex', alignItems: 'center', gap: 4 }}><Check size={14} />저장</button>
+          </div>
+        </div>
+      </div>)}
 
-      {/* Export 모달 */}
-      <Modal
-        opened={exportOpen}
-        onClose={() => setExportOpen(false)}
-        title={<Text fw={600} fz="sm">내보내기</Text>}
-        centered size="xs"
-      >
-        <Stack gap="sm">
-          <Button
-            variant="default" size="sm" fullWidth
-            leftSection={<DownloadSimple size={16} />}
-            onClick={() => handleExport('md')}
-          >
-            마크다운 (.md)
-          </Button>
-          <Button
-            variant="default" size="sm" fullWidth
-            leftSection={<DownloadSimple size={16} />}
-            onClick={() => handleExport('txt')}
-          >
-            텍스트 (.txt)
-          </Button>
-          <Button
-            variant="default" size="sm" fullWidth
-            leftSection={<DownloadSimple size={16} />}
-            onClick={() => window.print()}
-          >
-            인쇄 / PDF
-          </Button>
-        </Stack>
-      </Modal>
-    </Box>
+      {/* Export modal */}
+      {exportOpen && (<div onClick={() => setExportOpen(false)} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+        <div onClick={e => e.stopPropagation()} style={{ background: 'var(--ou-bg, #111)', borderRadius: 12, width: '90%', maxWidth: 320, border: '0.5px solid var(--ou-border, #333)', padding: 16 }}>
+          <span style={{ fontSize: 13, fontWeight: 600, display: 'block', marginBottom: 12 }}>내보내기</span>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {[{ label: '마크다운 (.md)', action: () => handleExport('md') }, { label: '텍스트 (.txt)', action: () => handleExport('txt') }, { label: '인쇄 / PDF', action: () => window.print() }].map(item => (
+              <button key={item.label} onClick={item.action} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', border: '0.5px solid var(--ou-border, #333)', borderRadius: 6, background: 'transparent', cursor: 'pointer', color: 'inherit', fontSize: 13, width: '100%' }}><DownloadSimple size={16} />{item.label}</button>
+            ))}
+          </div>
+        </div>
+      </div>)}
+
+      {/* Review confirm modal */}
+      {reviewConfirmOpen && (<div onClick={() => setReviewConfirmOpen(false)} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+        <div onClick={e => e.stopPropagation()} style={{ background: 'var(--ou-bg, #111)', borderRadius: 12, width: '90%', maxWidth: 360, border: '0.5px solid var(--ou-border, #333)', padding: 16 }}>
+          <span style={{ fontSize: 13, fontWeight: 600, display: 'block', marginBottom: 8 }}>검토를 완료하시겠어요?</span>
+          <p style={{ fontSize: 12, color: 'var(--ou-text-dimmed, #888)', margin: '0 0 16px' }}>꼼꼼히 확인하실수록, OU가 더 정확해집니다</p>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+            <button onClick={() => setReviewConfirmOpen(false)} style={{ padding: '6px 16px', fontSize: 12, border: 'none', background: 'none', cursor: 'pointer', color: 'var(--ou-text-dimmed, #888)' }}>취소</button>
+            <button onClick={handleReviewConfirm} style={{ padding: '6px 16px', fontSize: 12, border: '0.5px solid var(--ou-border, #333)', borderRadius: 6, background: 'transparent', cursor: 'pointer', color: 'inherit' }}>완료</button>
+          </div>
+        </div>
+      </div>)}
+    </div>
   );
 }
 
 // ═══════════════════════════════════════════════════
-// 심플 모드: 다중 노드 날짜별 문서 렌더링
+// Simple mode
 // ═══════════════════════════════════════════════════
 
-interface DocEntry {
-  id: string;
-  date: string;
-  title: string;
-  content: string;
-  domain: string;
-}
+interface DocEntry { id: string; date: string; title: string; content: string; domain: string; }
 
 function SimpleDocumentView({ nodes }: { nodes: any[] }) {
-  const entries: DocEntry[] = useMemo(
-    () =>
-      nodes
-        .map(n => ({
-          id: n.id,
-          date: n.domain_data?.date ?? n.created_at ?? '',
-          title: n.domain_data?.title ?? '',
-          content: n.domain_data?.content ?? n.domain_data?.description ?? n.raw ?? '',
-          domain: n.domain ?? '',
-        }))
-        .sort((a, b) => (a.date > b.date ? -1 : 1)),
-    [nodes],
-  );
-
-  const grouped = useMemo(() => {
-    const map: Record<string, DocEntry[]> = {};
-    for (const entry of entries) {
-      const key = entry.date ? dayjs(entry.date).format('YYYY-MM-DD') : '날짜 없음';
-      if (!map[key]) map[key] = [];
-      map[key].push(entry);
-    }
-    return Object.entries(map);
-  }, [entries]);
-
+  const entries: DocEntry[] = useMemo(() => nodes.map(n => ({ id: n.id, date: n.domain_data?.date ?? n.created_at ?? '', title: n.domain_data?.title ?? '', content: n.domain_data?.content ?? n.domain_data?.description ?? n.raw ?? '', domain: n.domain ?? '' })).sort((a, b) => (a.date > b.date ? -1 : 1)), [nodes]);
+  const grouped = useMemo(() => { const map: Record<string, DocEntry[]> = {}; for (const entry of entries) { const key = entry.date ? dayjs(entry.date).format('YYYY-MM-DD') : '날짜 없음'; if (!map[key]) map[key] = []; map[key].push(entry); } return Object.entries(map); }, [entries]);
   if (entries.length === 0) return null;
-
   return (
-    <Stack gap="xl" p="lg" style={{ maxWidth: 720, margin: '0 auto' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 32, padding: 24, maxWidth: 720, margin: '0 auto' }}>
       {grouped.map(([dateKey, dayEntries], gi) => (
-        <Box key={dateKey}>
-          {gi > 0 && <Divider mb="lg" color="var(--mantine-color-default-border)" />}
-          <Group gap="xs" mb="md">
-            <Title order={4} fw={600} style={{ color: 'var(--mantine-color-text)' }}>
-              {dateKey === '날짜 없음'
-                ? dateKey
-                : dayjs(dateKey).format('YYYY년 M월 D일 dddd')}
-            </Title>
-          </Group>
-          <Stack gap="lg">
+        <div key={dateKey}>
+          {gi > 0 && <div style={{ borderTop: '0.5px solid var(--ou-border, #333)', marginBottom: 24 }} />}
+          <h4 style={{ fontSize: 16, fontWeight: 600, marginBottom: 16, marginTop: 0 }}>{dateKey === '날짜 없음' ? dateKey : dayjs(dateKey).format('YYYY년 M월 D일 dddd')}</h4>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
             {dayEntries.map(entry => (
-              <Box
-                key={entry.id}
-                pl="md"
-                style={{ borderLeft: '2px solid var(--mantine-color-gray-3)' }}
-              >
-                {entry.title && (
-                  <Text fz="md" fw={600} mb={6} style={{ color: 'var(--mantine-color-text)' }}>
-                    {entry.title}
-                  </Text>
-                )}
-                <Text
-                  fz="sm"
-                  style={{ lineHeight: 1.8, whiteSpace: 'pre-wrap', color: 'var(--mantine-color-text)' }}
-                >
-                  {entry.content}
-                </Text>
-                {entry.date && (
-                  <Text fz={10} c="dimmed" mt={6}>
-                    {dayjs(entry.date).format('A h:mm')}
-                  </Text>
-                )}
-              </Box>
+              <div key={entry.id} style={{ paddingLeft: 16, borderLeft: '2px solid var(--ou-gray-3, #ccc)' }}>
+                {entry.title && (<span style={{ fontSize: 14, fontWeight: 600, display: 'block', marginBottom: 6 }}>{entry.title}</span>)}
+                <p style={{ fontSize: 13, lineHeight: 1.8, whiteSpace: 'pre-wrap', margin: 0 }}>{entry.content}</p>
+                {entry.date && (<span style={{ fontSize: 10, color: 'var(--ou-text-dimmed, #888)', display: 'block', marginTop: 6 }}>{dayjs(entry.date).format('A h:mm')}</span>)}
+              </div>
             ))}
-          </Stack>
-        </Box>
+          </div>
+        </div>
       ))}
-    </Stack>
+    </div>
   );
 }
-
-// ── 공통 ──
 
 function EmptyState({ icon: Icon, message }: { icon: any; message: string }) {
   return (
-    <Stack align="center" py="xl">
-      <Icon size={48} weight="light" color="var(--mantine-color-gray-5)" />
-      <Text fz="sm" c="dimmed">{message}</Text>
-    </Stack>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '40px 0' }}>
+      <Icon size={48} weight="light" color="var(--ou-gray-5, #888)" />
+      <span style={{ fontSize: 13, color: 'var(--ou-text-dimmed, #888)', marginTop: 8 }}>{message}</span>
+    </div>
   );
 }

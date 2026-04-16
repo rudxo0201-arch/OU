@@ -1,6 +1,5 @@
 'use client';
 
-import { Center, Stack, Text } from '@mantine/core';
 import { OULoader } from './OULoader';
 
 interface PageLoaderProps {
@@ -9,11 +8,18 @@ interface PageLoaderProps {
 
 export function PageLoader({ message = '불러오는 중...' }: PageLoaderProps) {
   return (
-    <Center h="60vh">
-      <Stack align="center" gap="xl">
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '60vh',
+      }}
+    >
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24 }}>
         <OULoader variant="ripple" size="lg" />
-        <Text fz="sm" c="dimmed">{message}</Text>
-      </Stack>
-    </Center>
+        <span style={{ fontSize: 14, color: 'var(--ou-text-muted, rgba(255,255,255,0.5))' }}>{message}</span>
+      </div>
+    </div>
   );
 }

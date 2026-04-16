@@ -1,6 +1,5 @@
 'use client';
 
-import { Box, Text, ActionIcon, Badge, Stack } from '@mantine/core';
 import { X } from '@phosphor-icons/react';
 import dynamic from 'next/dynamic';
 import { forwardRef, useImperativeHandle, useState, useRef, useCallback } from 'react';
@@ -45,7 +44,7 @@ export const ChatGraphPanel = forwardRef<ChatGraphPanelHandle, ChatGraphPanelPro
     }, []);
 
     return (
-      <Box
+      <div
         style={{
           position: 'relative',
           height: '100%',
@@ -53,7 +52,7 @@ export const ChatGraphPanel = forwardRef<ChatGraphPanelHandle, ChatGraphPanelPro
           background: '#060810',
         }}
       >
-        <Box
+        <div
           style={{
             position: 'absolute',
             top: 8,
@@ -64,15 +63,18 @@ export const ChatGraphPanel = forwardRef<ChatGraphPanelHandle, ChatGraphPanelPro
             gap: 8,
           }}
         >
-          <Text fz={10} c="dimmed">라이브 그래프</Text>
-          <ActionIcon variant="subtle" color="gray" size="xs" onClick={onClose}>
+          <span style={{ fontSize: 10, color: 'var(--mantine-color-dimmed)' }}>라이브 그래프</span>
+          <button
+            onClick={onClose}
+            style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 2, display: 'flex', alignItems: 'center', color: 'var(--mantine-color-gray-6)' }}
+          >
             <X size={12} />
-          </ActionIcon>
-        </Box>
+          </button>
+        </div>
 
         {/* New node notification */}
         {newNodeId && (
-          <Box
+          <div
             style={{
               position: 'absolute',
               top: 8,
@@ -81,10 +83,16 @@ export const ChatGraphPanel = forwardRef<ChatGraphPanelHandle, ChatGraphPanelPro
               animation: 'ou-slide-in-right 300ms ease',
             }}
           >
-            <Badge variant="light" color="gray" size="sm">
+            <span style={{
+              fontSize: 11,
+              padding: '2px 8px',
+              borderRadius: 4,
+              background: 'rgba(255,255,255,0.08)',
+              color: 'var(--mantine-color-dimmed)',
+            }}>
               새 데이터 추가됨
-            </Badge>
-          </Box>
+            </span>
+          </div>
         )}
 
         {nodes.length > 0 ? (
@@ -96,7 +104,7 @@ export const ChatGraphPanel = forwardRef<ChatGraphPanelHandle, ChatGraphPanelPro
             onNodeSelect={handleNodeSelect}
           />
         ) : (
-          <Box
+          <div
             style={{
               height: '100%',
               display: 'flex',
@@ -104,13 +112,13 @@ export const ChatGraphPanel = forwardRef<ChatGraphPanelHandle, ChatGraphPanelPro
               justifyContent: 'center',
             }}
           >
-            <Text fz="xs" c="dimmed">대화하면 별이 나타나요</Text>
-          </Box>
+            <span style={{ fontSize: 'var(--mantine-font-size-xs)', color: 'var(--mantine-color-dimmed)' }}>대화하면 별이 나타나요</span>
+          </div>
         )}
 
         {/* Node detail mini-panel */}
         {selectedNode && (
-          <Box
+          <div
             style={{
               position: 'absolute',
               bottom: 8,
@@ -124,27 +132,31 @@ export const ChatGraphPanel = forwardRef<ChatGraphPanelHandle, ChatGraphPanelPro
               animation: 'ou-slide-in-right 200ms ease',
             }}
           >
-            <Stack gap={4}>
-              <Box style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Badge variant="light" color="gray" size="xs">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{
+                  fontSize: 11,
+                  padding: '2px 8px',
+                  borderRadius: 4,
+                  background: 'rgba(255,255,255,0.08)',
+                  color: 'var(--mantine-color-dimmed)',
+                }}>
                   {selectedNode.domain}
-                </Badge>
-                <ActionIcon
-                  variant="subtle"
-                  color="gray"
-                  size="xs"
+                </span>
+                <button
                   onClick={() => setSelectedNode(null)}
+                  style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 2, display: 'flex', alignItems: 'center', color: 'var(--mantine-color-gray-6)' }}
                 >
                   <X size={10} />
-                </ActionIcon>
-              </Box>
-              <Text fz="xs" lineClamp={3} style={{ lineHeight: 1.5 }}>
+                </button>
+              </div>
+              <span style={{ fontSize: 'var(--mantine-font-size-xs)', lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                 {selectedNode.raw ?? '(내용 없음)'}
-              </Text>
-            </Stack>
-          </Box>
+              </span>
+            </div>
+          </div>
         )}
-      </Box>
+      </div>
     );
   }
 );

@@ -5,7 +5,6 @@ import { NodeViewClient } from './NodeViewClient';
 import { VisibilityToggle } from '@/components/ui/VisibilityToggle';
 import { ShareButton } from '@/components/ui/ShareButton';
 import { notFound } from 'next/navigation';
-import { Box, Title, Text, Stack, Group, Badge } from '@mantine/core';
 import type { Metadata } from 'next';
 
 const DOMAIN_LABELS: Record<string, string> = {
@@ -101,41 +100,39 @@ export default async function ViewPage({ params }: { params: { nodeId: string } 
     .order('order_idx');
 
   return (
-    <Stack gap={0} style={{ minHeight: '100vh', background: 'transparent' }}>
-      <Box
-        px="xl"
-        py="md"
-        style={{ borderBottom: '0.5px solid var(--ou-border-faint)' }}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 0, minHeight: '100vh', background: 'transparent' }}>
+      <div
+        style={{ padding: '16px 24px', borderBottom: '0.5px solid var(--ou-border-faint)' }}
       >
-        <Group justify="space-between" align="flex-start">
-          <Box>
-            <Title order={4} style={{ color: 'var(--ou-text-strong)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div>
+            <h4 style={{ color: 'var(--ou-text-strong)', margin: 0, fontSize: 18, fontWeight: 600 }}>
               {node.raw
                 ? (node.raw.length > 80 ? node.raw.slice(0, 77) + '...' : node.raw)
                 : DOMAIN_LABELS[node.domain] || '데이터'}
-            </Title>
-            <Group gap="xs" mt={4}>
-              <Badge
-                variant="light"
-                color="gray"
-                size="xs"
+            </h4>
+            <div style={{ display: 'flex', gap: 8, marginTop: 4, alignItems: 'center' }}>
+              <span
                 style={{
+                  fontSize: 12,
+                  padding: '2px 8px',
                   background: 'var(--ou-surface-muted)',
                   border: '0.5px solid var(--ou-border-subtle)',
+                  borderRadius: 'var(--ou-radius-pill)',
                   color: 'var(--ou-text-dimmed)',
                 }}
               >
                 {DOMAIN_LABELS[node.domain] || node.domain || ''}
-              </Badge>
+              </span>
               {node.source_file_type && (
-                <Text fz="xs" style={{ color: 'var(--ou-text-dimmed)' }}>
+                <span style={{ fontSize: 12, color: 'var(--ou-text-dimmed)' }}>
                   {node.source_file_type.toUpperCase()}
-                </Text>
+                </span>
               )}
-            </Group>
-          </Box>
+            </div>
+          </div>
           {isOwner && (
-            <Group gap="sm">
+            <div style={{ display: 'flex', gap: 12 }}>
               <ShareButton
                 nodeId={node.id}
                 title={node.raw ?? undefined}
@@ -144,12 +141,12 @@ export default async function ViewPage({ params }: { params: { nodeId: string } 
                 nodeId={node.id}
                 currentVisibility={node.visibility ?? 'private'}
               />
-            </Group>
+            </div>
           )}
-        </Group>
-      </Box>
+        </div>
+      </div>
 
-      <Box style={{ flex: 1, overflow: 'auto' }}>
+      <div style={{ flex: 1, overflow: 'auto' }}>
         {hasFile && fileUrl && node.source_file_type === 'pdf' ? (
           <NodeViewClient
             node={{
@@ -188,7 +185,7 @@ export default async function ViewPage({ params }: { params: { nodeId: string } 
             sentences={sentences ?? []}
           />
         )}
-      </Box>
-    </Stack>
+      </div>
+    </div>
   );
 }

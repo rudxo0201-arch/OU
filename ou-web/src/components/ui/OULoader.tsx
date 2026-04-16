@@ -1,6 +1,5 @@
 'use client';
 
-import { Box } from '@mantine/core';
 import { Star } from '@phosphor-icons/react';
 
 export type OULoaderVariant = 'star' | 'ripple';
@@ -21,8 +20,7 @@ export function OULoader({ variant = 'star', size = 'sm', className, style }: OU
 
   if (variant === 'star') {
     return (
-      <Box
-        component="span"
+      <span
         className={className}
         style={{
           display: 'inline-flex',
@@ -38,19 +36,18 @@ export function OULoader({ variant = 'star', size = 'sm', className, style }: OU
           size={px}
           weight="fill"
           style={{
-            color: 'var(--mantine-color-yellow-5)',
+            color: 'var(--mantine-color-yellow-5, #fab005)',
             animation: 'ou-star-breathe 1.5s ease-in-out infinite',
             display: 'block',
           }}
         />
-      </Box>
+      </span>
     );
   }
 
   // ripple variant
   return (
-    <Box
-      component="span"
+    <span
       className={className}
       style={{
         display: 'inline-flex',
@@ -64,9 +61,8 @@ export function OULoader({ variant = 'star', size = 'sm', className, style }: OU
       }}
     >
       {RING_SCALE.map((scale, i) => (
-        <Box
+        <span
           key={i}
-          component="span"
           style={{
             position: 'absolute',
             inset: 0,
@@ -79,6 +75,6 @@ export function OULoader({ variant = 'star', size = 'sm', className, style }: OU
           }}
         />
       ))}
-    </Box>
+    </span>
   );
 }

@@ -1,6 +1,5 @@
 'use client';
 
-import { Box, Text } from '@mantine/core';
 import type { DocumentTemplate } from '@/types/document-template';
 import { A4_WIDTH_PX, A4_HEIGHT_PX, MM_TO_PX } from '@/types/document-template';
 
@@ -46,7 +45,7 @@ export function CoverPage({ template, title, subtitle, date, author }: CoverPage
   };
 
   return (
-    <Box
+    <div
       className="a4-page a4-cover"
       style={{
         width: A4_WIDTH_PX,
@@ -58,7 +57,7 @@ export function CoverPage({ template, title, subtitle, date, author }: CoverPage
     >
       {/* 테두리 프레임 */}
       {cover.borderFrame && (
-        <Box
+        <div
           style={{
             position: 'absolute',
             top: 24,
@@ -73,7 +72,7 @@ export function CoverPage({ template, title, subtitle, date, author }: CoverPage
 
       {/* 세로 장식선 (매거진) */}
       {cover.verticalRule && (
-        <Box
+        <div
           style={{
             position: 'absolute',
             left: ml - 8,
@@ -85,9 +84,9 @@ export function CoverPage({ template, title, subtitle, date, author }: CoverPage
         />
       )}
 
-      <Box style={positionStyles[cover.titlePosition]}>
+      <div style={positionStyles[cover.titlePosition]}>
         {/* 제목 */}
-        <Text
+        <span
           style={{
             fontFamily: font.heading,
             fontSize: cover.titleFontSize,
@@ -99,11 +98,11 @@ export function CoverPage({ template, title, subtitle, date, author }: CoverPage
           }}
         >
           {title}
-        </Text>
+        </span>
 
         {/* 구분선 */}
         {cover.titlePosition === 'center' && (
-          <Box
+          <div
             style={{
               width: 48,
               height: 2,
@@ -115,7 +114,7 @@ export function CoverPage({ template, title, subtitle, date, author }: CoverPage
 
         {/* 부제목 */}
         {subtitle && (
-          <Text
+          <span
             style={{
               fontFamily: font.body,
               fontSize: cover.subtitleFontSize,
@@ -126,12 +125,12 @@ export function CoverPage({ template, title, subtitle, date, author }: CoverPage
             }}
           >
             {subtitle}
-          </Text>
+          </span>
         )}
 
         {/* 저자 */}
         {cover.showAuthor && author && (
-          <Text
+          <span
             style={{
               fontFamily: font.caption,
               fontSize: 11,
@@ -141,12 +140,12 @@ export function CoverPage({ template, title, subtitle, date, author }: CoverPage
             }}
           >
             {author}
-          </Text>
+          </span>
         )}
 
         {/* 날짜 */}
         {cover.showDate && date && (
-          <Text
+          <span
             style={{
               fontFamily: font.caption,
               fontSize: 10,
@@ -156,9 +155,9 @@ export function CoverPage({ template, title, subtitle, date, author }: CoverPage
             }}
           >
             {date}
-          </Text>
+          </span>
         )}
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 }

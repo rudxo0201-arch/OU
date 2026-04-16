@@ -1,12 +1,8 @@
 'use client';
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import {
-  Stack, TextInput, PasswordInput, Button, Text, Center, Anchor, Box
-} from '@mantine/core';
 import { GoogleLogo } from '@phosphor-icons/react';
 import { createClient } from '@/lib/supabase/client';
-import { notifications } from '@mantine/notifications';
 
 function LoginForm() {
   const searchParams = useSearchParams();
@@ -23,13 +19,13 @@ function LoginForm() {
     const reason = searchParams.get('reason');
 
     if (error === 'auth_failed') {
-      notifications.show({ message: '인증에 실패했어요. 다시 시도해주세요.', color: 'gray' });
+      alert('인증에 실패했어요. 다시 시도해주세요.');
     } else if (error) {
-      notifications.show({ message: decodeURIComponent(error), color: 'gray' });
+      alert(decodeURIComponent(error));
     }
 
     if (reason === 'timeout') {
-      notifications.show({ message: '세션이 만료되었어요. 다시 로그인해주세요.', color: 'gray' });
+      alert('세션이 만료되었어요. 다시 로그인해주세요.');
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -42,7 +38,7 @@ function LoginForm() {
     });
     if (error) {
       console.error('Google OAuth error:', error);
-      notifications.show({ message: 'Google 로그인에 실패했어요. 잠시 후 다시 시도해주세요.', color: 'gray' });
+      alert('Google 로그인에 실패했어요. 잠시 후 다시 시도해주세요.');
       setLoading(false);
     }
   }
@@ -51,7 +47,7 @@ function LoginForm() {
     e.preventDefault();
     if (!email || !password) return;
     if (password.length < 6) {
-      notifications.show({ message: '비밀번호는 6자 이상이어야 해요', color: 'gray' });
+      alert('비밀번호는 6자 이상이어야 해요');
       return;
     }
 
@@ -65,13 +61,13 @@ function LoginForm() {
         options: { emailRedirectTo: `${location.origin}/auth/callback?next=${encodeURIComponent('/auth/verified')}` },
       });
       if (error) {
-        notifications.show({ message: error.message === 'User already registered'
+        alert(error.message === 'User already registered'
           ? '이미 가입된 이메일이에요. 로그인해주세요.'
-          : '회원가입에 실패했어요. 다시 시도해주세요.', color: 'gray' });
+          : '회원가입에 실패했어요. 다시 시도해주세요.');
       } else {
         // 가입 성공 → 로그인 탭으로 전환
         setMode('login');
-        notifications.show({ message: '가입이 완료되었어요. 로그인해주세요.', color: 'gray' });
+        alert('가입이 완료되었어요. 로그인해주세요.');
       }
     } else {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -79,9 +75,9 @@ function LoginForm() {
         if (error.message === 'Email not confirmed') {
           setNeedVerify(true);
         } else {
-          notifications.show({ message: error.message === 'Invalid login credentials'
+          alert(error.message === 'Invalid login credentials'
             ? '이메일 또는 비밀번호가 틀렸어요'
-            : '로그인에 실패했어요', color: 'gray' });
+            : '로그인에 실패했어요');
         }
       } else {
         window.location.href = nextPath;
@@ -108,7 +104,7 @@ function LoginForm() {
 
   if (needVerify) {
     return (
-      <Box
+      <div
         style={{
           minHeight: '100dvh',
           display: 'flex',
@@ -117,10 +113,12 @@ function LoginForm() {
           background: 'var(--ou-space)',
         }}
       >
-        <Stack
-          align="center"
-          gap="md"
+        <div
           style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 16,
             maxWidth: 400,
             width: '90%',
             padding: 32,
@@ -130,26 +128,16 @@ function LoginForm() {
             boxShadow: 'var(--ou-glow-sm)',
           }}
         >
-          <Text
-            style={{
-              fontFamily: 'var(--ou-font-logo)',
-              fontSize: 36,
-              fontWeight: 500,
-              color: 'var(--ou-text-bright)',
-            }}
-          >
-            OU
-          </Text>
-          <Text
-            style={{ color: 'var(--ou-text-strong)', fontSize: 16, fontWeight: 600 }}
-            ta="center"
+          <img src="/ou-logo.png" alt="OU" style={{ width: 80, height: 'auto', objectFit: 'contain', filter: 'brightness(0.9)' }} />
+          <span
+            style={{ color: 'var(--ou-text-strong)', fontSize: 16, fontWeight: 600, textAlign: 'center' }}
           >
             이메일 인증이 필요해요
-          </Text>
-          <Text style={{ color: 'var(--ou-text-dimmed)', fontSize: 13 }} ta="center">
+          </span>
+          <span style={{ color: 'var(--ou-text-dimmed)', fontSize: 13, textAlign: 'center' }}>
             <strong style={{ color: 'var(--ou-text-body)' }}>{email}</strong>로 보낸 인증 메일을 확인해주세요.
             <br />인증이 완료되면 자동으로 이동합니다.
-          </Text>
+          </span>
           <button
             onClick={() => setNeedVerify(false)}
             style={{
@@ -167,38 +155,28 @@ function LoginForm() {
           >
             로그인으로 돌아가기
           </button>
-        </Stack>
-      </Box>
+        </div>
+      </div>
     );
   }
 
-  const inputStyles = {
-    root: { width: '100%' },
-    label: { color: 'var(--ou-text-dimmed)', fontSize: 11, fontWeight: 500, marginBottom: 6 },
-    input: {
-      background: 'transparent',
-      border: '0.5px solid var(--ou-border-subtle)',
-      borderRadius: 'var(--ou-radius-pill)',
-      color: 'var(--ou-text-bright)',
-      fontSize: 14,
-      padding: '12px 20px',
-      height: 44,
-      transition: 'var(--ou-transition)',
-      '&:focus': {
-        borderColor: 'var(--ou-border-strong)',
-        boxShadow: 'var(--ou-glow-md)',
-      },
-      '&::placeholder': {
-        color: 'var(--ou-text-muted)',
-      },
-    },
-    innerInput: {
-      color: 'var(--ou-text-bright)',
-    },
+  const nativeInputStyle: React.CSSProperties = {
+    width: '100%',
+    background: 'transparent',
+    border: '0.5px solid var(--ou-border-subtle)',
+    borderRadius: 'var(--ou-radius-pill)',
+    color: 'var(--ou-text-bright)',
+    fontSize: 14,
+    padding: '12px 20px',
+    height: 44,
+    transition: 'var(--ou-transition)',
+    fontFamily: 'inherit',
+    outline: 'none',
+    boxSizing: 'border-box',
   };
 
   return (
-    <Box
+    <div
       style={{
         minHeight: '100dvh',
         display: 'flex',
@@ -207,7 +185,7 @@ function LoginForm() {
         background: 'var(--ou-space)',
       }}
     >
-      <Box
+      <div
         style={{
           maxWidth: 400,
           width: '90%',
@@ -218,22 +196,12 @@ function LoginForm() {
           boxShadow: 'var(--ou-glow-sm)',
         }}
       >
-        <Stack gap="lg">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
           {/* Logo */}
-          <Stack gap={4} align="center">
-            <Text
-              style={{
-                fontFamily: 'var(--ou-font-logo)',
-                fontSize: 36,
-                fontWeight: 500,
-                color: 'var(--ou-text-bright)',
-                textShadow: '0 0 40px rgba(255,255,255,0.15)',
-              }}
-            >
-              OU
-            </Text>
-            <Text style={{ color: 'var(--ou-text-dimmed)', fontSize: 13 }}>Just talk.</Text>
-          </Stack>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'center' }}>
+            <img src="/ou-logo.png" alt="OU" style={{ width: 80, height: 'auto', objectFit: 'contain', filter: 'brightness(0.9)' }} />
+            <span style={{ color: 'var(--ou-text-dimmed)', fontSize: 13 }}>Just talk.</span>
+          </div>
 
           {/* Google OAuth */}
           <button
@@ -276,20 +244,20 @@ function LoginForm() {
           </button>
 
           {/* Divider */}
-          <Box
+          <div
             style={{
               display: 'flex',
               alignItems: 'center',
               gap: 16,
             }}
           >
-            <Box style={{ flex: 1, height: '0.5px', background: 'var(--ou-border-faint)' }} />
-            <Text style={{ color: 'var(--ou-text-muted)', fontSize: 11 }}>또는</Text>
-            <Box style={{ flex: 1, height: '0.5px', background: 'var(--ou-border-faint)' }} />
-          </Box>
+            <div style={{ flex: 1, height: '0.5px', background: 'var(--ou-border-faint)' }} />
+            <span style={{ color: 'var(--ou-text-muted)', fontSize: 11 }}>또는</span>
+            <div style={{ flex: 1, height: '0.5px', background: 'var(--ou-border-faint)' }} />
+          </div>
 
           {/* Mode toggle */}
-          <Box
+          <div
             style={{
               display: 'flex',
               gap: 0,
@@ -317,29 +285,50 @@ function LoginForm() {
                 {m === 'login' ? '로그인' : '가입하기'}
               </button>
             ))}
-          </Box>
+          </div>
 
           {/* Form */}
           <form onSubmit={handleSubmit}>
-            <Stack gap="sm">
-              <TextInput
-                label="이메일"
-                placeholder="you@example.com"
-                type="email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                required
-                styles={inputStyles}
-              />
-              <PasswordInput
-                label="비밀번호"
-                placeholder={mode === 'signup' ? '6자 이상' : '비밀번호 입력'}
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                required
-                minLength={6}
-                styles={inputStyles}
-              />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div style={{ width: '100%' }}>
+                <label style={{ color: 'var(--ou-text-dimmed)', fontSize: 11, fontWeight: 500, marginBottom: 6, display: 'block' }}>이메일</label>
+                <input
+                  type="email"
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  required
+                  style={nativeInputStyle}
+                  onFocus={e => {
+                    e.currentTarget.style.borderColor = 'var(--ou-border-strong)';
+                    e.currentTarget.style.boxShadow = 'var(--ou-glow-md)';
+                  }}
+                  onBlur={e => {
+                    e.currentTarget.style.borderColor = 'var(--ou-border-subtle)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
+                />
+              </div>
+              <div style={{ width: '100%' }}>
+                <label style={{ color: 'var(--ou-text-dimmed)', fontSize: 11, fontWeight: 500, marginBottom: 6, display: 'block' }}>비밀번호</label>
+                <input
+                  type="password"
+                  placeholder={mode === 'signup' ? '6자 이상' : '비밀번호 입력'}
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  required
+                  minLength={6}
+                  style={nativeInputStyle}
+                  onFocus={e => {
+                    e.currentTarget.style.borderColor = 'var(--ou-border-strong)';
+                    e.currentTarget.style.boxShadow = 'var(--ou-glow-md)';
+                  }}
+                  onBlur={e => {
+                    e.currentTarget.style.borderColor = 'var(--ou-border-subtle)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
+                />
+              </div>
               <button
                 type="submit"
                 disabled={loading || !email || !password}
@@ -369,44 +358,44 @@ function LoginForm() {
               >
                 {loading ? '...' : mode === 'signup' ? '가입하기' : '로그인'}
               </button>
-            </Stack>
+            </div>
           </form>
 
           {mode === 'login' && (
-            <Text size="xs" ta="center">
-              <Anchor
+            <p style={{ fontSize: 12, textAlign: 'center', margin: 0 }}>
+              <a
                 href="/forgot-password"
                 style={{ color: 'var(--ou-text-dimmed)', fontSize: 12, textDecoration: 'none' }}
                 onMouseEnter={e => (e.currentTarget.style.color = 'var(--ou-text-body)')}
                 onMouseLeave={e => (e.currentTarget.style.color = 'var(--ou-text-dimmed)')}
               >
                 비밀번호를 잊으셨나요?
-              </Anchor>
-            </Text>
+              </a>
+            </p>
           )}
 
-          <Text style={{ color: 'var(--ou-text-muted)', fontSize: 11 }} ta="center">
+          <p style={{ color: 'var(--ou-text-muted)', fontSize: 11, textAlign: 'center', margin: 0 }}>
             계속하면{' '}
-            <Anchor
+            <a
               href="/terms-agree"
               style={{ color: 'var(--ou-text-dimmed)', fontSize: 11, textDecoration: 'underline' }}
             >
               이용약관
-            </Anchor>
+            </a>
             에 동의하는 것으로 간주합니다.
-          </Text>
-        </Stack>
-      </Box>
-    </Box>
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }
 
 export default function LoginPage() {
   return (
     <Suspense fallback={
-      <Box style={{ minHeight: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--ou-space)' }}>
-        <Text style={{ color: 'var(--ou-text-dimmed)', fontSize: 13 }}>로딩 중...</Text>
-      </Box>
+      <div style={{ minHeight: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--ou-space)' }}>
+        <span style={{ color: 'var(--ou-text-dimmed)', fontSize: 13 }}>로딩 중...</span>
+      </div>
     }>
       <LoginForm />
     </Suspense>

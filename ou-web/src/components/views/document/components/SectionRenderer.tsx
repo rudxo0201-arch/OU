@@ -1,6 +1,5 @@
 'use client';
 
-import { Box, Text } from '@mantine/core';
 import type { DocumentTemplate, PageSection } from '@/types/document-template';
 import { DropCap } from './DropCap';
 import { SectionDivider } from './SectionDivider';
@@ -36,13 +35,13 @@ export function SectionRenderer({
         const isReport = template.id === 'report';
 
         return (
-          <Box key={`${section.id}-${sIdx}`}>
+          <div key={`${section.id}-${sIdx}`}>
             {/* 섹션 구분선 */}
             {showDivider && <SectionDivider decoration={decoration} />}
 
             {/* 섹션 제목 */}
             {section.isHeadingOnThisPage && section.heading && (
-              <Box
+              <div
                 style={{
                   marginTop: isFirst ? 0 : headingStyle.marginTop,
                   marginBottom: headingStyle.marginBottom,
@@ -63,7 +62,7 @@ export function SectionRenderer({
                     : {}),
                 }}
               >
-                <Text
+                <span
                   style={{
                     fontFamily: fontFamily.heading,
                     fontSize: headingStyle.fontSize,
@@ -74,12 +73,12 @@ export function SectionRenderer({
                   }}
                 >
                   {section.heading}
-                </Text>
-              </Box>
+                </span>
+              </div>
             )}
 
             {/* 문장들 */}
-            <Box
+            <div
               style={{
                 fontFamily: fontFamily.body,
                 fontSize: bodyStyle.fontSize,
@@ -100,7 +99,7 @@ export function SectionRenderer({
                   const rest = text.slice(1);
 
                   return (
-                    <Box
+                    <div
                       key={sentence.id}
                       style={{
                         marginBottom: paragraphSpacing,
@@ -114,22 +113,20 @@ export function SectionRenderer({
                         bodyLineHeight={bodyStyle.lineHeight}
                         color={headingStyle.color}
                       />
-                      <Text
-                        span
+                      <span
                         style={{
                           textIndent: 0,
                         }}
                       >
                         {rest}
-                      </Text>
-                    </Box>
+                      </span>
+                    </div>
                   );
                 }
 
                 return (
-                  <Box
+                  <p
                     key={sentence.id}
-                    component="p"
                     style={{
                       margin: 0,
                       marginBottom: paragraphSpacing,
@@ -137,11 +134,11 @@ export function SectionRenderer({
                     }}
                   >
                     {text}
-                  </Box>
+                  </p>
                 );
               })}
-            </Box>
-          </Box>
+            </div>
+          </div>
         );
       })}
     </>

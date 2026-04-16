@@ -1,6 +1,5 @@
 'use client';
 
-import { Paper, Group, Text, Button, Box } from '@mantine/core';
 import { useState } from 'react';
 import { CalendarBlank, ChartBar, Graph, ListChecks, ArrowRight } from '@phosphor-icons/react';
 import { ViewRenderer } from '@/components/views/ViewRenderer';
@@ -35,6 +34,35 @@ const VIEW_CONFIG: Record<string, { icon: React.ElementType; copy: string; label
   },
 };
 
+const filledBtnStyle: React.CSSProperties = {
+  padding: '4px 12px',
+  fontSize: 12,
+  fontWeight: 600,
+  fontFamily: 'inherit',
+  border: 'none',
+  borderRadius: 'var(--ou-radius-pill)',
+  cursor: 'pointer',
+  transition: 'var(--ou-transition)',
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: 4,
+  background: 'rgba(255,255,255,0.9)',
+  color: '#111',
+};
+
+const subtleBtnStyle: React.CSSProperties = {
+  padding: '4px 12px',
+  fontSize: 12,
+  fontWeight: 500,
+  fontFamily: 'inherit',
+  border: 'none',
+  borderRadius: 'var(--ou-radius-pill)',
+  cursor: 'pointer',
+  transition: 'var(--ou-transition)',
+  background: 'transparent',
+  color: 'var(--ou-text-dimmed)',
+};
+
 export function ViewRecommendBadge({ domain, viewType, nodes }: ViewRecommendBadgeProps) {
   const [shown, setShown] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -61,23 +89,23 @@ export function ViewRecommendBadge({ domain, viewType, nodes }: ViewRecommendBad
 
   if (saved) {
     return (
-      <Text fz="sm" c="dimmed" py="xs">
+      <p style={{ fontSize: 13, color: 'var(--ou-text-dimmed)', padding: '4px 0', margin: 0 }}>
         뷰가 저장됐어요. 내 우주에서 확인할 수 있어요.
-      </Text>
+      </p>
     );
   }
 
   return (
-    <Paper
-      p="sm"
+    <div
       style={{
-        border: '0.5px solid var(--mantine-color-default-border)',
-        borderRadius: 'var(--mantine-radius-md)',
-        background: 'var(--mantine-color-body)',
+        padding: 12,
+        border: '0.5px solid var(--ou-border-subtle)',
+        borderRadius: 'var(--ou-radius-md)',
+        background: 'var(--ou-surface-faint)',
       }}
     >
-      <Group gap="sm" mb={shown ? 'sm' : 0} wrap="nowrap">
-        <Box
+      <div style={{ display: 'flex', flexDirection: 'row', gap: 8, alignItems: 'center', flexWrap: 'nowrap', marginBottom: shown ? 8 : 0 }}>
+        <div
           style={{
             width: 32,
             height: 32,
@@ -90,36 +118,31 @@ export function ViewRecommendBadge({ domain, viewType, nodes }: ViewRecommendBad
           }}
         >
           <Icon size={16} weight="bold" />
-        </Box>
-        <Text fz="sm" style={{ flex: 1 }}>{config.copy}</Text>
-        <Group gap="xs" wrap="nowrap">
+        </div>
+        <span style={{ flex: 1, fontSize: 13, color: 'var(--ou-text-body)' }}>{config.copy}</span>
+        <div style={{ display: 'flex', flexDirection: 'row', gap: 4, alignItems: 'center', flexWrap: 'nowrap' }}>
           {!shown && (
-            <Button
-              size="xs"
-              variant="filled"
-              color="dark"
-              rightSection={<ArrowRight size={12} />}
+            <button
+              style={filledBtnStyle}
               onClick={() => setShown(true)}
             >
-              보기
-            </Button>
+              보기 <ArrowRight size={12} />
+            </button>
           )}
           {shown && (
-            <Button size="xs" variant="filled" color="dark" onClick={handleSave}>
+            <button style={filledBtnStyle} onClick={handleSave}>
               저장하기
-            </Button>
+            </button>
           )}
-          <Button
-            size="xs"
-            variant="subtle"
-            color="gray"
+          <button
+            style={subtleBtnStyle}
             onClick={() => setDismissed(true)}
           >
             괜찮아요
-          </Button>
-        </Group>
-      </Group>
+          </button>
+        </div>
+      </div>
       {shown && <ViewRenderer viewType={viewType} nodes={nodes} inline />}
-    </Paper>
+    </div>
   );
 }

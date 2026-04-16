@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { Box, Text, Group, ActionIcon, Paper, Stack, Badge } from '@mantine/core';
 import { CaretLeft, CaretRight } from '@phosphor-icons/react';
 
 interface Slide {
@@ -22,35 +21,39 @@ export function PPTViewer({ slides, extractedText }: PPTViewerProps) {
   if (slides && slides.length > 0) {
     const slide = slides[current];
     return (
-      <Box p="xl" maw={800} mx="auto">
-        <Group justify="space-between" mb="md">
-          <Badge variant="light" color="gray" size="sm">
+      <div style={{ padding: 24, maxWidth: 800, margin: '0 auto' }}>
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+          <span style={{
+            fontSize: 11,
+            padding: '2px 8px',
+            borderRadius: 4,
+            background: 'rgba(255,255,255,0.08)',
+            color: 'var(--mantine-color-dimmed)',
+          }}>
             슬라이드 {current + 1} / {slides.length}
-          </Badge>
-          <Group gap="xs">
-            <ActionIcon
-              variant="subtle"
-              color="gray"
+          </span>
+          <div style={{ display: 'flex', flexDirection: 'row', gap: 4 }}>
+            <button
               disabled={current === 0}
               onClick={() => setCurrent(c => c - 1)}
+              style={{ background: 'transparent', border: 'none', cursor: current === 0 ? 'not-allowed' : 'pointer', padding: 4, display: 'flex', alignItems: 'center', opacity: current === 0 ? 0.3 : 1, color: 'inherit' }}
             >
               <CaretLeft size={16} />
-            </ActionIcon>
-            <ActionIcon
-              variant="subtle"
-              color="gray"
+            </button>
+            <button
               disabled={current === slides.length - 1}
               onClick={() => setCurrent(c => c + 1)}
+              style={{ background: 'transparent', border: 'none', cursor: current === slides.length - 1 ? 'not-allowed' : 'pointer', padding: 4, display: 'flex', alignItems: 'center', opacity: current === slides.length - 1 ? 0.3 : 1, color: 'inherit' }}
             >
               <CaretRight size={16} />
-            </ActionIcon>
-          </Group>
-        </Group>
+            </button>
+          </div>
+        </div>
 
-        <Paper
-          p="xl"
-          radius="md"
+        <div
           style={{
+            padding: 24,
+            borderRadius: 'var(--mantine-radius-md)',
             border: '0.5px solid var(--mantine-color-default-border)',
             minHeight: 300,
             display: 'flex',
@@ -58,36 +61,35 @@ export function PPTViewer({ slides, extractedText }: PPTViewerProps) {
             justifyContent: 'center',
           }}
         >
-          <Stack gap="md">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             {slide.heading && (
-              <Text fw={600} fz="lg">{slide.heading}</Text>
+              <span style={{ fontWeight: 600, fontSize: 'var(--mantine-font-size-lg)' }}>{slide.heading}</span>
             )}
-            <Text
-              fz="sm"
-              style={{ whiteSpace: 'pre-wrap', lineHeight: 1.7 }}
+            <span
+              style={{ fontSize: 'var(--mantine-font-size-sm)', whiteSpace: 'pre-wrap', lineHeight: 1.7 }}
             >
               {slide.body}
-            </Text>
-          </Stack>
-        </Paper>
-      </Box>
+            </span>
+          </div>
+        </div>
+      </div>
     );
   }
 
   // slides가 없으면 텍스트 폴백
   if (extractedText) {
     return (
-      <Box p="xl" maw={700} mx="auto">
-        <Text fz="sm" style={{ whiteSpace: 'pre-wrap', lineHeight: 1.7 }}>
+      <div style={{ padding: 24, maxWidth: 700, margin: '0 auto' }}>
+        <span style={{ fontSize: 'var(--mantine-font-size-sm)', whiteSpace: 'pre-wrap', lineHeight: 1.7 }}>
           {extractedText}
-        </Text>
-      </Box>
+        </span>
+      </div>
     );
   }
 
   return (
-    <Box p="xl">
-      <Text c="dimmed">슬라이드 내용을 표시할 수 없었어요.</Text>
-    </Box>
+    <div style={{ padding: 24 }}>
+      <span style={{ color: 'var(--mantine-color-dimmed)' }}>슬라이드 내용을 표시할 수 없었어요.</span>
+    </div>
   );
 }

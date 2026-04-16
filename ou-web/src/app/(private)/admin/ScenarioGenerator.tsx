@@ -1,10 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import {
-  Stack, Text, Paper, Checkbox, Group, NumberInput, Button,
-  SimpleGrid, Badge, Loader, ScrollArea, Box,
-} from '@mantine/core';
 import { Lightning, FloppyDisk, Eye, Sparkle } from '@phosphor-icons/react';
 
 const ALL_ARCHETYPES = [
@@ -88,103 +84,103 @@ export function ScenarioGenerator() {
   };
 
   return (
-    <Stack gap="md">
-      <Text fw={600} fz="sm">아키타입 선택</Text>
-      <Paper p="md">
-        <Group gap="xs" mb="sm">
-          <Button variant="subtle" size="xs" color="gray" onClick={selectAll}>전체 선택</Button>
-          <Button variant="subtle" size="xs" color="gray" onClick={deselectAll}>전체 해제</Button>
-        </Group>
-        <SimpleGrid cols={{ base: 2, sm: 3, md: 5 }} spacing="xs">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <span style={{ fontWeight: 600, fontSize: 13 }}>아키타입 선택</span>
+      <div style={{ padding: 16, background: '#fff', borderRadius: 8, border: '1px solid #e0e0e0' }}>
+        <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+          <button onClick={selectAll} style={{ padding: '4px 10px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, color: '#868e96' }}>전체 선택</button>
+          <button onClick={deselectAll} style={{ padding: '4px 10px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, color: '#868e96' }}>전체 해제</button>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: 8 }}>
           {ALL_ARCHETYPES.map(arch => (
-            <Checkbox
-              key={arch}
-              label={arch}
-              checked={selected.includes(arch)}
-              onChange={() => toggle(arch)}
-              size="sm"
-            />
+            <label key={arch} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, cursor: 'pointer' }}>
+              <input
+                type="checkbox"
+                checked={selected.includes(arch)}
+                onChange={() => toggle(arch)}
+              />
+              {arch}
+            </label>
           ))}
-        </SimpleGrid>
-      </Paper>
+        </div>
+      </div>
 
-      <Group gap="md" align="flex-end">
-        <NumberInput
-          label="아키타입당 생성 수"
-          value={count}
-          onChange={(v) => setCount(typeof v === 'number' ? v : 2)}
-          min={1}
-          max={10}
-          w={160}
-          size="sm"
-        />
-        <Text fz="xs" c="dimmed" pb={6}>
+      <div style={{ display: 'flex', gap: 16, alignItems: 'flex-end' }}>
+        <div>
+          <label style={{ display: 'block', fontSize: 12, fontWeight: 500, marginBottom: 4 }}>아키타입당 생성 수</label>
+          <input
+            type="number"
+            value={count}
+            onChange={(e) => setCount(parseInt(e.target.value) || 2)}
+            min={1}
+            max={10}
+            style={{ width: 160, padding: '6px 10px', border: '1px solid #dee2e6', borderRadius: 4, fontSize: 13 }}
+          />
+        </div>
+        <span style={{ fontSize: 12, color: '#868e96', paddingBottom: 6 }}>
           예상: {selected.length * count}개 시나리오
-        </Text>
-      </Group>
+        </span>
+      </div>
 
-      <Group gap="sm">
-        <Button
-          leftSection={loading ? <Loader size={14} /> : <Eye size={14} />}
-          variant="light"
-          color="gray"
+      <div style={{ display: 'flex', gap: 8 }}>
+        <button
           onClick={generate}
           disabled={loading || selected.length === 0}
+          style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 14px', background: '#f8f9fa', border: '1px solid #dee2e6', borderRadius: 4, cursor: loading || selected.length === 0 ? 'default' : 'pointer', fontSize: 12, opacity: loading || selected.length === 0 ? 0.5 : 1 }}
         >
+          {loading ? '...' : <Eye size={14} />}
           {loading ? '생성 중...' : '미리보기'}
-        </Button>
-        <Button
-          leftSection={saving ? <Loader size={14} /> : <FloppyDisk size={14} />}
-          variant="filled"
-          color="dark"
+        </button>
+        <button
           onClick={save}
           disabled={saving || selected.length === 0}
+          style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 14px', background: '#343a40', color: '#fff', border: 'none', borderRadius: 4, cursor: saving || selected.length === 0 ? 'default' : 'pointer', fontSize: 12, opacity: saving || selected.length === 0 ? 0.5 : 1 }}
         >
+          {saving ? '...' : <FloppyDisk size={14} />}
           {saving ? '저장 중...' : '바로 생성 + 저장'}
-        </Button>
-      </Group>
+        </button>
+      </div>
 
       {/* Preview */}
       {scenarios.length > 0 && (
-        <Paper p="md">
-          <Group gap="xs" mb="md">
+        <div style={{ padding: 16, background: '#fff', borderRadius: 8, border: '1px solid #e0e0e0' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
             <Sparkle size={16} weight="fill" />
-            <Text fw={600} fz="sm">미리보기 ({scenarios.length}개)</Text>
-          </Group>
-          <ScrollArea h={400}>
-            <Stack gap="sm">
+            <span style={{ fontWeight: 600, fontSize: 13 }}>미리보기 ({scenarios.length}개)</span>
+          </div>
+          <div style={{ maxHeight: 400, overflow: 'auto' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {scenarios.map((s, i) => (
-                <Paper key={i} p="sm" withBorder>
-                  <Text fw={600} fz="sm" mb={4}>{s.title}</Text>
-                  <Text fz="sm" c="dimmed" mb="xs">{s.story}</Text>
-                  <Group gap={4}>
+                <div key={i} style={{ padding: 8, border: '1px solid #e0e0e0', borderRadius: 6 }}>
+                  <span style={{ fontWeight: 600, fontSize: 13, display: 'block', marginBottom: 4 }}>{s.title}</span>
+                  <span style={{ fontSize: 13, color: '#868e96', display: 'block', marginBottom: 8 }}>{s.story}</span>
+                  <div style={{ display: 'flex', gap: 4 }}>
                     {s.tags.map(tag => (
-                      <Badge key={tag} variant="light" color="gray" size="xs">{tag}</Badge>
+                      <span key={tag} style={{ background: '#f1f3f5', padding: '1px 8px', borderRadius: 10, fontSize: 10 }}>{tag}</span>
                     ))}
-                  </Group>
-                </Paper>
+                  </div>
+                </div>
               ))}
-            </Stack>
-          </ScrollArea>
-          <Box mt="md">
-            <Button
-              leftSection={saving ? <Loader size={14} /> : <FloppyDisk size={14} />}
-              variant="filled"
-              color="dark"
+            </div>
+          </div>
+          <div style={{ marginTop: 16 }}>
+            <button
               onClick={save}
               disabled={saving}
+              style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 14px', background: '#343a40', color: '#fff', border: 'none', borderRadius: 4, cursor: saving ? 'default' : 'pointer', fontSize: 12 }}
             >
+              {saving ? '...' : <FloppyDisk size={14} />}
               {saving ? '저장 중...' : '이 시나리오들 저장'}
-            </Button>
-          </Box>
-        </Paper>
+            </button>
+          </div>
+        </div>
       )}
 
       {result && (
-        <Paper p="sm">
-          <Text fz="sm">{result}</Text>
-        </Paper>
+        <div style={{ padding: 8, background: '#fff', borderRadius: 8, border: '1px solid #e0e0e0' }}>
+          <span style={{ fontSize: 13 }}>{result}</span>
+        </div>
       )}
-    </Stack>
+    </div>
   );
 }

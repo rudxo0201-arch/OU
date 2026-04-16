@@ -1,11 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import {
-  Stack, Group, Text, Button, TextInput, Paper, Checkbox, Badge,
-  ActionIcon, Modal, Loader, SimpleGrid,
-} from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
 import { Plus, Trash, PencilSimple } from '@phosphor-icons/react';
 import { SYSTEM_PERMISSIONS } from '@/types/admin';
 import type { RoleDefinition } from '@/types/admin';
@@ -18,7 +13,7 @@ export function RoleManager() {
   const [editName, setEditName] = useState('');
   const [editLabel, setEditLabel] = useState('');
   const [editPermissions, setEditPermissions] = useState<string[]>([]);
-  const [createOpened, { open: openCreate, close: closeCreate }] = useDisclosure(false);
+  const [createOpened, setCreateOpened] = useState(false);
   const [newName, setNewName] = useState('');
   const [newLabel, setNewLabel] = useState('');
 
@@ -95,7 +90,7 @@ export function RoleManager() {
     setSelectedRoleId(newRole.id);
     setNewName('');
     setNewLabel('');
-    closeCreate();
+    setCreateOpened(false);
   };
 
   const handleDeleteRole = async (id: string) => {
@@ -107,7 +102,7 @@ export function RoleManager() {
   };
 
   if (loading) {
-    return <Group justify="center" py="xl"><Loader size="sm" /></Group>;
+    return <div style={{ display: 'flex', justifyContent: 'center', padding: '24px 0' }}>...</div>;
   }
 
   const permissionGroups: Record<string, string[]> = {
@@ -118,117 +113,127 @@ export function RoleManager() {
   };
 
   return (
-    <Stack gap="md">
-      <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
         {/* Left: Role list */}
-        <Paper p="md">
-          <Group justify="space-between" mb="md">
-            <Text fw={600} fz="sm">역할 목록</Text>
-            <Button size="xs" variant="light" color="dark" leftSection={<Plus size={14} />} onClick={openCreate}>
-              새 역할
-            </Button>
-          </Group>
-          <Stack gap="xs">
+        <div style={{ padding: 16, background: '#fff', borderRadius: 8, border: '1px solid #e0e0e0' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
+            <span style={{ fontWeight: 600, fontSize: 13 }}>역할 목록</span>
+            <button onClick={() => setCreateOpened(true)} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '4px 12px', background: '#343a40', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer', fontSize: 12 }}>
+              <Plus size={14} /> 새 역할
+            </button>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {roles.map(role => (
-              <Paper
+              <div
                 key={role.id}
-                p="xs"
-                withBorder
-                style={{
-                  cursor: 'pointer',
-                  borderColor: selectedRoleId === role.id ? 'var(--mantine-color-dark-4)' : undefined,
-                }}
                 onClick={() => setSelectedRoleId(role.id)}
+                style={{
+                  padding: 8, borderRadius: 4, cursor: 'pointer',
+                  border: selectedRoleId === role.id ? '2px solid #343a40' : '1px solid #e0e0e0',
+                }}
               >
-                <Group justify="space-between">
-                  <Group gap="xs">
-                    <Text fz="sm" fw={500}>{role.label}</Text>
-                    {role.is_system && <Badge variant="light" color="gray" size="xs">시스템</Badge>}
-                  </Group>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{ fontSize: 13, fontWeight: 500 }}>{role.label}</span>
+                    {role.is_system && <span style={{ background: '#f1f3f5', padding: '1px 6px', borderRadius: 10, fontSize: 10 }}>시스템</span>}
+                  </div>
                   {!role.is_system && (
-                    <ActionIcon
-                      variant="subtle"
-                      size="xs"
-                      color="red"
+                    <button
                       onClick={e => { e.stopPropagation(); handleDeleteRole(role.id); }}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: '#fa5252' }}
                     >
                       <Trash size={14} />
-                    </ActionIcon>
+                    </button>
                   )}
-                </Group>
-                <Text fz="xs" c="dimmed">
+                </div>
+                <span style={{ fontSize: 12, color: '#868e96' }}>
                   {role.permissions.length}개 권한
-                </Text>
-              </Paper>
+                </span>
+              </div>
             ))}
-          </Stack>
-        </Paper>
+          </div>
+        </div>
 
         {/* Right: Permission editor */}
-        <Paper p="md">
+        <div style={{ padding: 16, background: '#fff', borderRadius: 8, border: '1px solid #e0e0e0' }}>
           {selectedRole ? (
-            <Stack gap="md">
-              <Group gap="sm">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <PencilSimple size={16} />
-                <Text fw={600} fz="sm">{selectedRole.label} 권한 설정</Text>
-              </Group>
+                <span style={{ fontWeight: 600, fontSize: 13 }}>{selectedRole.label} 권한 설정</span>
+              </div>
 
-              <Group gap="sm">
-                <TextInput
-                  label="역할 ID"
-                  value={editName}
-                  onChange={e => setEditName(e.target.value)}
-                  disabled={selectedRole.is_system}
-                  size="xs"
-                  flex={1}
-                />
-                <TextInput
-                  label="표시 이름"
-                  value={editLabel}
-                  onChange={e => setEditLabel(e.target.value)}
-                  size="xs"
-                  flex={1}
-                />
-              </Group>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 500, marginBottom: 4 }}>역할 ID</label>
+                  <input
+                    value={editName}
+                    onChange={e => setEditName(e.target.value)}
+                    disabled={selectedRole.is_system}
+                    style={{ width: '100%', padding: '4px 8px', border: '1px solid #dee2e6', borderRadius: 4, fontSize: 12 }}
+                  />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 500, marginBottom: 4 }}>표시 이름</label>
+                  <input
+                    value={editLabel}
+                    onChange={e => setEditLabel(e.target.value)}
+                    style={{ width: '100%', padding: '4px 8px', border: '1px solid #dee2e6', borderRadius: 4, fontSize: 12 }}
+                  />
+                </div>
+              </div>
 
               {Object.entries(permissionGroups).map(([group, perms]) => (
-                <Stack key={group} gap={4}>
-                  <Text fz="xs" fw={600} c="dimmed">{group}</Text>
+                <div key={group} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: '#868e96' }}>{group}</span>
                   {perms.map(perm => (
-                    <Checkbox
-                      key={perm}
-                      size="xs"
-                      label={perm}
-                      checked={editPermissions.includes(perm)}
-                      onChange={() => handleTogglePermission(perm)}
-                    />
+                    <label key={perm} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, cursor: 'pointer' }}>
+                      <input
+                        type="checkbox"
+                        checked={editPermissions.includes(perm)}
+                        onChange={() => handleTogglePermission(perm)}
+                      />
+                      {perm}
+                    </label>
                   ))}
-                </Stack>
+                </div>
               ))}
 
-              <Group justify="flex-end">
-                <Button size="xs" color="dark" loading={saving} onClick={handleSaveRole}>
-                  저장
-                </Button>
-              </Group>
-            </Stack>
+              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <button disabled={saving} onClick={handleSaveRole} style={{ padding: '4px 14px', background: '#343a40', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer', fontSize: 12 }}>
+                  {saving ? '...' : '저장'}
+                </button>
+              </div>
+            </div>
           ) : (
-            <Text c="dimmed" ta="center" py="xl" fz="sm">역할을 선택하세요.</Text>
+            <p style={{ color: '#868e96', textAlign: 'center', padding: '24px 0', fontSize: 13 }}>역할을 선택하세요.</p>
           )}
-        </Paper>
-      </SimpleGrid>
+        </div>
+      </div>
 
       {/* Create Role Modal */}
-      <Modal opened={createOpened} onClose={closeCreate} title="새 역할" centered size="sm">
-        <Stack gap="md">
-          <TextInput label="역할 ID" placeholder="예: moderator" value={newName} onChange={e => setNewName(e.target.value)} />
-          <TextInput label="표시 이름" placeholder="예: 운영자" value={newLabel} onChange={e => setNewLabel(e.target.value)} />
-          <Group justify="flex-end" gap="xs">
-            <Button variant="light" color="gray" onClick={closeCreate}>취소</Button>
-            <Button color="dark" onClick={handleCreateRole}>생성</Button>
-          </Group>
-        </Stack>
-      </Modal>
-    </Stack>
+      {createOpened && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }} onClick={() => setCreateOpened(false)}>
+          <div style={{ background: '#fff', borderRadius: 8, padding: 24, width: '90%', maxWidth: 400 }} onClick={e => e.stopPropagation()}>
+            <h3 style={{ margin: '0 0 16px 0', fontSize: 16 }}>새 역할</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 500, marginBottom: 4 }}>역할 ID</label>
+                <input placeholder="예: moderator" value={newName} onChange={e => setNewName(e.target.value)} style={{ width: '100%', padding: '6px 10px', border: '1px solid #dee2e6', borderRadius: 4, fontSize: 13 }} />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 500, marginBottom: 4 }}>표시 이름</label>
+                <input placeholder="예: 운영자" value={newLabel} onChange={e => setNewLabel(e.target.value)} style={{ width: '100%', padding: '6px 10px', border: '1px solid #dee2e6', borderRadius: 4, fontSize: 13 }} />
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+                <button onClick={() => setCreateOpened(false)} style={{ padding: '6px 14px', background: '#f8f9fa', border: '1px solid #dee2e6', borderRadius: 4, cursor: 'pointer', fontSize: 12 }}>취소</button>
+                <button onClick={handleCreateRole} style={{ padding: '6px 14px', background: '#343a40', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer', fontSize: 12 }}>생성</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

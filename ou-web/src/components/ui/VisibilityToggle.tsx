@@ -1,6 +1,5 @@
 'use client';
 
-import { SegmentedControl, Group, Text, Tooltip } from '@mantine/core';
 import { Lock, Link, Globe, LockSimple } from '@phosphor-icons/react';
 import { useState } from 'react';
 import type { Visibility } from '@/types';
@@ -32,40 +31,39 @@ export function VisibilityToggle({ nodeId, currentVisibility, onChange, locked }
   // 잠김 상태: 읽기 전용 표시
   if (locked) {
     return (
-      <Tooltip label="운영 데이터는 비공개로 고정됩니다" position="bottom" withArrow>
-        <Group
-          gap={6}
-          px="sm"
-          py={6}
-          style={{
-            borderRadius: 'var(--mantine-radius-sm)',
-            background: 'var(--mantine-color-default)',
-            border: '0.5px solid var(--mantine-color-default-border)',
-            opacity: 0.7,
-            cursor: 'not-allowed',
-          }}
-        >
-          <LockSimple size={16} weight="light" />
-          <Text fz="xs" c="dimmed">{VISIBILITY_LABELS[currentVisibility]}</Text>
-        </Group>
-      </Tooltip>
+      <div
+        title="운영 데이터는 비공개로 고정됩니다"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6,
+          padding: '6px 12px',
+          borderRadius: 6,
+          background: 'rgba(255,255,255,0.05)',
+          border: '0.5px solid var(--ou-border-muted, rgba(255,255,255,0.14))',
+          opacity: 0.7,
+          cursor: 'not-allowed',
+        }}
+      >
+        <LockSimple size={16} weight="light" />
+        <span style={{ fontSize: 12, color: 'var(--ou-text-muted, rgba(255,255,255,0.5))' }}>{VISIBILITY_LABELS[currentVisibility]}</span>
+      </div>
     );
   }
 
-  const handleChange = async (newValue: string) => {
-    const v = newValue as Visibility;
-    setValue(v);
+  const handleChange = async (newValue: Visibility) => {
+    setValue(newValue);
     setLoading(true);
     try {
       const res = await fetch(`/api/nodes/${nodeId}/visibility`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ visibility: v }),
+        body: JSON.stringify({ visibility: newValue }),
       });
       if (!res.ok) {
         setValue(currentVisibility);
       } else {
-        onChange?.(v);
+        onChange?.(newValue);
       }
     } catch {
       setValue(currentVisibility);
@@ -75,27 +73,41 @@ export function VisibilityToggle({ nodeId, currentVisibility, onChange, locked }
   };
 
   return (
-    <SegmentedControl
-      value={value}
-      onChange={handleChange}
-      disabled={loading}
-      data={OPTIONS.map(opt => ({
-        value: opt.value,
-        label: (
-          <Tooltip label={opt.tip} position="bottom" withArrow>
-            <Group gap={6} wrap="nowrap" justify="center">
-              <opt.icon size={16} weight="light" />
-              <Text fz="xs">{opt.label}</Text>
-            </Group>
-          </Tooltip>
-        ),
-      }))}
-      styles={{
-        root: {
-          background: 'var(--mantine-color-default)',
-          border: '0.5px solid var(--mantine-color-default-border)',
-        },
+    <div
+      style={{
+        display: 'flex',
+        border: '0.5px solid var(--ou-border-muted, rgba(255,255,255,0.14))',
+        borderRadius: 8,
+        overflow: 'hidden',
+        opacity: loading ? 0.6 : 1,
+        pointerEvents: loading ? 'none' : 'auto',
       }}
-    />
+    >
+      {OPTIONS.map(opt => (
+        <button
+          key={opt.value}
+          title={opt.tip}
+          onClick={() => handleChange(opt.value)}
+          style={{
+            flex: 1,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 6,
+            padding: '8px 4px',
+            background: value === opt.value ? 'rgba(255,255,255,0.1)' : 'transparent',
+            border: 'none',
+            cursor: 'pointer',
+            color: value === opt.value ? 'var(--ou-text-body, #fff)' : 'var(--ou-text-muted, rgba(255,255,255,0.5))',
+            fontSize: 12,
+            font: 'inherit',
+            transition: 'all 150ms ease',
+          }}
+        >
+          <opt.icon size={16} weight="light" />
+          {opt.label}
+        </button>
+      ))}
+    </div>
   );
 }

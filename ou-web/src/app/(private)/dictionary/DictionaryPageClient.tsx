@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { Container } from '@mantine/core';
 import { DictionaryView } from '@/components/views/DictionaryView';
 
 interface Props {
@@ -49,13 +48,13 @@ export function DictionaryPageClient({ initialNodes }: Props) {
   }, []);
 
   return (
-    <Container size="xl" py="md">
+    <div style={{ maxWidth: 1200, margin: '0 auto', padding: '16px 24px' }}>
       <DictionaryView
         nodes={nodes}
         onSearch={handleSearch}
         total={total}
         loading={loading}
       />
-    </Container>
+    </div>
   );
 }

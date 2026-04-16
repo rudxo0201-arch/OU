@@ -1,9 +1,7 @@
 'use client';
 
 import { useState, useRef, useCallback } from 'react';
-import { Box, Textarea, ActionIcon, Group, Text, Stack, Loader } from '@mantine/core';
 import { PaperPlaneRight, Stop, Paperclip, X, FilePdf, FileText, FileArrowDown, Slideshow, Microphone, StopCircle } from '@phosphor-icons/react';
-import { notifications } from '@mantine/notifications';
 import { useVoiceRecorder, type VoiceStatus } from '@/hooks/useVoiceRecorder';
 
 export interface ImageUploadResult {
@@ -49,6 +47,7 @@ export function ChatInput({ onSend, onStop, streaming, disabled, loggedIn }: Cha
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // 음성 녹음
   const handleVoiceTranscript = useCallback((text: string) => {
@@ -56,7 +55,7 @@ export function ChatInput({ onSend, onStop, streaming, disabled, loggedIn }: Cha
   }, [onSend]);
 
   const handleVoiceError = useCallback((msg: string) => {
-    notifications.show({ message: msg, color: 'gray' });
+    alert(msg);
   }, []);
 
   const { status: voiceStatus, duration, start: startRecording, stop: stopRecording, cancel: cancelRecording } = useVoiceRecorder({
@@ -90,7 +89,7 @@ export function ChatInput({ onSend, onStop, streaming, disabled, loggedIn }: Cha
     const isMedia = file.type.startsWith('video/') || file.type.startsWith('audio/') || /\.(mp4|mov|mp3|wav)$/i.test(file.name);
     const limit = isMedia ? MAX_SIZE_MB_VIDEO : MAX_SIZE_MB;
     if (file.size > limit * 1024 * 1024) {
-      notifications.show({ message: `${limit}MB 이하 파일만 업로드할 수 있어요.`, color: 'gray' });
+      alert(`${limit}MB 이하 파일만 업로드할 수 있어요.`);
       return;
     }
     setUploadFile(file);
@@ -111,6 +110,15 @@ export function ChatInput({ onSend, onStop, streaming, disabled, loggedIn }: Cha
   const isXLSXFile = (file: File) => file.name.endsWith('.xlsx') || file.name.endsWith('.xls');
   const isVideoFile = (file: File) => file.type.startsWith('video/') || /\.(mp4|mov)$/i.test(file.name);
   const isAudioFile = (file: File) => file.type.startsWith('audio/') || /\.(mp3|wav)$/i.test(file.name);
+
+  // Auto-resize textarea
+  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setValue(e.target.value);
+    const el = e.target;
+    el.style.height = 'auto';
+    const maxH = 6 * 24; // ~6 rows
+    el.style.height = Math.min(el.scrollHeight, maxH) + 'px';
+  };
 
   const handleUpload = async () => {
     if (!uploadFile) return;
@@ -169,12 +177,7 @@ export function ChatInput({ onSend, onStop, streaming, disabled, loggedIn }: Cha
         if (error) throw new Error(error);
 
         if (nodeId) {
-          notifications.show({
-            title: '문서가 저장되었어요',
-            message: '내용을 구조화했어요.',
-            color: 'gray',
-            autoClose: 5000,
-          });
+          console.log('[OU] 문서가 저장되었어요. 내용을 구조화했어요.');
         }
 
         const fileType = isPPTFile(uploadFile) ? 'ppt'
@@ -202,12 +205,7 @@ export function ChatInput({ onSend, onStop, streaming, disabled, loggedIn }: Cha
         if (error) throw new Error(error);
 
         if (nodeId) {
-          notifications.show({
-            title: '파일이 저장되었어요',
-            message: isVideoFile(uploadFile) ? '영상이 우주에 추가되었어요.' : '음성이 우주에 추가되었어요.',
-            color: 'gray',
-            autoClose: 5000,
-          });
+          console.log(`[OU] ${isVideoFile(uploadFile) ? '영상이' : '음성이'} 우주에 추가되었어요.`);
         }
 
         const fileType = isVideoFile(uploadFile) ? 'video' : 'audio';
@@ -229,12 +227,7 @@ export function ChatInput({ onSend, onStop, streaming, disabled, loggedIn }: Cha
         if (error) throw new Error(error);
 
         if (nodeId) {
-          notifications.show({
-            title: '문서가 저장되었어요',
-            message: '변환된 내용을 확인하면 정확도가 높아져요 (beta)',
-            color: 'gray',
-            autoClose: 5000,
-          });
+          console.log('[OU] 문서가 저장되었어요. 변환된 내용을 확인하면 정확도가 높아져요 (beta)');
         }
 
         const fileResult: FileUploadResult = {
@@ -265,7 +258,7 @@ export function ChatInput({ onSend, onStop, streaming, disabled, loggedIn }: Cha
       setValue('');
       setUploadFile(null);
     } catch {
-      notifications.show({ message: '파일 처리에 실패했어요.', color: 'gray' });
+      alert('파일 처리에 실패했어요.');
     } finally {
       setUploading(false);
     }
@@ -274,7 +267,7 @@ export function ChatInput({ onSend, onStop, streaming, disabled, loggedIn }: Cha
   const canSend = !streaming && !disabled && !uploading && (value.trim() || uploadFile);
   const isVoiceActive = voiceStatus !== 'idle';
 
-  /* ── Shared orb button style ── */
+  /* -- Shared orb button style -- */
   const orbBtnStyle: React.CSSProperties = {
     width: 36,
     height: 36,
@@ -293,7 +286,7 @@ export function ChatInput({ onSend, onStop, streaming, disabled, loggedIn }: Cha
   // 녹음/변환 중일 때: 녹음 전용 UI
   if (isVoiceActive) {
     return (
-      <Box
+      <div
         style={{
           border: '0.5px solid var(--ou-border-subtle)',
           borderRadius: 'var(--ou-radius-chat)',
@@ -308,7 +301,7 @@ export function ChatInput({ onSend, onStop, streaming, disabled, loggedIn }: Cha
         {voiceStatus === 'recording' ? (
           <>
             {/* 녹음 중 표시 */}
-            <Box
+            <div
               style={{
                 width: 8,
                 height: 8,
@@ -317,9 +310,9 @@ export function ChatInput({ onSend, onStop, streaming, disabled, loggedIn }: Cha
                 animation: 'pulse 1.5s ease-in-out infinite',
               }}
             />
-            <Text style={{ flex: 1, fontSize: 13, color: 'var(--ou-text-dimmed)' }}>
+            <span style={{ flex: 1, fontSize: 13, color: 'var(--ou-text-dimmed)' }}>
               녹음 중 {formatDuration(duration)}
-            </Text>
+            </span>
 
             {/* 취소 */}
             <button
@@ -350,39 +343,51 @@ export function ChatInput({ onSend, onStop, streaming, disabled, loggedIn }: Cha
         ) : (
           <>
             {/* 변환 중 */}
-            <Loader size={16} color="gray" />
-            <Text style={{ flex: 1, fontSize: 13, color: 'var(--ou-text-dimmed)' }}>
+            <div
+              style={{
+                width: 16,
+                height: 16,
+                borderRadius: '50%',
+                border: '2px solid var(--ou-text-dimmed)',
+                borderTopColor: 'transparent',
+                animation: 'spin 0.8s linear infinite',
+              }}
+            />
+            <span style={{ flex: 1, fontSize: 13, color: 'var(--ou-text-dimmed)' }}>
               변환 중...
-            </Text>
+            </span>
           </>
         )}
-      </Box>
+      </div>
     );
   }
 
   return (
-    <Stack gap={4}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
       {uploadFile && (
-        <Group
-          px="md"
-          py={6}
+        <div
           style={{
+            display: 'flex',
+            flexDirection: 'row',
+            gap: 8,
+            alignItems: 'center',
+            padding: '6px 16px',
             border: '0.5px solid var(--ou-border-subtle)',
             borderRadius: 'var(--ou-radius-md)',
             background: 'transparent',
           }}
         >
-          <Box style={{ color: 'var(--ou-text-dimmed)' }}>
+          <div style={{ color: 'var(--ou-text-dimmed)' }}>
             {isPDFFile(uploadFile) ? <FilePdf size={16} /> :
              isTextFile(uploadFile) ? <FileText size={16} /> :
              isOUFile(uploadFile) ? <FileArrowDown size={16} /> :
              (isPPTFile(uploadFile) || isHWPFile(uploadFile) || isDOCXFile(uploadFile) || isXLSXFile(uploadFile)) ? <Slideshow size={16} /> :
              (isVideoFile(uploadFile) || isAudioFile(uploadFile)) ? <FileArrowDown size={16} /> :
              <Paperclip size={14} />}
-          </Box>
-          <Text style={{ flex: 1, fontSize: 13, color: 'var(--ou-text-body)' }} truncate>
+          </div>
+          <span style={{ flex: 1, fontSize: 13, color: 'var(--ou-text-body)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {uploadFile.name}
-          </Text>
+          </span>
           <button
             onClick={() => setUploadFile(null)}
             style={{
@@ -396,10 +401,10 @@ export function ChatInput({ onSend, onStop, streaming, disabled, loggedIn }: Cha
           >
             <X size={14} />
           </button>
-        </Group>
+        </div>
       )}
 
-      <Box
+      <div
         style={{
           border: '0.5px solid var(--ou-border-subtle)',
           borderRadius: 'var(--ou-radius-chat)',
@@ -459,28 +464,26 @@ export function ChatInput({ onSend, onStop, streaming, disabled, loggedIn }: Cha
           <Paperclip size={16} />
         </button>
 
-        <Textarea
+        <textarea
+          ref={textareaRef}
           value={value}
-          onChange={e => setValue(e.target.value)}
+          onChange={handleTextareaChange}
           onKeyDown={handleKeyDown}
           placeholder={uploadFile ? '파일에 대해 설명을 추가하세요 (선택)' : '뭐든 말씀해보세요...'}
-          autosize
-          minRows={1}
-          maxRows={6}
-          styles={{
-            root: { flex: 1 },
-            input: {
-              border: 'none',
-              background: 'transparent',
-              padding: 0,
-              resize: 'none',
-              boxShadow: 'none',
-              color: 'var(--ou-text-bright)',
-              fontSize: 14,
-              '&::placeholder': {
-                color: 'var(--ou-text-muted)',
-              },
-            },
+          rows={1}
+          style={{
+            flex: 1,
+            border: 'none',
+            background: 'transparent',
+            padding: 0,
+            resize: 'none',
+            boxShadow: 'none',
+            color: 'var(--ou-text-bright)',
+            fontSize: 14,
+            fontFamily: 'inherit',
+            outline: 'none',
+            lineHeight: 1.5,
+            overflow: 'hidden',
           }}
         />
 
@@ -518,7 +521,18 @@ export function ChatInput({ onSend, onStop, streaming, disabled, loggedIn }: Cha
               e.currentTarget.style.transform = 'scale(1)';
             }}
           >
-            {uploading ? <Loader size={14} color="dark" /> : <PaperPlaneRight size={16} weight="fill" />}
+            {uploading ? (
+              <div
+                style={{
+                  width: 14,
+                  height: 14,
+                  borderRadius: '50%',
+                  border: '2px solid #111',
+                  borderTopColor: 'transparent',
+                  animation: 'spin 0.8s linear infinite',
+                }}
+              />
+            ) : <PaperPlaneRight size={16} weight="fill" />}
           </button>
         ) : (
           <button
@@ -549,7 +563,7 @@ export function ChatInput({ onSend, onStop, streaming, disabled, loggedIn }: Cha
             <Microphone size={18} weight="fill" />
           </button>
         )}
-      </Box>
-    </Stack>
+      </div>
+    </div>
   );
 }

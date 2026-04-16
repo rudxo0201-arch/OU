@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Stack, Title, SimpleGrid, Paper, Text, Button, List, Badge, Group, Box, Loader } from '@mantine/core';
 import { Check, Star, UsersThree, Rocket, ArrowRight } from '@phosphor-icons/react';
 
 const PLANS = [
@@ -123,152 +122,180 @@ export default function UpgradePage() {
 
   if (loading) {
     return (
-      <Stack align="center" justify="center" mih={400}>
-        <Loader size="sm" />
-      </Stack>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 400 }}>
+        <span style={{ fontSize: 14, color: 'var(--color-dimmed)' }}>불러오는 중...</span>
+      </div>
     );
   }
 
   return (
-    <Stack gap="xl" p="xl" maw={960} mx="auto">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24, padding: 24, maxWidth: 960, margin: '0 auto' }}>
       <div>
-        <Title order={2}>플랜 선택</Title>
-        <Text c="dimmed" fz="sm" mt={4}>나에게 맞는 플랜을 골라보세요</Text>
+        <h2 style={{ margin: 0 }}>플랜 선택</h2>
+        <span style={{ color: 'var(--color-dimmed)', fontSize: 14, marginTop: 4, display: 'block' }}>나에게 맞는 플랜을 골라보세요</span>
       </div>
 
       {/* 현재 구독 상태 */}
       {currentPlan !== 'free' && (
-        <Paper p="md" style={{ border: '0.5px solid var(--mantine-color-default-border)' }}>
-          <Group justify="space-between" wrap="nowrap">
+        <div style={{ padding: 16, border: '0.5px solid var(--color-default-border)', borderRadius: 8 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'nowrap', alignItems: 'center' }}>
             <div>
-              <Group gap="xs">
-                <Text fw={600}>{currentPlan.toUpperCase()} 플랜</Text>
-                <Badge
-                  size="sm"
-                  variant="light"
-                  color={sub?.cancelledAt ? 'yellow' : sub?.status === 'past_due' ? 'red' : 'green'}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontWeight: 600 }}>{currentPlan.toUpperCase()} 플랜</span>
+                <span
+                  style={{
+                    fontSize: 11,
+                    padding: '2px 8px',
+                    borderRadius: 12,
+                    background: sub?.cancelledAt ? '#fef3c7' : sub?.status === 'past_due' ? '#fee2e2' : '#dcfce7',
+                    color: sub?.cancelledAt ? '#92400e' : sub?.status === 'past_due' ? '#991b1b' : '#166534',
+                  }}
                 >
                   {sub?.cancelledAt ? '해지 예정' : sub?.status === 'past_due' ? '결제 실패' : '활성'}
-                </Badge>
-              </Group>
+                </span>
+              </div>
               {sub?.periodEnd && (
-                <Text fz="xs" c="dimmed" mt={2}>
+                <span style={{ fontSize: 12, color: 'var(--color-dimmed)', marginTop: 2, display: 'block' }}>
                   {sub.cancelledAt
                     ? `${new Date(sub.periodEnd).toLocaleDateString('ko-KR')}에 만료됩니다`
                     : `다음 결제일: ${new Date(sub.periodEnd).toLocaleDateString('ko-KR')}`}
-                </Text>
+                </span>
               )}
             </div>
-            <Group gap="xs">
-              <Button size="xs" variant="subtle" onClick={handlePortal} loading={portalLoading}>
-                결제 관리
-              </Button>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button
+                onClick={handlePortal}
+                disabled={portalLoading}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: 'var(--color-text)' }}
+              >
+                {portalLoading ? '...' : '결제 관리'}
+              </button>
               {!sub?.cancelledAt && (
-                <Button size="xs" variant="subtle" color="red" onClick={handleCancel}>
+                <button
+                  onClick={handleCancel}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: '#dc2626' }}
+                >
                   해지
-                </Button>
+                </button>
               )}
-            </Group>
-          </Group>
-        </Paper>
+            </div>
+          </div>
+        </div>
       )}
 
-      <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="lg">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 16 }}>
         {PLANS.map(plan => {
           const isCurrent = plan.id === currentPlan;
 
           return (
-            <Paper
+            <div
               key={plan.id}
-              p="xl"
               style={{
+                padding: 24,
                 display: 'flex',
                 flexDirection: 'column',
                 border: plan.highlighted
-                  ? '1.5px solid var(--mantine-color-gray-4)'
-                  : '0.5px solid var(--mantine-color-default-border)',
+                  ? '1.5px solid #9ca3af'
+                  : '0.5px solid var(--color-default-border)',
+                borderRadius: 8,
                 position: 'relative',
               }}
             >
               {plan.highlighted && (
-                <Badge
-                  variant="filled"
-                  color="dark"
-                  size="sm"
+                <span
                   style={{
                     position: 'absolute',
                     top: -10,
                     left: '50%',
                     transform: 'translateX(-50%)',
+                    fontSize: 11,
+                    padding: '2px 10px',
+                    borderRadius: 12,
+                    background: '#1a1a1a',
+                    color: '#fff',
                   }}
                 >
                   추천
-                </Badge>
+                </span>
               )}
 
-              <Stack gap="md" flex={1}>
-                <Group gap="sm">
-                  <Box c="dimmed">{plan.icon}</Box>
-                  <Text fw={600} fz="lg">{plan.name}</Text>
-                </Group>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{ color: 'var(--color-dimmed)' }}>{plan.icon}</span>
+                  <span style={{ fontWeight: 600, fontSize: 18 }}>{plan.name}</span>
+                </div>
 
-                <Text fz="sm" c="dimmed">{plan.description}</Text>
+                <span style={{ fontSize: 14, color: 'var(--color-dimmed)' }}>{plan.description}</span>
 
-                <Group align="baseline" gap={4}>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
                   {plan.id === 'free' ? (
-                    <Text fz={28} fw={700}>{plan.priceLabel}</Text>
+                    <span style={{ fontSize: 28, fontWeight: 700 }}>{plan.priceLabel}</span>
                   ) : (
                     <>
-                      <Text fz="sm" c="dimmed" fw={500}>&#8361;</Text>
-                      <Text fz={28} fw={700}>{plan.price}</Text>
-                      <Text fz="sm" c="dimmed">/{plan.priceLabel}</Text>
+                      <span style={{ fontSize: 14, color: 'var(--color-dimmed)', fontWeight: 500 }}>&#8361;</span>
+                      <span style={{ fontSize: 28, fontWeight: 700 }}>{plan.price}</span>
+                      <span style={{ fontSize: 14, color: 'var(--color-dimmed)' }}>/{plan.priceLabel}</span>
                     </>
                   )}
-                </Group>
+                </div>
 
-                <List
-                  spacing="xs"
-                  icon={<Check size={14} weight="bold" />}
-                  mt="sm"
-                >
+                <ul style={{ listStyle: 'none', padding: 0, margin: '8px 0 0 0', display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {plan.features.map(f => (
-                    <List.Item key={f}>
-                      <Text fz="sm">{f}</Text>
-                    </List.Item>
+                    <li key={f} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 14 }}>
+                      <Check size={14} weight="bold" />
+                      <span>{f}</span>
+                    </li>
                   ))}
-                </List>
+                </ul>
 
-                <Box mt="auto" pt="md">
+                <div style={{ marginTop: 'auto', paddingTop: 16 }}>
                   {isCurrent ? (
-                    <Button fullWidth variant="light" color="gray" style={{ cursor: 'default' }}>
-                      현재 플랜
-                    </Button>
-                  ) : plan.id === 'free' && currentPlan !== 'free' ? (
-                    <Button fullWidth variant="light" color="gray" style={{ cursor: 'default' }}>
-                      {sub?.cancelledAt ? '해지 후 전환됨' : '다운그레이드'}
-                    </Button>
-                  ) : (
-                    <Button
-                      fullWidth
-                      variant={plan.highlighted ? 'filled' : 'light'}
-                      color={plan.highlighted ? 'dark' : 'gray'}
-                      loading={loadingPlan === plan.id}
-                      onClick={() => handleUpgrade(plan.id)}
-                      rightSection={<ArrowRight size={14} />}
+                    <button
+                      disabled
+                      style={{ width: '100%', padding: '8px 16px', borderRadius: 6, border: '1px solid #e5e7eb', background: '#f3f4f6', color: '#6b7280', cursor: 'default', fontSize: 14 }}
                     >
-                      {plan.cta}
-                    </Button>
+                      현재 플랜
+                    </button>
+                  ) : plan.id === 'free' && currentPlan !== 'free' ? (
+                    <button
+                      disabled
+                      style={{ width: '100%', padding: '8px 16px', borderRadius: 6, border: '1px solid #e5e7eb', background: '#f3f4f6', color: '#6b7280', cursor: 'default', fontSize: 14 }}
+                    >
+                      {sub?.cancelledAt ? '해지 후 전환됨' : '다운그레이드'}
+                    </button>
+                  ) : (
+                    <button
+                      disabled={loadingPlan === plan.id}
+                      onClick={() => handleUpgrade(plan.id)}
+                      style={{
+                        width: '100%',
+                        padding: '8px 16px',
+                        borderRadius: 6,
+                        border: plan.highlighted ? 'none' : '1px solid #e5e7eb',
+                        background: plan.highlighted ? '#1a1a1a' : '#f3f4f6',
+                        color: plan.highlighted ? '#fff' : '#1a1a1a',
+                        cursor: 'pointer',
+                        fontSize: 14,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 6,
+                      }}
+                    >
+                      {loadingPlan === plan.id ? '...' : plan.cta}
+                      {loadingPlan !== plan.id && <ArrowRight size={14} />}
+                    </button>
                   )}
-                </Box>
-              </Stack>
-            </Paper>
+                </div>
+              </div>
+            </div>
           );
         })}
-      </SimpleGrid>
+      </div>
 
-      <Text fz="xs" c="dimmed" ta="center" mt="sm">
+      <span style={{ fontSize: 12, color: 'var(--color-dimmed)', textAlign: 'center', marginTop: 8, display: 'block' }}>
         언제든 플랜을 변경하거나 취소할 수 있어요. 해지해도 결제 기간이 끝날 때까지 사용 가능합니다.
-      </Text>
-    </Stack>
+      </span>
+    </div>
   );
 }

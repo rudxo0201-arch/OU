@@ -4,7 +4,7 @@ import { useCallback } from 'react';
 import { useFeatureStore } from '@/stores/featureStore';
 import { useAuth } from '@/hooks/useAuth';
 import { isValidFeatureId, getFeatureById } from '@/lib/features/registry';
-import { notifications } from '@mantine/notifications';
+// notifications removed (Mantine dependency)
 import { createClient } from '@/lib/supabase/client';
 
 export function useFeatureFlags() {
@@ -53,12 +53,7 @@ export function useFeatureFlags() {
       // 해금 축하 알림
       const feature = getFeatureById(featureId);
       if (feature) {
-        notifications.show({
-          title: feature.unlockConfirm,
-          message: '',
-          color: 'dark',
-          autoClose: 4000,
-        });
+        alert(feature.unlockConfirm);
       }
     } catch {
       // 실패 시 로컬 상태는 persist로 유지 (다음 로드 시 DB와 동기화)

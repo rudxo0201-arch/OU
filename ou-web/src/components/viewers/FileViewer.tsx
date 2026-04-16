@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Box, Text } from '@mantine/core';
 import { PDFViewer } from './PDFViewer';
 import { OUFileViewer } from './OUFileViewer';
 import { DOCXViewer } from './DOCXViewer';
@@ -33,32 +32,32 @@ export function FileViewer({ url, fileType, highlightPage, nodeData }: FileViewe
 
   if (fileType === 'image') {
     return (
-      <Box p="md" style={{ display: 'flex', justifyContent: 'center' }}>
+      <div style={{ padding: 16, display: 'flex', justifyContent: 'center' }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={url} alt="업로드 이미지" style={{ maxWidth: '100%', maxHeight: '80vh' }} />
-      </Box>
+      </div>
     );
   }
 
   // 영상
   if (fileType === 'video') {
     return (
-      <Box p="md" style={{ display: 'flex', justifyContent: 'center' }}>
+      <div style={{ padding: 16, display: 'flex', justifyContent: 'center' }}>
         <video
           src={url}
           controls
           style={{ maxWidth: '100%', maxHeight: '80vh', borderRadius: 8 }}
         />
-      </Box>
+      </div>
     );
   }
 
   // 음성
   if (fileType === 'audio') {
     return (
-      <Box p="xl" style={{ display: 'flex', justifyContent: 'center' }}>
+      <div style={{ padding: 24, display: 'flex', justifyContent: 'center' }}>
         <audio src={url} controls style={{ width: '100%', maxWidth: 600 }} />
-      </Box>
+      </div>
     );
   }
 
@@ -86,17 +85,17 @@ export function FileViewer({ url, fileType, highlightPage, nodeData }: FileViewe
   if (fileType === 'hwp' || fileType === 'hwpx') {
     if (nodeData?.extracted_text) {
       return (
-        <Box p="xl" maw={700} mx="auto">
-          <Text fz="sm" style={{ whiteSpace: 'pre-wrap', lineHeight: 1.7 }}>
+        <div style={{ padding: 24, maxWidth: 700, margin: '0 auto' }}>
+          <span style={{ fontSize: 'var(--mantine-font-size-sm)', whiteSpace: 'pre-wrap', lineHeight: 1.7 }}>
             {nodeData.extracted_text}
-          </Text>
-        </Box>
+          </span>
+        </div>
       );
     }
     return (
-      <Box p="xl">
-        <Text c="dimmed">문서 내용을 표시할 수 없었어요.</Text>
-      </Box>
+      <div style={{ padding: 24 }}>
+        <span style={{ color: 'var(--mantine-color-dimmed)' }}>문서 내용을 표시할 수 없었어요.</span>
+      </div>
     );
   }
 
@@ -111,9 +110,9 @@ export function FileViewer({ url, fileType, highlightPage, nodeData }: FileViewe
   }
 
   return (
-    <Box p="xl">
-      <Text c="dimmed">이 파일 형식은 아직 내장 뷰어를 지원하지 않아요.</Text>
-    </Box>
+    <div style={{ padding: 24 }}>
+      <span style={{ color: 'var(--mantine-color-dimmed)' }}>이 파일 형식은 아직 내장 뷰어를 지원하지 않아요.</span>
+    </div>
   );
 }
 
@@ -131,23 +130,23 @@ function OUFileViewerLoader({ url }: { url: string }) {
 
   if (error) {
     return (
-      <Box p="xl">
-        <Text c="dimmed">.ou 파일을 읽지 못했어요.</Text>
-      </Box>
+      <div style={{ padding: 24 }}>
+        <span style={{ color: 'var(--mantine-color-dimmed)' }}>.ou 파일을 읽지 못했어요.</span>
+      </div>
     );
   }
 
   if (!ouFile) {
     return (
-      <Box p="xl">
-        <Text c="dimmed">불러오는 중...</Text>
-      </Box>
+      <div style={{ padding: 24 }}>
+        <span style={{ color: 'var(--mantine-color-dimmed)' }}>불러오는 중...</span>
+      </div>
     );
   }
 
   return (
-    <Box p="md" maw={600} mx="auto">
+    <div style={{ padding: 16, maxWidth: 600, margin: '0 auto' }}>
       <OUFileViewer file={ouFile} />
-    </Box>
+    </div>
   );
 }

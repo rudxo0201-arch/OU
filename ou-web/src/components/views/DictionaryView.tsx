@@ -1,37 +1,29 @@
 'use client';
 
-import { useState, useMemo, useCallback, useEffect } from 'react';
-import {
-  Stack, Text, Box, Group, TextInput, SimpleGrid,
-  Paper, Badge, ActionIcon, Drawer, Select, RangeSlider,
-  Chip, ScrollArea, Pagination, Loader,
-} from '@mantine/core';
-import { useDebouncedValue, useDisclosure } from '@mantine/hooks';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { MagnifyingGlass, X, ArrowLeft } from '@phosphor-icons/react';
 import type { ViewProps } from './registry';
 import { useLayoutStyles } from '@/hooks/useLayoutStyles';
 import type { LayoutConfig } from '@/types/layout-config';
 
-// ============================================================
-// 한자 추출 (CJK Unicode 범위)
-// ============================================================
-// CJK Unified Ideographs + Extension A + Compatibility
 const CJK_REGEX = /[\u4E00-\u9FFF\u3400-\u4DBF\uF900-\uFAFF]/g;
 
 function extractHanjaChars(text: string): string[] {
   const matches = text.match(CJK_REGEX);
   if (!matches) return [];
-  // 중복 제거하되 순서 유지
   return Array.from(new Set(matches));
 }
 
-function isHanjaQuery(text: string): boolean {
-  return CJK_REGEX.test(text);
+// Custom debounce hook
+function useDebouncedValue(value: string, delay: number): string {
+  const [debounced, setDebounced] = useState(value);
+  useEffect(() => {
+    const timer = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+  return debounced;
 }
 
-// ============================================================
-// 필터 로직
-// ============================================================
 interface Filters {
   radical?: string;
   gradeMin?: number;
@@ -41,316 +33,151 @@ interface Filters {
   compositionType?: string;
 }
 
-function getNodeDomainData(node: any) {
-  return node.domain_data || {};
-}
+function getNodeDomainData(node: any) { return node.domain_data || {}; }
 
-function matchesSearch(node: any, query: string, hanjaChars: string[]): boolean {
+function matchesSearchFn(node: any, query: string, hanjaChars: string[]): boolean {
   const d = getNodeDomainData(node);
   if (!query) return true;
-
-  // 한자가 포함된 검색어 → 한자 매칭
-  if (hanjaChars.length > 0) {
-    return hanjaChars.includes(d.char);
-  }
-
-  // 한글/영문 검색 → 음, 훈, definition 매칭
+  if (hanjaChars.length > 0) return hanjaChars.includes(d.char);
   const q = query.toLowerCase();
   const ko = (d.readings?.ko || []).join(' ').toLowerCase();
   const hun = (d.readings?.ko_hun || []).join(' ').toLowerCase();
   const hangul = (d.hangul_reading || '').toLowerCase();
   const defEn = (d.definition_en || '').toLowerCase();
-
   return ko.includes(q) || hun.includes(q) || hangul.includes(q) || defEn.includes(q);
 }
 
 function matchesFilters(node: any, filters: Filters): boolean {
   const d = getNodeDomainData(node);
-
   if (filters.radical && d.radical_char !== filters.radical) return false;
   if (filters.gradeMin != null && (d.grade == null || d.grade < filters.gradeMin)) return false;
   if (filters.gradeMax != null && (d.grade == null || d.grade > filters.gradeMax)) return false;
   if (filters.strokeMin != null && d.stroke_count < filters.strokeMin) return false;
   if (filters.strokeMax != null && d.stroke_count > filters.strokeMax) return false;
   if (filters.compositionType && d.composition?.type !== filters.compositionType) return false;
-
   return true;
 }
 
-// ============================================================
-// 사용 가능한 필터 옵션 추출 (빈 필터 숨김)
-// ============================================================
 function getAvailableFilters(nodes: any[]) {
   const radicals = new Map<string, number>();
   const grades = new Map<number, number>();
   const compositionTypes = new Map<string, number>();
-  let minStroke = Infinity;
-  let maxStroke = 0;
-
   for (const n of nodes) {
     const d = getNodeDomainData(n);
-    if (d.radical_char) {
-      radicals.set(d.radical_char, (radicals.get(d.radical_char) || 0) + 1);
-    }
-    if (d.grade != null) {
-      grades.set(d.grade, (grades.get(d.grade) || 0) + 1);
-    }
-    if (d.composition?.type) {
-      compositionTypes.set(d.composition.type, (compositionTypes.get(d.composition.type) || 0) + 1);
-    }
-    if (d.stroke_count != null) {
-      minStroke = Math.min(minStroke, d.stroke_count);
-      maxStroke = Math.max(maxStroke, d.stroke_count);
-    }
+    if (d.radical_char) radicals.set(d.radical_char, (radicals.get(d.radical_char) || 0) + 1);
+    if (d.grade != null) grades.set(d.grade, (grades.get(d.grade) || 0) + 1);
+    if (d.composition?.type) compositionTypes.set(d.composition.type, (compositionTypes.get(d.composition.type) || 0) + 1);
   }
-
   return {
     radicals: Array.from(radicals.entries()).sort((a, b) => b[1] - a[1]),
     grades: Array.from(grades.entries()).sort((a, b) => a[0] - b[0]),
     compositionTypes: Array.from(compositionTypes.entries()).sort((a, b) => b[1] - a[1]),
-    strokeRange: [minStroke === Infinity ? 1 : minStroke, maxStroke || 30] as [number, number],
   };
 }
 
-// ============================================================
-// 카드 컴포넌트
-// ============================================================
-function HanjaCard({ node, onClick, styles }: {
-  node: any;
-  onClick: () => void;
-  styles: ReturnType<typeof useLayoutStyles>;
-}) {
+function HanjaCard({ node, onClick, styles }: { node: any; onClick: () => void; styles: ReturnType<typeof useLayoutStyles> }) {
   const d = getNodeDomainData(node);
   const hun = d.readings?.ko_hun?.[0] || '';
   const eum = d.readings?.ko?.[0] || d.hangul_reading || '';
   const displayReading = hun && eum ? `${hun} ${eum}` : eum || hun;
 
   return (
-    <Paper
-      onClick={onClick}
-      style={{
-        ...styles.card,
-        cursor: 'pointer',
-        textAlign: 'center',
-        transition: 'border-color 0.15s ease',
-      }}
-      className="hanja-card"
-    >
-      <Text style={styles.primary}>
-        {d.char}
-      </Text>
+    <div onClick={onClick} className="hanja-card" style={{ ...styles.card, cursor: 'pointer', textAlign: 'center', transition: 'border-color 0.15s ease', border: '0.5px solid var(--ou-border, #333)', borderRadius: 8, padding: 12 }}>
+      <span style={styles.primary}>{d.char}</span>
       {styles.isFieldVisible('reading') && (
-        <Text style={styles.secondary} mt={4} lineClamp={1}>
-          {displayReading}
-        </Text>
+        <span style={{ ...styles.secondary, marginTop: 4, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{displayReading}</span>
       )}
-      <Group gap={4} mt={4} justify="center">
-        {styles.isFieldVisible('stroke') && (
-          <Text style={styles.tertiary}>{d.stroke_count}획</Text>
-        )}
-        {styles.isFieldVisible('radical') && d.radical_char && (
-          <Text style={styles.tertiary}>{d.radical_char}부</Text>
-        )}
+      <div style={{ display: 'flex', gap: 4, marginTop: 4, justifyContent: 'center', alignItems: 'center' }}>
+        {styles.isFieldVisible('stroke') && <span style={styles.tertiary}>{d.stroke_count}획</span>}
+        {styles.isFieldVisible('radical') && d.radical_char && <span style={styles.tertiary}>{d.radical_char}부</span>}
         {styles.isFieldVisible('grade') && d.grade != null && (
-          <Badge size="xs" variant="light" color="gray">
+          <span style={{ fontSize: 10, padding: '1px 6px', border: '0.5px solid var(--ou-border, #333)', borderRadius: 4 }}>
             {d.grade > 0 ? `${d.grade}급` : '특급'}
-          </Badge>
+          </span>
         )}
-      </Group>
-    </Paper>
+      </div>
+    </div>
   );
 }
 
-// ============================================================
-// 상세 패널
-// ============================================================
-function DetailPanel({ node, nodes, onClose, onSelect }: {
-  node: any;
-  nodes: any[];
-  onClose: () => void;
-  onSelect: (node: any) => void;
-}) {
+function DetailPanel({ node, nodes, onClose, onSelect }: { node: any; nodes: any[]; onClose: () => void; onSelect: (node: any) => void }) {
   const d = getNodeDomainData(node);
-
-  // 관련 한자 찾기
-  const sameRadical = useMemo(() =>
-    nodes.filter(n => {
-      const nd = getNodeDomainData(n);
-      return nd.radical_char === d.radical_char && nd.char !== d.char;
-    }).slice(0, 20),
-    [nodes, d.radical_char, d.char],
-  );
-
-  const sameReading = useMemo(() => {
-    const myReading = d.readings?.ko?.[0];
-    if (!myReading) return [];
-    return nodes.filter(n => {
-      const nd = getNodeDomainData(n);
-      return nd.readings?.ko?.includes(myReading) && nd.char !== d.char;
-    }).slice(0, 20);
-  }, [nodes, d.readings?.ko, d.char]);
+  const sameRadical = useMemo(() => nodes.filter(n => { const nd = getNodeDomainData(n); return nd.radical_char === d.radical_char && nd.char !== d.char; }).slice(0, 20), [nodes, d.radical_char, d.char]);
+  const sameReading = useMemo(() => { const myReading = d.readings?.ko?.[0]; if (!myReading) return []; return nodes.filter(n => { const nd = getNodeDomainData(n); return nd.readings?.ko?.includes(myReading) && nd.char !== d.char; }).slice(0, 20); }, [nodes, d.readings?.ko, d.char]);
 
   return (
-    <Stack gap="lg" p="md">
-      {/* 헤더 */}
-      <Group justify="space-between">
-        <ActionIcon variant="subtle" color="gray" onClick={onClose}>
-          <ArrowLeft size={18} />
-        </ActionIcon>
-        {d.grade != null && (
-          <Badge variant="light" color="gray">
-            {d.grade > 0 ? `${d.grade}급` : '특급'}
-          </Badge>
-        )}
-      </Group>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24, padding: 16 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', padding: 4 }}><ArrowLeft size={18} /></button>
+        {d.grade != null && <span style={{ fontSize: 10, padding: '2px 8px', border: '0.5px solid var(--ou-border, #333)', borderRadius: 4 }}>{d.grade > 0 ? `${d.grade}급` : '특급'}</span>}
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'center' }}>
+        <span style={{ fontSize: 64, fontWeight: 700, lineHeight: 1 }}>{d.char}</span>
+        <span style={{ fontSize: 18, fontWeight: 500 }}>{d.readings?.ko_hun?.[0] && `${d.readings.ko_hun[0]} `}{d.readings?.ko?.[0] || d.hangul_reading}</span>
+        <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)' }}>부수: {d.radical_char} ({d.radical_name_ko}) | 총획: {d.stroke_count}</span>
+      </div>
 
-      <Stack gap={4} align="center">
-        <Text fz={64} fw={700} lh={1}>{d.char}</Text>
-        <Text fz="lg" fw={500}>
-          {d.readings?.ko_hun?.[0] && `${d.readings.ko_hun[0]} `}
-          {d.readings?.ko?.[0] || d.hangul_reading}
-        </Text>
-        <Text fz="xs" c="dimmed">
-          부수: {d.radical_char} ({d.radical_name_ko}) | 총획: {d.stroke_count}
-        </Text>
-      </Stack>
-
-      {/* 구성 원리 */}
       {d.composition && (
-        <Paper p="sm" style={{ border: '1px solid var(--mantine-color-default-border)', borderRadius: 8 }}>
-          <Text fz="xs" c="dimmed" mb={4}>구성 원리</Text>
-          <Group gap="xs">
-            <Badge variant="outline" color="gray" size="sm">{d.composition.type}</Badge>
-            {d.composition.components?.length > 0 && (
-              <Text fz="sm">{d.composition.components.join(' + ')}</Text>
-            )}
-          </Group>
-          {d.composition.explanation && (
-            <Text fz="sm" mt={4}>{d.composition.explanation}</Text>
-          )}
-          {d.composition.mnemonic && (
-            <Text fz="xs" c="dimmed" mt={4} fs="italic">
-              {d.composition.mnemonic}
-            </Text>
-          )}
-        </Paper>
+        <div style={{ padding: 12, border: '1px solid var(--ou-border, #333)', borderRadius: 8 }}>
+          <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', display: 'block', marginBottom: 4 }}>구성 원리</span>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <span style={{ fontSize: 10, padding: '1px 6px', border: '0.5px solid var(--ou-border, #333)', borderRadius: 4 }}>{d.composition.type}</span>
+            {d.composition.components?.length > 0 && <span style={{ fontSize: 13 }}>{d.composition.components.join(' + ')}</span>}
+          </div>
+          {d.composition.explanation && <span style={{ fontSize: 13, display: 'block', marginTop: 4 }}>{d.composition.explanation}</span>}
+          {d.composition.mnemonic && <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', display: 'block', marginTop: 4, fontStyle: 'italic' }}>{d.composition.mnemonic}</span>}
+        </div>
       )}
 
-      {/* 읽기 정보 */}
-      <Paper p="sm" style={{ border: '1px solid var(--mantine-color-default-border)', borderRadius: 8 }}>
-        <Text fz="xs" c="dimmed" mb={4}>읽기</Text>
-        <Stack gap={2}>
-          {d.readings?.ko?.length > 0 && (
-            <Group gap="xs">
-              <Text fz="xs" c="dimmed" w={32}>한국</Text>
-              <Text fz="sm">{d.readings.ko.join(', ')}</Text>
-            </Group>
-          )}
-          {d.readings?.cn_pinyin && (
-            <Group gap="xs">
-              <Text fz="xs" c="dimmed" w={32}>중국</Text>
-              <Text fz="sm">{d.readings.cn_pinyin}</Text>
-            </Group>
-          )}
-          {(d.readings?.jp_on || d.readings?.jp_kun) && (
-            <Group gap="xs">
-              <Text fz="xs" c="dimmed" w={32}>일본</Text>
-              <Text fz="sm">
-                {d.readings.jp_on && `${d.readings.jp_on}`}
-                {d.readings.jp_on && d.readings.jp_kun && ' / '}
-                {d.readings.jp_kun && `${d.readings.jp_kun}`}
-              </Text>
-            </Group>
-          )}
-        </Stack>
-      </Paper>
+      <div style={{ padding: 12, border: '1px solid var(--ou-border, #333)', borderRadius: 8 }}>
+        <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', display: 'block', marginBottom: 4 }}>읽기</span>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {d.readings?.ko?.length > 0 && <div style={{ display: 'flex', gap: 8 }}><span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', width: 32 }}>한국</span><span style={{ fontSize: 13 }}>{d.readings.ko.join(', ')}</span></div>}
+          {d.readings?.cn_pinyin && <div style={{ display: 'flex', gap: 8 }}><span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', width: 32 }}>중국</span><span style={{ fontSize: 13 }}>{d.readings.cn_pinyin}</span></div>}
+          {(d.readings?.jp_on || d.readings?.jp_kun) && <div style={{ display: 'flex', gap: 8 }}><span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', width: 32 }}>일본</span><span style={{ fontSize: 13 }}>{d.readings.jp_on && `${d.readings.jp_on}`}{d.readings.jp_on && d.readings.jp_kun && ' / '}{d.readings.jp_kun && `${d.readings.jp_kun}`}</span></div>}
+        </div>
+      </div>
 
-      {/* 영문 정의 */}
       {d.definition_en && (
-        <Paper p="sm" style={{ border: '1px solid var(--mantine-color-default-border)', borderRadius: 8 }}>
-          <Text fz="xs" c="dimmed" mb={4}>영문 정의</Text>
-          <Text fz="sm">{d.definition_en}</Text>
-        </Paper>
+        <div style={{ padding: 12, border: '1px solid var(--ou-border, #333)', borderRadius: 8 }}>
+          <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', display: 'block', marginBottom: 4 }}>영문 정의</span>
+          <span style={{ fontSize: 13 }}>{d.definition_en}</span>
+        </div>
       )}
 
-      {/* 관련 한자 — 같은 부수 */}
       {sameRadical.length > 0 && (
-        <Box>
-          <Text fz="xs" c="dimmed" mb={4}>
-            같은 부수 ({d.radical_char})
-          </Text>
-          <Group gap={4}>
+        <div>
+          <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', display: 'block', marginBottom: 4 }}>같은 부수 ({d.radical_char})</span>
+          <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
             {sameRadical.map(n => (
-              <Paper
-                key={n.id}
-                p={4}
-                onClick={() => onSelect(n)}
-                style={{
-                  border: '1px solid var(--mantine-color-default-border)',
-                  borderRadius: 4,
-                  cursor: 'pointer',
-                  width: 36,
-                  height: 36,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <Text fz="sm">{getNodeDomainData(n).char}</Text>
-              </Paper>
+              <div key={n.id} onClick={() => onSelect(n)} style={{ border: '1px solid var(--ou-border, #333)', borderRadius: 4, cursor: 'pointer', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13 }}>
+                {getNodeDomainData(n).char}
+              </div>
             ))}
-          </Group>
-        </Box>
+          </div>
+        </div>
       )}
 
-      {/* 관련 한자 — 같은 음 */}
       {sameReading.length > 0 && (
-        <Box>
-          <Text fz="xs" c="dimmed" mb={4}>
-            같은 음 ({d.readings?.ko?.[0]})
-          </Text>
-          <Group gap={4}>
+        <div>
+          <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', display: 'block', marginBottom: 4 }}>같은 음 ({d.readings?.ko?.[0]})</span>
+          <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
             {sameReading.map(n => (
-              <Paper
-                key={n.id}
-                p={4}
-                onClick={() => onSelect(n)}
-                style={{
-                  border: '1px solid var(--mantine-color-default-border)',
-                  borderRadius: 4,
-                  cursor: 'pointer',
-                  width: 36,
-                  height: 36,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <Text fz="sm">{getNodeDomainData(n).char}</Text>
-              </Paper>
+              <div key={n.id} onClick={() => onSelect(n)} style={{ border: '1px solid var(--ou-border, #333)', borderRadius: 4, cursor: 'pointer', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13 }}>
+                {getNodeDomainData(n).char}
+              </div>
             ))}
-          </Group>
-        </Box>
+          </div>
+        </div>
       )}
-    </Stack>
+    </div>
   );
 }
 
-// ============================================================
-// 메인 DictionaryView
-// ============================================================
 const PAGE_SIZE = 100;
 
 interface DictionaryViewProps extends ViewProps {
-  onSearch?: (params: {
-    query?: string;
-    radical?: string;
-    grade?: string;
-    strokeMin?: string;
-    strokeMax?: string;
-    compType?: string;
-    page?: number;
-  }) => void;
+  onSearch?: (params: { query?: string; radical?: string; grade?: string; strokeMin?: string; strokeMax?: string; compType?: string; page?: number }) => void;
   total?: number;
   loading?: boolean;
 }
@@ -358,258 +185,143 @@ interface DictionaryViewProps extends ViewProps {
 export function DictionaryView({ nodes, onSearch, total, loading, layoutConfig }: DictionaryViewProps) {
   const styles = useLayoutStyles(layoutConfig);
   const [searchQuery, setSearchQuery] = useState('');
-  const [debouncedQuery] = useDebouncedValue(searchQuery, 200);
+  const debouncedQuery = useDebouncedValue(searchQuery, 200);
   const [filters, setFilters] = useState<Filters>({});
   const [selectedNode, setSelectedNode] = useState<any>(null);
-  const [drawerOpened, { open: openDrawer, close: closeDrawer }] = useDisclosure(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [page, setPage] = useState(1);
 
-  // 서버사이드 검색 모드 여부
   const isServerMode = !!onSearch;
+  const hanjaChars = useMemo(() => extractHanjaChars(debouncedQuery), [debouncedQuery]);
 
-  // 한자 추출
-  const hanjaChars = useMemo(
-    () => extractHanjaChars(debouncedQuery),
-    [debouncedQuery],
-  );
-
-  // 서버 검색 트리거 (debounced query 또는 필터 변경 시)
   useEffect(() => {
     if (!isServerMode) return;
-    onSearch({
-      query: debouncedQuery || undefined,
-      radical: filters.radical,
-      grade: filters.gradeMin?.toString(),
-      page,
-    });
+    onSearch({ query: debouncedQuery || undefined, radical: filters.radical, grade: filters.gradeMin?.toString(), page });
   }, [debouncedQuery, filters, page, isServerMode]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // 클라이언트 필터링 (ViewRenderer 경유 시)
   const filteredNodes = useMemo(() => {
-    if (isServerMode) return nodes; // 서버가 이미 필터링함
-
+    if (isServerMode) return nodes;
     let result = nodes.filter(n => {
       const d = getNodeDomainData(n);
       if (d.type !== 'hanja') return false;
-      if (!matchesSearch(n, debouncedQuery, hanjaChars)) return false;
+      if (!matchesSearchFn(n, debouncedQuery, hanjaChars)) return false;
       if (!matchesFilters(n, filters)) return false;
       return true;
     });
-
     if (hanjaChars.length > 0) {
       const order = new Map(hanjaChars.map((c, i) => [c, i]));
-      result.sort((a, b) => {
-        const aIdx = order.get(getNodeDomainData(a).char) ?? 999;
-        const bIdx = order.get(getNodeDomainData(b).char) ?? 999;
-        return aIdx - bIdx;
-      });
+      result.sort((a, b) => (order.get(getNodeDomainData(a).char) ?? 999) - (order.get(getNodeDomainData(b).char) ?? 999));
     }
-
     return result;
   }, [nodes, debouncedQuery, hanjaChars, filters, isServerMode]);
 
-  // 사용 가능한 필터 (빈 필터 숨김)
-  const availableFilters = useMemo(
-    () => getAvailableFilters((nodes ?? []).filter(n => getNodeDomainData(n).type === 'hanja')),
-    [nodes],
-  );
+  const availableFilters = useMemo(() => getAvailableFilters((nodes ?? []).filter(n => getNodeDomainData(n).type === 'hanja')), [nodes]);
 
-  // 페이지네이션
   const totalCount = isServerMode ? (total ?? nodes.length) : filteredNodes.length;
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
   const pagedNodes = isServerMode ? filteredNodes : filteredNodes.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
-  const handleCardClick = useCallback((node: any) => {
-    setSelectedNode(node);
-    openDrawer();
-  }, [openDrawer]);
+  const handleCardClick = useCallback((node: any) => { setSelectedNode(node); setDrawerOpen(true); }, []);
+  const handleFilterChange = useCallback((key: keyof Filters, value: any) => { setFilters(prev => ({ ...prev, [key]: value })); setPage(1); }, []);
+  const clearFilter = useCallback((key: keyof Filters) => { setFilters(prev => { const next = { ...prev }; delete next[key]; return next; }); setPage(1); }, []);
+  const handleSearchChange = useCallback((val: string) => { setSearchQuery(val); setPage(1); }, []);
 
-  const handleFilterChange = useCallback((key: keyof Filters, value: any) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
-    setPage(1);
-  }, []);
-
-  const clearFilter = useCallback((key: keyof Filters) => {
-    setFilters(prev => {
-      const next = { ...prev };
-      delete next[key];
-      return next;
-    });
-    setPage(1);
-  }, []);
-
-  const handleSearchChange = useCallback((val: string) => {
-    setSearchQuery(val);
-    setPage(1);
-  }, []);
+  const gridCols = typeof styles.gridColumns === 'number' ? styles.gridColumns : 6;
 
   return (
-    <Stack gap="sm" p="md">
-      {/* 검색바 */}
-      <TextInput
-        placeholder="한자, 음, 훈 검색 (문장 붙여넣기 가능)"
-        leftSection={<MagnifyingGlass size={16} />}
-        rightSection={searchQuery ? (
-          <ActionIcon variant="subtle" size="sm" onClick={() => handleSearchChange('')}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: 16 }}>
+      {/* Search */}
+      <div style={{ position: 'relative' }}>
+        <MagnifyingGlass size={16} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--ou-text-dimmed, #888)' }} />
+        <input
+          placeholder="한자, 음, 훈 검색 (문장 붙여넣기 가능)"
+          value={searchQuery}
+          onChange={e => handleSearchChange(e.target.value)}
+          style={{ width: '100%', padding: '8px 32px 8px 32px', fontSize: 14, border: '0.5px solid var(--ou-border, #333)', borderRadius: 6, background: 'transparent', color: 'inherit', outline: 'none' }}
+        />
+        {searchQuery && (
+          <button onClick={() => handleSearchChange('')} style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', padding: 2 }}>
             <X size={14} />
-          </ActionIcon>
-        ) : null}
-        value={searchQuery}
-        onChange={e => handleSearchChange(e.currentTarget.value)}
-        styles={{ input: { fontSize: 14 } }}
-      />
+          </button>
+        )}
+      </div>
 
-      {/* 한자 추출 표시 */}
       {hanjaChars.length > 0 && (
-        <Group gap={4}>
-          <Text fz="xs" c="dimmed">추출된 한자:</Text>
+        <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+          <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)' }}>추출된 한자:</span>
           {hanjaChars.map((c, i) => (
-            <Badge key={i} variant="light" color="gray" size="sm">{c}</Badge>
+            <span key={i} style={{ fontSize: 10, padding: '1px 6px', border: '0.5px solid var(--ou-border, #333)', borderRadius: 4 }}>{c}</span>
           ))}
-        </Group>
+        </div>
       )}
 
-      {/* 필터 */}
-      <Group gap="xs">
-        {/* 부수 필터 */}
+      {/* Filters */}
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
         {availableFilters.radicals.length > 0 && (
-          <Select
-            placeholder="부수"
-            size="xs"
-            clearable
-            searchable
-            value={filters.radical || null}
-            onChange={val => val ? handleFilterChange('radical', val) : clearFilter('radical')}
-            data={availableFilters.radicals.slice(0, 50).map(([char, count]) => ({
-              value: char,
-              label: `${char} (${count})`,
-            }))}
-            styles={{ input: { width: 90 } }}
-          />
+          <select value={filters.radical || ''} onChange={e => e.target.value ? handleFilterChange('radical', e.target.value) : clearFilter('radical')}
+            style={{ padding: '4px 8px', fontSize: 12, border: '0.5px solid var(--ou-border, #333)', borderRadius: 6, background: 'transparent', color: 'inherit', width: 90 }}>
+            <option value="">부수</option>
+            {availableFilters.radicals.slice(0, 50).map(([char, count]) => (<option key={char} value={char}>{char} ({count})</option>))}
+          </select>
         )}
-
-        {/* 급수 필터 */}
         {availableFilters.grades.length > 0 && (
-          <Select
-            placeholder="급수"
-            size="xs"
-            clearable
-            value={filters.gradeMin?.toString() || null}
-            onChange={val => {
-              if (val) {
-                const g = parseInt(val);
-                handleFilterChange('gradeMin', g);
-                handleFilterChange('gradeMax', g);
-              } else {
-                clearFilter('gradeMin');
-                clearFilter('gradeMax');
-              }
-            }}
-            data={availableFilters.grades.map(([grade, count]) => ({
-              value: grade.toString(),
-              label: `${grade > 0 ? `${grade}급` : '특급'} (${count})`,
-            }))}
-            styles={{ input: { width: 90 } }}
-          />
+          <select value={filters.gradeMin?.toString() || ''} onChange={e => { if (e.target.value) { const g = parseInt(e.target.value); handleFilterChange('gradeMin', g); handleFilterChange('gradeMax', g); } else { clearFilter('gradeMin'); clearFilter('gradeMax'); } }}
+            style={{ padding: '4px 8px', fontSize: 12, border: '0.5px solid var(--ou-border, #333)', borderRadius: 6, background: 'transparent', color: 'inherit', width: 90 }}>
+            <option value="">급수</option>
+            {availableFilters.grades.map(([grade, count]) => (<option key={grade} value={grade.toString()}>{grade > 0 ? `${grade}급` : '특급'} ({count})</option>))}
+          </select>
         )}
-
-        {/* 구성원리 필터 */}
         {availableFilters.compositionTypes.length > 0 && (
-          <Select
-            placeholder="구성원리"
-            size="xs"
-            clearable
-            value={filters.compositionType || null}
-            onChange={val => val ? handleFilterChange('compositionType', val) : clearFilter('compositionType')}
-            data={availableFilters.compositionTypes.map(([type, count]) => ({
-              value: type,
-              label: `${type} (${count})`,
-            }))}
-            styles={{ input: { width: 100 } }}
-          />
+          <select value={filters.compositionType || ''} onChange={e => e.target.value ? handleFilterChange('compositionType', e.target.value) : clearFilter('compositionType')}
+            style={{ padding: '4px 8px', fontSize: 12, border: '0.5px solid var(--ou-border, #333)', borderRadius: 6, background: 'transparent', color: 'inherit', width: 100 }}>
+            <option value="">구성원리</option>
+            {availableFilters.compositionTypes.map(([type, count]) => (<option key={type} value={type}>{type} ({count})</option>))}
+          </select>
         )}
-      </Group>
+      </div>
 
-      {/* 활성 필터 칩 */}
+      {/* Active filter chips */}
       {Object.keys(filters).length > 0 && (
-        <Group gap={4}>
-          {filters.radical && (
-            <Chip checked={false} size="xs" onClick={() => clearFilter('radical')}>
-              {filters.radical}부 ×
-            </Chip>
-          )}
-          {filters.gradeMin != null && (
-            <Chip checked={false} size="xs" onClick={() => { clearFilter('gradeMin'); clearFilter('gradeMax'); }}>
-              {filters.gradeMin}급 ×
-            </Chip>
-          )}
-          {filters.compositionType && (
-            <Chip checked={false} size="xs" onClick={() => clearFilter('compositionType')}>
-              {filters.compositionType} ×
-            </Chip>
-          )}
-        </Group>
+        <div style={{ display: 'flex', gap: 4 }}>
+          {filters.radical && <button onClick={() => clearFilter('radical')} style={{ fontSize: 11, padding: '2px 8px', border: '0.5px solid var(--ou-border, #333)', borderRadius: 12, background: 'none', cursor: 'pointer', color: 'inherit' }}>{filters.radical}부 x</button>}
+          {filters.gradeMin != null && <button onClick={() => { clearFilter('gradeMin'); clearFilter('gradeMax'); }} style={{ fontSize: 11, padding: '2px 8px', border: '0.5px solid var(--ou-border, #333)', borderRadius: 12, background: 'none', cursor: 'pointer', color: 'inherit' }}>{filters.gradeMin}급 x</button>}
+          {filters.compositionType && <button onClick={() => clearFilter('compositionType')} style={{ fontSize: 11, padding: '2px 8px', border: '0.5px solid var(--ou-border, #333)', borderRadius: 12, background: 'none', cursor: 'pointer', color: 'inherit' }}>{filters.compositionType} x</button>}
+        </div>
       )}
 
-      {/* 결과 카운트 + 로딩 */}
-      <Group gap="xs">
-        {loading && <Loader size={12} />}
-        <Text fz="xs" c="dimmed">
-          {totalCount.toLocaleString()}자
-        </Text>
-      </Group>
+      {/* Count + loading */}
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+        {loading && <div style={{ width: 12, height: 12, border: '2px solid var(--ou-gray-5, #888)', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.6s linear infinite' }} />}
+        <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)' }}>{totalCount.toLocaleString()}자</span>
+      </div>
 
-      {/* 카드 그리드 */}
-      <SimpleGrid
-        cols={typeof styles.gridColumns === 'number'
-          ? styles.gridColumns
-          : styles.gridColumns as Record<string, number>}
-        spacing={styles.gridGap}
-      >
-        {pagedNodes.map(node => (
-          <HanjaCard
-            key={node.id}
-            node={node}
-            onClick={() => handleCardClick(node)}
-            styles={styles}
-          />
-        ))}
-      </SimpleGrid>
+      {/* Card grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${gridCols}, 1fr)`, gap: styles.gridGap ?? 8 }}>
+        {pagedNodes.map(node => (<HanjaCard key={node.id} node={node} onClick={() => handleCardClick(node)} styles={styles} />))}
+      </div>
 
-      {/* 페이지네이션 */}
+      {/* Pagination */}
       {totalPages > 1 && (
-        <Group justify="center" mt="sm">
-          <Pagination
-            total={totalPages}
-            value={page}
-            onChange={setPage}
-            size="sm"
-          />
-        </Group>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 4, marginTop: 12 }}>
+          <button disabled={page <= 1} onClick={() => setPage(p => Math.max(1, p - 1))} style={{ padding: '4px 8px', border: '0.5px solid var(--ou-border, #333)', borderRadius: 4, background: 'none', cursor: page <= 1 ? 'default' : 'pointer', color: 'inherit', opacity: page <= 1 ? 0.3 : 1 }}>Prev</button>
+          <span style={{ padding: '4px 8px', fontSize: 12 }}>{page} / {totalPages}</span>
+          <button disabled={page >= totalPages} onClick={() => setPage(p => Math.min(totalPages, p + 1))} style={{ padding: '4px 8px', border: '0.5px solid var(--ou-border, #333)', borderRadius: 4, background: 'none', cursor: page >= totalPages ? 'default' : 'pointer', color: 'inherit', opacity: page >= totalPages ? 0.3 : 1 }}>Next</button>
+        </div>
       )}
 
-      {/* 상세 Drawer */}
-      <Drawer
-        opened={drawerOpened}
-        onClose={closeDrawer}
-        position="right"
-        size="sm"
-        withCloseButton={false}
-        styles={{
-          body: { padding: 0 },
-        }}
-      >
-        {selectedNode && (
-          <ScrollArea h="100vh">
-            <DetailPanel
-              node={selectedNode}
-              nodes={filteredNodes}
-              onClose={closeDrawer}
-              onSelect={node => setSelectedNode(node)}
-            />
-          </ScrollArea>
-        )}
-      </Drawer>
-    </Stack>
+      {/* Detail drawer overlay */}
+      {drawerOpen && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', justifyContent: 'flex-end' }} onClick={() => setDrawerOpen(false)}>
+          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)' }} />
+          <div onClick={e => e.stopPropagation()} style={{ position: 'relative', width: 380, maxWidth: '90vw', height: '100vh', overflowY: 'auto', background: 'var(--ou-bg, #111)', borderLeft: '0.5px solid var(--ou-border, #333)' }}>
+            {selectedNode && (
+              <DetailPanel node={selectedNode} nodes={filteredNodes} onClose={() => setDrawerOpen(false)} onSelect={node => setSelectedNode(node)} />
+            )}
+          </div>
+        </div>
+      )}
+
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    </div>
   );
 }

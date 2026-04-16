@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo } from 'react';
-import { Stack, Text, Box } from '@mantine/core';
 import type { ViewProps } from './registry';
 
 interface TreemapRect {
@@ -56,11 +55,11 @@ function layoutTreemap(groups: { domain: string; count: number; nodes: { id: str
 }
 
 const GRAYS = [
-  'var(--mantine-color-gray-1)',
-  'var(--mantine-color-gray-2)',
-  'var(--mantine-color-gray-3)',
-  'var(--mantine-color-gray-1)',
-  'var(--mantine-color-gray-2)',
+  'var(--ou-gray-1, #f0f0f0)',
+  'var(--ou-gray-2, #ddd)',
+  'var(--ou-gray-3, #ccc)',
+  'var(--ou-gray-1, #f0f0f0)',
+  'var(--ou-gray-2, #ddd)',
 ];
 
 export function TreemapView({ nodes }: ViewProps) {
@@ -85,12 +84,12 @@ export function TreemapView({ nodes }: ViewProps) {
   if (nodes.length === 0) return null;
 
   return (
-    <Stack gap={0} p="md">
-      <Text fz="xs" c="dimmed" mb="md">Treemap</Text>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 0, padding: 16 }}>
+      <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', marginBottom: 16 }}>Treemap</span>
 
-      <Box style={{ position: 'relative', width: 600, height: 400, maxWidth: '100%', overflow: 'hidden' }}>
+      <div style={{ position: 'relative', width: 600, height: 400, maxWidth: '100%', overflow: 'hidden' }}>
         {rects.map((r, i) => (
-          <Box
+          <div
             key={r.domain}
             style={{
               position: 'absolute',
@@ -99,20 +98,20 @@ export function TreemapView({ nodes }: ViewProps) {
               width: r.w,
               height: r.h,
               backgroundColor: GRAYS[i % GRAYS.length],
-              border: '0.5px solid var(--mantine-color-default-border)',
+              border: '0.5px solid var(--ou-border, #333)',
               borderRadius: 2,
               padding: 6,
               overflow: 'hidden',
             }}
           >
-            <Text fz={11} fw={600} truncate mb={2}>
+            <span style={{ fontSize: 11, fontWeight: 600, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginBottom: 2 }}>
               {r.domain} ({r.count})
-            </Text>
+            </span>
 
             {r.h > 40 && (
-              <Box style={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
                 {r.nodes.slice(0, Math.floor((r.w * r.h) / 1200)).map(n => (
-                  <Box
+                  <div
                     key={n.id}
                     style={{
                       backgroundColor: 'rgba(255,255,255,0.7)',
@@ -121,16 +120,16 @@ export function TreemapView({ nodes }: ViewProps) {
                       maxWidth: r.w - 16,
                     }}
                   >
-                    <Text fz={9} truncate>
+                    <span style={{ fontSize: 9, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {n.title}
-                    </Text>
-                  </Box>
+                    </span>
+                  </div>
                 ))}
-              </Box>
+              </div>
             )}
-          </Box>
+          </div>
         ))}
-      </Box>
-    </Stack>
+      </div>
+    </div>
   );
 }

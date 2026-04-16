@@ -2,10 +2,6 @@
 
 import { useState, useMemo } from 'react';
 import {
-  Box, Group, Text, Stack, Avatar, Badge, Tabs,
-  SimpleGrid, ScrollArea, Divider,
-} from '@mantine/core';
-import {
   User, Eye, EyeSlash, Planet, IdentificationCard, UsersThree,
 } from '@phosphor-icons/react';
 
@@ -14,18 +10,9 @@ interface ProfileViewProps {
   filters?: Record<string, any>;
 }
 
-/**
- * 프로필 뷰 (Profile View)
- * 회원의 프로필을 데이터뷰 형태로 렌더링
- * - 기본 정보
- * - 페르소나별 공개 데이터
- * - 도메인별 데이터 통계
- * - 공개 노드 목록
- */
 export function ProfileView({ nodes }: ProfileViewProps) {
-  const [activeTab, setActiveTab] = useState<string | null>('overview');
+  const [activeTab, setActiveTab] = useState<string>('overview');
 
-  // 프로필 데이터 추출 (첫 노드 또는 domain_data에서)
   const profileData = useMemo(() => {
     const profileNode = nodes.find(n => n.domain_data?.type === 'profile');
     const dd = profileNode?.domain_data ?? {};
@@ -38,7 +25,6 @@ export function ProfileView({ nodes }: ProfileViewProps) {
     };
   }, [nodes]);
 
-  // 도메인별 통계
   const domainStats = useMemo(() => {
     const stats = new Map<string, number>();
     for (const n of nodes) {
@@ -51,164 +37,182 @@ export function ProfileView({ nodes }: ProfileViewProps) {
       .map(([domain, count]) => ({ domain, count }));
   }, [nodes]);
 
-  // 공개/비공개 노드 분류
   const publicNodes = useMemo(() => nodes.filter(n => n.visibility === 'public'), [nodes]);
-  const privateNodes = useMemo(() => nodes.filter(n => n.visibility !== 'public'), [nodes]);
-
   const totalNodes = nodes.length;
 
+  const tabs = [
+    { value: 'overview', label: '개요', icon: <IdentificationCard size={14} /> },
+    { value: 'public', label: '공개 데이터', icon: <Eye size={14} /> },
+    ...(profileData.personas.length > 0 ? [{ value: 'personas', label: '페르소나', icon: <UsersThree size={14} /> }] : []),
+  ];
+
   return (
-    <Box p="md">
-      {/* 프로필 헤더 */}
-      <Group gap="md" mb="lg" align="flex-start">
-        <Avatar
-          src={profileData.avatarUrl}
-          size={64}
-          radius="xl"
-          color="gray"
+    <div style={{ padding: 16 }}>
+      {/* Profile header */}
+      <div style={{ display: 'flex', gap: 16, marginBottom: 24, alignItems: 'flex-start' }}>
+        <div
+          style={{
+            width: 64,
+            height: 64,
+            borderRadius: '50%',
+            border: '0.5px solid var(--ou-border, #333)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0,
+            overflow: 'hidden',
+          }}
         >
-          <User size={28} weight="light" />
-        </Avatar>
-        <Stack gap={4} style={{ flex: 1 }}>
-          <Text fw={600} fz="lg">{profileData.displayName}</Text>
+          {profileData.avatarUrl ? (
+            <img src={profileData.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          ) : (
+            <User size={28} weight="light" />
+          )}
+        </div>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <span style={{ fontWeight: 600, fontSize: 18 }}>{profileData.displayName}</span>
           {profileData.handle && (
-            <Text fz="xs" c="dimmed">@{profileData.handle}</Text>
+            <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)' }}>@{profileData.handle}</span>
           )}
           {profileData.bio && (
-            <Text fz="sm" c="dimmed" lineClamp={2}>{profileData.bio}</Text>
+            <span style={{ fontSize: 13, color: 'var(--ou-text-dimmed, #888)', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{profileData.bio}</span>
           )}
-          <Group gap="md" mt={4}>
-            <Group gap={4}>
+          <div style={{ display: 'flex', gap: 16, marginTop: 4 }}>
+            <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
               <Planet size={14} weight="light" />
-              <Text fz="xs" c="dimmed">{totalNodes} Planet</Text>
-            </Group>
-            <Group gap={4}>
+              <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)' }}>{totalNodes} Planet</span>
+            </div>
+            <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
               <Eye size={14} weight="light" />
-              <Text fz="xs" c="dimmed">{publicNodes.length} 공개</Text>
-            </Group>
-          </Group>
-        </Stack>
-      </Group>
+              <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)' }}>{publicNodes.length} 공개</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
-      <Tabs value={activeTab} onChange={setActiveTab} variant="outline" color="gray">
-        <Tabs.List>
-          <Tabs.Tab value="overview" leftSection={<IdentificationCard size={14} />}>
-            개요
-          </Tabs.Tab>
-          <Tabs.Tab value="public" leftSection={<Eye size={14} />}>
-            공개 데이터
-          </Tabs.Tab>
-          {profileData.personas.length > 0 && (
-            <Tabs.Tab value="personas" leftSection={<UsersThree size={14} />}>
-              페르소나
-            </Tabs.Tab>
-          )}
-        </Tabs.List>
+      {/* Tabs */}
+      <div style={{ display: 'flex', gap: 0, borderBottom: '0.5px solid var(--ou-border, #333)', marginBottom: 16 }}>
+        {tabs.map(tab => (
+          <button
+            key={tab.value}
+            onClick={() => setActiveTab(tab.value)}
+            style={{
+              padding: '8px 16px',
+              border: 'none',
+              background: 'none',
+              cursor: 'pointer',
+              fontSize: 12,
+              color: activeTab === tab.value ? 'inherit' : 'var(--ou-text-dimmed, #888)',
+              borderBottom: activeTab === tab.value ? '2px solid currentColor' : '2px solid transparent',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+            }}
+          >
+            {tab.icon}
+            {tab.label}
+          </button>
+        ))}
+      </div>
 
-        {/* 개요 */}
-        <Tabs.Panel value="overview" pt="md">
-          <Stack gap="md">
-            <Text fz="xs" fw={600} c="dimmed" tt="uppercase">도메인별 데이터</Text>
-            {domainStats.length > 0 ? (
-              <SimpleGrid cols={2} spacing="xs">
-                {domainStats.map(({ domain, count }) => (
-                  <Group
-                    key={domain}
-                    px="sm"
-                    py="xs"
-                    style={{
-                      border: '0.5px solid var(--mantine-color-default-border)',
-                      borderRadius: 8,
-                    }}
-                    justify="space-between"
-                  >
-                    <Text fz="sm">{DOMAIN_LABELS[domain] ?? domain}</Text>
-                    <Badge variant="light" color="gray" size="sm">{count}</Badge>
-                  </Group>
-                ))}
-              </SimpleGrid>
-            ) : (
-              <Text fz="sm" c="dimmed">아직 데이터가 없습니다</Text>
-            )}
-          </Stack>
-        </Tabs.Panel>
-
-        {/* 공개 데이터 */}
-        <Tabs.Panel value="public" pt="md">
-          <ScrollArea h={400}>
-            {publicNodes.length > 0 ? (
-              <Stack gap={4}>
-                {publicNodes.map(node => (
-                  <Group
-                    key={node.id}
-                    px="md"
-                    py="sm"
-                    style={{
-                      border: '0.5px solid var(--mantine-color-default-border)',
-                      borderRadius: 8,
-                    }}
-                  >
-                    <Badge variant="light" color="gray" size="xs">{node.domain ?? '-'}</Badge>
-                    <Text fz="sm" lineClamp={1} style={{ flex: 1 }}>
-                      {node.domain_data?.title ?? node.raw?.slice(0, 60) ?? '(제목 없음)'}
-                    </Text>
-                    <Text fz="xs" c="dimmed">
-                      {node.created_at ? new Date(node.created_at).toLocaleDateString('ko-KR') : ''}
-                    </Text>
-                  </Group>
-                ))}
-              </Stack>
-            ) : (
-              <Stack align="center" py="xl">
-                <EyeSlash size={48} weight="light" color="var(--mantine-color-gray-5)" />
-                <Text fz="sm" c="dimmed">공개된 데이터가 없습니다</Text>
-              </Stack>
-            )}
-          </ScrollArea>
-        </Tabs.Panel>
-
-        {/* 페르소나 */}
-        {profileData.personas.length > 0 && (
-          <Tabs.Panel value="personas" pt="md">
-            <Stack gap="md">
-              {profileData.personas.map((persona: any, idx: number) => (
-                <Box
-                  key={idx}
-                  p="md"
+      {/* Overview */}
+      {activeTab === 'overview' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ou-text-dimmed, #888)', textTransform: 'uppercase' }}>도메인별 데이터</span>
+          {domainStats.length > 0 ? (
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+              {domainStats.map(({ domain, count }) => (
+                <div
+                  key={domain}
                   style={{
-                    border: '0.5px solid var(--mantine-color-default-border)',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    padding: '8px 12px',
+                    border: '0.5px solid var(--ou-border, #333)',
                     borderRadius: 8,
                   }}
                 >
-                  <Group gap="sm" mb="xs">
-                    <Avatar size={32} radius="xl" color="gray">
-                      {persona.display_name?.[0] ?? '?'}
-                    </Avatar>
-                    <Stack gap={0}>
-                      <Text fz="sm" fw={500}>{persona.display_name ?? '페르소나'}</Text>
-                      {persona.handle && (
-                        <Text fz="xs" c="dimmed">@{persona.handle}</Text>
-                      )}
-                    </Stack>
-                    <Badge
-                      variant="dot"
-                      color={persona.visibility === 'public' ? 'gray' : 'dark'}
-                      size="xs"
-                      ml="auto"
-                    >
-                      {persona.visibility === 'public' ? '공개' : '비공개'}
-                    </Badge>
-                  </Group>
-                  {persona.bio && (
-                    <Text fz="xs" c="dimmed">{persona.bio}</Text>
-                  )}
-                </Box>
+                  <span style={{ fontSize: 13 }}>{DOMAIN_LABELS[domain] ?? domain}</span>
+                  <span style={{ fontSize: 10, padding: '1px 6px', border: '0.5px solid var(--ou-border, #333)', borderRadius: 4 }}>{count}</span>
+                </div>
               ))}
-            </Stack>
-          </Tabs.Panel>
-        )}
-      </Tabs>
-    </Box>
+            </div>
+          ) : (
+            <span style={{ fontSize: 13, color: 'var(--ou-text-dimmed, #888)' }}>아직 데이터가 없습니다</span>
+          )}
+        </div>
+      )}
+
+      {/* Public data */}
+      {activeTab === 'public' && (
+        <div style={{ maxHeight: 400, overflowY: 'auto' }}>
+          {publicNodes.length > 0 ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              {publicNodes.map(node => (
+                <div
+                  key={node.id}
+                  style={{
+                    display: 'flex',
+                    padding: '8px 16px',
+                    gap: 12,
+                    alignItems: 'center',
+                    border: '0.5px solid var(--ou-border, #333)',
+                    borderRadius: 8,
+                  }}
+                >
+                  <span style={{ fontSize: 10, padding: '1px 6px', border: '0.5px solid var(--ou-border, #333)', borderRadius: 4 }}>{node.domain ?? '-'}</span>
+                  <span style={{ fontSize: 13, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {node.domain_data?.title ?? node.raw?.slice(0, 60) ?? '(제목 없음)'}
+                  </span>
+                  <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)' }}>
+                    {node.created_at ? new Date(node.created_at).toLocaleDateString('ko-KR') : ''}
+                  </span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '32px 0' }}>
+              <EyeSlash size={48} weight="light" style={{ color: 'var(--ou-gray-5, #888)' }} />
+              <span style={{ fontSize: 13, color: 'var(--ou-text-dimmed, #888)', marginTop: 8 }}>공개된 데이터가 없습니다</span>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Personas */}
+      {activeTab === 'personas' && profileData.personas.length > 0 && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {profileData.personas.map((persona: any, idx: number) => (
+            <div
+              key={idx}
+              style={{
+                padding: 16,
+                border: '0.5px solid var(--ou-border, #333)',
+                borderRadius: 8,
+              }}
+            >
+              <div style={{ display: 'flex', gap: 12, marginBottom: 8, alignItems: 'center' }}>
+                <div style={{ width: 32, height: 32, borderRadius: '50%', border: '0.5px solid var(--ou-border, #333)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>
+                  {persona.display_name?.[0] ?? '?'}
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+                  <span style={{ fontSize: 13, fontWeight: 500 }}>{persona.display_name ?? '페르소나'}</span>
+                  {persona.handle && (
+                    <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)' }}>@{persona.handle}</span>
+                  )}
+                </div>
+                <span style={{ fontSize: 10, marginLeft: 'auto', padding: '1px 6px', border: '0.5px solid var(--ou-border, #333)', borderRadius: 4 }}>
+                  {persona.visibility === 'public' ? '공개' : '비공개'}
+                </span>
+              </div>
+              {persona.bio && (
+                <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)' }}>{persona.bio}</span>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 

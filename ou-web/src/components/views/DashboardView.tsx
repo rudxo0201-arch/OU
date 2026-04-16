@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo } from 'react';
-import { Stack, Text, Box, SimpleGrid, Group } from '@mantine/core';
 import { ChartBar, Database, Clock } from '@phosphor-icons/react';
 import type { ViewProps } from './registry';
 
@@ -49,107 +48,107 @@ export function DashboardView({ nodes }: ViewProps) {
   const maxDomainCount = Math.max(1, ...domainStats.map(d => d.count));
 
   return (
-    <Stack gap="md" p="md">
-      <Text fz="xs" c="dimmed">Dashboard</Text>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: 16 }}>
+      <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)' }}>Dashboard</span>
 
       {/* Stat cards */}
-      <SimpleGrid cols={3} spacing="xs">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
         <StatCard icon={<Database size={16} />} label="Total Nodes" value={totalCount} />
         <StatCard icon={<ChartBar size={16} />} label="Domains" value={domainStats.length} />
         <StatCard icon={<Clock size={16} />} label="Recent (7d)" value={recentCount} />
-      </SimpleGrid>
+      </div>
 
       {/* Bar chart */}
       {domainStats.length > 0 && (
-        <Box
+        <div
           style={{
-            border: '0.5px solid var(--mantine-color-default-border)',
+            border: '0.5px solid var(--ou-border, #333)',
             borderRadius: 6,
             padding: 12,
           }}
         >
-          <Text fz={11} c="dimmed" fw={500} mb={8}>
+          <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', fontWeight: 500, display: 'block', marginBottom: 8 }}>
             Nodes by Domain
-          </Text>
-          <Stack gap={6}>
+          </span>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             {domainStats.slice(0, 8).map(d => (
-              <Group key={d.domain} gap={8} wrap="nowrap">
-                <Text fz={11} style={{ width: 80, flexShrink: 0 }} truncate>
+              <div key={d.domain} style={{ display: 'flex', gap: 8, flexWrap: 'nowrap', alignItems: 'center' }}>
+                <span style={{ fontSize: 11, width: 80, flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {d.domain}
-                </Text>
-                <Box style={{ flex: 1, height: 16, position: 'relative' }}>
-                  <Box
+                </span>
+                <div style={{ flex: 1, height: 16, position: 'relative' }}>
+                  <div
                     style={{
                       height: '100%',
                       width: `${(d.count / maxDomainCount) * 100}%`,
-                      backgroundColor: 'var(--mantine-color-gray-4)',
+                      backgroundColor: 'var(--ou-gray-4, #aaa)',
                       borderRadius: 3,
                       minWidth: 4,
                     }}
                   />
-                </Box>
-                <Text fz={11} c="dimmed" style={{ width: 28, textAlign: 'right', flexShrink: 0 }}>
+                </div>
+                <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', width: 28, textAlign: 'right', flexShrink: 0 }}>
                   {d.count}
-                </Text>
-              </Group>
+                </span>
+              </div>
             ))}
-          </Stack>
-        </Box>
+          </div>
+        </div>
       )}
 
       {/* Recent nodes */}
       {recentNodes.length > 0 && (
-        <Box
+        <div
           style={{
-            border: '0.5px solid var(--mantine-color-default-border)',
+            border: '0.5px solid var(--ou-border, #333)',
             borderRadius: 6,
             padding: 12,
           }}
         >
-          <Text fz={11} c="dimmed" fw={500} mb={8}>
+          <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', fontWeight: 500, display: 'block', marginBottom: 8 }}>
             Recent Nodes
-          </Text>
-          <Stack gap={4}>
+          </span>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             {recentNodes.map(n => (
-              <Group key={n.id} gap={8} wrap="nowrap" style={{ minHeight: 28 }} align="center">
-                <Box
+              <div key={n.id} style={{ display: 'flex', gap: 8, flexWrap: 'nowrap', minHeight: 28, alignItems: 'center' }}>
+                <div
                   style={{
                     width: 6,
                     height: 6,
                     borderRadius: '50%',
-                    backgroundColor: 'var(--mantine-color-gray-5)',
+                    backgroundColor: 'var(--ou-gray-5, #888)',
                     flexShrink: 0,
                   }}
                 />
-                <Text fz={12} truncate style={{ flex: 1 }}>
+                <span style={{ fontSize: 12, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {n.domain_data?.title ?? ((n.raw ?? '').slice(0, 50) || 'Untitled')}
-                </Text>
-                <Text fz={10} c="dimmed" style={{ flexShrink: 0 }}>
+                </span>
+                <span style={{ fontSize: 10, color: 'var(--ou-text-dimmed, #888)', flexShrink: 0 }}>
                   {n.created_at ? new Date(n.created_at).toLocaleDateString() : ''}
-                </Text>
-              </Group>
+                </span>
+              </div>
             ))}
-          </Stack>
-        </Box>
+          </div>
+        </div>
       )}
-    </Stack>
+    </div>
   );
 }
 
 function StatCard({ icon, label, value }: { icon: React.ReactNode; label: string; value: number }) {
   return (
-    <Box
+    <div
       style={{
-        border: '0.5px solid var(--mantine-color-default-border)',
+        border: '0.5px solid var(--ou-border, #333)',
         borderRadius: 6,
         padding: 12,
       }}
     >
-      <Group gap={6} mb={4}>
-        <Box style={{ color: 'var(--mantine-color-dimmed)' }}>{icon}</Box>
-        <Text fz={10} c="dimmed">{label}</Text>
-      </Group>
-      <Text fz={20} fw={600}>{value}</Text>
-    </Box>
+      <div style={{ display: 'flex', gap: 6, marginBottom: 4, alignItems: 'center' }}>
+        <span style={{ color: 'var(--ou-text-dimmed, #888)' }}>{icon}</span>
+        <span style={{ fontSize: 10, color: 'var(--ou-text-dimmed, #888)' }}>{label}</span>
+      </div>
+      <span style={{ fontSize: 20, fontWeight: 600 }}>{value}</span>
+    </div>
   );
 }

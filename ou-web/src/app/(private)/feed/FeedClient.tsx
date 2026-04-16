@@ -1,10 +1,6 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import {
-  Stack, Text, Paper, Group, Avatar, Badge, ActionIcon, Box, Divider,
-  Button, Textarea, Center, UnstyledButton,
-} from '@mantine/core';
 import { Heart, ChatCircle, ArrowsClockwise, PaperPlaneTilt, Rss, CheckCircle } from '@phosphor-icons/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -152,47 +148,57 @@ export function FeedClient({ nodes, userId }: { nodes: FeedNode[]; userId?: stri
     : allNodes; // In real app, discover tab would fetch different data
 
   const renderEmptyState = () => (
-    <Center h="50vh">
-      <Stack align="center" gap="md">
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '50vh' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
         <Rss size={48} weight="light" style={{ color: 'var(--ou-text-dimmed)' }} />
-        <Text fw={600} fz="lg" style={{ color: 'var(--ou-text-strong)' }}>
+        <span style={{ fontWeight: 600, fontSize: 18, color: 'var(--ou-text-strong)' }}>
           {tab === 'following'
             ? '팔로우한 사람의 새로운 소식이 없어요'
             : '아직 공유된 내용이 없어요'
           }
-        </Text>
-        <Text fz="sm" ta="center" style={{ color: 'var(--ou-text-dimmed)' }}>
+        </span>
+        <span style={{ fontSize: 14, textAlign: 'center', color: 'var(--ou-text-dimmed)' }}>
           {tab === 'following'
             ? '다른 사용자를 팔로우해서 피드를 채워보세요.'
             : '대화를 시작하고 내 기록을 공개해보세요.'
           }
-        </Text>
-        <Group gap="sm">
+        </span>
+        <div style={{ display: 'flex', gap: 12 }}>
           {tab === 'following' && (
-            <Button
-              variant="default"
+            <button
               onClick={() => setTab('discover')}
               style={{
                 background: 'transparent',
                 border: '0.5px solid var(--ou-border-subtle)',
                 borderRadius: 'var(--ou-radius-pill)',
                 color: 'var(--ou-text-body)',
+                padding: '8px 16px',
+                fontSize: 14,
+                fontFamily: 'inherit',
+                cursor: 'pointer',
               }}
             >
               추천 둘러보기
-            </Button>
+            </button>
           )}
-          <Button
-            variant="subtle"
-            color="gray"
+          <button
             onClick={() => router.push('/chat')}
-            style={{ borderRadius: 'var(--ou-radius-pill)' }}
+            style={{
+              background: 'none',
+              border: 'none',
+              borderRadius: 'var(--ou-radius-pill)',
+              color: 'var(--ou-text-dimmed)',
+              padding: '8px 16px',
+              fontSize: 14,
+              fontFamily: 'inherit',
+              cursor: 'pointer',
+            }}
           >
             대화 시작하기
-          </Button>
-        </Group>
-      </Stack>
-    </Center>
+          </button>
+        </div>
+      </div>
+    </div>
   );
 
   /* pill-block tab style */
@@ -203,46 +209,48 @@ export function FeedClient({ nodes, userId }: { nodes: FeedNode[]; userId?: stri
     boxShadow: active ? 'var(--ou-glow-xs)' : 'none',
     transition: 'all var(--ou-transition)',
     padding: '4px 14px',
+    cursor: 'pointer',
+    fontFamily: 'inherit',
   });
 
   return (
-    <Stack gap="md" maw={640} mx="auto" p="xl">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 640, margin: '0 auto', padding: 24 }}>
       {/* Header with tabs — pill-block toggles */}
-      <Group justify="space-between" mb="xs">
-        <Text
-          fz={10}
-          fw={500}
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+        <span
           style={{
+            fontSize: 10,
+            fontWeight: 500,
             color: 'var(--ou-text-heading)',
             textTransform: 'uppercase',
             letterSpacing: 3,
           }}
         >
           FEED
-        </Text>
-        <Group gap={4}>
-          <UnstyledButton
+        </span>
+        <div style={{ display: 'flex', gap: 4 }}>
+          <button
             onClick={() => setTab('following')}
-            style={tabStyle(tab === 'following')}
+            style={{ ...tabStyle(tab === 'following'), background: tab === 'following' ? 'var(--ou-surface-hover)' : 'transparent' }}
           >
-            <Text fz="sm" fw={tab === 'following' ? 600 : 400} style={{ color: tab === 'following' ? 'var(--ou-text-strong)' : 'var(--ou-text-dimmed)' }}>
+            <span style={{ fontSize: 14, fontWeight: tab === 'following' ? 600 : 400, color: tab === 'following' ? 'var(--ou-text-strong)' : 'var(--ou-text-dimmed)' }}>
               팔로잉
-            </Text>
-          </UnstyledButton>
-          <UnstyledButton
+            </span>
+          </button>
+          <button
             onClick={() => setTab('discover')}
-            style={tabStyle(tab === 'discover')}
+            style={{ ...tabStyle(tab === 'discover'), background: tab === 'discover' ? 'var(--ou-surface-hover)' : 'transparent' }}
           >
-            <Text fz="sm" fw={tab === 'discover' ? 600 : 400} style={{ color: tab === 'discover' ? 'var(--ou-text-strong)' : 'var(--ou-text-dimmed)' }}>
+            <span style={{ fontSize: 14, fontWeight: tab === 'discover' ? 600 : 400, color: tab === 'discover' ? 'var(--ou-text-strong)' : 'var(--ou-text-dimmed)' }}>
               추천
-            </Text>
-          </UnstyledButton>
-        </Group>
-      </Group>
+            </span>
+          </button>
+        </div>
+      </div>
 
       {/* New posts banner — pill-block */}
       {showNewBanner && newPosts.length > 0 && (
-        <UnstyledButton
+        <button
           onClick={showNewPosts}
           style={{
             textAlign: 'center',
@@ -251,18 +259,20 @@ export function FeedClient({ nodes, userId }: { nodes: FeedNode[]; userId?: stri
             background: 'var(--ou-surface-subtle)',
             border: '0.5px solid var(--ou-border-subtle)',
             boxShadow: 'var(--ou-glow-sm)',
+            cursor: 'pointer',
+            fontFamily: 'inherit',
           }}
         >
-          <Text fz="sm" fw={500} style={{ color: 'var(--ou-text-body)' }}>
+          <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ou-text-body)' }}>
             새 글 {newPosts.length}개
-          </Text>
-        </UnstyledButton>
+          </span>
+        </button>
       )}
 
       {displayNodes.length === 0 ? renderEmptyState() : (
         <>
           {displayNodes.map((node, i) => (
-            <Box key={node.id}>
+            <div key={node.id}>
               {/* card-block style feed item */}
               <div
                 style={{
@@ -282,37 +292,43 @@ export function FeedClient({ nodes, userId }: { nodes: FeedNode[]; userId?: stri
                   (e.currentTarget as HTMLElement).style.boxShadow = 'var(--ou-glow-sm)';
                 }}
               >
-                <Group mb="sm">
-                  <UnstyledButton
+                <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+                  <button
                     onClick={() => {
                       if (node.author_handle) {
                         router.push(`/profile/${node.author_handle}`);
                       }
                     }}
-                    style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: node.author_handle ? 'pointer' : 'default' }}
+                    style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: node.author_handle ? 'pointer' : 'default', background: 'none', border: 'none', padding: 0, fontFamily: 'inherit' }}
                   >
                     {/* orb-block avatar */}
-                    <Avatar
-                      src={node.profiles?.avatar_url ?? undefined}
-                      size="sm"
-                      radius="xl"
+                    <div
                       style={{
+                        width: 28,
+                        height: 28,
+                        borderRadius: '50%',
                         border: '0.5px solid var(--ou-border-muted)',
                         boxShadow: 'var(--ou-glow-xs)',
+                        overflow: 'hidden',
+                        flexShrink: 0,
+                        background: 'var(--ou-surface-muted)',
                       }}
-                    />
-                    <div>
-                      <Text fz="sm" fw={500} style={{ color: 'var(--ou-text-strong)' }}>
-                        {node.profiles?.display_name ?? '익명'}
-                      </Text>
-                      <Text fz="xs" style={{ color: 'var(--ou-text-dimmed)' }}>
-                        {new Date(node.created_at).toLocaleDateString('ko-KR')}
-                      </Text>
+                    >
+                      {node.profiles?.avatar_url && (
+                        <img src={node.profiles.avatar_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      )}
                     </div>
-                  </UnstyledButton>
+                    <div>
+                      <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ou-text-strong)', display: 'block' }}>
+                        {node.profiles?.display_name ?? '익명'}
+                      </span>
+                      <span style={{ fontSize: 12, color: 'var(--ou-text-dimmed)' }}>
+                        {new Date(node.created_at).toLocaleDateString('ko-KR')}
+                      </span>
+                    </div>
+                  </button>
                   {/* badge-block domain */}
-                  <Text
-                    fz={10}
+                  <span
                     style={{
                       marginLeft: 'auto',
                       padding: '2px 8px',
@@ -320,18 +336,18 @@ export function FeedClient({ nodes, userId }: { nodes: FeedNode[]; userId?: stri
                       border: '0.5px solid var(--ou-border-subtle)',
                       color: 'var(--ou-text-dimmed)',
                       background: 'transparent',
+                      fontSize: 10,
+                      alignSelf: 'flex-start',
                     }}
                   >
                     {DOMAIN_LABELS[node.domain] ?? node.domain}
-                  </Text>
-                </Group>
+                  </span>
+                </div>
 
                 {/* Realization context banner */}
                 {node.domain_data?.type === 'realization' && node.domain_data?.scenario_title && (
-                  <Box
-                    component={Link}
+                  <Link
                     href={`/scenario/${node.domain_data.scenario_node_id}`}
-                    mb="sm"
                     style={{
                       display: 'block',
                       padding: '6px 10px',
@@ -340,109 +356,137 @@ export function FeedClient({ nodes, userId }: { nodes: FeedNode[]; userId?: stri
                       border: '0.5px solid var(--ou-border-faint)',
                       textDecoration: 'none',
                       color: 'inherit',
+                      marginBottom: 12,
                     }}
                   >
-                    <Group gap={6}>
+                    <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
                       <CheckCircle size={14} weight="light" style={{ color: 'var(--ou-text-dimmed)' }} />
-                      <Text fz="xs" style={{ color: 'var(--ou-text-dimmed)' }}>
+                      <span style={{ fontSize: 12, color: 'var(--ou-text-dimmed)' }}>
                         {node.profiles?.display_name ?? '익명'}님이 &apos;{node.domain_data.scenario_title}&apos; 시나리오를 실현했어요
-                      </Text>
-                    </Group>
-                  </Box>
+                      </span>
+                    </div>
+                  </Link>
                 )}
 
                 {node.title && node.domain_data?.type !== 'realization' && (
-                  <Text fz="sm" fw={600} mb={4} style={{ color: 'var(--ou-text-strong)' }}>{node.title}</Text>
+                  <span style={{ fontSize: 14, fontWeight: 600, marginBottom: 4, color: 'var(--ou-text-strong)', display: 'block' }}>{node.title}</span>
                 )}
-                <Text fz="sm" mb="sm" lineClamp={4} style={{ lineHeight: 1.6, color: 'var(--ou-text-body)' }}>
+                <p style={{
+                  fontSize: 14,
+                  marginBottom: 12,
+                  lineHeight: 1.6,
+                  color: 'var(--ou-text-body)',
+                  display: '-webkit-box',
+                  WebkitLineClamp: 4,
+                  WebkitBoxOrient: 'vertical',
+                  overflow: 'hidden',
+                  margin: '0 0 12px 0',
+                }}>
                   {node.raw}
-                </Text>
+                </p>
 
-                <Divider mb="xs" style={{ borderColor: 'var(--ou-border-faint)' }} />
+                <div style={{ borderTop: '0.5px solid var(--ou-border-faint)', marginBottom: 8 }} />
 
                 {/* Action buttons — pill-block.sm */}
-                <Group gap="lg">
-                  <Group gap={4}>
-                    <ActionIcon
-                      variant="subtle"
-                      color="gray"
+                <div style={{ display: 'flex', gap: 24 }}>
+                  <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+                    <button
                       onClick={() => handleLike(node.id)}
                       style={{
+                        background: 'none',
+                        border: 'none',
                         borderRadius: 'var(--ou-radius-pill)',
+                        cursor: 'pointer',
+                        padding: 4,
+                        display: 'flex',
+                        alignItems: 'center',
                       }}
                     >
                       <Heart size={18} weight={likedIds.has(node.id) ? 'fill' : 'light'} style={{ color: likedIds.has(node.id) ? 'var(--ou-text-strong)' : 'var(--ou-text-dimmed)' }} />
-                    </ActionIcon>
+                    </button>
                     {(likeCounts[node.id] ?? 0) > 0 && (
-                      <Text fz="xs" style={{ color: 'var(--ou-text-dimmed)' }}>{likeCounts[node.id]}</Text>
+                      <span style={{ fontSize: 12, color: 'var(--ou-text-dimmed)' }}>{likeCounts[node.id]}</span>
                     )}
-                  </Group>
-                  <Group gap={4}>
-                    <ActionIcon
-                      variant="subtle"
-                      color="gray"
+                  </div>
+                  <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+                    <button
                       onClick={() => setCommentOpenId(commentOpenId === node.id ? null : node.id)}
                       style={{
+                        background: 'none',
+                        border: 'none',
                         borderRadius: 'var(--ou-radius-pill)',
+                        cursor: 'pointer',
+                        padding: 4,
+                        display: 'flex',
+                        alignItems: 'center',
                       }}
                     >
                       <ChatCircle size={18} weight="light" style={{ color: 'var(--ou-text-dimmed)' }} />
-                    </ActionIcon>
+                    </button>
                     {(node.comment_count ?? 0) > 0 && (
-                      <Text fz="xs" style={{ color: 'var(--ou-text-dimmed)' }}>{node.comment_count}</Text>
+                      <span style={{ fontSize: 12, color: 'var(--ou-text-dimmed)' }}>{node.comment_count}</span>
                     )}
-                  </Group>
-                  <ActionIcon
-                    variant="subtle"
-                    color="gray"
-                    style={{ borderRadius: 'var(--ou-radius-pill)' }}
+                  </div>
+                  <button
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      borderRadius: 'var(--ou-radius-pill)',
+                      cursor: 'pointer',
+                      padding: 4,
+                      display: 'flex',
+                      alignItems: 'center',
+                    }}
                   >
                     <ArrowsClockwise size={18} weight="light" style={{ color: 'var(--ou-text-dimmed)' }} />
-                  </ActionIcon>
-                </Group>
+                  </button>
+                </div>
 
                 {commentOpenId === node.id && (
-                  <Group mt="sm" gap="xs">
-                    <Textarea
+                  <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+                    <textarea
                       placeholder="댓글을 남겨보세요..."
                       value={commentText}
                       onChange={e => setCommentText(e.target.value)}
-                      flex={1}
-                      minRows={1}
-                      maxRows={3}
-                      autosize
-                      size="xs"
-                      styles={{
-                        input: {
-                          background: 'transparent',
-                          border: '0.5px solid var(--ou-border-subtle)',
-                          borderRadius: 'var(--ou-radius-pill)',
-                          color: 'var(--ou-text-body)',
-                        },
+                      rows={1}
+                      style={{
+                        flex: 1,
+                        background: 'transparent',
+                        border: '0.5px solid var(--ou-border-subtle)',
+                        borderRadius: 'var(--ou-radius-pill)',
+                        color: 'var(--ou-text-body)',
+                        padding: '6px 12px',
+                        fontSize: 12,
+                        fontFamily: 'inherit',
+                        resize: 'none',
+                        outline: 'none',
                       }}
                     />
-                    <ActionIcon
-                      variant="subtle"
-                      color="gray"
-                      size="lg"
+                    <button
                       onClick={() => handleComment(node.id)}
                       style={{
-                        ...((!commentText.trim()) ? { opacity: 0.4, pointerEvents: 'none' as const } : {}),
+                        background: 'none',
                         borderRadius: 'var(--ou-radius-pill)',
                         border: '0.5px solid var(--ou-border-subtle)',
+                        cursor: commentText.trim() ? 'pointer' : 'default',
+                        padding: 8,
+                        display: 'flex',
+                        alignItems: 'center',
+                        opacity: commentText.trim() ? 1 : 0.4,
+                        pointerEvents: commentText.trim() ? 'auto' : 'none',
                       }}
                     >
                       <PaperPlaneTilt size={16} style={{ color: 'var(--ou-text-body)' }} />
-                    </ActionIcon>
-                  </Group>
+                    </button>
+                  </div>
                 )}
               </div>
 
               {i % 5 === 4 && <AdBanner position="feed" plan="free" />}
-            </Box>
+            </div>
           ))}
         </>
       )}
-    </Stack>
+    </div>
   );
 }

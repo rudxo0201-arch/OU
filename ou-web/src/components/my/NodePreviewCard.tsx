@@ -1,9 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import {
-  Stack, Text, Badge, ActionIcon, Group, Button, Loader,
-} from '@mantine/core';
 import { X, ArrowRight } from '@phosphor-icons/react';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { getDomainLabel, getDomainStyle } from '@/lib/utils/domain';
@@ -61,65 +58,43 @@ export function NodePreviewCard({ node, onOpen, onClose }: NodePreviewCardProps)
         animation: 'ou-scale-in 150ms ease',
       }}
     >
-      <Stack gap="sm">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         {/* Header */}
-        <Group justify="space-between">
-          <Badge
-            variant="light"
-            color="gray"
-            size="sm"
-            style={{
-              borderStyle: ds.borderStyle,
-              borderWidth: ds.borderWidth,
-              borderColor: 'var(--mantine-color-default-border)',
-              borderRadius: ds.borderRadius,
-              fontWeight: ds.fontWeight,
-            }}
-          >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{
+            fontSize: 11, padding: '2px 8px', borderRadius: ds.borderRadius, background: 'rgba(255,255,255,0.08)', color: 'var(--mantine-color-dimmed)',
+            borderStyle: ds.borderStyle, borderWidth: ds.borderWidth, borderColor: 'var(--mantine-color-default-border)', fontWeight: ds.fontWeight,
+          }}>
             {node.graph_type === 'star' ? '\u2605' : '\u25CF'} {getDomainLabel(node.domain)}
-          </Badge>
-          <ActionIcon size="sm" variant="subtle" color="gray" onClick={onClose}>
+          </span>
+          <button onClick={onClose} style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 2, display: 'flex', alignItems: 'center', color: 'var(--mantine-color-gray-6)' }}>
             <X size={14} />
-          </ActionIcon>
-        </Group>
+          </button>
+        </div>
 
         {/* Body */}
-        <Text fz="sm" lineClamp={3} style={{ lineHeight: 1.6, wordBreak: 'break-word' }}>
+        <span style={{ fontSize: 'var(--mantine-font-size-sm)', lineHeight: 1.6, wordBreak: 'break-word', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
           {node.raw ?? '(내용 없음)'}
-        </Text>
+        </span>
 
         {/* Meta counts */}
         {loading ? (
-          <Group justify="center" py={4}>
-            <Loader size="xs" color="gray" />
-          </Group>
+          <div style={{ display: 'flex', justifyContent: 'center', padding: '4px 0' }}>
+            <span style={{ fontSize: 'var(--mantine-font-size-xs)', color: 'var(--mantine-color-dimmed)' }}>...</span>
+          </div>
         ) : (
-          <Group gap="xs">
-            {tripleCount! > 0 && (
-              <Text fz="xs" c="dimmed">관계 {tripleCount}개</Text>
-            )}
-            {relatedCount! > 0 && (
-              <Text fz="xs" c="dimmed">연결 {relatedCount}개</Text>
-            )}
-            {tripleCount === 0 && relatedCount === 0 && (
-              <Text fz="xs" c="dimmed">연결 정보 없음</Text>
-            )}
-          </Group>
+          <div style={{ display: 'flex', flexDirection: 'row', gap: 4 }}>
+            {tripleCount! > 0 && <span style={{ fontSize: 'var(--mantine-font-size-xs)', color: 'var(--mantine-color-dimmed)' }}>관계 {tripleCount}개</span>}
+            {relatedCount! > 0 && <span style={{ fontSize: 'var(--mantine-font-size-xs)', color: 'var(--mantine-color-dimmed)' }}>연결 {relatedCount}개</span>}
+            {tripleCount === 0 && relatedCount === 0 && <span style={{ fontSize: 'var(--mantine-font-size-xs)', color: 'var(--mantine-color-dimmed)' }}>연결 정보 없음</span>}
+          </div>
         )}
 
         {/* Action */}
-        <Button
-          variant="subtle"
-          size="xs"
-          fullWidth
-          justify="space-between"
-          rightSection={<ArrowRight size={14} />}
-          color="gray"
-          onClick={onOpen}
-        >
-          자세히 보기
-        </Button>
-      </Stack>
+        <button onClick={onOpen} style={{ width: '100%', padding: '6px 12px', fontSize: 'var(--mantine-font-size-xs)', background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--mantine-color-dimmed)' }}>
+          자세히 보기 <ArrowRight size={14} />
+        </button>
+      </div>
     </GlassCard>
   );
 }

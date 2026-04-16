@@ -1,9 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Box, Text, Stack, Group, Badge, Button, Loader } from '@mantine/core';
 import { FileArrowDown, Globe, Eye } from '@phosphor-icons/react';
-import { notifications } from '@mantine/notifications';
 import type { OUFile } from '@/lib/ou-format/types';
 
 interface OUFileViewerProps {
@@ -39,23 +37,17 @@ export function OUFileViewer({ file, onImported }: OUFileViewerProps) {
       if (data.error) throw new Error(data.error);
 
       setImported(true);
-      notifications.show({
-        message: `기록 ${data.imported.nodes}개, 보기 ${data.imported.views}개를 가져왔어요.`,
-        color: 'gray',
-      });
+      alert(`기록 ${data.imported.nodes}개, 보기 ${data.imported.views}개를 가져왔어요.`);
       onImported?.(data.imported);
     } catch {
-      notifications.show({
-        message: '가져오기에 실패했어요.',
-        color: 'gray',
-      });
+      alert('가져오기에 실패했어요.');
     } finally {
       setImporting(false);
     }
   };
 
   return (
-    <Box
+    <div
       style={{
         border: '0.5px solid var(--mantine-color-default-border)',
         borderRadius: 'var(--mantine-radius-md)',
@@ -63,147 +55,180 @@ export function OUFileViewer({ file, onImported }: OUFileViewerProps) {
       }}
     >
       {/* 헤더 */}
-      <Group
-        gap="xs"
-        px="sm"
-        py={8}
+      <div
         style={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 8,
+          padding: '8px 12px',
           background: 'rgba(255, 255, 255, 0.04)',
           borderBottom: '0.5px solid var(--mantine-color-default-border)',
         }}
       >
         <Globe size={14} weight="fill" />
-        <Text fz="sm" fw={600}>
+        <span style={{ fontSize: 'var(--mantine-font-size-sm)', fontWeight: 600 }}>
           {file.metadata?.title ?? '.ou 파일'}
-        </Text>
-        <Badge variant="light" color="gray" size="xs" ml="auto">
+        </span>
+        <span style={{
+          fontSize: 11,
+          padding: '2px 8px',
+          borderRadius: 4,
+          background: 'rgba(255,255,255,0.08)',
+          color: 'var(--mantine-color-dimmed)',
+          marginLeft: 'auto',
+        }}>
           v{file.version}
-        </Badge>
-      </Group>
+        </span>
+      </div>
 
       {/* 메타데이터 */}
-      <Stack gap={4} px="sm" py="sm">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 4, padding: '12px' }}>
         {file.metadata?.owner && (
-          <Group gap={6}>
-            <Text fz="xs" c="dimmed">만든이</Text>
-            <Text fz="xs">{file.metadata.owner}</Text>
-          </Group>
+          <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <span style={{ fontSize: 'var(--mantine-font-size-xs)', color: 'var(--mantine-color-dimmed)' }}>만든이</span>
+            <span style={{ fontSize: 'var(--mantine-font-size-xs)' }}>{file.metadata.owner}</span>
+          </div>
         )}
         {file.metadata?.created && (
-          <Group gap={6}>
-            <Text fz="xs" c="dimmed">만든 날</Text>
-            <Text fz="xs">{new Date(file.metadata.created).toLocaleDateString('ko-KR')}</Text>
-          </Group>
+          <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <span style={{ fontSize: 'var(--mantine-font-size-xs)', color: 'var(--mantine-color-dimmed)' }}>만든 날</span>
+            <span style={{ fontSize: 'var(--mantine-font-size-xs)' }}>{new Date(file.metadata.created).toLocaleDateString('ko-KR')}</span>
+          </div>
         )}
         {file.metadata?.language && (
-          <Group gap={6}>
-            <Text fz="xs" c="dimmed">언어</Text>
-            <Text fz="xs">{file.metadata.language}</Text>
-          </Group>
+          <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <span style={{ fontSize: 'var(--mantine-font-size-xs)', color: 'var(--mantine-color-dimmed)' }}>언어</span>
+            <span style={{ fontSize: 'var(--mantine-font-size-xs)' }}>{file.metadata.language}</span>
+          </div>
         )}
-      </Stack>
+      </div>
 
       {/* 요약 */}
-      <Box
-        px="sm"
-        py="sm"
-        style={{ borderTop: '0.5px solid var(--mantine-color-default-border)' }}
+      <div
+        style={{ padding: '12px', borderTop: '0.5px solid var(--mantine-color-default-border)' }}
       >
-        <Text fz="sm" fw={500} mb={8}>
+        <span style={{ fontSize: 'var(--mantine-font-size-sm)', fontWeight: 500, display: 'block', marginBottom: 8 }}>
           이 파일의 기록 {nodeCount}개, 보기 {viewCount}개
-        </Text>
+        </span>
 
         {/* 도메인별 뱃지 */}
         {Object.keys(domainCounts).length > 0 && (
-          <Group gap={4} mb={8}>
+          <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: 4, marginBottom: 8 }}>
             {Object.entries(domainCounts).map(([domain, count]) => (
-              <Badge key={domain} variant="light" color="gray" size="xs">
+              <span key={domain} style={{
+                fontSize: 11,
+                padding: '2px 8px',
+                borderRadius: 4,
+                background: 'rgba(255,255,255,0.08)',
+                color: 'var(--mantine-color-dimmed)',
+              }}>
                 {domain} {count}
-              </Badge>
+              </span>
             ))}
-          </Group>
+          </div>
         )}
 
         {edgeCount > 0 && (
-          <Text fz="xs" c="dimmed">
+          <span style={{ fontSize: 'var(--mantine-font-size-xs)', color: 'var(--mantine-color-dimmed)' }}>
             연결 {edgeCount}개
-          </Text>
+          </span>
         )}
-      </Box>
+      </div>
 
       {/* 노드 목록 미리보기 */}
       {nodeCount > 0 && (
-        <Stack
-          gap={2}
-          px="sm"
-          pb="sm"
-          style={{ maxHeight: 200, overflow: 'auto' }}
+        <div
+          style={{ display: 'flex', flexDirection: 'column', gap: 2, padding: '0 12px 12px', maxHeight: 200, overflow: 'auto' }}
         >
           {file.nodes.slice(0, 10).map((node, i) => (
-            <Group
+            <div
               key={node.id || i}
-              gap={6}
-              px={8}
-              py={4}
               style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 6,
+                padding: '4px 8px',
                 background: 'rgba(255, 255, 255, 0.02)',
                 borderRadius: 6,
                 border: '0.5px solid var(--mantine-color-default-border)',
               }}
             >
-              <Badge variant="light" color="gray" size="xs" style={{ flexShrink: 0 }}>
+              <span style={{
+                fontSize: 11,
+                padding: '2px 8px',
+                borderRadius: 4,
+                background: 'rgba(255,255,255,0.08)',
+                color: 'var(--mantine-color-dimmed)',
+                flexShrink: 0,
+              }}>
                 {node.domain || '기타'}
-              </Badge>
-              <Text fz="xs" truncate style={{ flex: 1 }}>
+              </span>
+              <span style={{ fontSize: 'var(--mantine-font-size-xs)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {node.raw?.slice(0, 80) || '(내용 없음)'}
-              </Text>
-            </Group>
+              </span>
+            </div>
           ))}
           {nodeCount > 10 && (
-            <Text fz="xs" c="dimmed" ta="center">
+            <span style={{ fontSize: 'var(--mantine-font-size-xs)', color: 'var(--mantine-color-dimmed)', textAlign: 'center' }}>
               ...외 {nodeCount - 10}개
-            </Text>
+            </span>
           )}
-        </Stack>
+        </div>
       )}
 
       {/* 보기 목록 */}
       {viewCount > 0 && (
-        <Stack
-          gap={2}
-          px="sm"
-          pb="sm"
-          style={{ borderTop: '0.5px solid var(--mantine-color-default-border)', paddingTop: 8 }}
+        <div
+          style={{ display: 'flex', flexDirection: 'column', gap: 2, padding: '8px 12px 12px', borderTop: '0.5px solid var(--mantine-color-default-border)' }}
         >
-          <Text fz="xs" c="dimmed" mb={2}>보기 목록</Text>
+          <span style={{ fontSize: 'var(--mantine-font-size-xs)', color: 'var(--mantine-color-dimmed)', marginBottom: 2 }}>보기 목록</span>
           {file.views.map((view, i) => (
-            <Group key={view.id || i} gap={6}>
+            <div key={view.id || i} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 6 }}>
               <Eye size={12} style={{ color: 'var(--mantine-color-dimmed)', flexShrink: 0 }} />
-              <Text fz="xs">{view.name}</Text>
-              <Badge variant="outline" color="gray" size="xs">{view.viewType}</Badge>
-            </Group>
+              <span style={{ fontSize: 'var(--mantine-font-size-xs)' }}>{view.name}</span>
+              <span style={{
+                fontSize: 11,
+                padding: '1px 6px',
+                borderRadius: 4,
+                border: '1px solid var(--mantine-color-default-border)',
+                color: 'var(--mantine-color-dimmed)',
+              }}>
+                {view.viewType}
+              </span>
+            </div>
           ))}
-        </Stack>
+        </div>
       )}
 
       {/* 가져오기 버튼 */}
-      <Box
-        px="sm"
-        py={8}
-        style={{ borderTop: '0.5px solid var(--mantine-color-default-border)' }}
+      <div
+        style={{ padding: '8px 12px', borderTop: '0.5px solid var(--mantine-color-default-border)' }}
       >
-        <Button
-          fullWidth
-          variant="light"
-          color="gray"
-          size="xs"
-          leftSection={importing ? <Loader size={12} /> : <FileArrowDown size={14} />}
+        <button
           onClick={handleImport}
           disabled={imported || importing}
+          style={{
+            width: '100%',
+            padding: '6px 12px',
+            fontSize: 'var(--mantine-font-size-xs)',
+            border: '0.5px solid var(--mantine-color-default-border)',
+            borderRadius: 'var(--mantine-radius-md)',
+            background: 'rgba(255,255,255,0.06)',
+            cursor: imported || importing ? 'not-allowed' : 'pointer',
+            opacity: imported || importing ? 0.5 : 1,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 6,
+            color: 'inherit',
+          }}
         >
-          {imported ? '가져오기 완료' : '내 우주로 가져오기'}
-        </Button>
-      </Box>
-    </Box>
+          <FileArrowDown size={14} />
+          {imported ? '가져오기 완료' : importing ? '가져오는 중...' : '내 우주로 가져오기'}
+        </button>
+      </div>
+    </div>
   );
 }

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { Stack, Text, Box, Paper, Badge, ActionIcon } from '@mantine/core';
 import { ArrowsClockwise } from '@phosphor-icons/react';
 import type { ViewProps } from './registry';
 
@@ -13,7 +12,7 @@ interface DailyCard {
   source?: string;
 }
 
-const ROTATE_INTERVAL = 30_000; // 30초
+const ROTATE_INTERVAL = 30_000;
 
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -60,7 +59,6 @@ export function DailyCardView({ nodes }: ViewProps) {
     setCurrentIndex(i => (i + 1) % Math.max(cards.length, 1));
   }, [cards.length]);
 
-  // 자동 교체
   useEffect(() => {
     if (cards.length <= 1) return;
     const id = setInterval(advance, ROTATE_INTERVAL);
@@ -72,9 +70,9 @@ export function DailyCardView({ nodes }: ViewProps) {
   const card = cards[currentIndex % cards.length];
 
   return (
-    <Stack gap="sm" p="md" align="center">
-      {/* 카드 */}
-      <Box
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: 16, alignItems: 'center' }}>
+      {/* Card */}
+      <div
         onClick={() => setFlipped(f => !f)}
         style={{
           width: '100%',
@@ -84,25 +82,24 @@ export function DailyCardView({ nodes }: ViewProps) {
           perspective: '1000px',
         }}
       >
-        <Paper
-          p="xl"
+        <div
           style={{
             minHeight: 180,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            border: '0.5px solid var(--ou-border-subtle, var(--mantine-color-default-border))',
+            border: '0.5px solid var(--ou-border, #333)',
             borderRadius: 16,
-            boxShadow: 'var(--ou-glow-sm, none)',
             transition: 'transform 0.4s ease',
             transformStyle: 'preserve-3d',
             transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
             position: 'relative',
             background: 'transparent',
+            padding: 32,
           }}
         >
-          {/* 앞면 */}
-          <Box
+          {/* Front */}
+          <div
             style={{
               position: 'absolute',
               inset: 0,
@@ -115,28 +112,24 @@ export function DailyCardView({ nodes }: ViewProps) {
               gap: 8,
             }}
           >
-            <Text
-              fz={10}
-              style={{ color: 'var(--ou-text-dimmed, var(--mantine-color-gray-4))' }}
-            >
+            <span style={{ fontSize: 10, color: 'var(--ou-text-dimmed, #888)' }}>
               탭해서 뒤집기
-            </Text>
-            <Text
-              fz="xl"
-              fw={600}
-              ta="center"
+            </span>
+            <span
               style={{
+                fontSize: 20,
+                fontWeight: 600,
+                textAlign: 'center',
                 lineHeight: 1.4,
                 wordBreak: 'keep-all',
-                color: 'var(--ou-text-strong, var(--mantine-color-gray-8))',
               }}
             >
               {card.front}
-            </Text>
-          </Box>
+            </span>
+          </div>
 
-          {/* 뒷면 */}
-          <Box
+          {/* Back */}
+          <div
             style={{
               position: 'absolute',
               inset: 0,
@@ -150,24 +143,24 @@ export function DailyCardView({ nodes }: ViewProps) {
               gap: 8,
             }}
           >
-            <Text
-              fz="sm"
-              ta="center"
+            <span
               style={{
+                fontSize: 13,
+                textAlign: 'center',
                 lineHeight: 1.7,
                 whiteSpace: 'pre-wrap',
                 wordBreak: 'keep-all',
-                color: 'var(--ou-text-body, var(--mantine-color-gray-6))',
+                color: 'var(--ou-text-secondary, #666)',
               }}
             >
               {card.back}
-            </Text>
-          </Box>
-        </Paper>
-      </Box>
+            </span>
+          </div>
+        </div>
+      </div>
 
-      {/* 하단: 도메인 태그 + 새로고침 */}
-      <Box
+      {/* Bottom: domain tags + refresh */}
+      <div
         style={{
           display: 'flex',
           alignItems: 'center',
@@ -177,28 +170,36 @@ export function DailyCardView({ nodes }: ViewProps) {
           maxWidth: 360,
         }}
       >
-        <Box style={{ display: 'flex', gap: 6, flexWrap: 'wrap', flex: 1, justifyContent: 'center' }}>
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', flex: 1, justifyContent: 'center' }}>
           {card.domain && (
-            <Badge variant="outline" color="gray" size="xs" radius="sm">
+            <span style={{
+              fontSize: 10,
+              padding: '2px 8px',
+              border: '0.5px solid var(--ou-border, #333)',
+              borderRadius: 4,
+            }}>
               {card.domain}
-            </Badge>
+            </span>
           )}
           {card.source && (
-            <Badge variant="outline" color="gray" size="xs" radius="sm">
+            <span style={{
+              fontSize: 10,
+              padding: '2px 8px',
+              border: '0.5px solid var(--ou-border, #333)',
+              borderRadius: 4,
+            }}>
               {card.source}
-            </Badge>
+            </span>
           )}
-        </Box>
-        <ActionIcon
-          variant="subtle"
-          color="gray"
-          size="sm"
+        </div>
+        <button
           onClick={(e) => { e.stopPropagation(); advance(); }}
           title="다음 카드"
+          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, display: 'flex', alignItems: 'center', color: 'inherit' }}
         >
           <ArrowsClockwise size={14} />
-        </ActionIcon>
-      </Box>
-    </Stack>
+        </button>
+      </div>
+    </div>
   );
 }

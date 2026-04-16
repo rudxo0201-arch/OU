@@ -2,12 +2,6 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import {
-  Box, Stack, Title, Text, Paper, Group, Badge, Center, Button,
-  TextInput, UnstyledButton, Loader, Divider, SimpleGrid, Accordion,
-  ThemeIcon, Modal, Textarea,
-} from '@mantine/core';
-import { notifications } from '@mantine/notifications';
-import {
   Planet, MagnifyingGlass, Sparkle, Lightning, GraduationCap,
   Question, ChatCircleDots, Robot, Eye, Camera, ShareNetwork,
   UsersThree, Star, CheckCircle,
@@ -198,29 +192,20 @@ export function UniverseClient({
           ...prev,
           [realizeTarget.id]: (prev[realizeTarget.id] ?? 0) + 1,
         }));
-        notifications.show({
-          message: '이야기가 공유되었어요!',
-          color: 'gray',
-        });
+        alert('이야기가 공유되었어요!');
       } else {
         const data = await res.json();
-        notifications.show({
-          message: data.error || '공유에 실패했어요. 다시 시도해주세요.',
-          color: 'gray',
-        });
+        alert(data.error || '공유에 실패했어요. 다시 시도해주세요.');
       }
     } catch {
-      notifications.show({
-        message: '공유에 실패했어요. 다시 시도해주세요.',
-        color: 'gray',
-      });
+      alert('공유에 실패했어요. 다시 시도해주세요.');
     } finally {
       setRealizeSubmitting(false);
     }
   };
 
   /* ── Shared card style ── */
-  const cardStyle = {
+  const cardStyle: React.CSSProperties = {
     background: 'transparent',
     border: '0.5px solid var(--ou-border-subtle)',
     borderRadius: 'var(--ou-radius-card)',
@@ -248,494 +233,553 @@ export function UniverseClient({
   };
 
   return (
-    <Box style={{ width: '100%', minHeight: '100vh', background: 'transparent' }}>
+    <div style={{ width: '100%', minHeight: '100vh', background: 'transparent' }}>
       {/* Hero Header */}
-      <Stack align="center" gap="xs" py="xl" px="xl">
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, padding: '48px 24px' }}>
         <Planet size={36} weight="thin" style={{ color: 'var(--ou-text-dimmed)' }} />
-        <Title order={2} fw={600} style={{ color: 'var(--ou-text-strong)' }}>
+        <h2 style={{ fontWeight: 600, color: 'var(--ou-text-strong)', margin: 0 }}>
           OU Universe
-        </Title>
-        <Text size="sm" style={{ color: 'var(--ou-text-dimmed)' }}>
+        </h2>
+        <span style={{ fontSize: 14, color: 'var(--ou-text-dimmed)' }}>
           모두가 공유한 기록들
-        </Text>
-      </Stack>
+        </span>
+      </div>
 
       {/* ── Admin: OU 소개 Section ── */}
       {introNodes.length > 0 && (
-        <Box maw={800} mx="auto" px="xl" mb="xl">
-          <Group gap="xs" mb="md">
+        <div style={{ maxWidth: 800, margin: '0 auto', padding: '0 24px', marginBottom: 28 }}>
+          <div style={{ display: 'flex', gap: 8, marginBottom: 16, alignItems: 'center' }}>
             <Sparkle size={14} weight="light" style={{ color: 'var(--ou-text-dimmed)' }} />
-            <Text style={sectionTitleStyle}>OU 소개</Text>
-          </Group>
-          <Stack gap="sm">
+            <span style={sectionTitleStyle}>OU 소개</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {introNodes.map(node => (
-              <Paper
+              <div
                 key={node.id}
-                p="lg"
-                style={cardStyle}
+                style={{ ...cardStyle, padding: 20 }}
                 {...cardHoverProps}
               >
-                <Text fw={600} mb={4} style={{ color: 'var(--ou-text-strong)' }}>
+                <span style={{ fontWeight: 600, marginBottom: 4, color: 'var(--ou-text-strong)', display: 'block' }}>
                   {node.title}
-                </Text>
-                <Text fz="sm" style={{ lineHeight: 1.6, color: 'var(--ou-text-body)' }}>
+                </span>
+                <span style={{ fontSize: 14, lineHeight: 1.6, color: 'var(--ou-text-body)' }}>
                   {node.raw}
-                </Text>
-              </Paper>
+                </span>
+              </div>
             ))}
-          </Stack>
-        </Box>
+          </div>
+        </div>
       )}
 
       {/* ── Admin: 기능 Section ── */}
       {featureNodes.length > 0 && (
-        <Box maw={800} mx="auto" px="xl" mb="xl">
-          <Group gap="xs" mb="md">
+        <div style={{ maxWidth: 800, margin: '0 auto', padding: '0 24px', marginBottom: 28 }}>
+          <div style={{ display: 'flex', gap: 8, marginBottom: 16, alignItems: 'center' }}>
             <Lightning size={14} weight="light" style={{ color: 'var(--ou-text-dimmed)' }} />
-            <Text style={sectionTitleStyle}>기능</Text>
-          </Group>
-          <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="sm">
+            <span style={sectionTitleStyle}>기능</span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 12 }}>
             {featureNodes.map(node => (
-              <Paper
+              <div
                 key={node.id}
-                p="md"
-                style={cardStyle}
+                style={{ ...cardStyle, padding: 16 }}
                 {...cardHoverProps}
               >
-                <Group gap="xs" mb={8}>
-                  <ThemeIcon
-                    variant="light"
-                    color="gray"
-                    size="sm"
-                    radius="xl"
-                    style={{ background: 'var(--ou-surface-muted)', border: 'none' }}
-                  >
+                <div style={{ display: 'flex', gap: 8, marginBottom: 8, alignItems: 'center' }}>
+                  <div style={{
+                    width: 28,
+                    height: 28,
+                    borderRadius: '50%',
+                    background: 'var(--ou-surface-muted)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                    color: 'var(--ou-text-dimmed)',
+                  }}>
                     {FEATURE_ICONS[node.title ?? ''] ?? <Lightning size={14} weight="light" />}
-                  </ThemeIcon>
-                  <Text fw={600} fz="sm" style={{ color: 'var(--ou-text-strong)' }}>
+                  </div>
+                  <span style={{ fontWeight: 600, fontSize: 14, color: 'var(--ou-text-strong)' }}>
                     {node.title}
-                  </Text>
-                </Group>
-                <Text fz="xs" style={{ lineHeight: 1.5, color: 'var(--ou-text-body)' }}>
+                  </span>
+                </div>
+                <span style={{ fontSize: 12, lineHeight: 1.5, color: 'var(--ou-text-body)' }}>
                   {node.raw}
-                </Text>
-              </Paper>
+                </span>
+              </div>
             ))}
-          </SimpleGrid>
-        </Box>
+          </div>
+        </div>
       )}
 
       {/* ── Admin: 활용법 Section ── */}
       {usecaseNodes.length > 0 && (
-        <Box maw={800} mx="auto" px="xl" mb="xl">
-          <Group gap="xs" mb="md">
+        <div style={{ maxWidth: 800, margin: '0 auto', padding: '0 24px', marginBottom: 28 }}>
+          <div style={{ display: 'flex', gap: 8, marginBottom: 16, alignItems: 'center' }}>
             <GraduationCap size={14} weight="light" style={{ color: 'var(--ou-text-dimmed)' }} />
-            <Text style={sectionTitleStyle}>활용법</Text>
-          </Group>
-          <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="sm">
+            <span style={sectionTitleStyle}>활용법</span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 12 }}>
             {usecaseNodes.map(node => (
-              <Paper
+              <div
                 key={node.id}
-                p="md"
-                style={cardStyle}
+                style={{ ...cardStyle, padding: 16 }}
                 {...cardHoverProps}
               >
-                <Text fw={600} fz="sm" mb={4} style={{ color: 'var(--ou-text-strong)' }}>
+                <span style={{ fontWeight: 600, fontSize: 14, marginBottom: 4, color: 'var(--ou-text-strong)', display: 'block' }}>
                   {node.title}
-                </Text>
-                <Text fz="xs" style={{ lineHeight: 1.5, color: 'var(--ou-text-body)' }}>
+                </span>
+                <span style={{ fontSize: 12, lineHeight: 1.5, color: 'var(--ou-text-body)' }}>
                   {node.raw}
-                </Text>
-              </Paper>
+                </span>
+              </div>
             ))}
-          </SimpleGrid>
-        </Box>
+          </div>
+        </div>
       )}
 
       {/* ── Scenario Section ── */}
       {scenarioNodes.length > 0 && (
-        <Box maw={800} mx="auto" px="xl" mb="xl">
-          <Group gap="xs" mb="md">
+        <div style={{ maxWidth: 800, margin: '0 auto', padding: '0 24px', marginBottom: 28 }}>
+          <div style={{ display: 'flex', gap: 8, marginBottom: 16, alignItems: 'center' }}>
             <Star size={14} weight="light" style={{ color: 'var(--ou-text-dimmed)' }} />
-            <Text style={sectionTitleStyle}>이런 경험, 해보셨나요?</Text>
-          </Group>
-          <Stack gap="sm">
+            <span style={sectionTitleStyle}>이런 경험, 해보셨나요?</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {scenarioNodes.map(node => (
-              <Paper
+              <div
                 key={node.id}
-                p="lg"
-                style={cardStyle}
+                style={{ ...cardStyle, padding: 20 }}
                 {...cardHoverProps}
               >
-                <UnstyledButton
-                  component={Link}
+                <Link
                   href={`/scenario/${node.id}`}
                   style={{ textDecoration: 'none', color: 'inherit', display: 'block', width: '100%' }}
                 >
-                  <Text fw={600} mb={4} style={{ color: 'var(--ou-text-strong)' }}>
+                  <span style={{ fontWeight: 600, marginBottom: 4, color: 'var(--ou-text-strong)', display: 'block' }}>
                     {node.title}
-                  </Text>
-                  <Text fz="sm" style={{ lineHeight: 1.6, color: 'var(--ou-text-body)' }} lineClamp={3}>
+                  </span>
+                  <p style={{
+                    fontSize: 14,
+                    lineHeight: 1.6,
+                    color: 'var(--ou-text-body)',
+                    display: '-webkit-box',
+                    WebkitLineClamp: 3,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                    margin: 0,
+                  }}>
                     {node.raw}
-                  </Text>
-                </UnstyledButton>
+                  </p>
+                </Link>
 
-                <Group justify="space-between" mt="md">
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 16, alignItems: 'center' }}>
                   {(realizeCounts[node.id] ?? 0) > 0 ? (
-                    <Group gap={4}>
+                    <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
                       <CheckCircle size={14} weight="light" style={{ color: 'var(--ou-text-dimmed)' }} />
-                      <Text fz="xs" style={{ color: 'var(--ou-text-dimmed)' }}>
+                      <span style={{ fontSize: 12, color: 'var(--ou-text-dimmed)' }}>
                         {realizeCounts[node.id]}명 실현
-                      </Text>
-                    </Group>
+                      </span>
+                    </div>
                   ) : (
-                    <Box />
+                    <div />
                   )}
-                  <Button
-                    variant="outline"
-                    color="gray"
-                    size="xs"
-                    radius="xl"
-                    style={{
-                      borderWidth: '0.5px',
-                      borderColor: 'var(--ou-border-subtle)',
-                      background: 'transparent',
-                      color: 'var(--ou-text-body)',
-                    }}
+                  <button
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
                       openRealizeModal(node);
                     }}
+                    style={{
+                      padding: '4px 12px',
+                      borderRadius: 'var(--ou-radius-pill)',
+                      borderWidth: '0.5px',
+                      borderStyle: 'solid',
+                      borderColor: 'var(--ou-border-subtle)',
+                      background: 'transparent',
+                      color: 'var(--ou-text-body)',
+                      fontSize: 12,
+                      fontFamily: 'inherit',
+                      cursor: 'pointer',
+                    }}
                   >
                     나도 이랬어요!
-                  </Button>
-                </Group>
-              </Paper>
+                  </button>
+                </div>
+              </div>
             ))}
-          </Stack>
-        </Box>
+          </div>
+        </div>
       )}
 
       {/* ── Admin: FAQ Section ── */}
       {faqNodes.length > 0 && (
-        <Box maw={800} mx="auto" px="xl" mb="xl">
-          <Group gap="xs" mb="md">
+        <div style={{ maxWidth: 800, margin: '0 auto', padding: '0 24px', marginBottom: 28 }}>
+          <div style={{ display: 'flex', gap: 8, marginBottom: 16, alignItems: 'center' }}>
             <Question size={14} weight="light" style={{ color: 'var(--ou-text-dimmed)' }} />
-            <Text style={sectionTitleStyle}>자주 묻는 질문</Text>
-          </Group>
-          <Accordion
-            variant="separated"
-            styles={{
-              item: {
-                background: 'transparent',
-                border: '0.5px solid var(--ou-border-subtle)',
-                borderRadius: 'var(--ou-radius-card)',
-                boxShadow: 'var(--ou-glow-sm)',
-              },
-              control: {
-                padding: 'var(--mantine-spacing-md)',
-                color: 'var(--ou-text-strong)',
-              },
-              panel: {
-                padding: 'var(--mantine-spacing-md)',
-                paddingTop: 0,
-              },
-            }}
-          >
+            <span style={sectionTitleStyle}>자주 묻는 질문</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {faqNodes.map(node => (
-              <Accordion.Item key={node.id} value={node.id}>
-                <Accordion.Control>
-                  <Text fw={500} fz="sm" style={{ color: 'var(--ou-text-strong)' }}>
-                    {node.title}
-                  </Text>
-                </Accordion.Control>
-                <Accordion.Panel>
-                  <Text fz="sm" style={{ lineHeight: 1.6, color: 'var(--ou-text-body)' }}>
+              <details
+                key={node.id}
+                style={{
+                  ...cardStyle,
+                  padding: 0,
+                }}
+              >
+                <summary style={{
+                  padding: 16,
+                  cursor: 'pointer',
+                  fontWeight: 500,
+                  fontSize: 14,
+                  color: 'var(--ou-text-strong)',
+                  listStyle: 'none',
+                }}>
+                  {node.title}
+                </summary>
+                <div style={{ padding: '0 16px 16px' }}>
+                  <span style={{ fontSize: 14, lineHeight: 1.6, color: 'var(--ou-text-body)' }}>
                     {node.raw}
-                  </Text>
-                </Accordion.Panel>
-              </Accordion.Item>
+                  </span>
+                </div>
+              </details>
             ))}
-          </Accordion>
-        </Box>
+          </div>
+        </div>
       )}
 
       {/* ── Divider between admin content and community ── */}
       {hasAdminContent && (
-        <Box maw={800} mx="auto" px="xl" mb="lg">
-          <Divider
-            label={
-              <Text fz="xs" style={{ color: 'var(--ou-text-dimmed)' }}>
-                공유된 기록들
-              </Text>
-            }
-            labelPosition="center"
-            color="var(--ou-border-subtle)"
-          />
-        </Box>
+        <div style={{ maxWidth: 800, margin: '0 auto', padding: '0 24px', marginBottom: 20 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <div style={{ flex: 1, height: '0.5px', background: 'var(--ou-border-subtle)' }} />
+            <span style={{ fontSize: 12, color: 'var(--ou-text-dimmed)' }}>공유된 기록들</span>
+            <div style={{ flex: 1, height: '0.5px', background: 'var(--ou-border-subtle)' }} />
+          </div>
+        </div>
       )}
 
       {/* Search */}
-      <Box maw={640} mx="auto" px="xl" mb="md">
-        <TextInput
-          placeholder="검색어를 입력하세요..."
-          leftSection={<MagnifyingGlass size={16} weight="light" style={{ color: 'var(--ou-text-dimmed)' }} />}
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          size="md"
-          radius="xl"
-          styles={{
-            input: {
+      <div style={{ maxWidth: 640, margin: '0 auto', padding: '0 24px', marginBottom: 16 }}>
+        <div style={{ position: 'relative' }}>
+          <div style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}>
+            <MagnifyingGlass size={16} weight="light" style={{ color: 'var(--ou-text-dimmed)' }} />
+          </div>
+          <input
+            placeholder="검색어를 입력하세요..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            style={{
+              width: '100%',
               border: '0.5px solid var(--ou-border-subtle)',
               backgroundColor: 'transparent',
               color: 'var(--ou-text-body)',
               boxShadow: 'var(--ou-glow-xs)',
               transition: 'border-color var(--ou-transition), box-shadow var(--ou-transition)',
-            },
-          }}
-        />
-      </Box>
+              borderRadius: 'var(--ou-radius-pill)',
+              padding: '12px 14px 12px 40px',
+              fontSize: 14,
+              fontFamily: 'inherit',
+              outline: 'none',
+              boxSizing: 'border-box',
+            }}
+          />
+        </div>
+      </div>
 
       {/* Domain filter tabs - pill-block toggles */}
       {domainTabs.length > 0 && (
-        <Group gap="xs" justify="center" px="xl" mb="lg">
-          <UnstyledButton
+        <div style={{ display: 'flex', gap: 8, justifyContent: 'center', padding: '0 24px', marginBottom: 20, flexWrap: 'wrap' }}>
+          <button
             onClick={() => setSelectedDomain(null)}
-            px="sm"
-            py={6}
             style={{
               borderRadius: 'var(--ou-radius-pill)',
               border: `0.5px solid ${selectedDomain === null ? 'var(--ou-border-hover)' : 'var(--ou-border-subtle)'}`,
               background: selectedDomain === null ? 'var(--ou-surface-muted)' : 'transparent',
               boxShadow: selectedDomain === null ? 'var(--ou-glow-sm)' : 'none',
               transition: 'all var(--ou-transition)',
+              padding: '6px 14px',
+              cursor: 'pointer',
+              fontFamily: 'inherit',
+              fontSize: 14,
+              fontWeight: selectedDomain === null ? 600 : 400,
+              color: selectedDomain === null ? 'var(--ou-text-strong)' : 'var(--ou-text-dimmed)',
             }}
           >
-            <Text
-              fz="sm"
-              fw={selectedDomain === null ? 600 : 400}
-              style={{ color: selectedDomain === null ? 'var(--ou-text-strong)' : 'var(--ou-text-dimmed)' }}
-            >
-              전체
-            </Text>
-          </UnstyledButton>
+            전체
+          </button>
           {domainTabs.map(tab => (
-            <UnstyledButton
+            <button
               key={tab.id}
               onClick={() => setSelectedDomain(tab.id)}
-              px="sm"
-              py={6}
               style={{
                 borderRadius: 'var(--ou-radius-pill)',
                 border: `0.5px solid ${selectedDomain === tab.id ? 'var(--ou-border-hover)' : 'var(--ou-border-subtle)'}`,
                 background: selectedDomain === tab.id ? 'var(--ou-surface-muted)' : 'transparent',
                 boxShadow: selectedDomain === tab.id ? 'var(--ou-glow-sm)' : 'none',
                 transition: 'all var(--ou-transition)',
+                padding: '6px 14px',
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+                fontSize: 14,
+                fontWeight: selectedDomain === tab.id ? 600 : 400,
+                color: selectedDomain === tab.id ? 'var(--ou-text-strong)' : 'var(--ou-text-dimmed)',
               }}
             >
-              <Text
-                fz="sm"
-                fw={selectedDomain === tab.id ? 600 : 400}
-                style={{ color: selectedDomain === tab.id ? 'var(--ou-text-strong)' : 'var(--ou-text-dimmed)' }}
-              >
-                {tab.label}
-              </Text>
-            </UnstyledButton>
+              {tab.label}
+            </button>
           ))}
-        </Group>
+        </div>
       )}
 
       {/* Community Content */}
-      <Box maw={700} mx="auto" px="xl" pb="xl">
+      <div style={{ maxWidth: 700, margin: '0 auto', padding: '0 24px 24px' }}>
         {filtered.length === 0 ? (
-          <Center py={80}>
-            <Stack align="center" gap="md">
+          <div style={{ display: 'flex', justifyContent: 'center', padding: '80px 0' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
               <Planet size={48} weight="light" style={{ color: 'var(--ou-text-dimmed)' }} />
-              <Text fw={600} style={{ color: 'var(--ou-text-strong)' }}>
+              <span style={{ fontWeight: 600, color: 'var(--ou-text-strong)' }}>
                 {search || selectedDomain ? '검색 결과가 없어요' : '아직 공유된 내용이 없어요'}
-              </Text>
-              <Text fz="sm" ta="center" style={{ color: 'var(--ou-text-dimmed)' }}>
+              </span>
+              <span style={{ fontSize: 14, textAlign: 'center', color: 'var(--ou-text-dimmed)' }}>
                 {search || selectedDomain
                   ? '다른 검색어나 카테고리를 시도해보세요.'
                   : '대화를 시작하고 내 기록을 공개해보세요.'}
-              </Text>
+              </span>
               {(search || selectedDomain) ? (
-                <Button
-                  variant="outline"
-                  color="gray"
-                  radius="xl"
+                <button
+                  onClick={() => { setSearch(''); setSelectedDomain(null); }}
                   style={{
+                    padding: '8px 20px',
+                    borderRadius: 'var(--ou-radius-pill)',
                     borderWidth: '0.5px',
+                    borderStyle: 'solid',
                     borderColor: 'var(--ou-border-subtle)',
                     background: 'transparent',
                     color: 'var(--ou-text-body)',
+                    fontSize: 14,
+                    fontFamily: 'inherit',
+                    cursor: 'pointer',
                   }}
-                  onClick={() => { setSearch(''); setSelectedDomain(null); }}
                 >
                   전체 보기
-                </Button>
+                </button>
               ) : (
-                <Button
-                  component={Link}
+                <Link
                   href="/login"
-                  variant="filled"
-                  color="dark"
-                  radius="xl"
-                  style={{ color: 'white' }}
+                  style={{
+                    display: 'inline-block',
+                    padding: '8px 20px',
+                    borderRadius: 'var(--ou-radius-pill)',
+                    background: 'rgba(255,255,255,0.9)',
+                    color: '#111',
+                    fontSize: 14,
+                    fontWeight: 600,
+                    textDecoration: 'none',
+                    textAlign: 'center',
+                  }}
                 >
                   시작하기
-                </Button>
+                </Link>
               )}
-            </Stack>
-          </Center>
+            </div>
+          </div>
         ) : (
-          <Stack gap="xs">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {filtered.map(node => (
-              <Paper
+              <Link
                 key={node.id}
-                p="md"
-                component={Link}
                 href={`/view/${node.id}`}
                 style={{
                   textDecoration: 'none',
                   color: 'inherit',
                   cursor: 'pointer',
+                  display: 'block',
+                  padding: 16,
                   background: 'transparent',
                   border: '0.5px solid var(--ou-border-subtle)',
                   borderRadius: 'var(--ou-radius-card)',
                   boxShadow: 'var(--ou-glow-sm)',
                   transition: 'box-shadow var(--ou-transition), border-color var(--ou-transition)',
                 }}
-                onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => {
+                onMouseEnter={(e) => {
                   (e.currentTarget as HTMLElement).style.boxShadow = 'var(--ou-glow-hover)';
                   (e.currentTarget as HTMLElement).style.borderColor = 'var(--ou-border-hover)';
                 }}
-                onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => {
+                onMouseLeave={(e) => {
                   (e.currentTarget as HTMLElement).style.boxShadow = 'var(--ou-glow-sm)';
                   (e.currentTarget as HTMLElement).style.borderColor = 'var(--ou-border-subtle)';
                 }}
               >
-                <Group justify="space-between" mb={4}>
-                  <Text size="sm" fw={500} lineClamp={1} style={{ flex: 1, color: 'var(--ou-text-strong)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                  <span style={{
+                    fontSize: 14,
+                    fontWeight: 500,
+                    flex: 1,
+                    color: 'var(--ou-text-strong)',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}>
                     {node.title || (node.raw ? node.raw.slice(0, 60) : node.id)}
-                  </Text>
-                  <Badge
-                    variant="light"
-                    color="gray"
-                    size="xs"
+                  </span>
+                  <span
                     style={{
+                      fontSize: 10,
+                      padding: '2px 8px',
                       background: 'var(--ou-surface-muted)',
                       border: '0.5px solid var(--ou-border-subtle)',
+                      borderRadius: 'var(--ou-radius-pill)',
                       color: 'var(--ou-text-dimmed)',
+                      flexShrink: 0,
+                      marginLeft: 8,
                     }}
                   >
                     {DOMAIN_LABELS[node.domain] ?? node.domain}
-                  </Badge>
-                </Group>
+                  </span>
+                </div>
                 {node.raw && node.title && (
-                  <Text size="xs" lineClamp={2} mb={4} style={{ color: 'var(--ou-text-body)' }}>
+                  <p style={{
+                    fontSize: 12,
+                    marginBottom: 4,
+                    color: 'var(--ou-text-body)',
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                    margin: '0 0 4px 0',
+                  }}>
                     {node.raw}
-                  </Text>
+                  </p>
                 )}
-                <Group justify="space-between">
-                  <Text
-                    fz="xs"
-                    component={Link}
-                    href={node.profiles?.handle ? `/profile/${node.profiles.handle}` : '#'}
-                    onClick={e => e.stopPropagation()}
-                    style={{ textDecoration: 'none', color: 'var(--ou-text-dimmed)' }}
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span
+                    style={{ fontSize: 12, textDecoration: 'none', color: 'var(--ou-text-dimmed)' }}
                   >
                     {node.profiles?.display_name ?? '익명'}
-                  </Text>
-                  <Text size="xs" style={{ color: 'var(--ou-text-dimmed)' }}>
+                  </span>
+                  <span style={{ fontSize: 12, color: 'var(--ou-text-dimmed)' }}>
                     {new Date(node.created_at).toLocaleDateString('ko-KR')}
-                  </Text>
-                </Group>
-              </Paper>
+                  </span>
+                </div>
+              </Link>
             ))}
 
             {/* Infinite scroll trigger */}
             {hasMore && (
-              <Center ref={observerRef} py="xl">
-                {loading && <Loader size="sm" color="gray" />}
-              </Center>
+              <div ref={observerRef} style={{ display: 'flex', justifyContent: 'center', padding: '24px 0' }}>
+                {loading && <span style={{ color: 'var(--ou-text-dimmed)', fontSize: 13 }}>...</span>}
+              </div>
             )}
-          </Stack>
+          </div>
         )}
-      </Box>
+      </div>
 
       {/* ── Realization Modal ── */}
-      <Modal
-        opened={realizeModalOpen}
-        onClose={() => setRealizeModalOpen(false)}
-        title={<Text fw={600} style={{ color: 'var(--ou-text-strong)' }}>나도 이랬어요!</Text>}
-        size="md"
-        centered
-        radius="var(--ou-radius-card)"
-        styles={{
-          content: {
-            background: 'var(--ou-space)',
-            border: '0.5px solid var(--ou-border-subtle)',
-            boxShadow: 'var(--ou-glow-lg)',
-          },
-          header: {
-            background: 'transparent',
-          },
-          body: {
-            background: 'transparent',
-          },
-        }}
-      >
-        {realizeTarget && (
-          <Stack gap="md">
-            {/* Quoted scenario */}
-            <Box
-              p="md"
-              style={{
-                background: 'var(--ou-surface-subtle)',
-                borderRadius: 'var(--ou-radius-md)',
-                border: '0.5px solid var(--ou-border-faint)',
-              }}
-            >
-              <Text fz="xs" mb={4} style={{ color: 'var(--ou-text-dimmed)' }}>
-                {realizeTarget.title}
-              </Text>
-              <Text fz="sm" style={{ lineHeight: 1.5, color: 'var(--ou-text-body)' }} lineClamp={4}>
-                {realizeTarget.raw}
-              </Text>
-            </Box>
+      {realizeModalOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 1000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'rgba(0,0,0,0.5)',
+            backdropFilter: 'blur(4px)',
+          }}
+          onClick={e => {
+            if (e.target === e.currentTarget) setRealizeModalOpen(false);
+          }}
+        >
+          <div
+            style={{
+              width: '90%',
+              maxWidth: 500,
+              background: 'var(--ou-space)',
+              border: '0.5px solid var(--ou-border-subtle)',
+              boxShadow: 'var(--ou-glow-lg)',
+              borderRadius: 'var(--ou-radius-card)',
+              padding: 24,
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <span style={{ fontWeight: 600, color: 'var(--ou-text-strong)' }}>나도 이랬어요!</span>
+              <button onClick={() => setRealizeModalOpen(false)} style={{ background: 'none', border: 'none', color: 'var(--ou-text-dimmed)', cursor: 'pointer', fontSize: 18, fontFamily: 'inherit' }}>&times;</button>
+            </div>
+            {realizeTarget && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                {/* Quoted scenario */}
+                <div
+                  style={{
+                    padding: 16,
+                    background: 'var(--ou-surface-subtle)',
+                    borderRadius: 'var(--ou-radius-md)',
+                    border: '0.5px solid var(--ou-border-faint)',
+                  }}
+                >
+                  <span style={{ fontSize: 12, marginBottom: 4, color: 'var(--ou-text-dimmed)', display: 'block' }}>
+                    {realizeTarget.title}
+                  </span>
+                  <p style={{
+                    fontSize: 14,
+                    lineHeight: 1.5,
+                    color: 'var(--ou-text-body)',
+                    display: '-webkit-box',
+                    WebkitLineClamp: 4,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                    margin: 0,
+                  }}>
+                    {realizeTarget.raw}
+                  </p>
+                </div>
 
-            <Textarea
-              placeholder="당신의 이야기를 들려주세요"
-              value={realizeStory}
-              onChange={e => setRealizeStory(e.target.value)}
-              minRows={4}
-              maxRows={8}
-              autosize
-              styles={{
-                input: {
-                  border: '0.5px solid var(--ou-border-subtle)',
-                  background: 'transparent',
-                  color: 'var(--ou-text-body)',
-                },
-              }}
-            />
+                <textarea
+                  placeholder="당신의 이야기를 들려주세요"
+                  value={realizeStory}
+                  onChange={e => setRealizeStory(e.target.value)}
+                  rows={4}
+                  style={{
+                    border: '0.5px solid var(--ou-border-subtle)',
+                    background: 'transparent',
+                    color: 'var(--ou-text-body)',
+                    padding: '10px 14px',
+                    fontSize: 14,
+                    fontFamily: 'inherit',
+                    borderRadius: 'var(--ou-radius-card)',
+                    outline: 'none',
+                    resize: 'vertical',
+                    width: '100%',
+                    boxSizing: 'border-box',
+                  }}
+                />
 
-            <Button
-              color="dark"
-              fullWidth
-              radius="xl"
-              onClick={submitRealization}
-              loading={realizeSubmitting}
-              disabled={!realizeStory.trim()}
-              style={{ color: 'white' }}
-            >
-              공유하기
-            </Button>
-          </Stack>
-        )}
-      </Modal>
-    </Box>
+                <button
+                  onClick={submitRealization}
+                  disabled={realizeSubmitting || !realizeStory.trim()}
+                  style={{
+                    width: '100%',
+                    padding: '10px 20px',
+                    borderRadius: 'var(--ou-radius-pill)',
+                    background: 'rgba(255,255,255,0.9)',
+                    color: '#111',
+                    border: 'none',
+                    fontSize: 14,
+                    fontWeight: 600,
+                    fontFamily: 'inherit',
+                    cursor: realizeSubmitting || !realizeStory.trim() ? 'not-allowed' : 'pointer',
+                    opacity: realizeSubmitting || !realizeStory.trim() ? 0.4 : 1,
+                  }}
+                >
+                  공유하기
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

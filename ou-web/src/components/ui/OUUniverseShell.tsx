@@ -1,10 +1,8 @@
 'use client';
 
-import { Box } from '@mantine/core';
 import {
   Newspaper, ChatCircle, Gear, Sun, Moon,
 } from '@phosphor-icons/react';
-import { useMantineColorScheme } from '@mantine/core';
 import { useRouter, usePathname } from 'next/navigation';
 import { SystemOrbDock, type SystemOrbItem } from './SystemOrbDock';
 
@@ -15,7 +13,6 @@ interface OUUniverseShellProps {
 export function OUUniverseShell({ children }: OUUniverseShellProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const { setColorScheme, colorScheme } = useMantineColorScheme();
 
   const systemOrbs: SystemOrbItem[] = [
     {
@@ -41,14 +38,16 @@ export function OUUniverseShell({ children }: OUUniverseShellProps) {
     },
     {
       id: 'theme',
-      icon: colorScheme === 'dark' ? Sun : Moon,
-      label: colorScheme === 'dark' ? '라이트 모드' : '다크 모드',
-      onClick: () => setColorScheme(colorScheme === 'dark' ? 'light' : 'dark'),
+      icon: Sun,
+      label: '라이트 모드',
+      onClick: () => {
+        // Theme toggle removed - always dark
+      },
     },
   ];
 
   return (
-    <Box
+    <div
       style={{
         position: 'relative',
         width: '100vw',
@@ -58,12 +57,12 @@ export function OUUniverseShell({ children }: OUUniverseShellProps) {
       }}
     >
       {/* Main content */}
-      <Box style={{ position: 'relative', width: '100%', height: '100%', zIndex: 1, overflowY: 'auto' }}>
+      <div style={{ position: 'relative', width: '100%', height: '100%', zIndex: 1, overflowY: 'auto' }}>
         {children}
-      </Box>
+      </div>
 
-      {/* Left orb dock — system navigation */}
+      {/* Left orb dock -- system navigation */}
       <SystemOrbDock side="left" items={systemOrbs} />
-    </Box>
+    </div>
   );
 }

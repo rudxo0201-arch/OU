@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useRef, useState } from 'react';
-import { Text, Box, Group, Badge, ScrollArea, TextInput, Loader } from '@mantine/core';
 import { Terminal, WarningCircle, CheckCircle } from '@phosphor-icons/react';
 import type { ViewProps } from './registry';
 import { useDevWorkspaceStore } from '@/stores/devWorkspaceStore';
@@ -11,7 +10,6 @@ import { WebContainerTerminal } from './dev/WebContainerTerminal';
 export function TerminalView({ nodes }: ViewProps) {
   const { isAdminMode, projectId } = useDevWorkspaceStore();
 
-  // R2/WebContainer 모드 (일반 사용자): WebContainer 터미널
   if (!isAdminMode && projectId) {
     return <WebContainerTerminal />;
   }
@@ -28,7 +26,6 @@ function TerminalViewInner({ nodes }: { nodes: any[] }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // DevWorkspace store 연동
   const wsStore = useDevWorkspaceStore();
 
   const executeCommand = useCallback(async () => {
@@ -89,7 +86,6 @@ function TerminalViewInner({ nodes }: { nodes: any[] }) {
     }
     setRunning(false);
 
-    // 자동 스크롤
     setTimeout(() => {
       scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
     }, 50);
@@ -119,9 +115,9 @@ function TerminalViewInner({ nodes }: { nodes: any[] }) {
   }, [executeCommand, cmdHistory, cmdIdx]);
 
   return (
-    <Box
+    <div
       style={{
-        background: 'var(--mantine-color-dark-9)',
+        background: 'var(--ou-bg-deep, #0a0a0a)',
         borderRadius: 8,
         fontFamily: 'monospace',
         display: 'flex',
@@ -132,83 +128,77 @@ function TerminalViewInner({ nodes }: { nodes: any[] }) {
       onClick={() => inputRef.current?.focus()}
     >
       {/* Header */}
-      <Group gap="xs" p="sm" style={{ borderBottom: '1px solid var(--mantine-color-dark-6)', flexShrink: 0 }}>
-        <Terminal size={14} color="var(--mantine-color-green-5)" />
-        <Text fz={11} c="green.5">OU Terminal</Text>
-        <Badge size="xs" variant="light" color="gray">{history.length} commands</Badge>
-      </Group>
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center', padding: 12, borderBottom: '1px solid var(--ou-border-muted, #222)', flexShrink: 0 }}>
+        <Terminal size={14} color="var(--ou-green, #4caf50)" />
+        <span style={{ fontSize: 11, color: 'var(--ou-green, #4caf50)' }}>OU Terminal</span>
+        <span style={{ fontSize: 10, padding: '1px 6px', borderRadius: 4, backgroundColor: 'var(--ou-bg-subtle, rgba(255,255,255,0.06))', color: 'var(--ou-text-dimmed, #888)' }}>
+          {history.length} commands
+        </span>
+      </div>
 
       {/* Output */}
-      <ScrollArea style={{ flex: 1 }} viewportRef={scrollRef} p="sm">
+      <div ref={scrollRef} style={{ flex: 1, overflow: 'auto', padding: 12 }}>
         {history.length === 0 && (
-          <Text fz={11} c="dimmed">명령어를 입력하세요. (pnpm, git, node, npx 등)</Text>
+          <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)' }}>명령어를 입력하세요. (pnpm, git, node, npx 등)</span>
         )}
 
         {history.map(entry => (
-          <Box key={entry.id} mb="sm">
-            {/* Command */}
-            <Group gap={4} wrap="nowrap">
-              <Text fz={11} c="green.6" span>$</Text>
-              <Text fz={11} c="gray.3" span fw={500}>{entry.command}</Text>
-              <Text fz={9} c="dimmed" span ml="auto">{entry.timestamp}</Text>
+          <div key={entry.id} style={{ marginBottom: 12 }}>
+            <div style={{ display: 'flex', gap: 4, flexWrap: 'nowrap', alignItems: 'center' }}>
+              <span style={{ fontSize: 11, color: 'var(--ou-green, #4caf50)' }}>$</span>
+              <span style={{ fontSize: 11, color: 'var(--ou-text-secondary, #ccc)', fontWeight: 500 }}>{entry.command}</span>
+              <span style={{ fontSize: 9, color: 'var(--ou-text-dimmed, #888)', marginLeft: 'auto' }}>{entry.timestamp}</span>
               {entry.exitCode === 0 ? (
-                <CheckCircle size={10} color="var(--mantine-color-green-7)" />
+                <CheckCircle size={10} color="var(--ou-green, #4caf50)" />
               ) : (
-                <WarningCircle size={10} color="var(--mantine-color-red-5)" />
+                <WarningCircle size={10} color="var(--ou-red, #f44336)" />
               )}
-            </Group>
+            </div>
 
-            {/* Output */}
             {entry.stdout && (
-              <Text fz={11} c="gray.4" mt={2} style={{ whiteSpace: 'pre-wrap', paddingLeft: 16 }}>
+              <p style={{ fontSize: 11, color: 'var(--ou-text-secondary, #aaa)', margin: '2px 0 0', whiteSpace: 'pre-wrap', paddingLeft: 16 }}>
                 {entry.stdout.slice(0, 5000)}
-              </Text>
+              </p>
             )}
             {entry.stderr && (
-              <Text fz={11} c="red.5" mt={2} style={{ whiteSpace: 'pre-wrap', paddingLeft: 16 }}>
+              <p style={{ fontSize: 11, color: 'var(--ou-red, #f44336)', margin: '2px 0 0', whiteSpace: 'pre-wrap', paddingLeft: 16 }}>
                 {entry.stderr.slice(0, 2000)}
-              </Text>
+              </p>
             )}
-          </Box>
+          </div>
         ))}
 
         {running && (
-          <Group gap={4}>
-            <Loader size={10} color="green" />
-            <Text fz={11} c="dimmed">실행 중...</Text>
-          </Group>
+          <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+            <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)' }}>실행 중...</span>
+          </div>
         )}
-      </ScrollArea>
+      </div>
 
       {/* Input */}
-      <Group
-        gap={4}
-        p="sm"
-        style={{ borderTop: '1px solid var(--mantine-color-dark-6)', flexShrink: 0 }}
-        wrap="nowrap"
+      <div
+        style={{ display: 'flex', gap: 4, alignItems: 'center', padding: 12, borderTop: '1px solid var(--ou-border-muted, #222)', flexShrink: 0, flexWrap: 'nowrap' }}
       >
-        <Text fz={12} c="green.6" fw={700}>$</Text>
-        <TextInput
+        <span style={{ fontSize: 12, color: 'var(--ou-green, #4caf50)', fontWeight: 700 }}>$</span>
+        <input
           ref={inputRef}
           value={input}
-          onChange={e => setInput(e.currentTarget.value)}
+          onChange={e => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="명령어 입력..."
-          variant="unstyled"
-          size="xs"
-          style={{ flex: 1 }}
-          styles={{
-            input: {
-              fontFamily: 'monospace',
-              fontSize: 12,
-              color: 'var(--mantine-color-gray-3)',
-              background: 'transparent',
-            },
-          }}
           disabled={running}
           autoFocus
+          style={{
+            flex: 1,
+            fontFamily: 'monospace',
+            fontSize: 12,
+            color: 'var(--ou-text-secondary, #ccc)',
+            background: 'transparent',
+            border: 'none',
+            outline: 'none',
+          }}
         />
-      </Group>
-    </Box>
+      </div>
+    </div>
   );
 }

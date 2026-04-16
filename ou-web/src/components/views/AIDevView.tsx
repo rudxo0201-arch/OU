@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useRef, useState } from 'react';
-import { Stack, Text, Box, Group, ActionIcon, ScrollArea, Textarea, Loader, Badge } from '@mantine/core';
 import { PaperPlaneRight, Lightning, User, File } from '@phosphor-icons/react';
 import type { ViewProps } from './registry';
 import { useDevWorkspaceStore } from '@/stores/devWorkspaceStore';
@@ -20,7 +19,6 @@ export function AIDevView({ nodes }: ViewProps) {
   const [streaming, setStreaming] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // DevWorkspace store에서 맥락 읽기
   const wsStore = useDevWorkspaceStore();
 
   const scrollToBottom = useCallback(() => {
@@ -47,7 +45,6 @@ export function AIDevView({ nodes }: ViewProps) {
         content: m.content,
       }));
 
-      // 터미널 출력에서 최근 5개
       const recentTerminal = wsStore.terminalOutput.slice(-5).map(t => ({
         command: t.command,
         stdout: t.stdout,
@@ -60,7 +57,6 @@ export function AIDevView({ nodes }: ViewProps) {
         selectedText: wsStore.selectedText || undefined,
       };
 
-      // Admin 모드에서만 터미널/Git 맥락 전송
       if (wsStore.isAdminMode) {
         if (recentTerminal.length > 0) context.recentTerminalOutput = recentTerminal;
         if (wsStore.currentErrors.length > 0) context.currentErrors = wsStore.currentErrors;
@@ -69,7 +65,6 @@ export function AIDevView({ nodes }: ViewProps) {
         if (wsStore.gitLog.length > 0) context.gitLog = wsStore.gitLog.slice(0, 5);
       }
 
-      // 프로젝트 모드: projectId 전달
       if (wsStore.projectId) {
         context.projectId = wsStore.projectId;
         context.projectName = wsStore.projectName;
@@ -129,39 +124,40 @@ export function AIDevView({ nodes }: ViewProps) {
   }, [sendMessage]);
 
   return (
-    <Box style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 400 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 400 }}>
       {/* Header */}
-      <Group gap="xs" p="sm" style={{ borderBottom: '1px solid var(--mantine-color-dark-4)', flexShrink: 0 }} wrap="nowrap">
-        <Lightning size={14} color="var(--mantine-color-yellow-5)" />
-        <Text fz={12} fw={600}>AI Dev</Text>
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center', padding: 12, borderBottom: '1px solid var(--ou-border-muted, #333)', flexShrink: 0, flexWrap: 'nowrap' }}>
+        <Lightning size={14} color="var(--mantine-color-yellow-5, #ffd43b)" />
+        <span style={{ fontSize: 12, fontWeight: 600 }}>AI Dev</span>
         {wsStore.activeFilePath && (
-          <Badge size="xs" variant="light" color="gray" leftSection={<File size={8} />}>
+          <span style={{ fontSize: 10, padding: '1px 6px', borderRadius: 4, backgroundColor: 'var(--ou-bg-subtle, rgba(255,255,255,0.06))', color: 'var(--ou-text-dimmed, #888)', display: 'flex', alignItems: 'center', gap: 4 }}>
+            <File size={8} />
             {wsStore.activeFilePath.split('/').pop()}
-          </Badge>
+          </span>
         )}
-      </Group>
+      </div>
 
       {/* Messages */}
-      <ScrollArea style={{ flex: 1 }} viewportRef={scrollRef} p="sm">
+      <div ref={scrollRef} style={{ flex: 1, overflow: 'auto', padding: 12 }}>
         {messages.length === 0 && (
-          <Stack align="center" justify="center" h={200} gap="xs">
-            <Lightning size={32} color="var(--mantine-color-dark-3)" />
-            <Text fz="sm" c="dimmed">AI에게 개발 요청을 해보세요</Text>
-            <Text fz={10} c="dimmed">&quot;이 함수 리팩토링해줘&quot;, &quot;에러 원인 분석해줘&quot;</Text>
-          </Stack>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 200, gap: 8 }}>
+            <Lightning size={32} color="var(--ou-border-muted, #333)" />
+            <span style={{ fontSize: 13, color: 'var(--ou-text-dimmed, #888)' }}>AI에게 개발 요청을 해보세요</span>
+            <span style={{ fontSize: 10, color: 'var(--ou-text-dimmed, #888)' }}>&quot;이 함수 리팩토링해줘&quot;, &quot;에러 원인 분석해줘&quot;</span>
+          </div>
         )}
 
-        <Stack gap="md">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {messages.map(msg => (
-            <Group key={msg.id} gap="sm" align="flex-start" wrap="nowrap">
-              <Box
+            <div key={msg.id} style={{ display: 'flex', gap: 12, alignItems: 'flex-start', flexWrap: 'nowrap' }}>
+              <div
                 style={{
                   width: 28,
                   height: 28,
                   borderRadius: '50%',
                   background: msg.role === 'user'
-                    ? 'var(--mantine-color-blue-8)'
-                    : 'var(--mantine-color-dark-4)',
+                    ? 'var(--ou-blue, #1565c0)'
+                    : 'var(--ou-border-muted, #333)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -170,27 +166,27 @@ export function AIDevView({ nodes }: ViewProps) {
               >
                 {msg.role === 'user'
                   ? <User size={14} color="white" />
-                  : <Lightning size={14} color="var(--mantine-color-yellow-5)" />
+                  : <Lightning size={14} color="var(--mantine-color-yellow-5, #ffd43b)" />
                 }
-              </Box>
-              <Box style={{ flex: 1, minWidth: 0 }}>
-                <Text fz={10} c="dimmed" mb={2}>{msg.role === 'user' ? 'You' : 'AI'}</Text>
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <span style={{ fontSize: 10, color: 'var(--ou-text-dimmed, #888)', display: 'block', marginBottom: 2 }}>{msg.role === 'user' ? 'You' : 'AI'}</span>
                 {msg.role === 'assistant' && msg.content ? (() => {
                   const actions = parseActions(msg.content);
                   const textOnly = stripActions(msg.content);
                   return (
                     <>
                       {textOnly && (
-                        <Text
-                          fz={12}
+                        <span
                           style={{
+                            fontSize: 12,
                             whiteSpace: 'pre-wrap',
                             fontFamily: 'monospace',
                             lineHeight: 1.6,
                           }}
                         >
                           {textOnly}
-                        </Text>
+                        </span>
                       )}
                       {actions.map((action, i) => (
                         <ActionBlock key={`${msg.id}-action-${i}`} action={action} />
@@ -198,9 +194,9 @@ export function AIDevView({ nodes }: ViewProps) {
                     </>
                   );
                 })() : (
-                  <Text
-                    fz={12}
+                  <span
                     style={{
+                      fontSize: 12,
                       whiteSpace: 'pre-wrap',
                       fontFamily: msg.role === 'assistant' ? 'monospace' : 'inherit',
                       lineHeight: 1.6,
@@ -208,50 +204,61 @@ export function AIDevView({ nodes }: ViewProps) {
                   >
                     {msg.content}
                     {streaming && msg.role === 'assistant' && !msg.content && (
-                      <Loader size={12} color="yellow" type="dots" />
+                      <span style={{ color: 'var(--mantine-color-yellow-5, #ffd43b)' }}>...</span>
                     )}
-                  </Text>
+                  </span>
                 )}
-              </Box>
-            </Group>
+              </div>
+            </div>
           ))}
-        </Stack>
-      </ScrollArea>
+        </div>
+      </div>
 
       {/* Input */}
-      <Group
-        gap="xs"
-        p="sm"
-        style={{ borderTop: '1px solid var(--mantine-color-dark-4)', flexShrink: 0 }}
-        align="flex-end"
-        wrap="nowrap"
+      <div
+        style={{ display: 'flex', gap: 8, alignItems: 'flex-end', padding: 12, borderTop: '1px solid var(--ou-border-muted, #333)', flexShrink: 0, flexWrap: 'nowrap' }}
       >
-        <Textarea
+        <textarea
           value={input}
-          onChange={e => setInput(e.currentTarget.value)}
+          onChange={e => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="AI에게 요청..."
-          variant="filled"
-          size="sm"
-          autosize
-          minRows={1}
-          maxRows={4}
-          style={{ flex: 1 }}
-          styles={{
-            input: { fontSize: 12 },
-          }}
           disabled={streaming}
+          rows={1}
+          style={{
+            flex: 1,
+            fontSize: 12,
+            padding: '8px 12px',
+            borderRadius: 8,
+            border: '0.5px solid var(--ou-border, #333)',
+            background: 'var(--ou-bg-subtle, rgba(255,255,255,0.04))',
+            color: 'inherit',
+            resize: 'none',
+            outline: 'none',
+            fontFamily: 'inherit',
+          }}
         />
-        <ActionIcon
-          size="lg"
-          variant="filled"
-          color="blue"
+        <button
           onClick={sendMessage}
           disabled={!input.trim() || streaming}
+          style={{
+            width: 36,
+            height: 36,
+            borderRadius: 8,
+            border: 'none',
+            background: 'var(--ou-blue, #1565c0)',
+            color: 'white',
+            cursor: !input.trim() || streaming ? 'default' : 'pointer',
+            opacity: !input.trim() || streaming ? 0.4 : 1,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0,
+          }}
         >
           <PaperPlaneRight size={16} />
-        </ActionIcon>
-      </Group>
-    </Box>
+        </button>
+      </div>
+    </div>
   );
 }

@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Box, Text, Loader, Stack } from '@mantine/core';
 import { Terminal as TerminalIcon } from '@phosphor-icons/react';
 import { useDevWorkspaceStore } from '@/stores/devWorkspaceStore';
 
@@ -104,30 +103,30 @@ export function WebContainerTerminal() {
   // 로딩 상태
   if (webcontainerStatus === 'booting' || webcontainerStatus === 'loading') {
     return (
-      <Stack align="center" justify="center" h="100%" gap="xs">
-        <Loader size={20} color="green" />
-        <Text fz={11} c="dimmed">
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 4 }}>
+        <span style={{ color: 'green', fontSize: 'var(--mantine-font-size-sm)' }}>...</span>
+        <span style={{ fontSize: 11, color: 'var(--mantine-color-dimmed)' }}>
           {webcontainerStatus === 'booting' ? '런타임 시작 중...' : '프로젝트 로드 중...'}
-        </Text>
-      </Stack>
+        </span>
+      </div>
     );
   }
 
   // 에러 상태
   if (webcontainerStatus === 'error' || error) {
     return (
-      <Stack align="center" justify="center" h="100%" gap="xs">
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 4 }}>
         <TerminalIcon size={28} color="var(--mantine-color-red-5)" />
-        <Text fz={11} c="red.5">터미널 초기화 실패</Text>
-        <Text fz={10} c="dimmed" maw={300} ta="center">
+        <span style={{ fontSize: 11, color: 'var(--mantine-color-red-5)' }}>터미널 초기화 실패</span>
+        <span style={{ fontSize: 10, color: 'var(--mantine-color-dimmed)', maxWidth: 300, textAlign: 'center' }}>
           {error || webcontainerError || '브라우저가 WebContainer를 지원하지 않을 수 있습니다'}
-        </Text>
-      </Stack>
+        </span>
+      </div>
     );
   }
 
   return (
-    <Box
+    <div
       ref={terminalRef}
       style={{
         height: '100%',

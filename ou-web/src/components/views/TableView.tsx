@@ -1,10 +1,6 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import {
-  Table, ScrollArea, TextInput, Group, Badge, Text, Box,
-  ActionIcon, Tooltip, Select,
-} from '@mantine/core';
 import { MagnifyingGlass, CaretUp, CaretDown } from '@phosphor-icons/react';
 
 interface TableViewProps {
@@ -18,18 +14,16 @@ export function TableView({ nodes }: TableViewProps) {
   const [search, setSearch] = useState('');
   const [sortKey, setSortKey] = useState<string>('created_at');
   const [sortDir, setSortDir] = useState<SortDir>('desc');
-  const [domainFilter, setDomainFilter] = useState<string | null>(null);
+  const [domainFilter, setDomainFilter] = useState<string>('');
 
-  // 존재하는 도메인 추출 (빈 필터 원칙)
   const availableDomains = useMemo(() => {
     const domains = new Set<string>();
     for (const n of nodes) {
       if (n.domain) domains.add(n.domain);
     }
-    return Array.from(domains).map(d => ({ value: d, label: d }));
+    return Array.from(domains);
   }, [nodes]);
 
-  // 필터 + 검색 + 정렬
   const displayNodes = useMemo(() => {
     let filtered = nodes;
 
@@ -73,78 +67,96 @@ export function TableView({ nodes }: TableViewProps) {
   };
 
   return (
-    <Box p="md">
-      <Group gap="sm" mb="md">
-        <TextInput
-          placeholder="검색..."
-          leftSection={<MagnifyingGlass size={14} />}
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          size="xs"
-          style={{ flex: 1, maxWidth: 300 }}
-          styles={{ input: { background: 'transparent', border: '0.5px solid var(--mantine-color-default-border)' } }}
-        />
-        {availableDomains.length > 1 && (
-          <Select
-            placeholder="전체 도메인"
-            data={availableDomains}
-            value={domainFilter}
-            onChange={setDomainFilter}
-            clearable
-            size="xs"
-            style={{ width: 140 }}
+    <div style={{ padding: 16 }}>
+      <div style={{ display: 'flex', gap: 12, marginBottom: 16, alignItems: 'center' }}>
+        <div style={{ flex: 1, maxWidth: 300, position: 'relative' }}>
+          <MagnifyingGlass size={14} style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', color: 'var(--ou-text-dimmed, #888)' }} />
+          <input
+            placeholder="검색..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '6px 8px 6px 28px',
+              fontSize: 12,
+              border: '0.5px solid var(--ou-border, #333)',
+              borderRadius: 6,
+              background: 'transparent',
+              color: 'inherit',
+              outline: 'none',
+            }}
           />
+        </div>
+        {availableDomains.length > 1 && (
+          <select
+            value={domainFilter}
+            onChange={e => setDomainFilter(e.target.value)}
+            style={{
+              padding: '6px 8px',
+              fontSize: 12,
+              border: '0.5px solid var(--ou-border, #333)',
+              borderRadius: 6,
+              background: 'transparent',
+              color: 'inherit',
+              width: 140,
+            }}
+          >
+            <option value="">전체 도메인</option>
+            {availableDomains.map(d => (
+              <option key={d} value={d}>{d}</option>
+            ))}
+          </select>
         )}
-        <Text fz="xs" c="dimmed">{displayNodes.length}개</Text>
-      </Group>
+        <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)' }}>{displayNodes.length}개</span>
+      </div>
 
-      <ScrollArea>
-        <Table highlightOnHover fz="xs" verticalSpacing={4}>
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th style={{ cursor: 'pointer' }} onClick={() => handleSort('domain')}>
-                <Group gap={4}>도메인 <SortIcon col="domain" /></Group>
-              </Table.Th>
-              <Table.Th style={{ cursor: 'pointer' }} onClick={() => handleSort('raw')}>
-                <Group gap={4}>내용 <SortIcon col="raw" /></Group>
-              </Table.Th>
-              <Table.Th style={{ cursor: 'pointer' }} onClick={() => handleSort('confidence')}>
-                <Group gap={4}>신뢰도 <SortIcon col="confidence" /></Group>
-              </Table.Th>
-              <Table.Th style={{ cursor: 'pointer' }} onClick={() => handleSort('created_at')}>
-                <Group gap={4}>생성일 <SortIcon col="created_at" /></Group>
-              </Table.Th>
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>
+      <div style={{ overflowX: 'auto' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
+          <thead>
+            <tr>
+              <th style={{ cursor: 'pointer', padding: '8px 12px', textAlign: 'left', borderBottom: '1px solid var(--ou-border, #333)' }} onClick={() => handleSort('domain')}>
+                <span style={{ display: 'inline-flex', gap: 4, alignItems: 'center' }}>도메인 <SortIcon col="domain" /></span>
+              </th>
+              <th style={{ cursor: 'pointer', padding: '8px 12px', textAlign: 'left', borderBottom: '1px solid var(--ou-border, #333)' }} onClick={() => handleSort('raw')}>
+                <span style={{ display: 'inline-flex', gap: 4, alignItems: 'center' }}>내용 <SortIcon col="raw" /></span>
+              </th>
+              <th style={{ cursor: 'pointer', padding: '8px 12px', textAlign: 'left', borderBottom: '1px solid var(--ou-border, #333)' }} onClick={() => handleSort('confidence')}>
+                <span style={{ display: 'inline-flex', gap: 4, alignItems: 'center' }}>신뢰도 <SortIcon col="confidence" /></span>
+              </th>
+              <th style={{ cursor: 'pointer', padding: '8px 12px', textAlign: 'left', borderBottom: '1px solid var(--ou-border, #333)' }} onClick={() => handleSort('created_at')}>
+                <span style={{ display: 'inline-flex', gap: 4, alignItems: 'center' }}>생성일 <SortIcon col="created_at" /></span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
             {displayNodes.map(node => (
-              <Table.Tr key={node.id}>
-                <Table.Td>
-                  <Badge variant="light" color="gray" size="xs">{node.domain ?? '-'}</Badge>
-                </Table.Td>
-                <Table.Td style={{ maxWidth: 400 }}>
-                  <Text fz="xs" lineClamp={1}>{node.raw ?? JSON.stringify(node.domain_data ?? {}).slice(0, 80)}</Text>
-                </Table.Td>
-                <Table.Td>
-                  <Text fz="xs" c="dimmed">{node.confidence ?? '-'}</Text>
-                </Table.Td>
-                <Table.Td>
-                  <Text fz="xs" c="dimmed">
+              <tr key={node.id} style={{ borderBottom: '0.5px solid var(--ou-border, #333)' }}>
+                <td style={{ padding: '6px 12px' }}>
+                  <span style={{ fontSize: 10, padding: '1px 6px', border: '0.5px solid var(--ou-border, #333)', borderRadius: 4 }}>{node.domain ?? '-'}</span>
+                </td>
+                <td style={{ padding: '6px 12px', maxWidth: 400 }}>
+                  <span style={{ fontSize: 11, display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{node.raw ?? JSON.stringify(node.domain_data ?? {}).slice(0, 80)}</span>
+                </td>
+                <td style={{ padding: '6px 12px' }}>
+                  <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)' }}>{node.confidence ?? '-'}</span>
+                </td>
+                <td style={{ padding: '6px 12px' }}>
+                  <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)' }}>
                     {node.created_at ? new Date(node.created_at).toLocaleDateString('ko-KR') : '-'}
-                  </Text>
-                </Table.Td>
-              </Table.Tr>
+                  </span>
+                </td>
+              </tr>
             ))}
             {displayNodes.length === 0 && (
-              <Table.Tr>
-                <Table.Td colSpan={4}>
-                  <Text ta="center" fz="xs" c="dimmed" py="xl">데이터가 없습니다</Text>
-                </Table.Td>
-              </Table.Tr>
+              <tr>
+                <td colSpan={4} style={{ padding: '32px 12px', textAlign: 'center' }}>
+                  <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)' }}>데이터가 없습니다</span>
+                </td>
+              </tr>
             )}
-          </Table.Tbody>
-        </Table>
-      </ScrollArea>
-    </Box>
+          </tbody>
+        </table>
+      </div>
+    </div>
   );
 }

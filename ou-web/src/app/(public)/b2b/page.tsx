@@ -2,10 +2,6 @@
 
 import { useState } from 'react';
 import {
-  Stack, Title, Text, SimpleGrid, Paper, Button, Group, Center, Box,
-  Divider, TextInput, Textarea, Table, Badge, Notification,
-} from '@mantine/core';
-import {
   Check, Buildings, ArrowRight, GraduationCap, Chalkboard,
   Briefcase, EnvelopeSimple, X,
 } from '@phosphor-icons/react';
@@ -123,281 +119,283 @@ export default function B2BPage() {
   const canSubmit = contactForm.name.trim() && contactForm.email.trim() && contactForm.message.trim();
 
   return (
-    <Stack gap={60} maw={900} mx="auto" p="xl">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 60, maxWidth: 900, margin: '0 auto', padding: 24 }}>
       {/* Notification */}
       {submitResult && (
-        <Notification
-          icon={submitResult === 'success' ? <Check size={16} /> : <X size={16} />}
-          color="gray"
-          onClose={() => setSubmitResult(null)}
-          withBorder
-          style={{ position: 'fixed', top: 20, right: 20, zIndex: 1000, maxWidth: 360 }}
+        <div
+          style={{
+            position: 'fixed', top: 20, right: 20, zIndex: 1000, maxWidth: 360,
+            padding: '12px 16px', borderRadius: 8, border: '1px solid #e5e7eb', background: '#fff',
+            display: 'flex', alignItems: 'center', gap: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+          }}
         >
-          {submitResult === 'success'
-            ? '문의가 접수되었어요. 빠르게 연락드릴게요!'
-            : '문의 접수에 실패했어요. 잠시 후 다시 시도해주세요.'}
-        </Notification>
+          {submitResult === 'success' ? <Check size={16} /> : <X size={16} />}
+          <span style={{ fontSize: 14, flex: 1 }}>
+            {submitResult === 'success'
+              ? '문의가 접수되었어요. 빠르게 연락드릴게요!'
+              : '문의 접수에 실패했어요. 잠시 후 다시 시도해주세요.'}
+          </span>
+          <button onClick={() => setSubmitResult(null)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+            <X size={14} />
+          </button>
+        </div>
       )}
 
       {/* Hero */}
-      <Stack gap="lg" ta="center" py="xl">
-        <Buildings size={48} weight="light" color="var(--mantine-color-gray-5)" />
-        <Title order={1} fz={{ base: 28, sm: 36 }}>
-          조직을 위한 OU Team
-        </Title>
-        <Text c="dimmed" fz="lg" maw={500} mx="auto" style={{ lineHeight: 1.7 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, textAlign: 'center', padding: '24px 0' }}>
+        <Buildings size={48} weight="light" color="#9ca3af" />
+        <h1 style={{ margin: 0, fontSize: 32 }}>조직을 위한 OU Team</h1>
+        <span style={{ color: 'var(--color-dimmed)', fontSize: 18, maxWidth: 500, lineHeight: 1.7 }}>
           대화로 쌓은 지식이 조직의 자산이 됩니다.
           모든 구성원이 항상 최신 자료를 확인하고,
           관리자는 전체 현황을 한눈에 파악합니다.
-        </Text>
-        <Group justify="center" gap="md">
-          <Button
-            size="lg"
-            color="dark"
+        </span>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 12 }}>
+          <button
             onClick={() => {
               document.getElementById('contact-form')?.scrollIntoView({ behavior: 'smooth' });
             }}
+            style={{ padding: '12px 24px', background: '#1a1a1a', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer', fontSize: 16 }}
           >
             도입 문의하기
-          </Button>
-          <Button
-            size="lg"
-            variant="light"
-            color="gray"
-            component={Link}
+          </button>
+          <Link
             href="/login"
+            style={{ padding: '12px 24px', background: '#f3f4f6', color: '#1a1a1a', border: 'none', borderRadius: 6, cursor: 'pointer', fontSize: 16, textDecoration: 'none' }}
           >
             먼저 체험해보기
-          </Button>
-        </Group>
-      </Stack>
+          </Link>
+        </div>
+      </div>
 
       {/* Features */}
       <div>
-        <Text fw={600} fz="lg" mb="md">주요 기능</Text>
-        <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
+        <span style={{ fontWeight: 600, fontSize: 18, display: 'block', marginBottom: 16 }}>주요 기능</span>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 12 }}>
           {FEATURES.map(f => (
-            <Paper key={f} p="md">
-              <Group gap="sm" wrap="nowrap" align="flex-start">
-                <Box mt={2}>
-                  <Check size={16} weight="bold" color="var(--mantine-color-gray-6)" />
-                </Box>
-                <Text fz="sm" style={{ lineHeight: 1.5 }}>{f}</Text>
-              </Group>
-            </Paper>
+            <div key={f} style={{ padding: 16 }}>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+                <div style={{ marginTop: 2 }}>
+                  <Check size={16} weight="bold" color="#9ca3af" />
+                </div>
+                <span style={{ fontSize: 14, lineHeight: 1.5 }}>{f}</span>
+              </div>
+            </div>
           ))}
-        </SimpleGrid>
+        </div>
       </div>
 
       {/* Use Case Scenarios */}
       <div>
-        <Text fw={600} fz="lg" mb="sm">이런 곳에서 쓰고 있어요</Text>
-        <Text fz="sm" c="dimmed" mb="md">
+        <span style={{ fontWeight: 600, fontSize: 18, display: 'block', marginBottom: 8 }}>이런 곳에서 쓰고 있어요</span>
+        <span style={{ fontSize: 14, color: 'var(--color-dimmed)', display: 'block', marginBottom: 16 }}>
           다양한 조직에서 OU Team을 활용하는 방법
-        </Text>
-        <Stack gap="lg">
+        </span>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {USE_CASES.map((uc) => {
             const Icon = uc.icon;
             return (
-              <Paper key={uc.title} p="lg">
-                <Group gap="sm" mb="md">
+              <div key={uc.title} style={{ padding: 20 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
                   <Icon size={24} weight="light" />
                   <div>
-                    <Text fw={600}>{uc.title}</Text>
-                    <Text fz="xs" c="dimmed">{uc.subtitle}</Text>
+                    <span style={{ fontWeight: 600, display: 'block' }}>{uc.title}</span>
+                    <span style={{ fontSize: 12, color: 'var(--color-dimmed)' }}>{uc.subtitle}</span>
                   </div>
-                </Group>
+                </div>
 
                 {/* Step flow */}
-                <SimpleGrid cols={{ base: 2, sm: 4 }} spacing="sm" mb="md">
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 8, marginBottom: 16 }}>
                   {uc.steps.map((step, i) => (
-                    <Box key={i}>
-                      <Group gap={4} mb={4}>
-                        <Badge variant="light" color="gray" size="xs" circle>
+                    <div key={i}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4 }}>
+                        <span style={{ fontSize: 10, padding: '1px 6px', borderRadius: '50%', background: '#f3f4f6', color: '#6b7280' }}>
                           {i + 1}
-                        </Badge>
-                        <Text fz="xs" fw={600}>{step.label}</Text>
-                      </Group>
-                      <Text fz="xs" c="dimmed" style={{ lineHeight: 1.5 }}>
+                        </span>
+                        <span style={{ fontSize: 12, fontWeight: 600 }}>{step.label}</span>
+                      </div>
+                      <span style={{ fontSize: 12, color: 'var(--color-dimmed)', lineHeight: 1.5 }}>
                         {step.desc}
-                      </Text>
-                    </Box>
+                      </span>
+                    </div>
                   ))}
-                </SimpleGrid>
+                </div>
 
-                <Divider mb="sm" />
-                <Group gap="xs">
-                  <ArrowRight size={14} color="var(--mantine-color-gray-6)" />
-                  <Text fz="sm" fw={500}>{uc.result}</Text>
-                </Group>
-              </Paper>
+                <hr style={{ border: 'none', borderTop: '0.5px solid #e5e7eb', margin: '0 0 8px 0' }} />
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <ArrowRight size={14} color="#9ca3af" />
+                  <span style={{ fontSize: 14, fontWeight: 500 }}>{uc.result}</span>
+                </div>
+              </div>
             );
           })}
-        </Stack>
+        </div>
       </div>
 
       {/* Before/After Scenarios */}
       <div>
-        <Text fw={600} fz="lg" mb="md">이렇게 달라져요</Text>
-        <Stack gap="md">
+        <span style={{ fontWeight: 600, fontSize: 18, display: 'block', marginBottom: 16 }}>이렇게 달라져요</span>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {SCENARIOS.map(scenario => (
-            <Paper key={scenario.title} p="lg">
-              <Text fw={600} mb="sm">{scenario.title}</Text>
-              <Stack gap="sm">
-                <Box>
-                  <Text fz="xs" c="dimmed" mb={4}>기존 방식</Text>
-                  <Text fz="sm" c="dimmed">{scenario.before}</Text>
-                </Box>
-                <Divider />
-                <Box>
-                  <Text fz="xs" c="dimmed" mb={4}>OU Team</Text>
-                  <Text fz="sm">{scenario.after}</Text>
-                </Box>
-              </Stack>
-            </Paper>
+            <div key={scenario.title} style={{ padding: 20 }}>
+              <span style={{ fontWeight: 600, display: 'block', marginBottom: 8 }}>{scenario.title}</span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <div>
+                  <span style={{ fontSize: 12, color: 'var(--color-dimmed)', display: 'block', marginBottom: 4 }}>기존 방식</span>
+                  <span style={{ fontSize: 14, color: 'var(--color-dimmed)' }}>{scenario.before}</span>
+                </div>
+                <hr style={{ border: 'none', borderTop: '0.5px solid #e5e7eb', margin: 0 }} />
+                <div>
+                  <span style={{ fontSize: 12, color: 'var(--color-dimmed)', display: 'block', marginBottom: 4 }}>OU Team</span>
+                  <span style={{ fontSize: 14 }}>{scenario.after}</span>
+                </div>
+              </div>
+            </div>
           ))}
-        </Stack>
+        </div>
       </div>
 
       {/* Plan Comparison Table */}
       <div>
-        <Text fw={600} fz="lg" mb="md">요금제 비교</Text>
-        <Paper p={0} style={{ overflow: 'auto' }}>
-          <Table verticalSpacing="sm" horizontalSpacing="md">
-            <Table.Thead>
-              <Table.Tr>
-                <Table.Th style={{ minWidth: 140 }}>기능</Table.Th>
-                <Table.Th ta="center" style={{ minWidth: 100 }}>
-                  <Stack gap={2} align="center">
-                    <Text fz="sm" fw={600}>Free</Text>
-                    <Text fz="xs" c="dimmed">무료</Text>
-                  </Stack>
-                </Table.Th>
-                <Table.Th ta="center" style={{ minWidth: 100 }}>
-                  <Stack gap={2} align="center">
-                    <Text fz="sm" fw={600}>Pro</Text>
-                    <Text fz="xs" c="dimmed">월 9,900원</Text>
-                  </Stack>
-                </Table.Th>
-                <Table.Th ta="center" style={{ minWidth: 100 }}>
-                  <Stack gap={2} align="center">
-                    <Text fz="sm" fw={600}>Team</Text>
-                    <Text fz="xs" c="dimmed">문의</Text>
-                  </Stack>
-                </Table.Th>
-              </Table.Tr>
-            </Table.Thead>
-            <Table.Tbody>
+        <span style={{ fontWeight: 600, fontSize: 18, display: 'block', marginBottom: 16 }}>요금제 비교</span>
+        <div style={{ overflow: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
+            <thead>
+              <tr>
+                <th style={{ textAlign: 'left', padding: '12px 16px', minWidth: 140, borderBottom: '1px solid #e5e7eb' }}>기능</th>
+                <th style={{ textAlign: 'center', padding: '12px 16px', minWidth: 100, borderBottom: '1px solid #e5e7eb' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+                    <span style={{ fontWeight: 600 }}>Free</span>
+                    <span style={{ fontSize: 12, color: 'var(--color-dimmed)' }}>무료</span>
+                  </div>
+                </th>
+                <th style={{ textAlign: 'center', padding: '12px 16px', minWidth: 100, borderBottom: '1px solid #e5e7eb' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+                    <span style={{ fontWeight: 600 }}>Pro</span>
+                    <span style={{ fontSize: 12, color: 'var(--color-dimmed)' }}>월 9,900원</span>
+                  </div>
+                </th>
+                <th style={{ textAlign: 'center', padding: '12px 16px', minWidth: 100, borderBottom: '1px solid #e5e7eb' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+                    <span style={{ fontWeight: 600 }}>Team</span>
+                    <span style={{ fontSize: 12, color: 'var(--color-dimmed)' }}>문의</span>
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
               {PLAN_FEATURES.map(f => (
-                <Table.Tr key={f.name}>
-                  <Table.Td>
-                    <Text fz="sm">{f.name}</Text>
-                  </Table.Td>
-                  <Table.Td ta="center">
-                    <Text fz="sm" c={f.free === '-' ? 'dimmed' : undefined}>
-                      {f.free}
-                    </Text>
-                  </Table.Td>
-                  <Table.Td ta="center">
-                    <Text fz="sm" c={f.pro === '-' ? 'dimmed' : undefined}>
-                      {f.pro}
-                    </Text>
-                  </Table.Td>
-                  <Table.Td ta="center">
-                    <Text fz="sm" fw={500}>{f.team}</Text>
-                  </Table.Td>
-                </Table.Tr>
+                <tr key={f.name}>
+                  <td style={{ padding: '10px 16px', borderBottom: '1px solid #f3f4f6' }}>
+                    <span>{f.name}</span>
+                  </td>
+                  <td style={{ textAlign: 'center', padding: '10px 16px', borderBottom: '1px solid #f3f4f6', color: f.free === '-' ? 'var(--color-dimmed)' : undefined }}>
+                    {f.free}
+                  </td>
+                  <td style={{ textAlign: 'center', padding: '10px 16px', borderBottom: '1px solid #f3f4f6', color: f.pro === '-' ? 'var(--color-dimmed)' : undefined }}>
+                    {f.pro}
+                  </td>
+                  <td style={{ textAlign: 'center', padding: '10px 16px', borderBottom: '1px solid #f3f4f6', fontWeight: 500 }}>
+                    {f.team}
+                  </td>
+                </tr>
               ))}
-            </Table.Tbody>
-          </Table>
-        </Paper>
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Contact Form */}
-      <Paper p="xl" id="contact-form">
-        <Stack gap="lg">
-          <Group gap="xs">
+      <div style={{ padding: 24 }} id="contact-form">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <EnvelopeSimple size={20} weight="light" />
-            <Text fw={600} fz="lg">도입 문의</Text>
-          </Group>
-          <Text fz="sm" c="dimmed">
+            <span style={{ fontWeight: 600, fontSize: 18 }}>도입 문의</span>
+          </div>
+          <span style={{ fontSize: 14, color: 'var(--color-dimmed)' }}>
             아래 양식을 작성하시면 담당자가 빠르게 연락드립니다.
-          </Text>
+          </span>
 
-          <Divider />
+          <hr style={{ border: 'none', borderTop: '0.5px solid #e5e7eb', margin: 0 }} />
 
-          <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
-            <TextInput
-              label="이름"
-              placeholder="홍길동"
-              required
-              size="sm"
-              value={contactForm.name}
-              onChange={e => setContactForm(prev => ({ ...prev, name: e.target.value }))}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
+            <div>
+              <label style={{ display: 'block', fontSize: 14, fontWeight: 500, marginBottom: 4 }}>이름 *</label>
+              <input
+                placeholder="홍길동"
+                value={contactForm.name}
+                onChange={e => setContactForm(prev => ({ ...prev, name: e.target.value }))}
+                style={{ width: '100%', padding: '8px 12px', borderRadius: 6, border: '1px solid #d1d5db', fontSize: 14, boxSizing: 'border-box' }}
+              />
+            </div>
+            <div>
+              <label style={{ display: 'block', fontSize: 14, fontWeight: 500, marginBottom: 4 }}>소속</label>
+              <input
+                placeholder="학교/학원/기업명"
+                value={contactForm.organization}
+                onChange={e => setContactForm(prev => ({ ...prev, organization: e.target.value }))}
+                style={{ width: '100%', padding: '8px 12px', borderRadius: 6, border: '1px solid #d1d5db', fontSize: 14, boxSizing: 'border-box' }}
+              />
+            </div>
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: 14, fontWeight: 500, marginBottom: 4 }}>이메일 *</label>
+            <input
+              type="email"
+              placeholder="example@email.com"
+              value={contactForm.email}
+              onChange={e => setContactForm(prev => ({ ...prev, email: e.target.value }))}
+              style={{ width: '100%', padding: '8px 12px', borderRadius: 6, border: '1px solid #d1d5db', fontSize: 14, boxSizing: 'border-box' }}
             />
-            <TextInput
-              label="소속"
-              placeholder="학교/학원/기업명"
-              size="sm"
-              value={contactForm.organization}
-              onChange={e => setContactForm(prev => ({ ...prev, organization: e.target.value }))}
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: 14, fontWeight: 500, marginBottom: 4 }}>문의 내용 *</label>
+            <textarea
+              placeholder="도입을 고려하시는 이유, 예상 인원 수, 궁금한 점 등을 자유롭게 적어주세요."
+              rows={4}
+              value={contactForm.message}
+              onChange={e => setContactForm(prev => ({ ...prev, message: e.target.value }))}
+              style={{ width: '100%', padding: '8px 12px', borderRadius: 6, border: '1px solid #d1d5db', fontSize: 14, resize: 'vertical', boxSizing: 'border-box', fontFamily: 'inherit' }}
             />
-          </SimpleGrid>
+          </div>
 
-          <TextInput
-            label="이메일"
-            placeholder="example@email.com"
-            required
-            size="sm"
-            type="email"
-            value={contactForm.email}
-            onChange={e => setContactForm(prev => ({ ...prev, email: e.target.value }))}
-          />
-
-          <Textarea
-            label="문의 내용"
-            placeholder="도입을 고려하시는 이유, 예상 인원 수, 궁금한 점 등을 자유롭게 적어주세요."
-            required
-            size="sm"
-            autosize
-            minRows={4}
-            maxRows={8}
-            value={contactForm.message}
-            onChange={e => setContactForm(prev => ({ ...prev, message: e.target.value }))}
-          />
-
-          <Button
-            color="dark"
-            size="md"
+          <button
             onClick={handleSubmitContact}
-            loading={submitting}
-            disabled={!canSubmit}
-            rightSection={<ArrowRight size={16} />}
+            disabled={submitting || !canSubmit}
+            style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+              padding: '10px 24px', background: '#1a1a1a', color: '#fff', border: 'none', borderRadius: 6,
+              cursor: submitting || !canSubmit ? 'default' : 'pointer', fontSize: 14,
+              opacity: submitting || !canSubmit ? 0.5 : 1,
+            }}
           >
-            문의 보내기
-          </Button>
-        </Stack>
-      </Paper>
+            {submitting ? '...' : '문의 보내기'} {!submitting && <ArrowRight size={16} />}
+          </button>
+        </div>
+      </div>
 
       {/* CTA */}
-      <Paper p="xl" ta="center">
-        <Stack align="center" gap="md">
-          <Title order={3}>지금 도입을 시작해보세요</Title>
-          <Text c="dimmed" fz="sm">
+      <div style={{ padding: 24, textAlign: 'center' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+          <h3 style={{ margin: 0 }}>지금 도입을 시작해보세요</h3>
+          <span style={{ color: 'var(--color-dimmed)', fontSize: 14 }}>
             5명 이상 팀이라면 무료 체험이 가능합니다.
-          </Text>
-          <Button
-            size="md"
-            color="dark"
-            rightSection={<ArrowRight size={16} />}
+          </span>
+          <button
             onClick={() => {
               document.getElementById('contact-form')?.scrollIntoView({ behavior: 'smooth' });
             }}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 8,
+              padding: '10px 24px', background: '#1a1a1a', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer', fontSize: 14,
+            }}
           >
-            도입 문의
-          </Button>
-        </Stack>
-      </Paper>
-    </Stack>
+            도입 문의 <ArrowRight size={16} />
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }

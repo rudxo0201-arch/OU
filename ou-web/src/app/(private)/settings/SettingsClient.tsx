@@ -2,12 +2,6 @@
 
 import { useState, useRef } from 'react';
 import {
-  Stack, Text, Group, Button, Badge, Avatar,
-  TextInput, Textarea, Modal, Switch, Progress, FileButton,
-  Tooltip, Box,
-} from '@mantine/core';
-import { notifications } from '@mantine/notifications';
-import {
   User, CreditCard, Bell, ShieldCheck, Database,
   Trash, ArrowRight, SignOut, Export, Upload, Warning,
 } from '@phosphor-icons/react';
@@ -64,36 +58,34 @@ const labelStyle: React.CSSProperties = {
   fontWeight: 500,
 };
 
-const inputStyles = {
-  label: { color: 'var(--ou-text-dimmed)', fontSize: 11, fontWeight: 500, marginBottom: 4 },
-  input: {
-    background: 'transparent',
-    border: '0.5px solid var(--ou-border-subtle)',
-    borderRadius: 'var(--ou-radius-pill)',
-    color: 'var(--ou-text-bright)',
-    fontSize: 13,
-    transition: 'var(--ou-transition)',
-    '&:focus': {
-      borderColor: 'var(--ou-border-strong)',
-      boxShadow: 'var(--ou-glow-md)',
-    },
-  },
+const nativeInputStyle: React.CSSProperties = {
+  width: '100%',
+  background: 'transparent',
+  border: '0.5px solid var(--ou-border-subtle)',
+  borderRadius: 'var(--ou-radius-pill)',
+  color: 'var(--ou-text-bright)',
+  fontSize: 13,
+  transition: 'var(--ou-transition)',
+  fontFamily: 'inherit',
+  outline: 'none',
+  padding: '8px 14px',
+  boxSizing: 'border-box' as const,
 };
 
-const textareaStyles = {
-  label: { color: 'var(--ou-text-dimmed)', fontSize: 11, fontWeight: 500, marginBottom: 4 },
-  input: {
-    background: 'transparent',
-    border: '0.5px solid var(--ou-border-subtle)',
-    borderRadius: 'var(--ou-radius-card)',
-    color: 'var(--ou-text-bright)',
-    fontSize: 13,
-    transition: 'var(--ou-transition)',
-    '&:focus': {
-      borderColor: 'var(--ou-border-strong)',
-      boxShadow: 'var(--ou-glow-md)',
-    },
-  },
+const nativeTextareaStyle: React.CSSProperties = {
+  width: '100%',
+  background: 'transparent',
+  border: '0.5px solid var(--ou-border-subtle)',
+  borderRadius: 'var(--ou-radius-card)',
+  color: 'var(--ou-text-bright)',
+  fontSize: 13,
+  transition: 'var(--ou-transition)',
+  fontFamily: 'inherit',
+  outline: 'none',
+  padding: '8px 14px',
+  boxSizing: 'border-box' as const,
+  resize: 'vertical' as const,
+  minHeight: 60,
 };
 
 const pillBtnStyle: React.CSSProperties = {
@@ -160,10 +152,10 @@ function SocialLinkButton({ provider, label, icon }: { provider: string; label: 
         options: { redirectTo: `${window.location.origin}/auth/callback?next=/settings` },
       });
       if (error) {
-        notifications.show({ message: `${label} 연결에 실패했어요.`, color: 'gray' });
+        alert(`${label} 연결에 실패했어요.`);
       }
     } catch {
-      notifications.show({ message: `${label} 연결에 실패했어요.`, color: 'gray' });
+      alert(`${label} 연결에 실패했어요.`);
     } finally {
       setLinking(false);
     }
@@ -225,7 +217,7 @@ export function SettingsClient({ profile, subscription, nodeCount }: SettingsCli
 
   const [exporting, setExporting] = useState(false);
   const [importing, setImporting] = useState(false);
-  const resetRef = useRef<() => void>(null);
+  const importInputRef = useRef<HTMLInputElement>(null);
 
   const planId = subscription?.plan ?? 'free';
   const tokenLimit = subscription?.token_limit ?? PLAN_LIMITS[planId] ?? 100;
@@ -245,10 +237,10 @@ export function SettingsClient({ profile, subscription, nodeCount }: SettingsCli
             handle: handle.trim(),
           })
           .eq('id', user.id);
-        notifications.show({ message: '저장했어요.', color: 'gray' });
+        alert('저장했어요.');
       }
     } catch {
-      notifications.show({ message: '저장에 실패했어요.', color: 'gray' });
+      alert('저장에 실패했어요.');
     } finally {
       setSaving(false);
     }
@@ -260,7 +252,8 @@ export function SettingsClient({ profile, subscription, nodeCount }: SettingsCli
     handle.trim() !== (profile?.handle ?? '');
 
   // ── 아바타 업로드 ──
-  const handleAvatarUpload = async (file: File | null) => {
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (!file) return;
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -274,7 +267,7 @@ export function SettingsClient({ profile, subscription, nodeCount }: SettingsCli
       .upload(path, file, { upsert: true });
 
     if (error) {
-      notifications.show({ message: '업로드에 실패했어요.', color: 'gray' });
+      alert('업로드에 실패했어요.');
       return;
     }
 
@@ -284,7 +277,7 @@ export function SettingsClient({ profile, subscription, nodeCount }: SettingsCli
       .update({ avatar_url: urlData.publicUrl })
       .eq('id', user.id);
 
-    notifications.show({ message: '프로필 사진을 변경했어요.', color: 'gray' });
+    alert('프로필 사진을 변경했어요.');
     router.refresh();
   };
 
@@ -325,16 +318,17 @@ export function SettingsClient({ profile, subscription, nodeCount }: SettingsCli
       a.click();
       URL.revokeObjectURL(url);
 
-      notifications.show({ message: '내보내기를 완료했어요.', color: 'gray' });
+      alert('내보내기를 완료했어요.');
     } catch {
-      notifications.show({ message: '내보내기에 실패했어요.', color: 'gray' });
+      alert('내보내기에 실패했어요.');
     } finally {
       setExporting(false);
     }
   };
 
   // ── 데이터 가져오기 (.ou) ──
-  const handleImport = async (file: File | null) => {
+  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (!file) return;
     setImporting(true);
     try {
@@ -350,16 +344,13 @@ export function SettingsClient({ profile, subscription, nodeCount }: SettingsCli
       if (!res.ok) throw new Error('Import failed');
 
       const result = await res.json();
-      notifications.show({
-        message: `가져오기 완료: ${result.imported?.nodes ?? 0}개 항목`,
-        color: 'gray',
-      });
+      alert(`가져오기 완료: ${result.imported?.nodes ?? 0}개 항목`);
       router.refresh();
     } catch {
-      notifications.show({ message: '.ou 파일 형식이 올바르지 않아요.', color: 'gray' });
+      alert('.ou 파일 형식이 올바르지 않아요.');
     } finally {
       setImporting(false);
-      resetRef.current?.();
+      if (importInputRef.current) importInputRef.current.value = '';
     }
   };
 
@@ -372,93 +363,94 @@ export function SettingsClient({ profile, subscription, nodeCount }: SettingsCli
 
   const SectionHeader = ({ icon, title }: { icon: React.ReactNode; title: string }) => (
     <>
-      <Group gap={8}>
-        <Box style={{ color: 'var(--ou-text-dimmed)' }}>{icon}</Box>
-        <Text style={{ color: 'var(--ou-text-strong)', fontSize: 13, fontWeight: 600 }}>{title}</Text>
-      </Group>
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+        <span style={{ color: 'var(--ou-text-dimmed)' }}>{icon}</span>
+        <span style={{ color: 'var(--ou-text-strong)', fontSize: 13, fontWeight: 600 }}>{title}</span>
+      </div>
       <div style={dividerStyle} />
     </>
   );
 
   return (
-    <Stack gap="xl" p="xl" maw={560} mx="auto" pb={80}>
-      <Text style={{ color: 'var(--ou-text-strong)', fontSize: 22, fontWeight: 600 }}>설정</Text>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 28, padding: 24, maxWidth: 560, margin: '0 auto', paddingBottom: 80 }}>
+      <span style={{ color: 'var(--ou-text-strong)', fontSize: 22, fontWeight: 600 }}>설정</span>
 
       {/* ─── 1. 프로필 ─── */}
       <div style={sectionStyle}>
-        <Stack gap="md">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <SectionHeader icon={<User size={18} weight="light" />} title="프로필" />
 
-          <Group justify="center" py="sm">
-            <FileButton onChange={handleAvatarUpload} accept="image/*">
-              {(props) => (
-                <Tooltip label="사진 변경">
-                  <Avatar
-                    {...props}
-                    src={profile?.avatar_url ?? undefined}
-                    size={80}
-                    radius="xl"
-                    color="gray"
-                    style={{
-                      cursor: 'pointer',
-                      border: '0.5px solid var(--ou-border-muted)',
-                      boxShadow: 'var(--ou-glow-sm)',
-                    }}
-                    component="button"
-                  >
-                    {(profile?.display_name ?? '?')[0]}
-                  </Avatar>
-                </Tooltip>
-              )}
-            </FileButton>
-          </Group>
+          <div style={{ display: 'flex', justifyContent: 'center', padding: '12px 0' }}>
+            <label style={{ cursor: 'pointer' }} title="사진 변경">
+              <input type="file" accept="image/*" onChange={handleAvatarUpload} style={{ display: 'none' }} />
+              <div
+                style={{
+                  width: 80,
+                  height: 80,
+                  borderRadius: '50%',
+                  border: '0.5px solid var(--ou-border-muted)',
+                  boxShadow: 'var(--ou-glow-sm)',
+                  overflow: 'hidden',
+                  background: 'var(--ou-surface-muted)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 24,
+                  color: 'var(--ou-text-dimmed)',
+                }}
+              >
+                {profile?.avatar_url ? (
+                  <img src={profile.avatar_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ) : (
+                  (profile?.display_name ?? '?')[0]
+                )}
+              </div>
+            </label>
+          </div>
 
           {/* 등급 */}
-          <Box style={{
+          <div style={{
             padding: 12,
             borderRadius: 'var(--ou-radius-md)',
             border: '0.5px solid var(--ou-border-faint)',
             background: 'var(--ou-surface-faint)',
           }}>
             <RankBadge nodeCount={nodeCount} variant="full" />
-          </Box>
+          </div>
 
-          <Stack gap="xs">
-            <Text style={labelStyle}>이름</Text>
-            <TextInput
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <span style={labelStyle}>이름</span>
+            <input
               value={displayName}
               onChange={e => setDisplayName(e.target.value)}
               placeholder="표시 이름"
-              size="sm"
-              styles={inputStyles}
+              style={nativeInputStyle}
             />
-          </Stack>
+          </div>
 
-          <Stack gap="xs">
-            <Text style={labelStyle}>핸들</Text>
-            <TextInput
-              value={handle}
-              onChange={e => setHandle(e.target.value)}
-              placeholder="handle"
-              size="sm"
-              leftSection={<Text style={{ fontSize: 13, color: 'var(--ou-text-dimmed)' }}>@</Text>}
-              styles={inputStyles}
-            />
-          </Stack>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <span style={labelStyle}>핸들</span>
+            <div style={{ position: 'relative' }}>
+              <span style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', fontSize: 13, color: 'var(--ou-text-dimmed)' }}>@</span>
+              <input
+                value={handle}
+                onChange={e => setHandle(e.target.value)}
+                placeholder="handle"
+                style={{ ...nativeInputStyle, paddingLeft: 28 }}
+              />
+            </div>
+          </div>
 
-          <Stack gap="xs">
-            <Text style={labelStyle}>소개</Text>
-            <Textarea
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <span style={labelStyle}>소개</span>
+            <textarea
               value={bio}
               onChange={e => setBio(e.target.value)}
               placeholder="한 줄 소개를 적어주세요"
-              size="sm"
-              autosize
-              minRows={2}
-              maxRows={4}
-              styles={textareaStyles}
+              rows={3}
+              style={nativeTextareaStyle}
             />
-          </Stack>
+          </div>
 
           <button
             onClick={handleSaveProfile}
@@ -477,18 +469,18 @@ export function SettingsClient({ profile, subscription, nodeCount }: SettingsCli
           >
             {saving ? '...' : '저장'}
           </button>
-        </Stack>
+        </div>
       </div>
 
       {/* ─── 2. 계정 ─── */}
       <div style={sectionStyle}>
-        <Stack gap="md">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <SectionHeader icon={<ShieldCheck size={18} weight="light" />} title="계정" />
 
-          <Stack gap={4}>
-            <Text style={labelStyle}>이메일</Text>
-            <Text style={{ color: 'var(--ou-text-body)', fontSize: 13 }}>{profile?.email ?? '-'}</Text>
-          </Stack>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <span style={labelStyle}>이메일</span>
+            <span style={{ color: 'var(--ou-text-body)', fontSize: 13 }}>{profile?.email ?? '-'}</span>
+          </div>
 
           <button
             onClick={() => router.push('/reset-password')}
@@ -511,8 +503,8 @@ export function SettingsClient({ profile, subscription, nodeCount }: SettingsCli
 
           {/* 소셜 계정 연결 */}
           <div style={dividerStyle} />
-          <Text style={labelStyle}>계정 연결</Text>
-          <Stack gap="xs">
+          <span style={labelStyle}>계정 연결</span>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             <SocialLinkButton
               provider="google"
               label="Google"
@@ -534,18 +526,18 @@ export function SettingsClient({ profile, subscription, nodeCount }: SettingsCli
                 </svg>
               }
             />
-          </Stack>
-        </Stack>
+          </div>
+        </div>
       </div>
 
       {/* ─── 3. 구독 ─── */}
       <div style={sectionStyle}>
-        <Stack gap="md">
-          <Group justify="space-between">
-            <Group gap={8}>
-              <Box style={{ color: 'var(--ou-text-dimmed)' }}><CreditCard size={18} weight="light" /></Box>
-              <Text style={{ color: 'var(--ou-text-strong)', fontSize: 13, fontWeight: 600 }}>구독</Text>
-            </Group>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <span style={{ color: 'var(--ou-text-dimmed)' }}><CreditCard size={18} weight="light" /></span>
+              <span style={{ color: 'var(--ou-text-strong)', fontSize: 13, fontWeight: 600 }}>구독</span>
+            </div>
             <span style={{
               fontSize: 10,
               color: 'var(--ou-text-dimmed)',
@@ -556,29 +548,30 @@ export function SettingsClient({ profile, subscription, nodeCount }: SettingsCli
             }}>
               {PLAN_LABELS[planId] ?? planId}
             </span>
-          </Group>
+          </div>
           <div style={dividerStyle} />
 
-          <Group justify="space-between">
-            <Text style={{ ...labelStyle, fontSize: 13 }}>현재 플랜</Text>
-            <Text style={{ color: 'var(--ou-text-body)', fontSize: 13, fontWeight: 500 }}>{PLAN_LABELS[planId] ?? planId}</Text>
-          </Group>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span style={{ ...labelStyle, fontSize: 13 }}>현재 플랜</span>
+            <span style={{ color: 'var(--ou-text-body)', fontSize: 13, fontWeight: 500 }}>{PLAN_LABELS[planId] ?? planId}</span>
+          </div>
 
-          <Stack gap={4}>
-            <Group justify="space-between">
-              <Text style={labelStyle}>사용량</Text>
-              <Text style={labelStyle}>{nodeCount} / {tokenLimit}턴</Text>
-            </Group>
-            <Progress
-              value={Math.min((nodeCount / tokenLimit) * 100, 100)}
-              size="xs"
-              color="gray"
-              styles={{
-                root: { background: 'var(--ou-surface-muted)', borderRadius: 'var(--ou-radius-pill)' },
-                section: { borderRadius: 'var(--ou-radius-pill)' },
-              }}
-            />
-          </Stack>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={labelStyle}>사용량</span>
+              <span style={labelStyle}>{nodeCount} / {tokenLimit}턴</span>
+            </div>
+            {/* Progress bar */}
+            <div style={{ width: '100%', height: 4, background: 'var(--ou-surface-muted)', borderRadius: 'var(--ou-radius-pill)' }}>
+              <div style={{
+                width: `${Math.min((nodeCount / tokenLimit) * 100, 100)}%`,
+                height: '100%',
+                background: 'var(--ou-text-dimmed)',
+                borderRadius: 'var(--ou-radius-pill)',
+                transition: 'width 0.3s',
+              }} />
+            </div>
+          </div>
 
           {planId === 'free' && (
             <button
@@ -616,39 +609,41 @@ export function SettingsClient({ profile, subscription, nodeCount }: SettingsCli
               플랜 변경
             </button>
           )}
-        </Stack>
+        </div>
       </div>
 
       {/* ─── 4. 알림 ─── */}
       <div style={sectionStyle}>
-        <Stack gap="md">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <SectionHeader icon={<Bell size={18} weight="light" />} title="알림" />
 
-          <Group justify="space-between">
-            <Stack gap={2}>
-              <Text style={{ color: 'var(--ou-text-body)', fontSize: 13 }}>이메일 알림</Text>
-              <Text style={labelStyle}>새 소식이나 업데이트를 이메일로 받아요</Text>
-            </Stack>
-            <Switch
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <span style={{ color: 'var(--ou-text-body)', fontSize: 13 }}>이메일 알림</span>
+              <span style={labelStyle}>새 소식이나 업데이트를 이메일로 받아요</span>
+            </div>
+            <input
+              type="checkbox"
               checked={emailNotify}
-              onChange={e => setEmailNotify(e.currentTarget.checked)}
-              color="gray"
+              onChange={e => setEmailNotify(e.target.checked)}
+              style={{ accentColor: 'gray' }}
             />
-          </Group>
+          </div>
 
-          <Group justify="space-between">
-            <Stack gap={2}>
-              <Text style={{ color: 'var(--ou-text-body)', fontSize: 13 }}>푸시 알림</Text>
-              <Text style={labelStyle}>곧 지원할 예정이에요</Text>
-            </Stack>
-            <Switch
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <span style={{ color: 'var(--ou-text-body)', fontSize: 13 }}>푸시 알림</span>
+              <span style={labelStyle}>곧 지원할 예정이에요</span>
+            </div>
+            <input
+              type="checkbox"
               checked={pushNotify}
-              onChange={e => setPushNotify(e.currentTarget.checked)}
-              color="gray"
+              onChange={e => setPushNotify(e.target.checked)}
               disabled
+              style={{ accentColor: 'gray' }}
             />
-          </Group>
-        </Stack>
+          </div>
+        </div>
       </div>
 
       {/* ─── 5. AI 연결 (API Keys) ─── */}
@@ -656,34 +651,34 @@ export function SettingsClient({ profile, subscription, nodeCount }: SettingsCli
 
       {/* ─── 6. 보안 ─── */}
       <div style={sectionStyle}>
-        <Stack gap="md">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <SectionHeader icon={<ShieldCheck size={18} weight="light" />} title="보안" />
 
-          <Stack gap={4}>
-            <Text style={{ color: 'var(--ou-text-body)', fontSize: 13 }}>활성 세션</Text>
-            <Text style={labelStyle}>현재 세션 1개 활성 중</Text>
-          </Stack>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <span style={{ color: 'var(--ou-text-body)', fontSize: 13 }}>활성 세션</span>
+            <span style={labelStyle}>현재 세션 1개 활성 중</span>
+          </div>
 
-          <Group justify="space-between">
-            <Stack gap={2}>
-              <Text style={{ color: 'var(--ou-text-body)', fontSize: 13 }}>2단계 인증</Text>
-              <Text style={labelStyle}>곧 지원할 예정이에요</Text>
-            </Stack>
-            <Switch checked={false} color="gray" disabled />
-          </Group>
-        </Stack>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <span style={{ color: 'var(--ou-text-body)', fontSize: 13 }}>2단계 인증</span>
+              <span style={labelStyle}>곧 지원할 예정이에요</span>
+            </div>
+            <input type="checkbox" checked={false} disabled style={{ accentColor: 'gray' }} />
+          </div>
+        </div>
       </div>
 
       {/* ─── 6. 데이터 ─── */}
       <div style={sectionStyle}>
-        <Stack gap="md">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <SectionHeader icon={<Database size={18} weight="light" />} title="데이터" />
 
-          <Text style={labelStyle}>
+          <span style={labelStyle}>
             현재 {nodeCount}개의 데이터가 저장되어 있어요
-          </Text>
+          </span>
 
-          <Group grow>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
             <button
               onClick={handleExport}
               disabled={exporting}
@@ -707,38 +702,39 @@ export function SettingsClient({ profile, subscription, nodeCount }: SettingsCli
               {exporting ? '...' : '내보내기 (.ou)'}
             </button>
 
-            <FileButton
-              onChange={handleImport}
-              accept=".ou,application/json"
-              resetRef={resetRef}
-            >
-              {(props) => (
-                <button
-                  {...props}
-                  disabled={importing}
-                  style={{
-                    ...pillBtnStyle,
-                    justifyContent: 'center',
-                    opacity: importing ? 0.5 : 1,
-                  }}
-                  onMouseEnter={e => {
-                    if (!importing) {
-                      e.currentTarget.style.borderColor = 'var(--ou-border-hover)';
-                      e.currentTarget.style.boxShadow = 'var(--ou-glow-sm)';
-                    }
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.borderColor = 'var(--ou-border-subtle)';
-                    e.currentTarget.style.boxShadow = 'var(--ou-glow-xs)';
-                  }}
-                >
-                  <Upload size={16} />
-                  {importing ? '...' : '가져오기 (.ou)'}
-                </button>
-              )}
-            </FileButton>
-          </Group>
-        </Stack>
+            <label style={{ display: 'contents' }}>
+              <input
+                type="file"
+                accept=".ou,application/json"
+                ref={importInputRef}
+                onChange={handleImport}
+                style={{ display: 'none' }}
+              />
+              <button
+                onClick={() => importInputRef.current?.click()}
+                disabled={importing}
+                style={{
+                  ...pillBtnStyle,
+                  justifyContent: 'center',
+                  opacity: importing ? 0.5 : 1,
+                }}
+                onMouseEnter={e => {
+                  if (!importing) {
+                    e.currentTarget.style.borderColor = 'var(--ou-border-hover)';
+                    e.currentTarget.style.boxShadow = 'var(--ou-glow-sm)';
+                  }
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.borderColor = 'var(--ou-border-subtle)';
+                  e.currentTarget.style.boxShadow = 'var(--ou-glow-xs)';
+                }}
+              >
+                <Upload size={16} />
+                {importing ? '...' : '가져오기 (.ou)'}
+              </button>
+            </label>
+          </div>
+        </div>
       </div>
 
       {/* ─── 7. 위험 구역 ─── */}
@@ -746,16 +742,16 @@ export function SettingsClient({ profile, subscription, nodeCount }: SettingsCli
         ...sectionStyle,
         borderColor: 'var(--ou-border-muted)',
       }}>
-        <Stack gap="md">
-          <Group gap={8}>
-            <Box style={{ color: 'var(--ou-text-dimmed)' }}><Warning size={18} weight="light" /></Box>
-            <Text style={{ color: 'var(--ou-text-dimmed)', fontSize: 13, fontWeight: 600 }}>위험 구역</Text>
-          </Group>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <span style={{ color: 'var(--ou-text-dimmed)' }}><Warning size={18} weight="light" /></span>
+            <span style={{ color: 'var(--ou-text-dimmed)', fontSize: 13, fontWeight: 600 }}>위험 구역</span>
+          </div>
           <div style={dividerStyle} />
 
-          <Text style={{ color: 'var(--ou-text-dimmed)', fontSize: 13 }}>
+          <span style={{ color: 'var(--ou-text-dimmed)', fontSize: 13 }}>
             계정을 삭제하면 모든 대화 기록과 저장된 내용이 사라져요. 되돌릴 수 없어요.
-          </Text>
+          </span>
 
           <button
             onClick={signOut}
@@ -800,79 +796,90 @@ export function SettingsClient({ profile, subscription, nodeCount }: SettingsCli
             <Trash size={16} />
             계정 삭제
           </button>
-        </Stack>
+        </div>
       </div>
 
       {/* ─── 삭제 확인 모달 ─── */}
-      <Modal
-        opened={deleteModalOpen}
-        onClose={() => {
-          setDeleteModalOpen(false);
-          setDeleteConfirmText('');
-        }}
-        title="정말 계정을 삭제하시겠어요?"
-        centered
-        styles={{
-          content: {
-            background: 'var(--mantine-color-body)',
-            border: '0.5px solid var(--ou-border-subtle)',
-            borderRadius: 'var(--ou-radius-card)',
-            boxShadow: 'var(--ou-glow-lg)',
-          },
-          header: {
-            background: 'transparent',
-          },
-          title: {
-            color: 'var(--ou-text-strong)',
-            fontWeight: 600,
-          },
-        }}
-      >
-        <Stack gap="md">
-          <Text style={{ color: 'var(--ou-text-dimmed)', fontSize: 13 }}>
-            삭제하면 모든 대화 기록과 저장된 내용이 사라져요. 이 작업은 되돌릴 수 없어요.
-          </Text>
-          <Text style={{ color: 'var(--ou-text-body)', fontSize: 13 }}>
-            계속하려면 아래에 <strong>&quot;삭제&quot;</strong>를 입력해주세요.
-          </Text>
-          <TextInput
-            value={deleteConfirmText}
-            onChange={e => setDeleteConfirmText(e.target.value)}
-            placeholder="삭제"
-            size="sm"
-            styles={inputStyles}
-          />
-          <Group justify="flex-end" gap="sm">
-            <button
-              onClick={() => {
-                setDeleteModalOpen(false);
-                setDeleteConfirmText('');
-              }}
-              style={pillBtnStyle}
-              onMouseEnter={e => {
-                e.currentTarget.style.borderColor = 'var(--ou-border-hover)';
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.borderColor = 'var(--ou-border-subtle)';
-              }}
-            >
-              취소
-            </button>
-            <button
-              onClick={handleDeleteAccount}
-              disabled={deleteConfirmText !== '삭제'}
-              style={{
-                ...filledBtnStyle,
-                width: 'auto',
-                opacity: deleteConfirmText !== '삭제' ? 0.3 : 1,
-                cursor: deleteConfirmText !== '삭제' ? 'not-allowed' : 'pointer',
-              }}
-            >
-              삭제하기
-            </button>
-          </Group>
-        </Stack>
-      </Modal>
-    </Stack>
+      {deleteModalOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 1000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'rgba(0,0,0,0.5)',
+            backdropFilter: 'blur(4px)',
+          }}
+          onClick={e => {
+            if (e.target === e.currentTarget) {
+              setDeleteModalOpen(false);
+              setDeleteConfirmText('');
+            }
+          }}
+        >
+          <div
+            style={{
+              width: '90%',
+              maxWidth: 440,
+              background: 'var(--ou-space)',
+              border: '0.5px solid var(--ou-border-subtle)',
+              borderRadius: 'var(--ou-radius-card)',
+              boxShadow: 'var(--ou-glow-lg)',
+              padding: 24,
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <span style={{ color: 'var(--ou-text-strong)', fontWeight: 600 }}>정말 계정을 삭제하시겠어요?</span>
+              <button onClick={() => { setDeleteModalOpen(false); setDeleteConfirmText(''); }} style={{ background: 'none', border: 'none', color: 'var(--ou-text-dimmed)', cursor: 'pointer', fontSize: 18, fontFamily: 'inherit' }}>&times;</button>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <span style={{ color: 'var(--ou-text-dimmed)', fontSize: 13 }}>
+                삭제하면 모든 대화 기록과 저장된 내용이 사라져요. 이 작업은 되돌릴 수 없어요.
+              </span>
+              <span style={{ color: 'var(--ou-text-body)', fontSize: 13 }}>
+                계속하려면 아래에 <strong>&quot;삭제&quot;</strong>를 입력해주세요.
+              </span>
+              <input
+                value={deleteConfirmText}
+                onChange={e => setDeleteConfirmText(e.target.value)}
+                placeholder="삭제"
+                style={nativeInputStyle}
+              />
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
+                <button
+                  onClick={() => {
+                    setDeleteModalOpen(false);
+                    setDeleteConfirmText('');
+                  }}
+                  style={pillBtnStyle}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.borderColor = 'var(--ou-border-hover)';
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.borderColor = 'var(--ou-border-subtle)';
+                  }}
+                >
+                  취소
+                </button>
+                <button
+                  onClick={handleDeleteAccount}
+                  disabled={deleteConfirmText !== '삭제'}
+                  style={{
+                    ...filledBtnStyle,
+                    width: 'auto',
+                    opacity: deleteConfirmText !== '삭제' ? 0.3 : 1,
+                    cursor: deleteConfirmText !== '삭제' ? 'not-allowed' : 'pointer',
+                  }}
+                >
+                  삭제하기
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

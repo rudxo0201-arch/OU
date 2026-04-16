@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Stack, Paper, Text, Group, Button, Badge, SimpleGrid, Box, Progress, Table, TextInput, Select } from '@mantine/core';
 import { Leaf, MagnifyingGlass, ArrowClockwise } from '@phosphor-icons/react';
 
 interface BonchoStats {
@@ -37,7 +36,7 @@ export function BonchoManager() {
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<string>('');
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -88,181 +87,142 @@ export function BonchoManager() {
 
   const enrichedPercent = stats ? Math.round((stats.enriched / Math.max(stats.total, 1)) * 100) : 0;
 
+  const statusColor = (s: string) => s === 'enriched' ? '#40c057' : s === 'partial' ? '#fab005' : '#868e96';
+  const statusLabel = (s: string) => s === 'enriched' ? '완료' : s === 'partial' ? '부분' : '대기';
+
   return (
-    <Stack gap="md">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       {/* Stats */}
       {stats && (
-        <SimpleGrid cols={{ base: 2, sm: 5 }} spacing="sm">
-          <Paper p="sm">
-            <Text fz="xs" c="dimmed">전체</Text>
-            <Text fz="lg" fw={700}>{stats.total}</Text>
-          </Paper>
-          <Paper p="sm">
-            <Text fz="xs" c="dimmed">주요(★)</Text>
-            <Text fz="lg" fw={700}>{stats.starred}</Text>
-          </Paper>
-          <Paper p="sm">
-            <Text fz="xs" c="dimmed">보강 완료</Text>
-            <Text fz="lg" fw={700} c="green">{stats.enriched}</Text>
-          </Paper>
-          <Paper p="sm">
-            <Text fz="xs" c="dimmed">대기</Text>
-            <Text fz="lg" fw={700} c="yellow">{stats.pending}</Text>
-          </Paper>
-          <Paper p="sm">
-            <Text fz="xs" c="dimmed">부분</Text>
-            <Text fz="lg" fw={700} c="gray">{stats.partial}</Text>
-          </Paper>
-        </SimpleGrid>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: 8 }}>
+          {[
+            { label: '전체', value: stats.total, color: undefined },
+            { label: '주요(★)', value: stats.starred, color: undefined },
+            { label: '보강 완료', value: stats.enriched, color: '#40c057' },
+            { label: '대기', value: stats.pending, color: '#fab005' },
+            { label: '부분', value: stats.partial, color: '#868e96' },
+          ].map(s => (
+            <div key={s.label} style={{ padding: 8, background: '#fff', borderRadius: 8, border: '1px solid #e0e0e0' }}>
+              <span style={{ fontSize: 12, color: '#868e96', display: 'block' }}>{s.label}</span>
+              <span style={{ fontSize: 18, fontWeight: 700, color: s.color }}>{s.value}</span>
+            </div>
+          ))}
+        </div>
       )}
 
       {/* Progress */}
       {stats && stats.total > 0 && (
-        <Paper p="sm">
-          <Group justify="space-between" mb="xs">
-            <Text fz="sm" fw={500}>보강 진행률</Text>
-            <Text fz="sm" c="dimmed">{enrichedPercent}%</Text>
-          </Group>
-          <Progress value={enrichedPercent} size="lg" />
-        </Paper>
+        <div style={{ padding: 8, background: '#fff', borderRadius: 8, border: '1px solid #e0e0e0' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+            <span style={{ fontSize: 13, fontWeight: 500 }}>보강 진행률</span>
+            <span style={{ fontSize: 13, color: '#868e96' }}>{enrichedPercent}%</span>
+          </div>
+          <div style={{ width: '100%', height: 12, background: '#e9ecef', borderRadius: 6, overflow: 'hidden' }}>
+            <div style={{ width: `${enrichedPercent}%`, height: '100%', background: '#228be6', borderRadius: 6, transition: 'width 0.3s' }} />
+          </div>
+        </div>
       )}
 
       {/* Actions */}
-      <Paper p="md">
-        <Text fw={600} fz="sm" mb="md">작업</Text>
-        <Group gap="sm" wrap="wrap">
-          <Button
-            variant="light"
-            color="gray"
-            leftSection={<Leaf size={14} />}
-            loading={actionLoading === 'seed'}
-            onClick={() => handleAction('seed')}
-          >
-            ★ Seed (91개)
-          </Button>
-          <Button
-            variant="light"
-            color="gray"
-            leftSection={<Leaf size={14} />}
-            loading={actionLoading === 'seed-all'}
-            onClick={() => handleAction('seed-all')}
-          >
-            전체 Seed (504개)
-          </Button>
-          <Button
-            variant="light"
-            color="gray"
-            leftSection={<ArrowClockwise size={14} />}
-            loading={actionLoading === 'enrich-starred'}
-            onClick={() => handleAction('enrich-starred', { scope: 'starred' })}
-          >
-            ★ 보강
-          </Button>
-          <Button
-            variant="light"
-            color="gray"
-            leftSection={<ArrowClockwise size={14} />}
-            loading={actionLoading === 'enrich-all'}
-            onClick={() => handleAction('enrich-all', { scope: 'all' })}
-          >
-            전체 보강
-          </Button>
-        </Group>
+      <div style={{ padding: 16, background: '#fff', borderRadius: 8, border: '1px solid #e0e0e0' }}>
+        <p style={{ fontWeight: 600, fontSize: 13, margin: '0 0 16px 0' }}>작업</p>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          {[
+            { key: 'seed', label: '★ Seed (91개)', icon: <Leaf size={14} /> },
+            { key: 'seed-all', label: '전체 Seed (504개)', icon: <Leaf size={14} /> },
+            { key: 'enrich-starred', label: '★ 보강', icon: <ArrowClockwise size={14} />, params: { scope: 'starred' } },
+            { key: 'enrich-all', label: '전체 보강', icon: <ArrowClockwise size={14} />, params: { scope: 'all' } },
+          ].map(btn => (
+            <button
+              key={btn.key}
+              disabled={actionLoading === btn.key}
+              onClick={() => handleAction(btn.key, (btn as any).params)}
+              style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 14px', background: '#f8f9fa', border: '1px solid #dee2e6', borderRadius: 4, cursor: 'pointer', fontSize: 12 }}
+            >
+              {actionLoading === btn.key ? '...' : btn.icon} {btn.label}
+            </button>
+          ))}
+        </div>
         {message && (
-          <Text fz="sm" mt="sm" c={message.startsWith('오류') ? 'red' : 'green'}>
+          <p style={{ fontSize: 13, marginTop: 8, marginBottom: 0, color: message.startsWith('오류') ? 'red' : '#40c057' }}>
             {message}
-          </Text>
+          </p>
         )}
-      </Paper>
+      </div>
 
       {/* Herb List */}
-      <Paper p="md">
-        <Group justify="space-between" mb="md">
-          <Text fw={600} fz="sm">본초 목록 ({filteredHerbs.length})</Text>
-          <Group gap="sm">
-            <TextInput
-              size="xs"
-              placeholder="검색..."
-              leftSection={<MagnifyingGlass size={14} />}
-              value={search}
-              onChange={(e) => setSearch(e.currentTarget.value)}
-              style={{ width: 160 }}
-            />
-            <Select
-              size="xs"
-              placeholder="상태"
-              clearable
-              data={[
-                { value: 'pending', label: '대기' },
-                { value: 'partial', label: '부분' },
-                { value: 'enriched', label: '완료' },
-              ]}
+      <div style={{ padding: 16, background: '#fff', borderRadius: 8, border: '1px solid #e0e0e0' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
+          <span style={{ fontWeight: 600, fontSize: 13 }}>본초 목록 ({filteredHerbs.length})</span>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <div style={{ position: 'relative' }}>
+              <MagnifyingGlass size={14} style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', color: '#868e96' }} />
+              <input
+                placeholder="검색..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                style={{ width: 160, padding: '4px 8px 4px 26px', border: '1px solid #dee2e6', borderRadius: 4, fontSize: 12 }}
+              />
+            </div>
+            <select
               value={statusFilter}
-              onChange={setStatusFilter}
-              style={{ width: 100 }}
-            />
-          </Group>
-        </Group>
+              onChange={e => setStatusFilter(e.target.value)}
+              style={{ width: 100, padding: '4px 8px', border: '1px solid #dee2e6', borderRadius: 4, fontSize: 12 }}
+            >
+              <option value="">상태</option>
+              <option value="pending">대기</option>
+              <option value="partial">부분</option>
+              <option value="enriched">완료</option>
+            </select>
+          </div>
+        </div>
 
         {herbs.length === 0 ? (
-          <Text fz="sm" c="dimmed" ta="center" py="xl">
+          <p style={{ fontSize: 13, color: '#868e96', textAlign: 'center', padding: '24px 0' }}>
             {loading ? '불러오는 중...' : '아직 본초 데이터가 없습니다. Seed를 먼저 실행하세요.'}
-          </Text>
+          </p>
         ) : (
-          <Box style={{ overflowX: 'auto' }}>
-            <Table striped highlightOnHover fz="xs">
-              <Table.Thead>
-                <Table.Tr>
-                  <Table.Th>번호</Table.Th>
-                  <Table.Th>본초명</Table.Th>
-                  <Table.Th>한자</Table.Th>
-                  <Table.Th>분류</Table.Th>
-                  <Table.Th>성</Table.Th>
-                  <Table.Th>미</Table.Th>
-                  <Table.Th>귀경</Table.Th>
-                  <Table.Th>상태</Table.Th>
-                </Table.Tr>
-              </Table.Thead>
-              <Table.Tbody>
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
+              <thead>
+                <tr>
+                  {['번호', '본초명', '한자', '분류', '성', '미', '귀경', '상태'].map(h => (
+                    <th key={h} style={{ textAlign: 'left', padding: '6px 8px', borderBottom: '2px solid #e0e0e0' }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
                 {filteredHerbs.slice(0, 100).map((h) => (
-                  <Table.Tr key={h.id}>
-                    <Table.Td>{h.domain_data.herb_id}</Table.Td>
-                    <Table.Td>
-                      <Group gap={4} wrap="nowrap">
-                        {h.domain_data.starred && <Text c="yellow">★</Text>}
-                        <Text fw={500}>{h.domain_data.name_korean}</Text>
-                      </Group>
-                    </Table.Td>
-                    <Table.Td c="dimmed">{h.domain_data.name_hanja ?? '-'}</Table.Td>
-                    <Table.Td c="dimmed">{h.domain_data.category_minor ?? '-'}</Table.Td>
-                    <Table.Td>{h.domain_data.nature?.join(', ') ?? '-'}</Table.Td>
-                    <Table.Td>{h.domain_data.flavor?.join(', ') ?? '-'}</Table.Td>
-                    <Table.Td>{h.domain_data.channel_tropism?.join(', ') ?? '-'}</Table.Td>
-                    <Table.Td>
-                      <Badge
-                        size="xs"
-                        variant="light"
-                        color={
-                          h.domain_data.enrichment_status === 'enriched' ? 'green' :
-                          h.domain_data.enrichment_status === 'partial' ? 'yellow' : 'gray'
-                        }
-                      >
-                        {h.domain_data.enrichment_status === 'enriched' ? '완료' :
-                         h.domain_data.enrichment_status === 'partial' ? '부분' : '대기'}
-                      </Badge>
-                    </Table.Td>
-                  </Table.Tr>
+                  <tr key={h.id} style={{ borderBottom: '1px solid #f1f3f5' }}>
+                    <td style={{ padding: '6px 8px' }}>{h.domain_data.herb_id}</td>
+                    <td style={{ padding: '6px 8px' }}>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                        {h.domain_data.starred && <span style={{ color: 'var(--mantine-color-yellow-5, #fab005)' }}>★</span>}
+                        <span style={{ fontWeight: 500 }}>{h.domain_data.name_korean}</span>
+                      </span>
+                    </td>
+                    <td style={{ padding: '6px 8px', color: '#868e96' }}>{h.domain_data.name_hanja ?? '-'}</td>
+                    <td style={{ padding: '6px 8px', color: '#868e96' }}>{h.domain_data.category_minor ?? '-'}</td>
+                    <td style={{ padding: '6px 8px' }}>{h.domain_data.nature?.join(', ') ?? '-'}</td>
+                    <td style={{ padding: '6px 8px' }}>{h.domain_data.flavor?.join(', ') ?? '-'}</td>
+                    <td style={{ padding: '6px 8px' }}>{h.domain_data.channel_tropism?.join(', ') ?? '-'}</td>
+                    <td style={{ padding: '6px 8px' }}>
+                      <span style={{ background: `${statusColor(h.domain_data.enrichment_status)}20`, color: statusColor(h.domain_data.enrichment_status), padding: '1px 8px', borderRadius: 10, fontSize: 10 }}>
+                        {statusLabel(h.domain_data.enrichment_status)}
+                      </span>
+                    </td>
+                  </tr>
                 ))}
-              </Table.Tbody>
-            </Table>
+              </tbody>
+            </table>
             {filteredHerbs.length > 100 && (
-              <Text fz="xs" c="dimmed" ta="center" mt="sm">
+              <p style={{ fontSize: 12, color: '#868e96', textAlign: 'center', marginTop: 8 }}>
                 {filteredHerbs.length - 100}개 더 있음
-              </Text>
+              </p>
             )}
-          </Box>
+          </div>
         )}
-      </Paper>
-    </Stack>
+      </div>
+    </div>
   );
 }

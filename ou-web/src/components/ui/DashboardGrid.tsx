@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo, useCallback } from 'react';
-import { Box, Text, ActionIcon, Group } from '@mantine/core';
 import { X, ArrowsOutSimple } from '@phosphor-icons/react';
 import { ResponsiveGridLayout, useContainerWidth } from 'react-grid-layout';
 import { ViewRenderer } from '@/components/views/ViewRenderer';
@@ -67,7 +66,7 @@ export function DashboardGrid({ savedViews, nodes, onViewFullscreen }: Dashboard
 
   if (dashboardViews.length === 0) {
     return (
-      <Box
+      <div
         ref={containerRef as React.Ref<HTMLDivElement>}
         style={{
           display: 'flex',
@@ -78,17 +77,17 @@ export function DashboardGrid({ savedViews, nodes, onViewFullscreen }: Dashboard
         }}
       >
         <GlassCard style={{ padding: 40, textAlign: 'center', maxWidth: 400 }}>
-          <Text size="lg" fw={600} mb="sm">아직 뷰가 없어요</Text>
-          <Text size="sm" c="dimmed">
+          <span style={{ fontSize: 18, fontWeight: 600, display: 'block', marginBottom: 8 }}>아직 뷰가 없어요</span>
+          <span style={{ fontSize: 14, color: 'var(--color-dimmed)' }}>
             채팅으로 데이터를 추가하면 자동으로 뷰가 만들어집니다.
-          </Text>
+          </span>
         </GlassCard>
-      </Box>
+      </div>
     );
   }
 
   return (
-    <Box ref={containerRef as React.Ref<HTMLDivElement>} style={{ width: '100%', height: '100%', overflow: 'auto', padding: 16, background: 'var(--ou-glass-bg)', backdropFilter: 'blur(var(--ou-glass-blur))', WebkitBackdropFilter: 'blur(var(--ou-glass-blur))', border: '0.5px solid var(--ou-glass-border)', borderRadius: 16 }}>
+    <div ref={containerRef as React.Ref<HTMLDivElement>} style={{ width: '100%', height: '100%', overflow: 'auto', padding: 16, background: 'var(--ou-glass-bg)', backdropFilter: 'blur(var(--ou-glass-blur))', WebkitBackdropFilter: 'blur(var(--ou-glass-blur))', border: '0.5px solid var(--ou-glass-border)', borderRadius: 16 }}>
       {mounted && (
         <ResponsiveGridLayout
           width={width}
@@ -114,40 +113,38 @@ export function DashboardGrid({ savedViews, nodes, onViewFullscreen }: Dashboard
                   overflow: 'hidden',
                 }}
               >
-                <Group
+                <div
                   className="dashboard-drag-handle"
-                  justify="space-between"
                   style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
                     padding: '8px 12px',
                     cursor: 'grab',
                     borderBottom: '0.5px solid var(--ou-glass-border)',
                     flexShrink: 0,
                   }}
                 >
-                  <Text size="xs" fw={600} truncate>
+                  <span style={{ fontSize: 12, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {view.name || view.view_type}
-                  </Text>
-                  <Group gap={4}>
-                    <ActionIcon
-                      variant="subtle"
-                      color="gray"
-                      size="xs"
+                  </span>
+                  <div style={{ display: 'flex', gap: 4 }}>
+                    <button
                       onClick={() => onViewFullscreen?.(view.id)}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: '#6b7280' }}
                     >
                       <ArrowsOutSimple size={14} />
-                    </ActionIcon>
-                    <ActionIcon
-                      variant="subtle"
-                      color="gray"
-                      size="xs"
+                    </button>
+                    <button
                       onClick={() => handleRemoveView(view.id)}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: '#6b7280' }}
                     >
                       <X size={14} />
-                    </ActionIcon>
-                  </Group>
-                </Group>
+                    </button>
+                  </div>
+                </div>
 
-                <Box style={{ flex: 1, overflow: 'auto', padding: 8 }}>
+                <div style={{ flex: 1, overflow: 'auto', padding: 8 }}>
                   <ViewRenderer
                     viewType={view.view_type}
                     nodes={nodes.filter(n => {
@@ -159,12 +156,12 @@ export function DashboardGrid({ savedViews, nodes, onViewFullscreen }: Dashboard
                     filters={view.filter_config}
                     layoutConfig={view.layout_config}
                   />
-                </Box>
+                </div>
               </GlassCard>
             </div>
           ))}
         </ResponsiveGridLayout>
       )}
-    </Box>
+    </div>
   );
 }

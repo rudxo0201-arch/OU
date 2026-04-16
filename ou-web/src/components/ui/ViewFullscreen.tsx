@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect } from 'react';
-import { Box, ActionIcon, Text, Group } from '@mantine/core';
 import { X } from '@phosphor-icons/react';
 import { ViewRenderer } from '@/components/views/ViewRenderer';
 import { useNavigationStore } from '@/stores/navigationStore';
@@ -30,7 +29,7 @@ export function ViewFullscreen({ view, nodes, onClose }: ViewFullscreenProps) {
   });
 
   return (
-    <Box
+    <div
       style={{
         position: 'fixed',
         inset: 0,
@@ -44,29 +43,43 @@ export function ViewFullscreen({ view, nodes, onClose }: ViewFullscreenProps) {
       }}
     >
       {/* Header */}
-      <Group
-        justify="space-between"
+      <div
         style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
           padding: '12px 24px',
           borderBottom: '0.5px solid var(--ou-glass-border)',
           flexShrink: 0,
         }}
       >
-        <Text size="sm" fw={600}>{view.name || view.view_type}</Text>
-        <ActionIcon variant="subtle" color="gray" size="md" onClick={onClose}>
+        <span style={{ fontSize: 14, fontWeight: 600 }}>{view.name || view.view_type}</span>
+        <button
+          onClick={onClose}
+          style={{
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            color: 'var(--ou-text-muted, rgba(255,255,255,0.5))',
+            padding: 4,
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
           <X size={20} />
-        </ActionIcon>
-      </Group>
+        </button>
+      </div>
 
       {/* Content */}
-      <Box style={{ flex: 1, overflow: 'auto', padding: 24 }}>
+      <div style={{ flex: 1, overflow: 'auto', padding: 24 }}>
         <ViewRenderer
           viewType={view.view_type}
           nodes={filteredNodes}
           filters={view.filter_config}
           layoutConfig={view.layout_config}
         />
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 }

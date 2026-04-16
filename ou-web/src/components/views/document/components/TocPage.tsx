@@ -1,6 +1,5 @@
 'use client';
 
-import { Box, Text } from '@mantine/core';
 import type { DocumentTemplate, PageContent } from '@/types/document-template';
 import { A4_WIDTH_PX, A4_HEIGHT_PX, MM_TO_PX } from '@/types/document-template';
 
@@ -32,7 +31,7 @@ export function TocPage({ template, pages, sections }: TocPageProps) {
   const headingSections = sections.filter(s => s.heading);
 
   return (
-    <Box
+    <div
       className="a4-page a4-toc"
       style={{
         width: A4_WIDTH_PX,
@@ -44,7 +43,7 @@ export function TocPage({ template, pages, sections }: TocPageProps) {
       }}
     >
       {/* 목차 제목 */}
-      <Text
+      <span
         style={{
           fontFamily: font.heading,
           fontSize: 18,
@@ -52,16 +51,17 @@ export function TocPage({ template, pages, sections }: TocPageProps) {
           color: '#111',
           marginBottom: 32,
           letterSpacing: '0.05em',
+          display: 'block',
         }}
       >
         목차
-      </Text>
+      </span>
 
       {/* 항목 */}
       {headingSections.map((section, idx) => {
         const pageNum = sectionPageMap.get(section.id);
         return (
-          <Box
+          <div
             key={section.id}
             style={{
               display: 'flex',
@@ -70,7 +70,7 @@ export function TocPage({ template, pages, sections }: TocPageProps) {
               gap: 8,
             }}
           >
-            <Text
+            <span
               style={{
                 fontFamily: font.body,
                 fontSize: 12,
@@ -80,8 +80,8 @@ export function TocPage({ template, pages, sections }: TocPageProps) {
               }}
             >
               {section.heading}
-            </Text>
-            <Box
+            </span>
+            <div
               style={{
                 flex: 1,
                 borderBottom: '0.5px dotted #ccc',
@@ -90,7 +90,7 @@ export function TocPage({ template, pages, sections }: TocPageProps) {
               }}
             />
             {pageNum && (
-              <Text
+              <span
                 style={{
                   fontFamily: font.caption,
                   fontSize: 11,
@@ -100,11 +100,11 @@ export function TocPage({ template, pages, sections }: TocPageProps) {
                 }}
               >
                 {pageNum}
-              </Text>
+              </span>
             )}
-          </Box>
+          </div>
         );
       })}
-    </Box>
+    </div>
   );
 }

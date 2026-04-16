@@ -1,11 +1,6 @@
 'use client';
 
 import { useEffect, useState, useCallback, useRef } from 'react';
-import {
-  Stack, Group, Avatar, Text, Button, Box,
-  Badge, SimpleGrid, Paper, Loader, Center,
-  ScrollArea, TextInput, ActionIcon,
-} from '@mantine/core';
 import { UserPlus, UserMinus, PencilSimple, Globe, Robot, PaperPlaneTilt, X } from '@phosphor-icons/react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
@@ -200,137 +195,147 @@ export function ProfileClient({ persona, nodes, totalNodeCount }: { persona: Per
     boxShadow: 'var(--ou-glow-sm)',
     cursor: 'pointer',
     transition: 'box-shadow var(--ou-transition), border-color var(--ou-transition)',
+    padding: 16,
   };
 
   return (
-    <Stack gap="xl" maw={800} mx="auto" p="xl" style={{ background: 'transparent' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 28, maxWidth: 800, margin: '0 auto', padding: 24, background: 'transparent' }}>
       {/* Header: avatar, name, bio, actions */}
-      <Stack align="center" gap="md">
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
         {/* Avatar as orb-block */}
-        <Avatar
-          src={persona.avatar_url ?? undefined}
-          size={96}
-          radius="50%"
+        <div
           style={{
+            width: 96,
+            height: 96,
+            borderRadius: '50%',
             border: '0.5px solid var(--ou-border-subtle)',
             boxShadow: 'var(--ou-glow-md)',
+            overflow: 'hidden',
+            background: 'var(--ou-surface-muted)',
           }}
-        />
-        <Stack gap={4} align="center">
-          <Text fw={700} fz="xl" style={{ color: 'var(--ou-text-strong)' }}>
+        >
+          {persona.avatar_url && (
+            <img src={persona.avatar_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          )}
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'center' }}>
+          <span style={{ fontWeight: 700, fontSize: 20, color: 'var(--ou-text-strong)' }}>
             {persona.display_name ?? persona.handle}
-          </Text>
-          <Text fz="sm" style={{ color: 'var(--ou-text-dimmed)' }}>
+          </span>
+          <span style={{ fontSize: 14, color: 'var(--ou-text-dimmed)' }}>
             @{persona.handle}
-          </Text>
+          </span>
 
           {persona.bio && (
-            <Text fz="sm" mt={4} ta="center" style={{ color: 'var(--ou-text-body)' }}>
+            <span style={{ fontSize: 14, marginTop: 4, textAlign: 'center', color: 'var(--ou-text-body)' }}>
               {persona.bio}
-            </Text>
+            </span>
           )}
 
           {/* Stats — badge-block style */}
           {statsLoading ? (
-            <Loader size="xs" color="gray" mt={4} />
+            <span style={{ color: 'var(--ou-text-dimmed)', fontSize: 13, marginTop: 4 }}>...</span>
           ) : (
-            <Group gap="lg" mt={8}>
-              <Badge
-                variant="light"
-                color="gray"
-                size="lg"
-                style={{
-                  background: 'var(--ou-surface-muted)',
-                  border: '0.5px solid var(--ou-border-subtle)',
-                  color: 'var(--ou-text-body)',
-                }}
-              >
+            <div style={{ display: 'flex', gap: 20, marginTop: 8 }}>
+              <span style={{
+                fontSize: 14,
+                padding: '4px 14px',
+                background: 'var(--ou-surface-muted)',
+                border: '0.5px solid var(--ou-border-subtle)',
+                borderRadius: 'var(--ou-radius-pill)',
+                color: 'var(--ou-text-body)',
+              }}>
                 공개 기록 {nodes.length}
-              </Badge>
-              <Badge
-                variant="light"
-                color="gray"
-                size="lg"
-                style={{
-                  background: 'var(--ou-surface-muted)',
-                  border: '0.5px solid var(--ou-border-subtle)',
-                  color: 'var(--ou-text-body)',
-                }}
-              >
+              </span>
+              <span style={{
+                fontSize: 14,
+                padding: '4px 14px',
+                background: 'var(--ou-surface-muted)',
+                border: '0.5px solid var(--ou-border-subtle)',
+                borderRadius: 'var(--ou-radius-pill)',
+                color: 'var(--ou-text-body)',
+              }}>
                 팔로워 {followerCount}
-              </Badge>
-            </Group>
+              </span>
+            </div>
           )}
 
           {/* Rank */}
-          <Box mt={8} maw={240}>
+          <div style={{ marginTop: 8, maxWidth: 240 }}>
             <RankBadge nodeCount={totalNodeCount} variant="compact" />
-          </Box>
+          </div>
 
           {/* Action button — pill-block */}
-          <Box mt="md">
+          <div style={{ marginTop: 16 }}>
             {isOwn ? (
-              <Button
-                variant="outline"
-                color="gray"
-                size="sm"
-                radius="xl"
+              <button
+                onClick={() => router.push('/settings')}
                 style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  padding: '6px 16px',
+                  borderRadius: 'var(--ou-radius-pill)',
                   borderWidth: '0.5px',
+                  borderStyle: 'solid',
                   borderColor: 'var(--ou-border-subtle)',
                   background: 'transparent',
                   color: 'var(--ou-text-body)',
+                  fontSize: 14,
+                  fontFamily: 'inherit',
+                  cursor: 'pointer',
                 }}
-                leftSection={<PencilSimple size={16} weight="light" />}
-                onClick={() => router.push('/settings')}
               >
+                <PencilSimple size={16} weight="light" />
                 편집
-              </Button>
+              </button>
             ) : (
-              <Button
-                variant={following ? 'light' : 'outline'}
-                color="gray"
-                size="sm"
-                radius="xl"
+              <button
+                onClick={handleFollow}
+                disabled={followLoading}
                 style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  padding: '6px 16px',
+                  borderRadius: 'var(--ou-radius-pill)',
                   borderWidth: '0.5px',
+                  borderStyle: 'solid',
                   borderColor: following ? 'var(--ou-border-hover)' : 'var(--ou-border-subtle)',
                   background: following ? 'var(--ou-surface-muted)' : 'transparent',
                   color: 'var(--ou-text-body)',
                   boxShadow: following ? 'var(--ou-glow-sm)' : 'none',
+                  fontSize: 14,
+                  fontFamily: 'inherit',
+                  cursor: followLoading ? 'wait' : 'pointer',
                 }}
-                leftSection={
-                  following
-                    ? <UserMinus size={16} weight="light" />
-                    : <UserPlus size={16} weight="light" />
-                }
-                loading={followLoading}
-                onClick={handleFollow}
               >
+                {following
+                  ? <UserMinus size={16} weight="light" />
+                  : <UserPlus size={16} weight="light" />
+                }
                 {following ? '팔로잉' : '팔로우'}
-              </Button>
+              </button>
             )}
-          </Box>
-        </Stack>
-      </Stack>
+          </div>
+        </div>
+      </div>
 
       {/* Public nodes grid — card-block items */}
       {nodes.length === 0 ? (
-        <Center py="xl">
-          <Stack align="center" gap="xs">
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '48px 0' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
             <Globe size={36} weight="light" style={{ color: 'var(--ou-text-dimmed)' }} />
-            <Text fz="sm" style={{ color: 'var(--ou-text-dimmed)' }}>
+            <span style={{ fontSize: 14, color: 'var(--ou-text-dimmed)' }}>
               공개된 기록이 없어요
-            </Text>
-          </Stack>
-        </Center>
+            </span>
+          </div>
+        </div>
       ) : (
-        <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="sm">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12 }}>
           {nodes.map(node => (
-            <Paper
+            <div
               key={node.id}
-              p="md"
-              radius="md"
               style={cardStyle}
               onClick={() => router.push(`/view/${node.id}`)}
               onMouseEnter={(e) => {
@@ -342,59 +347,71 @@ export function ProfileClient({ persona, nodes, totalNodeCount }: { persona: Per
                 e.currentTarget.style.borderColor = 'var(--ou-border-subtle)';
               }}
             >
-              <Group justify="space-between" mb={6}>
-                <Badge
-                  variant="light"
-                  color="gray"
-                  size="xs"
-                  styles={{ root: { textTransform: 'none' } }}
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                <span
                   style={{
+                    fontSize: 10,
+                    padding: '2px 8px',
                     background: 'var(--ou-surface-muted)',
                     border: '0.5px solid var(--ou-border-subtle)',
+                    borderRadius: 'var(--ou-radius-pill)',
                     color: 'var(--ou-text-dimmed)',
                   }}
                 >
                   {DOMAIN_LABELS[node.domain] ?? node.domain}
-                </Badge>
+                </span>
                 {node.created_at && (
-                  <Text fz={10} style={{ color: 'var(--ou-text-dimmed)' }}>
+                  <span style={{ fontSize: 10, color: 'var(--ou-text-dimmed)' }}>
                     {new Date(node.created_at as string).toLocaleDateString('ko-KR')}
-                  </Text>
+                  </span>
                 )}
-              </Group>
-              <Text fz="sm" lineClamp={3} style={{ color: 'var(--ou-text-body)' }}>
+              </div>
+              <p style={{
+                fontSize: 14,
+                color: 'var(--ou-text-body)',
+                display: '-webkit-box',
+                WebkitLineClamp: 3,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+                margin: 0,
+              }}>
                 {node.raw}
-              </Text>
-            </Paper>
+              </p>
+            </div>
           ))}
-        </SimpleGrid>
+        </div>
       )}
 
       {/* AI Chat Button */}
       {!chatOpen && nodes.length > 0 && (
-        <Center>
-          <Button
-            variant="outline"
-            color="gray"
-            radius="xl"
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <button
+            onClick={() => setChatOpen(true)}
             style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              padding: '8px 20px',
+              borderRadius: 'var(--ou-radius-pill)',
               borderWidth: '0.5px',
+              borderStyle: 'solid',
               borderColor: 'var(--ou-border-subtle)',
               background: 'transparent',
               color: 'var(--ou-text-body)',
+              fontSize: 14,
+              fontFamily: 'inherit',
+              cursor: 'pointer',
             }}
-            leftSection={<Robot size={18} weight="light" />}
-            onClick={() => setChatOpen(true)}
           >
+            <Robot size={18} weight="light" />
             이 사람의 AI에게 물어보기
-          </Button>
-        </Center>
+          </button>
+        </div>
       )}
 
       {/* AI Chat Panel */}
       {chatOpen && (
-        <Paper
-          radius="md"
+        <div
           style={{
             border: '0.5px solid var(--ou-border-subtle)',
             borderRadius: 'var(--ou-radius-card)',
@@ -404,51 +421,54 @@ export function ProfileClient({ persona, nodes, totalNodeCount }: { persona: Per
           }}
         >
           {/* Header */}
-          <Group
-            justify="space-between"
-            px="md"
-            py="sm"
-            style={{ borderBottom: '0.5px solid var(--ou-border-faint)' }}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              padding: '10px 16px',
+              borderBottom: '0.5px solid var(--ou-border-faint)',
+              alignItems: 'center',
+            }}
           >
-            <Group gap="xs">
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
               <Robot size={18} weight="light" style={{ color: 'var(--ou-text-dimmed)' }} />
-              <Text fw={600} fz="sm" style={{ color: 'var(--ou-text-strong)' }}>
+              <span style={{ fontWeight: 600, fontSize: 14, color: 'var(--ou-text-strong)' }}>
                 {persona.display_name ?? persona.handle}의 AI
-              </Text>
-            </Group>
-            <ActionIcon
-              variant="subtle"
-              color="gray"
-              size="sm"
+              </span>
+            </div>
+            <button
               onClick={() => setChatOpen(false)}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, display: 'flex' }}
             >
-              <X size={16} weight="light" />
-            </ActionIcon>
-          </Group>
+              <X size={16} weight="light" style={{ color: 'var(--ou-text-dimmed)' }} />
+            </button>
+          </div>
 
           {/* Disclaimer */}
-          <Box px="md" py={6} style={{ background: 'var(--ou-surface-faint)' }}>
-            <Text fz="xs" style={{ color: 'var(--ou-text-dimmed)' }}>
+          <div style={{ padding: '6px 16px', background: 'var(--ou-surface-faint)' }}>
+            <span style={{ fontSize: 12, color: 'var(--ou-text-dimmed)' }}>
               AI가 공개된 기록을 바탕으로 답변합니다
-            </Text>
-          </Box>
+            </span>
+          </div>
 
           {/* Messages */}
-          <ScrollArea h={400} viewportRef={chatViewport} px="md" py="sm">
-            <Stack gap="sm">
+          <div
+            ref={chatViewport}
+            style={{ height: 400, overflow: 'auto', padding: '12px 16px' }}
+          >
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {chatMessages.map((msg, i) => (
-                <Box
+                <div
                   key={i}
                   style={{
                     display: 'flex',
                     justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start',
                   }}
                 >
-                  <Box
-                    px="sm"
-                    py={6}
-                    maw="80%"
+                  <div
                     style={{
+                      padding: '6px 12px',
+                      maxWidth: '80%',
                       borderRadius: 'var(--ou-radius-md)',
                       background: msg.role === 'user'
                         ? 'var(--ou-surface-hover)'
@@ -456,36 +476,36 @@ export function ProfileClient({ persona, nodes, totalNodeCount }: { persona: Per
                       border: '0.5px solid var(--ou-border-faint)',
                     }}
                   >
-                    <Text
-                      fz="sm"
+                    <span
                       style={{
+                        fontSize: 14,
                         whiteSpace: 'pre-wrap',
                         wordBreak: 'break-word',
                         color: 'var(--ou-text-body)',
                       }}
                     >
                       {msg.content || (streaming && i === chatMessages.length - 1 ? '...' : '')}
-                    </Text>
-                  </Box>
-                </Box>
+                    </span>
+                  </div>
+                </div>
               ))}
-            </Stack>
-          </ScrollArea>
+            </div>
+          </div>
 
           {/* Input */}
-          <Group
-            px="md"
-            py="sm"
-            gap="xs"
-            style={{ borderTop: '0.5px solid var(--ou-border-faint)' }}
+          <div
+            style={{
+              display: 'flex',
+              padding: '10px 16px',
+              gap: 8,
+              borderTop: '0.5px solid var(--ou-border-faint)',
+              alignItems: 'center',
+            }}
           >
-            <TextInput
-              flex={1}
+            <input
               placeholder="궁금한 것을 물어보세요"
-              size="sm"
-              radius="xl"
               value={chatInput}
-              onChange={e => setChatInput(e.currentTarget.value)}
+              onChange={e => setChatInput(e.target.value)}
               onKeyDown={e => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault();
@@ -493,38 +513,52 @@ export function ProfileClient({ persona, nodes, totalNodeCount }: { persona: Per
                 }
               }}
               disabled={streaming || chatMessages.length >= 20}
-              styles={{
-                input: {
-                  borderWidth: '0.5px',
-                  borderColor: 'var(--ou-border-subtle)',
-                  background: 'transparent',
-                  color: 'var(--ou-text-body)',
-                },
+              style={{
+                flex: 1,
+                borderWidth: '0.5px',
+                borderStyle: 'solid',
+                borderColor: 'var(--ou-border-subtle)',
+                borderRadius: 'var(--ou-radius-pill)',
+                background: 'transparent',
+                color: 'var(--ou-text-body)',
+                padding: '8px 14px',
+                fontSize: 14,
+                fontFamily: 'inherit',
+                outline: 'none',
               }}
             />
-            <ActionIcon
-              variant="filled"
-              color="dark"
-              size="lg"
-              radius="xl"
+            <button
               onClick={sendChatMessage}
               disabled={streaming || !chatInput.trim() || chatMessages.length >= 20}
+              style={{
+                width: 36,
+                height: 36,
+                borderRadius: '50%',
+                background: 'rgba(255,255,255,0.9)',
+                border: 'none',
+                cursor: streaming || !chatInput.trim() ? 'not-allowed' : 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                opacity: streaming || !chatInput.trim() ? 0.4 : 1,
+                flexShrink: 0,
+              }}
             >
-              <PaperPlaneTilt size={18} weight="light" />
-            </ActionIcon>
-          </Group>
+              <PaperPlaneTilt size={18} weight="light" style={{ color: '#111' }} />
+            </button>
+          </div>
 
           {chatMessages.length >= 20 && (
-            <Text fz="xs" ta="center" pb="xs" style={{ color: 'var(--ou-text-dimmed)' }}>
+            <span style={{ fontSize: 12, textAlign: 'center', display: 'block', paddingBottom: 8, color: 'var(--ou-text-dimmed)' }}>
               최대 대화 수에 도달했어요
-            </Text>
+            </span>
           )}
-        </Paper>
+        </div>
       )}
 
-      <Text fz="xs" ta="center" style={{ color: 'var(--ou-text-dimmed)' }}>
+      <span style={{ fontSize: 12, textAlign: 'center', color: 'var(--ou-text-dimmed)' }}>
         Made with OU
-      </Text>
-    </Stack>
+      </span>
+    </div>
   );
 }

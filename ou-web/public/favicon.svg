@@ -1,21 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-  <defs>
-    <filter id="glow">
-      <feGaussianBlur stdDeviation="1.5" result="blur"/>
-      <feMerge>
-        <feMergeNode in="blur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
-  </defs>
   <style>
-    rect { fill: #060810; }
-    text { fill: rgba(255,255,255,0.9); }
+    .bg { fill: #060810; }
+    .logo { fill: rgba(255,255,255,0.88); }
     @media (prefers-color-scheme: light) {
-      rect { fill: #f0f0f4; }
-      text { fill: rgba(0,0,0,0.85); }
+      .bg { fill: #f0f0f4; }
+      .logo { fill: rgba(0,0,0,0.82); }
     }
   </style>
-  <rect width="32" height="32" rx="6"/>
-  <text x="16" y="22" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="700" filter="url(#glow)">O</text>
+  <rect class="bg" width="32" height="32" rx="6"/>
+  <!-- O: rounded rect with hole -->
+  <path class="logo" d="M4,11 C4,9.3 5.3,8 7,8 L13,8 C14.7,8 16,9.3 16,11 L16,21 C16,22.7 14.7,24 13,24 L7,24 C5.3,24 4,22.7 4,21 Z M7.5,14 C7.5,13.2 8.2,12.5 9,12.5 L11,12.5 C11.8,12.5 12.5,13.2 12.5,14 L12.5,17 C12.5,17.8 11.8,18.5 11,18.5 L9,18.5 C8.2,18.5 7.5,17.8 7.5,17 Z" fill-rule="evenodd"/>
+  <!-- U: open top rounded rect -->
+  <path class="logo" d="M18,8 L18,21 C18,22.7 19.3,24 21,24 L25,24 C26.7,24 28,22.7 28,21 L28,8 L25.5,8 L25.5,20.5 C25.5,21.1 25,21.5 24.5,21.5 L21.5,21.5 C21,21.5 20.5,21.1 20.5,20.5 L20.5,8 Z"/>
 </svg>

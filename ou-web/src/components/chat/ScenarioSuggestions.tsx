@@ -1,6 +1,5 @@
 'use client';
 
-import { Box, Group, Stack, Text, UnstyledButton, ScrollArea } from '@mantine/core';
 import {
   CalendarBlank, CurrencyKrw, CheckSquare, SmileyMeh, ListChecks,
   Barbell, Brain, Users, Notebook, Lightbulb, BookOpen, FunnelSimple,
@@ -23,14 +22,14 @@ export function ScenarioSuggestions({ scenarios, onSelect }: ScenarioSuggestions
   if (scenarios.length === 0) return null;
 
   return (
-    <Stack gap="sm" px="md" py="sm">
-      <Text fz="xs" c="dimmed">이렇게 시작해보세요</Text>
-      <ScrollArea scrollbarSize={4} type="hover">
-        <Group gap="sm" wrap="nowrap">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: '8px 16px' }}>
+      <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed)' }}>이렇게 시작해보세요</span>
+      <div style={{ overflowX: 'auto', overflowY: 'hidden' }}>
+        <div style={{ display: 'flex', flexDirection: 'row', gap: 8, flexWrap: 'nowrap' }}>
           {scenarios.map(scenario => {
             const IconComponent = SCENARIO_ICONS[scenario.icon] ?? Star;
             return (
-              <UnstyledButton
+              <button
                 key={scenario.id}
                 onClick={() => onSelect(scenario)}
                 style={{
@@ -38,31 +37,35 @@ export function ScenarioSuggestions({ scenarios, onSelect }: ScenarioSuggestions
                   maxWidth: 220,
                   padding: '12px 16px',
                   borderRadius: 12,
-                  border: '0.5px solid var(--mantine-color-default-border)',
+                  border: '0.5px solid var(--ou-border-subtle)',
                   transition: 'all 150ms',
                   flexShrink: 0,
+                  background: 'none',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  fontFamily: 'inherit',
                 }}
-                styles={{
-                  root: {
-                    '&:hover': {
-                      borderColor: 'var(--mantine-color-dark-4)',
-                      backgroundColor: 'var(--mantine-color-gray-0)',
-                    },
-                  },
+                onMouseEnter={e => {
+                  e.currentTarget.style.borderColor = 'var(--ou-border-hover)';
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.borderColor = 'var(--ou-border-subtle)';
+                  e.currentTarget.style.background = 'none';
                 }}
               >
-                <Group gap="xs" mb={6} wrap="nowrap">
+                <div style={{ display: 'flex', flexDirection: 'row', gap: 4, alignItems: 'center', marginBottom: 6, flexWrap: 'nowrap' }}>
                   <IconComponent size={16} weight="bold" style={{ opacity: 0.6, flexShrink: 0 }} />
-                  <Text fz="xs" fw={600} lineClamp={1}>{scenario.title}</Text>
-                </Group>
-                <Text fz={10} c="dimmed" lineClamp={2} style={{ lineHeight: 1.5 }}>
+                  <span style={{ fontSize: 11, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--ou-text-body)' }}>{scenario.title}</span>
+                </div>
+                <span style={{ fontSize: 10, color: 'var(--ou-text-dimmed)', lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                   {scenario.description}
-                </Text>
-              </UnstyledButton>
+                </span>
+              </button>
             );
           })}
-        </Group>
-      </ScrollArea>
-    </Stack>
+        </div>
+      </div>
+    </div>
   );
 }

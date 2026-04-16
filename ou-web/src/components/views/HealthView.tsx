@@ -1,9 +1,6 @@
 'use client';
 
 import { useMemo } from 'react';
-import {
-  Box, Group, Text, Stack, Button, Divider,
-} from '@mantine/core';
 import { Printer } from '@phosphor-icons/react';
 import dayjs from 'dayjs';
 import 'dayjs/locale/ko';
@@ -13,7 +10,7 @@ dayjs.locale('ko');
 
 const CELL_SIZE = 12;
 const CELL_GAP = 2;
-const WEEKS = 24; // 6 months
+const WEEKS = 24;
 const DAYS = 7;
 
 interface HealthEntry {
@@ -44,7 +41,6 @@ export function HealthView({ nodes }: ViewProps) {
     [nodes],
   );
 
-  // Heatmap data
   const dateCounts = useMemo(() => {
     const map: Record<string, number> = {};
     for (const e of entries) {
@@ -65,12 +61,12 @@ export function HealthView({ nodes }: ViewProps) {
   const gridStart = startDate.subtract(startDate.day(), 'day');
 
   const getIntensity = (count: number): string => {
-    if (count === 0) return 'var(--mantine-color-gray-1)';
+    if (count === 0) return 'var(--ou-gray-1, #f0f0f0)';
     const ratio = count / maxCount;
-    if (ratio <= 0.25) return 'var(--mantine-color-gray-3)';
-    if (ratio <= 0.5) return 'var(--mantine-color-gray-5)';
-    if (ratio <= 0.75) return 'var(--mantine-color-gray-7)';
-    return 'var(--mantine-color-dark-6)';
+    if (ratio <= 0.25) return 'var(--ou-gray-3, #ccc)';
+    if (ratio <= 0.5) return 'var(--ou-gray-5, #888)';
+    if (ratio <= 0.75) return 'var(--ou-gray-7, #555)';
+    return 'var(--ou-gray-9, #222)';
   };
 
   const monthLabels = useMemo(() => {
@@ -87,7 +83,6 @@ export function HealthView({ nodes }: ViewProps) {
     return labels;
   }, [gridStart]);
 
-  // Symptom frequency
   const symptomFrequency = useMemo(() => {
     const map: Record<string, number> = {};
     for (const e of entries) {
@@ -114,14 +109,14 @@ export function HealthView({ nodes }: ViewProps) {
   if (entries.length === 0) return null;
 
   return (
-    <Stack gap="lg" p="md" className="health-view-print">
+    <div className="health-view-print" style={{ display: 'flex', flexDirection: 'column', gap: 24, padding: 16 }}>
       {/* Monthly Heatmap */}
-      <Box>
-        <Group justify="space-between" align="baseline" mb="xs">
-          <Text fz="sm" fw={600}>기록 현황</Text>
-          <Text fz="xs" c="dimmed">{entries.length}건</Text>
-        </Group>
-        <Box style={{ overflowX: 'auto' }}>
+      <div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8 }}>
+          <span style={{ fontSize: 13, fontWeight: 600 }}>기록 현황</span>
+          <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)' }}>{entries.length}건</span>
+        </div>
+        <div style={{ overflowX: 'auto' }}>
           <svg width={svgWidth} height={svgHeight} style={{ display: 'block' }}>
             {monthLabels.map(({ label, week }) => (
               <text
@@ -157,98 +152,108 @@ export function HealthView({ nodes }: ViewProps) {
               }),
             )}
           </svg>
-        </Box>
-      </Box>
+        </div>
+      </div>
 
-      <Divider color="var(--mantine-color-default-border)" />
+      <div style={{ borderTop: '0.5px solid var(--ou-border, #333)' }} />
 
       {/* Symptom Frequency */}
       {symptomFrequency.length > 0 && (
-        <Box>
-          <Text fz="sm" fw={600} mb="sm">자주 기록된 증상</Text>
-          <Stack gap={6}>
+        <div>
+          <span style={{ fontSize: 13, fontWeight: 600, display: 'block', marginBottom: 12 }}>자주 기록된 증상</span>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             {symptomFrequency.map(([symptom, count]) => (
-              <Group key={symptom} gap="sm" wrap="nowrap">
-                <Text fz="xs" style={{ width: 80, flexShrink: 0 }} lineClamp={1}>
+              <div key={symptom} style={{ display: 'flex', gap: 12, flexWrap: 'nowrap', alignItems: 'center' }}>
+                <span style={{ fontSize: 11, width: 80, flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {symptom}
-                </Text>
-                <Box style={{ flex: 1, position: 'relative', height: 16 }}>
-                  <Box
+                </span>
+                <div style={{ flex: 1, position: 'relative', height: 16 }}>
+                  <div
                     style={{
                       position: 'absolute',
                       left: 0,
                       top: 0,
                       height: '100%',
                       width: `${(count / maxSymptomCount) * 100}%`,
-                      backgroundColor: 'var(--mantine-color-gray-5)',
+                      backgroundColor: 'var(--ou-gray-5, #888)',
                       borderRadius: 4,
                       transition: 'width 300ms ease',
                     }}
                   />
-                </Box>
-                <Text fz={10} c="dimmed" style={{ width: 24, textAlign: 'right', flexShrink: 0 }}>
+                </div>
+                <span style={{ fontSize: 10, color: 'var(--ou-text-dimmed, #888)', width: 24, textAlign: 'right', flexShrink: 0 }}>
                   {count}
-                </Text>
-              </Group>
+                </span>
+              </div>
             ))}
-          </Stack>
-        </Box>
+          </div>
+        </div>
       )}
 
-      <Divider color="var(--mantine-color-default-border)" />
+      <div style={{ borderTop: '0.5px solid var(--ou-border, #333)' }} />
 
       {/* Timeline */}
-      <Box>
-        <Text fz="sm" fw={600} mb="sm">기록 목록</Text>
-        <Stack gap={4}>
+      <div>
+        <span style={{ fontSize: 13, fontWeight: 600, display: 'block', marginBottom: 12 }}>기록 목록</span>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           {entries.slice(0, 30).map(entry => (
-            <Group
+            <div
               key={entry.id}
-              px="sm"
-              py="xs"
-              gap="sm"
-              wrap="nowrap"
               style={{
-                border: '0.5px solid var(--mantine-color-default-border)',
+                display: 'flex',
+                padding: '8px 12px',
+                gap: 12,
+                flexWrap: 'nowrap',
+                alignItems: 'center',
+                border: '0.5px solid var(--ou-border, #333)',
                 borderRadius: 8,
               }}
             >
-              <Text fz={10} c="dimmed" style={{ width: 64, flexShrink: 0 }}>
+              <span style={{ fontSize: 10, color: 'var(--ou-text-dimmed, #888)', width: 64, flexShrink: 0 }}>
                 {entry.date ? dayjs(entry.date).format('MM.DD') : ''}
-              </Text>
-              <Text fz="xs" fw={500} style={{ flexShrink: 0 }}>
+              </span>
+              <span style={{ fontSize: 11, fontWeight: 500, flexShrink: 0 }}>
                 {entry.symptom || '기록'}
-              </Text>
+              </span>
               {entry.severity && (
-                <Text fz={10} c="dimmed">
+                <span style={{ fontSize: 10, color: 'var(--ou-text-dimmed, #888)' }}>
                   {entry.severity}
-                </Text>
+                </span>
               )}
               {entry.bodyPart && (
-                <Text fz={10} c="dimmed">
+                <span style={{ fontSize: 10, color: 'var(--ou-text-dimmed, #888)' }}>
                   {entry.bodyPart}
-                </Text>
+                </span>
               )}
-              <Text fz="xs" c="dimmed" lineClamp={1} style={{ flex: 1, minWidth: 0 }}>
+              <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {entry.memo}
-              </Text>
-            </Group>
+              </span>
+            </div>
           ))}
-        </Stack>
-      </Box>
+        </div>
+      </div>
 
       {/* Print button */}
-      <Button
-        variant="outline"
-        color="gray"
-        size="sm"
-        leftSection={<Printer size={16} />}
+      <button
         onClick={handlePrint}
+        style={{
+          padding: '8px 20px',
+          border: '0.5px solid var(--ou-border, #333)',
+          borderRadius: 6,
+          background: 'none',
+          cursor: 'pointer',
+          fontSize: 13,
+          color: 'inherit',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          alignSelf: 'flex-start',
+        }}
       >
+        <Printer size={16} />
         병원 방문용 요약
-      </Button>
+      </button>
 
-      {/* Print styles */}
       <style>{`
         @media print {
           body * { visibility: hidden; }
@@ -263,6 +268,6 @@ export function HealthView({ nodes }: ViewProps) {
           .health-view-print button { display: none !important; }
         }
       `}</style>
-    </Stack>
+    </div>
   );
 }

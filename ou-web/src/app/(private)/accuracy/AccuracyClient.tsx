@@ -2,11 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import {
-  Stack, Title, Text, Paper, Group, Button,
-  TextInput, Badge, Box, Progress, Center,
-  Transition,
-} from '@mantine/core';
-import {
   CheckCircle, ChatTeardrop, User, MapPin, Clock, Cube, ArrowRight,
   SkipForward, Keyboard, Check,
 } from '@phosphor-icons/react';
@@ -95,9 +90,6 @@ export function AccuracyClient({ entities: initialEntities }: AccuracyClientProp
     : 100;
 
   // 정확도 계산: 해결된 수 / 전체 수
-  const currentAccuracy = entities.length > 0
-    ? Math.round(((entities.length - initialEntities.length) / Math.max(entities.length, 1)) * 100)
-    : 100;
   const nextAccuracy = entities.length > 0
     ? Math.round(((resolvedCount + 1) / entities.length) * 100)
     : 100;
@@ -190,64 +182,73 @@ export function AccuracyClient({ entities: initialEntities }: AccuracyClientProp
   // Empty state
   if (initialEntities.length === 0) {
     return (
-      <Center h="60vh">
-        <Stack align="center" gap="md">
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
           <CheckCircle size={48} weight="light" style={{ color: 'var(--ou-text-dimmed)' }} />
-          <Text fw={600} fz="lg" style={{ color: 'var(--ou-text-strong)' }}>
+          <span style={{ fontWeight: 600, fontSize: 18, color: 'var(--ou-text-strong)' }}>
             모든 기록이 정확해요!
-          </Text>
-          <Text fz="sm" ta="center" style={{ color: 'var(--ou-text-dimmed)' }}>
+          </span>
+          <span style={{ fontSize: 14, textAlign: 'center', color: 'var(--ou-text-dimmed)' }}>
             대화를 더 나눠보세요!<br />
             OU가 잘 모르는 것들이 생기면 여기서 알려드릴게요.
-          </Text>
-          <Button
-            variant="outline"
-            color="gray"
-            radius="xl"
-            leftSection={<ChatTeardrop size={18} />}
+          </span>
+          <button
             onClick={() => router.push('/chat')}
             style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              padding: '8px 20px',
+              borderRadius: 'var(--ou-radius-pill)',
               borderWidth: '0.5px',
+              borderStyle: 'solid',
               borderColor: 'var(--ou-border-subtle)',
               background: 'transparent',
               color: 'var(--ou-text-body)',
+              fontSize: 14,
+              fontFamily: 'inherit',
+              cursor: 'pointer',
             }}
           >
+            <ChatTeardrop size={18} />
             대화하러 가기
-          </Button>
-        </Stack>
-      </Center>
+          </button>
+        </div>
+      </div>
     );
   }
 
   // All done
   if (!current || currentIdx >= entities.length) {
     return (
-      <Center h="60vh">
-        <Stack align="center" gap="md">
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
           <CheckCircle size={48} weight="light" style={{ color: 'var(--ou-text-dimmed)' }} />
-          <Text fw={600} fz="lg" style={{ color: 'var(--ou-text-strong)' }}>
+          <span style={{ fontWeight: 600, fontSize: 18, color: 'var(--ou-text-strong)' }}>
             모두 확인했어요!
-          </Text>
-          <Text ta="center" fz="sm" style={{ color: 'var(--ou-text-dimmed)' }}>
+          </span>
+          <span style={{ textAlign: 'center', fontSize: 14, color: 'var(--ou-text-dimmed)' }}>
             덕분에 OU가 더 정확해졌어요.
-          </Text>
-          <Button
-            variant="outline"
-            color="gray"
-            radius="xl"
+          </span>
+          <button
             onClick={() => router.push('/my')}
             style={{
+              padding: '8px 20px',
+              borderRadius: 'var(--ou-radius-pill)',
               borderWidth: '0.5px',
+              borderStyle: 'solid',
               borderColor: 'var(--ou-border-subtle)',
               background: 'transparent',
               color: 'var(--ou-text-body)',
+              fontSize: 14,
+              fontFamily: 'inherit',
+              cursor: 'pointer',
             }}
           >
             내 우주로 돌아가기
-          </Button>
-        </Stack>
-      </Center>
+          </button>
+        </div>
+      </div>
     );
   }
 
@@ -257,293 +258,301 @@ export function AccuracyClient({ entities: initialEntities }: AccuracyClientProp
   const contextMessages = parseContext(current.context_snippet);
 
   return (
-    <Stack gap="xl" p="xl" maw={600} mx="auto">
-      <Stack gap="xs">
-        <Text
-          fw={500}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 28, padding: 24, maxWidth: 600, margin: '0 auto' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <span
           style={{
             fontSize: 10,
             textTransform: 'uppercase',
             letterSpacing: 3,
             color: 'var(--ou-text-dimmed)',
+            fontWeight: 500,
           }}
         >
           정확도 높이기
-        </Text>
-        <Text fz="sm" style={{ color: 'var(--ou-text-body)' }}>
+        </span>
+        <span style={{ fontSize: 14, color: 'var(--ou-text-body)' }}>
           OU가 아직 모르는 것들이에요. 알려주시면 더 정확해져요.
-        </Text>
-        <Progress value={progress} size="xs" mt="xs" color="gray" />
-        <Group justify="space-between">
-          <Text fz="xs" style={{ color: 'var(--ou-text-dimmed)' }}>
+        </span>
+        {/* Progress bar */}
+        <div style={{ width: '100%', height: 4, background: 'var(--ou-surface-muted)', borderRadius: 2, marginTop: 8 }}>
+          <div style={{ width: `${progress}%`, height: '100%', background: 'var(--ou-text-dimmed)', borderRadius: 2, transition: 'width 0.3s' }} />
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 12, color: 'var(--ou-text-dimmed)' }}>
             {currentIdx + 1} / {entities.length}
-          </Text>
-          <Group gap="md">
-            <Badge
-              variant="light"
-              color="gray"
-              size="sm"
-              style={{
-                background: 'var(--ou-surface-muted)',
-                border: '0.5px solid var(--ou-border-subtle)',
-                color: 'var(--ou-text-body)',
-              }}
-            >
+          </span>
+          <div style={{ display: 'flex', gap: 16 }}>
+            <span style={{
+              fontSize: 12,
+              padding: '2px 8px',
+              background: 'var(--ou-surface-muted)',
+              border: '0.5px solid var(--ou-border-subtle)',
+              borderRadius: 'var(--ou-radius-pill)',
+              color: 'var(--ou-text-body)',
+            }}>
               전체 {entities.length}
-            </Badge>
-            <Badge
-              variant="light"
-              color="gray"
-              size="sm"
-              style={{
-                background: 'var(--ou-surface-muted)',
-                border: '0.5px solid var(--ou-border-subtle)',
-                color: 'var(--ou-text-body)',
-              }}
-            >
+            </span>
+            <span style={{
+              fontSize: 12,
+              padding: '2px 8px',
+              background: 'var(--ou-surface-muted)',
+              border: '0.5px solid var(--ou-border-subtle)',
+              borderRadius: 'var(--ou-radius-pill)',
+              color: 'var(--ou-text-body)',
+            }}>
               확인 {resolvedCount}
-            </Badge>
-            <Badge
-              variant="light"
-              color="gray"
-              size="sm"
-              style={{
-                background: 'var(--ou-surface-muted)',
-                border: '0.5px solid var(--ou-border-subtle)',
-                color: 'var(--ou-text-body)',
-              }}
-            >
+            </span>
+            <span style={{
+              fontSize: 12,
+              padding: '2px 8px',
+              background: 'var(--ou-surface-muted)',
+              border: '0.5px solid var(--ou-border-subtle)',
+              borderRadius: 'var(--ou-radius-pill)',
+              color: 'var(--ou-text-body)',
+            }}>
               건너뜀 {skippedCount}
-            </Badge>
-          </Group>
-        </Group>
-      </Stack>
+            </span>
+          </div>
+        </div>
+      </div>
 
       {/* 정확도 향상 안내 */}
       {current && (
-        <Text fz="sm" ta="center" style={{ color: 'var(--ou-text-dimmed)' }}>
+        <span style={{ fontSize: 14, textAlign: 'center', color: 'var(--ou-text-dimmed)' }}>
           정확도가{' '}
-          <Text span fw={600} style={{ color: 'var(--ou-text-strong)' }}>
+          <span style={{ fontWeight: 600, color: 'var(--ou-text-strong)' }}>
             {currentResolvedAccuracy}%
-          </Text>
+          </span>
           {' → '}
-          <Text span fw={600} style={{ color: 'var(--ou-text-strong)' }}>
+          <span style={{ fontWeight: 600, color: 'var(--ou-text-strong)' }}>
             {nextAccuracy}%
-          </Text>
+          </span>
           {' '}로 높아져요
-        </Text>
+        </span>
       )}
 
       {/* 단축키 안내 */}
-      <Group gap="xs" justify="center">
+      <div style={{ display: 'flex', gap: 8, justifyContent: 'center', alignItems: 'center' }}>
         <Keyboard size={14} style={{ color: 'var(--ou-text-dimmed)' }} />
-        <Text fz="xs" style={{ color: 'var(--ou-text-dimmed)' }}>
+        <span style={{ fontSize: 12, color: 'var(--ou-text-dimmed)' }}>
           1~4 선택 · S 건너뛰기 · Enter 직접 입력
-        </Text>
-      </Group>
+        </span>
+      </div>
 
-      <Transition mounted={slideIn} transition="slide-left" duration={200}>
-        {(styles) => (
-          <Paper
-            p="lg"
+      <div
+        style={{
+          opacity: slideIn ? 1 : 0,
+          transform: slideIn ? 'translateX(0)' : 'translateX(-20px)',
+          transition: 'opacity 0.2s, transform 0.2s',
+          padding: 20,
+          background: 'transparent',
+          border: '0.5px solid var(--ou-border-subtle)',
+          borderRadius: 'var(--ou-radius-card)',
+          boxShadow: 'var(--ou-glow-sm)',
+        }}
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          {/* Context — glass-block with border-left accent */}
+          {contextMessages.length > 0 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <span style={{ fontSize: 12, color: 'var(--ou-text-dimmed)' }}>이 대화에서</span>
+              <div
+                style={{
+                  padding: 12,
+                  background: 'var(--ou-surface-subtle)',
+                  borderRadius: 'var(--ou-radius-md)',
+                  borderLeft: '2px solid var(--ou-border-muted)',
+                }}
+              >
+                {contextMessages.map((msg, i) => (
+                  <p key={i} style={{ fontSize: 14, marginBottom: 4, margin: 0 }}>
+                    <span style={{ fontSize: 12, color: 'var(--ou-text-dimmed)' }}>
+                      {msg.role === 'user' ? '나' : 'OU'}:{' '}
+                    </span>
+                    <span
+                      style={{
+                        color: 'var(--ou-text-body)',
+                        background: msg.text.includes(current.raw_text)
+                          ? 'var(--ou-surface-hover)'
+                          : 'transparent',
+                        borderRadius: 2,
+                        padding: msg.text.includes(current.raw_text) ? '0 2px' : 0,
+                      }}
+                    >
+                      {msg.text}
+                    </span>
+                  </p>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Question */}
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <EntityIcon size={20} weight="light" style={{ color: 'var(--ou-text-dimmed)' }} />
+            <span style={{ fontWeight: 600, color: 'var(--ou-text-strong)' }}>
+              <span
+                style={{
+                  display: 'inline-block',
+                  marginRight: 8,
+                  padding: '4px 12px',
+                  fontSize: 14,
+                  borderRadius: 'var(--ou-radius-pill)',
+                  border: '1px solid var(--ou-border-subtle)',
+                  color: 'var(--ou-text-strong)',
+                }}
+              >
+                {current.raw_text}
+              </span>
+              {config.question}
+            </span>
+          </div>
+
+          {/* 확인 체크마크 — white/bright, no green */}
+          {showCheckmark && (
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <div
+                style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: '50%',
+                  background: 'var(--ou-surface-hover)',
+                  border: '0.5px solid var(--ou-border-subtle)',
+                  boxShadow: 'var(--ou-glow-md)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  animation: 'fadeInScale 0.3s ease-out',
+                }}
+              >
+                <Check size={28} weight="bold" style={{ color: 'var(--ou-text-bright)' }} />
+              </div>
+            </div>
+          )}
+
+          {/* Candidate buttons — pill-block style */}
+          {!showCheckmark && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {candidates.map((candidate, idx) => (
+              <button
+                key={candidate}
+                disabled={resolving}
+                onClick={() => handleResolve(candidate)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  padding: '8px 16px',
+                  borderRadius: 'var(--ou-radius-pill)',
+                  borderWidth: '0.5px',
+                  borderStyle: 'solid',
+                  borderColor: 'var(--ou-border-subtle)',
+                  background: 'transparent',
+                  color: 'var(--ou-text-body)',
+                  boxShadow: 'var(--ou-glow-xs)',
+                  transition: 'all var(--ou-transition)',
+                  fontFamily: 'inherit',
+                  fontSize: 14,
+                  cursor: resolving ? 'wait' : 'pointer',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow = 'var(--ou-glow-hover)';
+                  e.currentTarget.style.borderColor = 'var(--ou-border-hover)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = 'var(--ou-glow-xs)';
+                  e.currentTarget.style.borderColor = 'var(--ou-border-subtle)';
+                }}
+              >
+                {idx < 4 && (
+                  <span style={{
+                    minWidth: 18,
+                    fontSize: 10,
+                    padding: '1px 4px',
+                    borderRadius: 'var(--ou-radius-pill)',
+                    border: '1px solid var(--ou-border-subtle)',
+                    color: 'var(--ou-text-dimmed)',
+                    textAlign: 'center',
+                  }}>
+                    {idx + 1}
+                  </span>
+                )}
+                <ArrowRight size={14} style={{ color: 'var(--ou-text-dimmed)' }} />
+                {candidate}
+              </button>
+            ))}
+
+            {/* Custom input — input-block style */}
+            <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+              <input
+                placeholder="직접 입력..."
+                value={customInput}
+                onChange={e => setCustomInput(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' && customInput.trim()) {
+                    handleResolve(customInput.trim());
+                  }
+                }}
+                style={{
+                  flex: 1,
+                  border: '0.5px solid var(--ou-border-subtle)',
+                  borderRadius: 'var(--ou-radius-pill)',
+                  background: 'transparent',
+                  color: 'var(--ou-text-body)',
+                  boxShadow: 'var(--ou-glow-xs)',
+                  padding: '8px 16px',
+                  fontSize: 14,
+                  fontFamily: 'inherit',
+                  outline: 'none',
+                }}
+              />
+              <button
+                onClick={() => customInput.trim() && handleResolve(customInput.trim())}
+                disabled={!customInput.trim() || resolving}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: 'var(--ou-radius-pill)',
+                  borderWidth: '0.5px',
+                  borderStyle: 'solid',
+                  borderColor: 'var(--ou-border-subtle)',
+                  background: 'transparent',
+                  color: 'var(--ou-text-body)',
+                  fontSize: 14,
+                  fontFamily: 'inherit',
+                  cursor: !customInput.trim() || resolving ? 'not-allowed' : 'pointer',
+                  opacity: !customInput.trim() ? 0.4 : 1,
+                }}
+              >
+                입력
+              </button>
+            </div>
+          </div>
+          )}
+
+          {/* Skip button — subtle text, text-dimmed */}
+          {!showCheckmark && (
+          <button
+            onClick={handleSkip}
             style={{
-              ...styles,
-              background: 'transparent',
-              border: '0.5px solid var(--ou-border-subtle)',
-              borderRadius: 'var(--ou-radius-card)',
-              boxShadow: 'var(--ou-glow-sm)',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              background: 'none',
+              border: 'none',
+              color: 'var(--ou-text-dimmed)',
+              fontSize: 12,
+              cursor: 'pointer',
+              fontFamily: 'inherit',
+              padding: '4px 0',
             }}
           >
-            <Stack gap="lg">
-              {/* Context — glass-block with border-left accent */}
-              {contextMessages.length > 0 && (
-                <Stack gap="xs">
-                  <Text fz="xs" style={{ color: 'var(--ou-text-dimmed)' }}>이 대화에서</Text>
-                  <Box
-                    p="sm"
-                    style={{
-                      background: 'var(--ou-surface-subtle)',
-                      borderRadius: 'var(--ou-radius-md)',
-                      borderLeft: '2px solid var(--ou-border-muted)',
-                    }}
-                  >
-                    {contextMessages.map((msg, i) => (
-                      <Text key={i} fz="sm" mb={4}>
-                        <Text span fz="xs" style={{ color: 'var(--ou-text-dimmed)' }}>
-                          {msg.role === 'user' ? '나' : 'OU'}:{' '}
-                        </Text>
-                        <Text
-                          span
-                          style={{
-                            color: 'var(--ou-text-body)',
-                            background: msg.text.includes(current.raw_text)
-                              ? 'var(--ou-surface-hover)'
-                              : 'transparent',
-                            borderRadius: 2,
-                            padding: msg.text.includes(current.raw_text) ? '0 2px' : 0,
-                          }}
-                        >
-                          {msg.text}
-                        </Text>
-                      </Text>
-                    ))}
-                  </Box>
-                </Stack>
-              )}
-
-              {/* Question */}
-              <Group gap="xs" align="center">
-                <EntityIcon size={20} weight="light" style={{ color: 'var(--ou-text-dimmed)' }} />
-                <Text fw={600} style={{ color: 'var(--ou-text-strong)' }}>
-                  <Badge
-                    variant="outline"
-                    color="gray"
-                    mr="xs"
-                    size="lg"
-                    style={{
-                      borderColor: 'var(--ou-border-subtle)',
-                      color: 'var(--ou-text-strong)',
-                    }}
-                  >
-                    {current.raw_text}
-                  </Badge>
-                  {config.question}
-                </Text>
-              </Group>
-
-              {/* 확인 체크마크 — white/bright, no green */}
-              {showCheckmark && (
-                <Center>
-                  <Box
-                    style={{
-                      width: 48,
-                      height: 48,
-                      borderRadius: '50%',
-                      background: 'var(--ou-surface-hover)',
-                      border: '0.5px solid var(--ou-border-subtle)',
-                      boxShadow: 'var(--ou-glow-md)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      animation: 'fadeInScale 0.3s ease-out',
-                    }}
-                  >
-                    <Check size={28} weight="bold" style={{ color: 'var(--ou-text-bright)' }} />
-                  </Box>
-                </Center>
-              )}
-
-              {/* Candidate buttons — pill-block style */}
-              {!showCheckmark && (
-              <Stack gap="xs">
-                {candidates.map((candidate, idx) => (
-                  <Button
-                    key={candidate}
-                    variant="outline"
-                    color="gray"
-                    justify="flex-start"
-                    radius="xl"
-                    loading={resolving}
-                    leftSection={
-                      <Group gap={4}>
-                        {idx < 4 && (
-                          <Badge
-                            size="xs"
-                            variant="outline"
-                            color="gray"
-                            style={{
-                              minWidth: 18,
-                              borderColor: 'var(--ou-border-subtle)',
-                              color: 'var(--ou-text-dimmed)',
-                            }}
-                          >
-                            {idx + 1}
-                          </Badge>
-                        )}
-                        <ArrowRight size={14} style={{ color: 'var(--ou-text-dimmed)' }} />
-                      </Group>
-                    }
-                    onClick={() => handleResolve(candidate)}
-                    style={{
-                      borderWidth: '0.5px',
-                      borderColor: 'var(--ou-border-subtle)',
-                      background: 'transparent',
-                      color: 'var(--ou-text-body)',
-                      boxShadow: 'var(--ou-glow-xs)',
-                      transition: 'all var(--ou-transition)',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.boxShadow = 'var(--ou-glow-hover)';
-                      e.currentTarget.style.borderColor = 'var(--ou-border-hover)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.boxShadow = 'var(--ou-glow-xs)';
-                      e.currentTarget.style.borderColor = 'var(--ou-border-subtle)';
-                    }}
-                  >
-                    {candidate}
-                  </Button>
-                ))}
-
-                {/* Custom input — input-block style */}
-                <Group gap="xs" mt="xs">
-                  <TextInput
-                    placeholder="직접 입력..."
-                    value={customInput}
-                    onChange={e => setCustomInput(e.target.value)}
-                    flex={1}
-                    radius="xl"
-                    onKeyDown={e => {
-                      if (e.key === 'Enter' && customInput.trim()) {
-                        handleResolve(customInput.trim());
-                      }
-                    }}
-                    styles={{
-                      input: {
-                        border: '0.5px solid var(--ou-border-subtle)',
-                        background: 'transparent',
-                        color: 'var(--ou-text-body)',
-                        boxShadow: 'var(--ou-glow-xs)',
-                      },
-                    }}
-                  />
-                  <Button
-                    variant="outline"
-                    color="gray"
-                    radius="xl"
-                    onClick={() => customInput.trim() && handleResolve(customInput.trim())}
-                    disabled={!customInput.trim()}
-                    loading={resolving}
-                    style={{
-                      borderWidth: '0.5px',
-                      borderColor: 'var(--ou-border-subtle)',
-                      background: 'transparent',
-                      color: 'var(--ou-text-body)',
-                    }}
-                  >
-                    입력
-                  </Button>
-                </Group>
-              </Stack>
-              )}
-
-              {/* Skip button — subtle text, text-dimmed */}
-              {!showCheckmark && (
-              <Button
-                variant="subtle"
-                color="gray"
-                size="xs"
-                onClick={handleSkip}
-                leftSection={<SkipForward size={14} />}
-                style={{ color: 'var(--ou-text-dimmed)' }}
-              >
-                건너뛰기 (S)
-              </Button>
-              )}
-            </Stack>
-          </Paper>
-        )}
-      </Transition>
-    </Stack>
+            <SkipForward size={14} />
+            건너뛰기 (S)
+          </button>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }

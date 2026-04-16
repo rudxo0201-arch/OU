@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef, useCallback } from 'react';
-import { Box } from '@mantine/core';
 import { useCanvasStore } from './useCanvasStore';
 import { setupCanvas, observeResize } from './engine/canvas-utils';
 import {
@@ -461,7 +460,7 @@ export function CanvasAnnotationOverlay({ nodeId, children }: CanvasAnnotationOv
   const canvasActive = activeTool !== null;
 
   return (
-    <Box ref={containerRef} style={{ position: 'relative' }}>
+    <div ref={containerRef} style={{ position: 'relative' }}>
       {children}
 
       {/* Completed strokes layer */}
@@ -497,6 +496,6 @@ export function CanvasAnnotationOverlay({ nodeId, children }: CanvasAnnotationOv
             : 'default',
         }}
       />
-    </Box>
+    </div>
   );
 }

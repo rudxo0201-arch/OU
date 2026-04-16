@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Box, Text, Loader } from '@mantine/core';
 
 interface DOCXViewerProps {
   url: string;
@@ -34,27 +33,27 @@ export function DOCXViewer({ url, preRenderedHtml }: DOCXViewerProps) {
 
   if (loading) {
     return (
-      <Box p="xl" style={{ display: 'flex', justifyContent: 'center' }}>
-        <Loader size="sm" color="gray" />
-      </Box>
+      <div style={{ padding: 24, display: 'flex', justifyContent: 'center' }}>
+        <span style={{ color: 'var(--mantine-color-dimmed)', fontSize: 'var(--mantine-font-size-sm)' }}>불러오는 중...</span>
+      </div>
     );
   }
 
   if (error || !html) {
     return (
-      <Box p="xl">
-        <Text c="dimmed">문서를 표시할 수 없었어요.</Text>
-      </Box>
+      <div style={{ padding: 24 }}>
+        <span style={{ color: 'var(--mantine-color-dimmed)' }}>문서를 표시할 수 없었어요.</span>
+      </div>
     );
   }
 
   return (
-    <Box
-      p="xl"
-      maw={700}
-      mx="auto"
+    <div
       className="docx-viewer"
       style={{
+        padding: 24,
+        maxWidth: 700,
+        margin: '0 auto',
         lineHeight: 1.7,
         fontSize: 15,
         color: 'var(--mantine-color-text)',

@@ -3,10 +3,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import {
-  Box, TextInput, Stack, Text, Group, Badge, Loader,
-  Paper, ActionIcon, Kbd, Divider,
-} from '@mantine/core';
-import {
   MagnifyingGlass, X, Clock, ArrowRight,
 } from '@phosphor-icons/react';
 
@@ -138,35 +134,61 @@ export default function SearchPage() {
     fontSize: 12,
     fontWeight: active ? 600 : 400,
     transition: 'all var(--ou-transition)',
+    fontFamily: 'inherit',
   });
 
   return (
-    <Box p="xl" maw={720} mx="auto">
-      <Stack gap="lg">
+    <div style={{ padding: 24, maxWidth: 720, margin: '0 auto' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
         {/* Section title */}
-        <Text
-          fz={10}
-          fw={500}
+        <span
           style={{
+            fontSize: 10,
+            fontWeight: 500,
             color: 'var(--ou-text-heading)',
             textTransform: 'uppercase',
             letterSpacing: 3,
           }}
         >
           SEARCH
-        </Text>
+        </span>
 
         {/* Search input — input-block style */}
         <form onSubmit={handleSubmit}>
-          <TextInput
-            ref={inputRef}
-            size="lg"
-            placeholder="검색어를 입력하세요..."
-            value={query}
-            onChange={e => setQuery(e.currentTarget.value)}
-            leftSection={<MagnifyingGlass size={20} style={{ color: 'var(--ou-text-dimmed)' }} />}
-            rightSection={
-              loading ? (
+          <div style={{ position: 'relative' }}>
+            <div style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}>
+              <MagnifyingGlass size={20} style={{ color: 'var(--ou-text-dimmed)' }} />
+            </div>
+            <input
+              ref={inputRef}
+              placeholder="검색어를 입력하세요..."
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+              style={{
+                width: '100%',
+                background: 'transparent',
+                border: '0.5px solid var(--ou-border-subtle)',
+                borderRadius: 'var(--ou-radius-pill)',
+                color: 'var(--ou-text-body)',
+                boxShadow: 'var(--ou-glow-sm)',
+                transition: 'border-color var(--ou-transition), box-shadow var(--ou-transition)',
+                padding: '14px 48px 14px 48px',
+                fontSize: 16,
+                fontFamily: 'inherit',
+                outline: 'none',
+                boxSizing: 'border-box',
+              }}
+              onFocus={e => {
+                e.currentTarget.style.borderColor = 'var(--ou-border-hover)';
+                e.currentTarget.style.boxShadow = 'var(--ou-glow-hover)';
+              }}
+              onBlur={e => {
+                e.currentTarget.style.borderColor = 'var(--ou-border-subtle)';
+                e.currentTarget.style.boxShadow = 'var(--ou-glow-sm)';
+              }}
+            />
+            <div style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)' }}>
+              {loading ? (
                 <div style={{ display: 'flex', gap: 3, alignItems: 'center' }}>
                   <span style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--ou-text-dimmed)', animation: 'ou-dot1 1.2s infinite' }} />
                   <span style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--ou-text-dimmed)', animation: 'ou-dot2 1.2s infinite' }} />
@@ -178,48 +200,29 @@ export default function SearchPage() {
                   `}</style>
                 </div>
               ) : query ? (
-                <ActionIcon
-                  variant="subtle"
-                  color="gray"
-                  size="sm"
+                <button
+                  type="button"
                   onClick={() => {
                     setQuery('');
                     setResults([]);
                     setSearched(false);
                     inputRef.current?.focus();
                   }}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, display: 'flex' }}
                 >
                   <X size={14} style={{ color: 'var(--ou-text-dimmed)' }} />
-                </ActionIcon>
+                </button>
               ) : (
-                <Kbd size="xs" style={{ background: 'var(--ou-surface-subtle)', border: '0.5px solid var(--ou-border-faint)', color: 'var(--ou-text-dimmed)' }}>Enter</Kbd>
-              )
-            }
-            styles={{
-              input: {
-                background: 'transparent',
-                border: '0.5px solid var(--ou-border-subtle)',
-                borderRadius: 'var(--ou-radius-pill)',
-                color: 'var(--ou-text-body)',
-                boxShadow: 'var(--ou-glow-sm)',
-                transition: 'border-color var(--ou-transition), box-shadow var(--ou-transition)',
-              },
-            }}
-            onFocus={e => {
-              e.currentTarget.style.borderColor = 'var(--ou-border-hover)';
-              e.currentTarget.style.boxShadow = 'var(--ou-glow-hover)';
-            }}
-            onBlur={e => {
-              e.currentTarget.style.borderColor = 'var(--ou-border-subtle)';
-              e.currentTarget.style.boxShadow = 'var(--ou-glow-sm)';
-            }}
-          />
+                <kbd style={{ background: 'var(--ou-surface-subtle)', border: '0.5px solid var(--ou-border-faint)', color: 'var(--ou-text-dimmed)', padding: '2px 6px', borderRadius: 4, fontSize: 11 }}>Enter</kbd>
+              )}
+            </div>
+          </div>
         </form>
 
         {/* Search mode selector — pill-block toggles */}
-        <Group gap="xs">
+        <div style={{ display: 'flex', gap: 8 }}>
           {modes.map(m => (
-            <div
+            <button
               key={m.value}
               style={modeStyle(mode === m.value)}
               onClick={() => {
@@ -228,33 +231,32 @@ export default function SearchPage() {
               }}
             >
               {m.label}
-            </div>
+            </button>
           ))}
-        </Group>
+        </div>
 
         {/* Recent searches — badge-block chips */}
         {!searched && recentSearches.length > 0 && (
-          <Stack gap="xs">
-            <Group justify="space-between">
-              <Text
-                fz={10}
-                fw={500}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span
                 style={{
+                  fontSize: 10,
+                  fontWeight: 500,
                   color: 'var(--ou-text-heading)',
                   textTransform: 'uppercase',
                   letterSpacing: 3,
                 }}
               >
                 RECENT
-              </Text>
-              <Text
-                fz="xs"
-                style={{ cursor: 'pointer', color: 'var(--ou-text-dimmed)' }}
+              </span>
+              <span
+                style={{ fontSize: 12, cursor: 'pointer', color: 'var(--ou-text-dimmed)' }}
                 onClick={handleClearRecent}
               >
                 지우기
-              </Text>
-            </Group>
+              </span>
+            </div>
             {recentSearches.map((q, i) => (
               <div
                 key={i}
@@ -277,39 +279,39 @@ export default function SearchPage() {
                   (e.currentTarget as HTMLElement).style.boxShadow = 'var(--ou-glow-sm)';
                 }}
               >
-                <Group gap="xs">
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                   <Clock size={14} style={{ color: 'var(--ou-text-dimmed)' }} />
-                  <Text fz="sm" style={{ color: 'var(--ou-text-body)' }}>{q}</Text>
-                </Group>
+                  <span style={{ fontSize: 14, color: 'var(--ou-text-body)' }}>{q}</span>
+                </div>
               </div>
             ))}
-          </Stack>
+          </div>
         )}
 
         {/* Results — empty state */}
         {searched && !loading && results.length === 0 && (
-          <Stack align="center" py="xl" gap="xs">
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '48px 0', gap: 8 }}>
             <MagnifyingGlass size={40} style={{ color: 'var(--ou-text-dimmed)' }} />
-            <Text fz="sm" style={{ color: 'var(--ou-text-dimmed)' }}>
+            <span style={{ fontSize: 14, color: 'var(--ou-text-dimmed)' }}>
               &ldquo;{query}&rdquo;에 대한 결과가 없습니다
-            </Text>
-          </Stack>
+            </span>
+          </div>
         )}
 
         {/* Results — card-block items */}
         {searched && !loading && results.length > 0 && (
-          <Stack gap="md">
-            <Text fz="xs" style={{ color: 'var(--ou-text-dimmed)' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <span style={{ fontSize: 12, color: 'var(--ou-text-dimmed)' }}>
               {results.length}건의 결과
-            </Text>
+            </span>
 
             {Object.entries(groupedResults).map(([domain, items]) => (
-              <Stack key={domain} gap="xs">
-                <Group gap="xs">
+              <div key={domain} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                   {/* badge-block */}
-                  <Text
-                    fz={10}
+                  <span
                     style={{
+                      fontSize: 10,
                       padding: '2px 8px',
                       borderRadius: 'var(--ou-radius-pill)',
                       border: '0.5px solid var(--ou-border-subtle)',
@@ -318,9 +320,9 @@ export default function SearchPage() {
                     }}
                   >
                     {domain}
-                  </Text>
-                  <Text fz="xs" style={{ color: 'var(--ou-text-dimmed)' }}>{items.length}건</Text>
-                </Group>
+                  </span>
+                  <span style={{ fontSize: 12, color: 'var(--ou-text-dimmed)' }}>{items.length}건</span>
+                </div>
 
                 {items.map((result, idx) => {
                   const nodeId = result.id;
@@ -351,45 +353,52 @@ export default function SearchPage() {
                         (e.currentTarget as HTMLElement).style.boxShadow = 'var(--ou-glow-sm)';
                       }}
                     >
-                      <Stack gap={4}>
-                        <Text fz="sm" lineClamp={2} style={{ color: 'var(--ou-text-body)' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                        <span style={{
+                          fontSize: 14,
+                          color: 'var(--ou-text-body)',
+                          display: '-webkit-box',
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden',
+                        }}>
                           {rawPreview || '(내용 없음)'}
                           {(result.raw ?? '').length > 120 && '...'}
-                        </Text>
+                        </span>
 
-                        <Group gap="xs">
+                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                           {date && (
-                            <Text fz="xs" style={{ color: 'var(--ou-text-dimmed)' }}>{date}</Text>
+                            <span style={{ fontSize: 12, color: 'var(--ou-text-dimmed)' }}>{date}</span>
                           )}
                           {result.confidence && (
                             <>
-                              <Divider orientation="vertical" style={{ borderColor: 'var(--ou-border-faint)' }} />
-                              <Text fz="xs" style={{ color: 'var(--ou-text-dimmed)' }}>{result.confidence}</Text>
+                              <div style={{ width: '0.5px', height: 12, background: 'var(--ou-border-faint)' }} />
+                              <span style={{ fontSize: 12, color: 'var(--ou-text-dimmed)' }}>{result.confidence}</span>
                             </>
                           )}
                           {result.similarity != null && (
                             <>
-                              <Divider orientation="vertical" style={{ borderColor: 'var(--ou-border-faint)' }} />
-                              <Text fz="xs" style={{ color: 'var(--ou-text-dimmed)' }}>
+                              <div style={{ width: '0.5px', height: 12, background: 'var(--ou-border-faint)' }} />
+                              <span style={{ fontSize: 12, color: 'var(--ou-text-dimmed)' }}>
                                 유사도 {Math.round(result.similarity * 100)}%
-                              </Text>
+                              </span>
                             </>
                           )}
-                          <Box style={{ flex: 1 }} />
+                          <div style={{ flex: 1 }} />
                           <ArrowRight
                             size={14}
                             style={{ color: 'var(--ou-text-dimmed)' }}
                           />
-                        </Group>
-                      </Stack>
+                        </div>
+                      </div>
                     </div>
                   );
                 })}
-              </Stack>
+              </div>
             ))}
-          </Stack>
+          </div>
         )}
-      </Stack>
-    </Box>
+      </div>
+    </div>
   );
 }

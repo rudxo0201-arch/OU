@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Stack, Text, Box, Modal, Image } from '@mantine/core';
 import type { ViewProps } from './registry';
 
 interface GalleryItem {
@@ -31,23 +30,23 @@ export function GalleryView({ nodes }: ViewProps) {
   if (nodes.length === 0) return null;
 
   return (
-    <Stack gap={0} p="md">
-      <Text fz="xs" c="dimmed" mb="md">Gallery</Text>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 0, padding: 16 }}>
+      <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', marginBottom: 16 }}>Gallery</span>
 
-      <Box
+      <div
         style={{
           columnCount: 3,
           columnGap: 8,
         }}
       >
         {items.map(item => (
-          <Box
+          <div
             key={item.id}
             onClick={() => setSelected(item)}
             style={{
               breakInside: 'avoid',
               marginBottom: 8,
-              border: '0.5px solid var(--mantine-color-default-border)',
+              border: '0.5px solid var(--ou-border, #333)',
               borderRadius: 6,
               overflow: 'hidden',
               cursor: 'pointer',
@@ -55,14 +54,13 @@ export function GalleryView({ nodes }: ViewProps) {
             }}
           >
             {item.imageUrl ? (
-              <Box style={{ position: 'relative' }}>
-                <Image
+              <div style={{ position: 'relative' }}>
+                <img
                   src={item.imageUrl}
                   alt={item.title}
                   style={{ display: 'block', width: '100%' }}
-                  fallbackSrc={undefined}
                 />
-                <Box
+                <div
                   style={{
                     position: 'absolute',
                     bottom: 0,
@@ -72,47 +70,75 @@ export function GalleryView({ nodes }: ViewProps) {
                     background: 'linear-gradient(transparent, rgba(0,0,0,0.6))',
                   }}
                 >
-                  <Text fz={11} c="white" truncate>
+                  <span style={{ fontSize: 11, color: 'white', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {item.title}
-                  </Text>
-                </Box>
-              </Box>
+                  </span>
+                </div>
+              </div>
             ) : (
-              <Box style={{ padding: 16, textAlign: 'center' }}>
-                <Text
-                  fz={28}
-                  fw={700}
-                  c="dimmed"
-                  style={{ lineHeight: 1, marginBottom: 6 }}
+              <div style={{ padding: 16, textAlign: 'center' }}>
+                <span
+                  style={{ fontSize: 28, fontWeight: 700, color: 'var(--ou-text-dimmed, #888)', lineHeight: 1, display: 'block', marginBottom: 6 }}
                 >
                   {item.initial}
-                </Text>
-                <Text fz={11} c="dimmed" truncate>
+                </span>
+                <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {item.title}
-                </Text>
-              </Box>
+                </span>
+              </div>
             )}
-          </Box>
+          </div>
         ))}
-      </Box>
+      </div>
 
-      <Modal
-        opened={!!selected}
-        onClose={() => setSelected(null)}
-        title={selected?.title}
-        centered
-        size="lg"
-        styles={{ header: { borderBottom: '0.5px solid var(--mantine-color-default-border)' } }}
-      >
-        {selected?.imageUrl ? (
-          <Image src={selected.imageUrl} alt={selected.title} style={{ width: '100%' }} />
-        ) : (
-          <Box style={{ textAlign: 'center', padding: 40 }}>
-            <Text fz={64} fw={700} c="dimmed">{selected?.initial}</Text>
-            <Text fz="sm" mt="md">{selected?.title}</Text>
-          </Box>
-        )}
-      </Modal>
-    </Stack>
+      {/* Modal overlay */}
+      {selected && (
+        <div
+          onClick={() => setSelected(null)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0,0,0,0.7)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: 'var(--ou-bg, #111)',
+              borderRadius: 12,
+              maxWidth: 640,
+              width: '90%',
+              maxHeight: '80vh',
+              overflow: 'auto',
+              border: '0.5px solid var(--ou-border, #333)',
+            }}
+          >
+            <div style={{ padding: '12px 16px', borderBottom: '0.5px solid var(--ou-border, #333)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: 14, fontWeight: 500 }}>{selected.title}</span>
+              <button
+                onClick={() => setSelected(null)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', fontSize: 18, padding: 4 }}
+              >
+                x
+              </button>
+            </div>
+            <div style={{ padding: 16 }}>
+              {selected.imageUrl ? (
+                <img src={selected.imageUrl} alt={selected.title} style={{ width: '100%', display: 'block' }} />
+              ) : (
+                <div style={{ textAlign: 'center', padding: 40 }}>
+                  <span style={{ fontSize: 64, fontWeight: 700, color: 'var(--ou-text-dimmed, #888)' }}>{selected.initial}</span>
+                  <p style={{ fontSize: 13, marginTop: 16 }}>{selected.title}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

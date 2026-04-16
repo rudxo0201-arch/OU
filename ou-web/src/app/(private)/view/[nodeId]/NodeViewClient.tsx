@@ -1,6 +1,5 @@
 'use client';
 
-import { Box, Text, Stack, Paper, Group, Badge, Divider } from '@mantine/core';
 import { ViewRenderer } from '@/components/views/ViewRenderer';
 import { DOMAIN_VIEW_MAP } from '@/components/views/registry';
 
@@ -41,10 +40,11 @@ export function NodeViewClient({ node, triples, sections, sentences, viewTypeOve
     border: '0.5px solid var(--ou-border-subtle)',
     borderRadius: 'var(--ou-radius-card)',
     boxShadow: 'var(--ou-glow-sm)',
+    padding: 16,
   };
 
   return (
-    <Stack gap="lg" p="xl">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: 24 }}>
       {/* 데이터뷰 렌더링 (매칭되는 뷰가 있으면) */}
       {viewType && (
         <ViewRenderer viewType={viewType} nodes={[node]} />
@@ -52,109 +52,109 @@ export function NodeViewClient({ node, triples, sections, sentences, viewTypeOve
 
       {/* 원문 */}
       {node.raw && (
-        <Paper p="md" radius="md" style={cardStyle}>
-          <Stack gap="xs">
-            <Text style={sectionTitleStyle}>원문</Text>
-            <Text fz="sm" style={{ whiteSpace: 'pre-wrap', color: 'var(--ou-text-body)' }}>
+        <div style={cardStyle}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <span style={sectionTitleStyle}>원문</span>
+            <span style={{ fontSize: 14, whiteSpace: 'pre-wrap', color: 'var(--ou-text-body)' }}>
               {node.raw}
-            </Text>
-          </Stack>
-        </Paper>
+            </span>
+          </div>
+        </div>
       )}
 
       {/* 구조화된 문장 */}
       {sections.length > 0 && (
-        <Paper p="md" radius="md" style={cardStyle}>
-          <Stack gap="sm">
-            <Text style={sectionTitleStyle}>구조</Text>
+        <div style={cardStyle}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <span style={sectionTitleStyle}>구조</span>
             {sections.map(sec => {
               const sectionSentences = sentences
                 .filter(s => s.section_id === sec.id)
                 .sort((a, b) => a.order_idx - b.order_idx);
               return (
-                <Box key={sec.id}>
+                <div key={sec.id}>
                   {sec.heading && (
-                    <Text fz="sm" fw={600} mb={4} style={{ color: 'var(--ou-text-strong)' }}>
+                    <span style={{ fontSize: 14, fontWeight: 600, marginBottom: 4, color: 'var(--ou-text-strong)', display: 'block' }}>
                       {sec.heading}
-                    </Text>
+                    </span>
                   )}
                   {sectionSentences.map(s => (
-                    <Text key={s.id} fz="sm" pl="sm" style={{ color: 'var(--ou-text-body)' }}>
+                    <span key={s.id} style={{ fontSize: 14, paddingLeft: 12, color: 'var(--ou-text-body)', display: 'block' }}>
                       {s.text}
-                    </Text>
+                    </span>
                   ))}
-                </Box>
+                </div>
               );
             })}
-          </Stack>
-        </Paper>
+          </div>
+        </div>
       )}
 
       {/* 트리플 (관계) */}
       {triples.length > 0 && (
-        <Paper p="md" radius="md" style={cardStyle}>
-          <Stack gap="xs">
-            <Text style={sectionTitleStyle}>관계</Text>
+        <div style={cardStyle}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <span style={sectionTitleStyle}>관계</span>
             {triples.map((t, i) => (
-              <Group key={i} gap="xs">
-                <Badge
-                  variant="light"
-                  color="gray"
-                  size="sm"
+              <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                <span
                   style={{
+                    fontSize: 12,
+                    padding: '2px 8px',
                     background: 'var(--ou-surface-muted)',
                     border: '0.5px solid var(--ou-border-subtle)',
+                    borderRadius: 'var(--ou-radius-pill)',
                     color: 'var(--ou-text-body)',
                   }}
                 >
                   {t.subject}
-                </Badge>
-                <Text fz="xs" style={{ color: 'var(--ou-text-dimmed)' }}>{t.predicate}</Text>
-                <Badge
-                  variant="light"
-                  color="gray"
-                  size="sm"
+                </span>
+                <span style={{ fontSize: 12, color: 'var(--ou-text-dimmed)' }}>{t.predicate}</span>
+                <span
                   style={{
+                    fontSize: 12,
+                    padding: '2px 8px',
                     background: 'var(--ou-surface-muted)',
                     border: '0.5px solid var(--ou-border-subtle)',
+                    borderRadius: 'var(--ou-radius-pill)',
                     color: 'var(--ou-text-body)',
                   }}
                 >
                   {t.object}
-                </Badge>
-              </Group>
+                </span>
+              </div>
             ))}
-          </Stack>
-        </Paper>
+          </div>
+        </div>
       )}
 
       {/* 메타 정보 */}
-      <Group gap="xs">
-        {date && <Text fz="xs" style={{ color: 'var(--ou-text-dimmed)' }}>{date}</Text>}
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+        {date && <span style={{ fontSize: 12, color: 'var(--ou-text-dimmed)' }}>{date}</span>}
         {node.confidence && (
           <>
-            <Divider orientation="vertical" color="var(--ou-border-subtle)" />
-            <Text fz="xs" style={{ color: 'var(--ou-text-dimmed)' }}>{node.confidence}</Text>
+            <div style={{ width: '0.5px', height: 12, background: 'var(--ou-border-subtle)' }} />
+            <span style={{ fontSize: 12, color: 'var(--ou-text-dimmed)' }}>{node.confidence}</span>
           </>
         )}
         {node.domain && (
           <>
-            <Divider orientation="vertical" color="var(--ou-border-subtle)" />
-            <Badge
-              variant="light"
-              color="gray"
-              size="xs"
+            <div style={{ width: '0.5px', height: 12, background: 'var(--ou-border-subtle)' }} />
+            <span
               style={{
+                fontSize: 10,
+                padding: '2px 8px',
                 background: 'var(--ou-surface-muted)',
                 border: '0.5px solid var(--ou-border-subtle)',
+                borderRadius: 'var(--ou-radius-pill)',
                 color: 'var(--ou-text-dimmed)',
               }}
             >
               {DOMAIN_LABELS[node.domain] || node.domain}
-            </Badge>
+            </span>
           </>
         )}
-      </Group>
-    </Stack>
+      </div>
+    </div>
   );
 }

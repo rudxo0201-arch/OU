@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { Stack, Text, Button } from '@mantine/core';
 import { useRouter } from 'next/navigation';
 
 /**
@@ -132,28 +131,29 @@ export function GenesisEmptyState() {
       />
 
       {/* Text overlay */}
-      <Stack
-        align="center"
-        gap="lg"
-        style={{ position: 'relative', zIndex: 1, marginTop: 80 }}
+      <div
+        style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20, position: 'relative', zIndex: 1, marginTop: 80 }}
       >
-        <Stack align="center" gap="xs">
-          <Text c="dimmed" fz="sm">아직 우주가 비어있어요</Text>
-          <Text c="dimmed" fz="xs">첫 대화를 시작하면 별이 태어나요</Text>
-        </Stack>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+          <span style={{ color: 'var(--mantine-color-dimmed)', fontSize: 'var(--mantine-font-size-sm)' }}>아직 우주가 비어있어요</span>
+          <span style={{ color: 'var(--mantine-color-dimmed)', fontSize: 'var(--mantine-font-size-xs)' }}>첫 대화를 시작하면 별이 태어나요</span>
+        </div>
 
-        <Button
-          variant="light"
-          size="md"
+        <button
           onClick={() => router.push('/chat')}
           style={{
+            padding: '10px 24px',
+            fontSize: 'var(--mantine-font-size-md)',
             background: 'rgba(255, 255, 255, 0.06)',
             border: '0.5px solid rgba(255, 255, 255, 0.15)',
+            borderRadius: 'var(--mantine-radius-md)',
+            cursor: 'pointer',
+            color: 'inherit',
           }}
         >
           대화 시작하기
-        </Button>
-      </Stack>
+        </button>
+      </div>
     </div>
   );
 }

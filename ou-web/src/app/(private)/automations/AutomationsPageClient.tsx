@@ -2,10 +2,6 @@
 
 import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  Container, Title, Text, Stack, Group, Button,
-  Modal, Loader, Center,
-} from '@mantine/core';
 import { Lightning, Plus } from '@phosphor-icons/react';
 import { AutomationCard } from '@/components/automation/AutomationCard';
 import { AutomationBuilder } from '@/components/automation/AutomationBuilder';
@@ -115,51 +111,56 @@ export function AutomationsPageClient({ automations: initial }: Props) {
     : null;
 
   return (
-    <Container size="md" py="xl">
-      <Group justify="space-between" mb="xl">
-        <Group gap="sm">
+    <div style={{ maxWidth: 768, margin: '0 auto', padding: 24 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <Lightning size={28} weight="bold" />
-          <Title order={2}>자동화</Title>
-        </Group>
-        <Button
-          color="dark"
-          leftSection={<Plus size={16} />}
+          <h2 style={{ margin: 0 }}>자동화</h2>
+        </div>
+        <button
           onClick={() => {
             setEditingId(null);
             setShowBuilder(true);
           }}
+          style={{
+            display: 'flex', alignItems: 'center', gap: 6, padding: '8px 16px',
+            background: '#1a1a1a', color: '#fff', border: 'none', borderRadius: 6,
+            cursor: 'pointer', fontSize: 14,
+          }}
         >
-          새 자동화 만들기
-        </Button>
-      </Group>
+          <Plus size={16} /> 새 자동화 만들기
+        </button>
+      </div>
 
       {loading && (
-        <Center py="md">
-          <Loader color="dark" size="sm" />
-        </Center>
+        <div style={{ display: 'flex', justifyContent: 'center', padding: 16 }}>
+          <span style={{ fontSize: 14, color: 'var(--color-dimmed)' }}>처리 중...</span>
+        </div>
       )}
 
       {automations.length === 0 && !showBuilder && (
-        <Stack align="center" gap="md" py={60}>
-          <Lightning size={48} weight="thin" color="var(--mantine-color-dimmed)" />
-          <Text c="dimmed" ta="center">
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, padding: '60px 0' }}>
+          <Lightning size={48} weight="thin" color="var(--color-dimmed)" />
+          <span style={{ color: 'var(--color-dimmed)', textAlign: 'center' }}>
             아직 자동화가 없습니다.
             <br />
             반복 작업을 자동으로 처리해보세요.
-          </Text>
-          <Button
-            variant="outline"
-            color="dark"
-            leftSection={<Plus size={16} />}
+          </span>
+          <button
             onClick={() => setShowBuilder(true)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 6, padding: '8px 16px',
+              border: '1px solid #1a1a1a', borderRadius: 6, background: 'transparent',
+              cursor: 'pointer', fontSize: 14,
+            }}
           >
-            첫 자동화 만들기
-          </Button>
-        </Stack>
+            <Plus size={16} /> 첫 자동화 만들기
+          </button>
+        </div>
       )}
 
       {automations.length > 0 && !showBuilder && (
-        <Stack gap="sm">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {automations.map((automation) => (
             <AutomationCard
               key={automation.id}
@@ -170,37 +171,36 @@ export function AutomationsPageClient({ automations: initial }: Props) {
               onRun={handleRun}
             />
           ))}
-        </Stack>
+        </div>
       )}
 
-      <Modal
-        opened={showBuilder}
-        onClose={() => {
-          setShowBuilder(false);
-          setEditingId(null);
-        }}
-        title={editingId ? '자동화 수정' : '새 자동화 만들기'}
-        size="lg"
-        centered
-      >
-        <AutomationBuilder
-          initialData={
-            editingAutomation
-              ? {
-                  name: editingAutomation.title,
-                  trigger: editingAutomation.domain_data.trigger as any,
-                  actions: editingAutomation.domain_data.actions as any[],
-                  enabled: editingAutomation.domain_data.enabled as boolean,
-                }
-              : undefined
-          }
-          onSave={handleSave}
-          onCancel={() => {
-            setShowBuilder(false);
-            setEditingId(null);
-          }}
-        />
-      </Modal>
-    </Container>
+      {showBuilder && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+          <div style={{ background: '#fff', borderRadius: 12, padding: 24, maxWidth: 600, width: '90%', maxHeight: '80vh', overflow: 'auto' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <h3 style={{ margin: 0 }}>{editingId ? '자동화 수정' : '새 자동화 만들기'}</h3>
+              <button onClick={() => { setShowBuilder(false); setEditingId(null); }} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 18 }}>×</button>
+            </div>
+            <AutomationBuilder
+              initialData={
+                editingAutomation
+                  ? {
+                      name: editingAutomation.title,
+                      trigger: editingAutomation.domain_data.trigger as any,
+                      actions: editingAutomation.domain_data.actions as any[],
+                      enabled: editingAutomation.domain_data.enabled as boolean,
+                    }
+                  : undefined
+              }
+              onSave={handleSave}
+              onCancel={() => {
+                setShowBuilder(false);
+                setEditingId(null);
+              }}
+            />
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

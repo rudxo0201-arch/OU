@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { Box, Stack, Text, Group, TextInput, Button, SimpleGrid, Loader } from '@mantine/core';
 import { Code, Plus, Folder, ArrowRight } from '@phosphor-icons/react';
 import { useDevWorkspaceStore } from '@/stores/devWorkspaceStore';
 import { TEMPLATES } from '@/lib/dev/templates';
@@ -61,14 +60,14 @@ export function ProjectSelector() {
 
   if (loading) {
     return (
-      <Stack align="center" justify="center" h="100%">
-        <Loader size="sm" />
-      </Stack>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+        <span style={{ color: 'var(--mantine-color-dimmed)', fontSize: 'var(--mantine-font-size-sm)' }}>불러오는 중...</span>
+      </div>
     );
   }
 
   return (
-    <Box
+    <div
       style={{
         display: 'flex',
         flexDirection: 'column',
@@ -76,67 +75,80 @@ export function ProjectSelector() {
         background: 'var(--mantine-color-dark-8)',
       }}
     >
-      <Stack align="center" justify="center" style={{ flex: 1 }} p="xl" gap="lg">
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, padding: 24, gap: 20 }}>
         <Code size={48} color="var(--mantine-color-dark-3)" />
-        <Text fz="lg" fw={600}>개발 환경</Text>
-        <Text fz="sm" c="dimmed" ta="center">프로젝트를 선택하거나 새로 만드세요</Text>
+        <span style={{ fontSize: 'var(--mantine-font-size-lg)', fontWeight: 600 }}>개발 환경</span>
+        <span style={{ fontSize: 'var(--mantine-font-size-sm)', color: 'var(--mantine-color-dimmed)', textAlign: 'center' }}>프로젝트를 선택하거나 새로 만드세요</span>
 
         {/* 기존 프로젝트 목록 */}
         {projects.length > 0 && (
-          <Stack gap="xs" w="100%" maw={500}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4, width: '100%', maxWidth: 500 }}>
             {projects.map(p => (
-              <Group
+              <div
                 key={p.id}
-                gap="sm"
-                p="sm"
-                wrap="nowrap"
+                onClick={() => handleSelect(p)}
                 style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 8,
+                  padding: 12,
                   borderRadius: 8,
                   border: '1px solid var(--mantine-color-dark-4)',
                   cursor: 'pointer',
                   transition: 'border-color 0.15s',
                 }}
-                onClick={() => handleSelect(p)}
                 className="hover-border"
               >
                 <Folder size={20} color="var(--mantine-color-dark-2)" />
-                <Box style={{ flex: 1 }}>
-                  <Text fz="sm" fw={500}>{p.name}</Text>
-                  {p.description && <Text fz={10} c="dimmed" lineClamp={1}>{p.description}</Text>}
-                </Box>
+                <div style={{ flex: 1 }}>
+                  <span style={{ fontSize: 'var(--mantine-font-size-sm)', fontWeight: 500, display: 'block' }}>{p.name}</span>
+                  {p.description && <span style={{ fontSize: 10, color: 'var(--mantine-color-dimmed)', display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{p.description}</span>}
+                </div>
                 <ArrowRight size={14} color="var(--mantine-color-dark-3)" />
-              </Group>
+              </div>
             ))}
-          </Stack>
+          </div>
         )}
 
         {/* 새 프로젝트 */}
         {!showCreate ? (
-          <Button
-            variant="light"
-            leftSection={<Plus size={14} />}
+          <button
             onClick={() => setShowCreate(true)}
+            style={{
+              padding: '8px 16px',
+              border: '0.5px solid var(--mantine-color-default-border)',
+              borderRadius: 'var(--mantine-radius-md)',
+              background: 'rgba(255,255,255,0.06)',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              color: 'inherit',
+            }}
           >
+            <Plus size={14} />
             새 프로젝트
-          </Button>
+          </button>
         ) : (
-          <Stack gap="sm" w="100%" maw={500}>
-            <TextInput
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%', maxWidth: 500 }}>
+            <input
               value={newName}
-              onChange={e => setNewName(e.currentTarget.value)}
+              onChange={e => setNewName(e.target.value)}
               placeholder="프로젝트 이름"
-              size="sm"
               autoFocus
               onKeyDown={e => { if (e.key === 'Enter') handleCreate(); }}
+              style={{ padding: '8px 12px', fontSize: 'var(--mantine-font-size-sm)', border: '0.5px solid var(--mantine-color-default-border)', borderRadius: 'var(--mantine-radius-md)', background: 'transparent', color: 'inherit' }}
             />
 
             {/* 템플릿 선택 */}
-            <SimpleGrid cols={2} spacing="xs">
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4 }}>
               {TEMPLATES.map(t => (
-                <Box
+                <div
                   key={t.id}
-                  p="xs"
+                  onClick={() => setSelectedTemplate(t.id)}
                   style={{
+                    padding: 8,
                     borderRadius: 6,
                     border: selectedTemplate === t.id
                       ? '1px solid var(--mantine-color-blue-5)'
@@ -146,30 +158,28 @@ export function ProjectSelector() {
                       ? 'var(--mantine-color-dark-6)'
                       : 'transparent',
                   }}
-                  onClick={() => setSelectedTemplate(t.id)}
                 >
-                  <Text fz={12} fw={500}>{t.name}</Text>
-                  <Text fz={10} c="dimmed">{t.description}</Text>
-                </Box>
+                  <span style={{ fontSize: 12, fontWeight: 500, display: 'block' }}>{t.name}</span>
+                  <span style={{ fontSize: 10, color: 'var(--mantine-color-dimmed)' }}>{t.description}</span>
+                </div>
               ))}
-            </SimpleGrid>
+            </div>
 
-            <Group gap="xs" justify="flex-end">
-              <Button variant="subtle" size="xs" onClick={() => setShowCreate(false)}>
+            <div style={{ display: 'flex', flexDirection: 'row', gap: 4, justifyContent: 'flex-end' }}>
+              <button onClick={() => setShowCreate(false)} style={{ padding: '4px 12px', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--mantine-color-dimmed)', fontSize: 'var(--mantine-font-size-xs)' }}>
                 취소
-              </Button>
-              <Button
-                size="xs"
+              </button>
+              <button
                 onClick={handleCreate}
-                disabled={!newName.trim()}
-                loading={creating}
+                disabled={!newName.trim() || creating}
+                style={{ padding: '4px 12px', border: '0.5px solid var(--mantine-color-default-border)', borderRadius: 'var(--mantine-radius-md)', background: 'rgba(255,255,255,0.06)', cursor: !newName.trim() || creating ? 'not-allowed' : 'pointer', opacity: !newName.trim() || creating ? 0.5 : 1, color: 'inherit', fontSize: 'var(--mantine-font-size-xs)' }}
               >
-                만들기
-              </Button>
-            </Group>
-          </Stack>
+                {creating ? '만드는 중...' : '만들기'}
+              </button>
+            </div>
+          </div>
         )}
-      </Stack>
-    </Box>
+      </div>
+    </div>
   );
 }

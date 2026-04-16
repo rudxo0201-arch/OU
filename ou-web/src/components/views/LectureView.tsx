@@ -2,13 +2,8 @@
 
 import { useState, useMemo } from 'react';
 import {
-  Box, Group, Text, Stack, ScrollArea, Badge,
-  ActionIcon, Tooltip, SimpleGrid, Progress, Tabs,
-  Divider,
-} from '@mantine/core';
-import {
   Play, Image, FileText, CaretLeft, CaretRight,
-  Plus, DotsSixVertical, Cards, ListNumbers,
+  Cards, ListNumbers,
 } from '@phosphor-icons/react';
 import { tripleToSentence } from '@/lib/triples/sentence-templates';
 import type { TriplePredicate } from '@/types';
@@ -28,18 +23,10 @@ interface Chapter {
   nodeId?: string;
 }
 
-/**
- * 강의 뷰 (Lecture View)
- * 챕터 기반 강의 제작/열람 뷰
- * - 좌측: 챕터 목록 (드래그 가능)
- * - 우측: 선택된 챕터 콘텐츠
- * - 하단 탭: 콘텐츠 / 퀴즈 / 개요
- */
 export function LectureView({ nodes }: LectureViewProps) {
-  const [activeTab, setActiveTab] = useState<string | null>('content');
+  const [activeTab, setActiveTab] = useState<string>('content');
   const [selectedChapterIdx, setSelectedChapterIdx] = useState(0);
 
-  // 노드들을 챕터로 변환
   const chapters: Chapter[] = useMemo(() => {
     return nodes.map((node, idx) => {
       const dd = node.domain_data ?? {};
@@ -60,7 +47,6 @@ export function LectureView({ nodes }: LectureViewProps) {
     ? Math.round(((selectedChapterIdx + 1) / chapters.length) * 100)
     : 0;
 
-  // 노드에서 트리플 기반 퀴즈 생성 (간이)
   const quizItems = useMemo(() => {
     const items: { question: string; answer: string }[] = [];
     for (const node of nodes) {
@@ -68,7 +54,6 @@ export function LectureView({ nodes }: LectureViewProps) {
       if (dd.question && dd.answer) {
         items.push({ question: dd.question, answer: dd.answer });
       }
-      // 트리플이 있으면 퀴즈 변환
       if (dd.triples && Array.isArray(dd.triples)) {
         for (const t of dd.triples) {
           if (t.subject && t.predicate && t.object) {
@@ -85,111 +70,97 @@ export function LectureView({ nodes }: LectureViewProps) {
 
   if (chapters.length === 0) {
     return (
-      <Stack align="center" py="xl" gap="sm">
-        <ListNumbers size={48} weight="light" color="var(--mantine-color-gray-5)" />
-        <Text fz="sm" c="dimmed">강의에 넣을 데이터가 없습니다</Text>
-      </Stack>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '32px 0', gap: 12 }}>
+        <ListNumbers size={48} weight="light" style={{ color: 'var(--ou-gray-5, #888)' }} />
+        <span style={{ fontSize: 13, color: 'var(--ou-text-dimmed, #888)' }}>강의에 넣을 데이터가 없습니다</span>
+      </div>
     );
   }
 
   return (
-    <Box style={{ display: 'flex', height: 500 }}>
-      {/* 좌측: 챕터 목록 */}
-      <Box
-        style={{
-          width: 220,
-          borderRight: '0.5px solid var(--mantine-color-default-border)',
-          flexShrink: 0,
-        }}
-      >
-        <Box px="sm" py="xs" style={{ borderBottom: '0.5px solid var(--mantine-color-default-border)' }}>
-          <Text fz="xs" fw={600} c="dimmed" tt="uppercase">
+    <div style={{ display: 'flex', height: 500 }}>
+      {/* Left: chapter list */}
+      <div style={{ width: 220, borderRight: '0.5px solid var(--ou-border, #333)', flexShrink: 0 }}>
+        <div style={{ padding: '8px 12px', borderBottom: '0.5px solid var(--ou-border, #333)' }}>
+          <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ou-text-dimmed, #888)', textTransform: 'uppercase' }}>
             챕터 ({chapters.length})
-          </Text>
-          <Progress value={progress} size="xs" mt={4} color="gray" />
-        </Box>
-        <ScrollArea h={440}>
-          <Stack gap={0}>
+          </span>
+          <div style={{ height: 3, borderRadius: 2, backgroundColor: 'var(--ou-bg-subtle, #e0e0e0)', marginTop: 4, overflow: 'hidden' }}>
+            <div style={{ height: '100%', width: `${progress}%`, backgroundColor: 'var(--ou-gray-5, #888)', borderRadius: 2 }} />
+          </div>
+        </div>
+        <div style={{ height: 440, overflowY: 'auto' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
             {chapters.map((ch, idx) => {
               const isActive = idx === selectedChapterIdx;
               const TypeIcon = ch.contentType === 'video' ? Play
                 : ch.contentType === 'image' ? Image : FileText;
               return (
-                <Group
+                <div
                   key={ch.id}
-                  px="sm"
-                  py="xs"
-                  gap="xs"
-                  wrap="nowrap"
                   onClick={() => setSelectedChapterIdx(idx)}
                   style={{
+                    display: 'flex', gap: 8, padding: '8px 12px', flexWrap: 'nowrap', alignItems: 'center',
                     cursor: 'pointer',
-                    background: isActive ? 'var(--mantine-color-dark-6)' : 'transparent',
-                    borderBottom: '0.5px solid var(--mantine-color-default-border)',
+                    background: isActive ? 'var(--ou-bg-subtle, rgba(255,255,255,0.06))' : 'transparent',
+                    borderBottom: '0.5px solid var(--ou-border, #333)',
                   }}
                 >
-                  <Text fz="xs" c="dimmed" w={18} ta="right">{idx + 1}</Text>
+                  <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', width: 18, textAlign: 'right' }}>{idx + 1}</span>
                   <TypeIcon size={12} weight="light" />
-                  <Text fz="xs" lineClamp={1} style={{ flex: 1 }}>{ch.title}</Text>
-                </Group>
+                  <span style={{ fontSize: 11, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ch.title}</span>
+                </div>
               );
             })}
-          </Stack>
-        </ScrollArea>
-      </Box>
+          </div>
+        </div>
+      </div>
 
-      {/* 우측: 콘텐츠 영역 */}
-      <Box style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        {/* 내비게이션 */}
-        <Group justify="space-between" px="md" py="xs" style={{ borderBottom: '0.5px solid var(--mantine-color-default-border)' }}>
-          <ActionIcon
-            variant="subtle"
-            color="gray"
-            size="sm"
+      {/* Right: content area */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+        {/* Navigation */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 16px', borderBottom: '0.5px solid var(--ou-border, #333)', alignItems: 'center' }}>
+          <button
             disabled={selectedChapterIdx === 0}
             onClick={() => setSelectedChapterIdx(i => Math.max(0, i - 1))}
+            style={{ background: 'none', border: 'none', cursor: selectedChapterIdx === 0 ? 'default' : 'pointer', padding: 4, color: 'inherit', opacity: selectedChapterIdx === 0 ? 0.3 : 1 }}
           >
             <CaretLeft size={16} />
-          </ActionIcon>
-          <Text fz="xs" fw={500}>{currentChapter?.title}</Text>
-          <ActionIcon
-            variant="subtle"
-            color="gray"
-            size="sm"
+          </button>
+          <span style={{ fontSize: 11, fontWeight: 500 }}>{currentChapter?.title}</span>
+          <button
             disabled={selectedChapterIdx === chapters.length - 1}
             onClick={() => setSelectedChapterIdx(i => Math.min(chapters.length - 1, i + 1))}
+            style={{ background: 'none', border: 'none', cursor: selectedChapterIdx === chapters.length - 1 ? 'default' : 'pointer', padding: 4, color: 'inherit', opacity: selectedChapterIdx === chapters.length - 1 ? 0.3 : 1 }}
           >
             <CaretRight size={16} />
-          </ActionIcon>
-        </Group>
+          </button>
+        </div>
 
-        {/* 탭: 콘텐츠 / 퀴즈 / 개요 */}
-        <Tabs value={activeTab} onChange={setActiveTab} variant="outline" color="gray" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-          <Tabs.List px="md">
-            <Tabs.Tab value="content" fz="xs">콘텐츠</Tabs.Tab>
-            <Tabs.Tab value="quiz" fz="xs" rightSection={
-              quizItems.length > 0 ? <Badge size="xs" variant="light" color="gray">{quizItems.length}</Badge> : null
-            }>퀴즈</Tabs.Tab>
-            <Tabs.Tab value="overview" fz="xs">개요</Tabs.Tab>
-          </Tabs.List>
+        {/* Tab bar */}
+        <div style={{ display: 'flex', gap: 0, padding: '0 16px', borderBottom: '0.5px solid var(--ou-border, #333)' }}>
+          {['content', 'quiz', 'overview'].map(tab => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              style={{
+                padding: '8px 12px', border: 'none', background: 'none', cursor: 'pointer', fontSize: 11,
+                color: activeTab === tab ? 'inherit' : 'var(--ou-text-dimmed, #888)',
+                borderBottom: activeTab === tab ? '2px solid currentColor' : '2px solid transparent',
+                display: 'flex', alignItems: 'center', gap: 4,
+              }}
+            >
+              {tab === 'content' ? '콘텐츠' : tab === 'quiz' ? `퀴즈${quizItems.length > 0 ? ` (${quizItems.length})` : ''}` : '개요'}
+            </button>
+          ))}
+        </div>
 
-          {/* 콘텐츠 탭 */}
-          <Tabs.Panel value="content" style={{ flex: 1 }}>
-            <ScrollArea h={380} p="md">
+        {/* Tab content */}
+        <div style={{ flex: 1, overflow: 'auto', padding: 16 }}>
+          {activeTab === 'content' && (
+            <>
               {currentChapter?.mediaUrl && (
-                <Box
-                  mb="md"
-                  style={{
-                    border: '0.5px solid var(--mantine-color-default-border)',
-                    borderRadius: 8,
-                    overflow: 'hidden',
-                    aspectRatio: '16/9',
-                    background: 'var(--mantine-color-dark-7)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
+                <div style={{ border: '0.5px solid var(--ou-border, #333)', borderRadius: 8, overflow: 'hidden', aspectRatio: '16/9', background: '#111', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
                   {currentChapter.contentType === 'video' ? (
                     <video src={currentChapter.mediaUrl} controls style={{ width: '100%', height: '100%' }} />
                   ) : currentChapter.contentType === 'image' ? (
@@ -197,85 +168,75 @@ export function LectureView({ nodes }: LectureViewProps) {
                   ) : (
                     <iframe src={currentChapter.mediaUrl} style={{ width: '100%', height: '100%', border: 'none' }} title={currentChapter.title} />
                   )}
-                </Box>
+                </div>
               )}
-              <Text fz="sm" style={{ whiteSpace: 'pre-wrap', lineHeight: 1.8 }}>
+              <p style={{ fontSize: 13, whiteSpace: 'pre-wrap', lineHeight: 1.8, margin: 0 }}>
                 {currentChapter?.content || '(내용 없음)'}
-              </Text>
-            </ScrollArea>
-          </Tabs.Panel>
+              </p>
+            </>
+          )}
 
-          {/* 퀴즈 탭 */}
-          <Tabs.Panel value="quiz" style={{ flex: 1 }}>
-            <ScrollArea h={380} p="md">
-              {quizItems.length > 0 ? (
-                <Stack gap="md">
-                  {quizItems.map((q, idx) => (
-                    <QuizCard key={idx} index={idx} question={q.question} answer={q.answer} />
-                  ))}
-                </Stack>
-              ) : (
-                <Stack align="center" py="xl">
-                  <Cards size={48} weight="light" color="var(--mantine-color-gray-5)" />
-                  <Text fz="sm" c="dimmed">데이터에서 자동 생성할 퀴즈가 없습니다</Text>
-                </Stack>
-              )}
-            </ScrollArea>
-          </Tabs.Panel>
-
-          {/* 개요 탭 */}
-          <Tabs.Panel value="overview" style={{ flex: 1 }}>
-            <ScrollArea h={380} p="md">
-              <Stack gap="xs">
-                <Text fz="xs" fw={600} c="dimmed" tt="uppercase">전체 챕터</Text>
-                {chapters.map((ch, idx) => (
-                  <Group
-                    key={ch.id}
-                    gap="xs"
-                    py={4}
-                    onClick={() => { setSelectedChapterIdx(idx); setActiveTab('content'); }}
-                    style={{ cursor: 'pointer', borderBottom: '0.5px solid var(--mantine-color-default-border)' }}
-                  >
-                    <Text fz="xs" c="dimmed" w={24} ta="right">{idx + 1}</Text>
-                    <Badge variant="light" color="gray" size="xs">{ch.contentType}</Badge>
-                    <Text fz="sm" style={{ flex: 1 }}>{ch.title}</Text>
-                  </Group>
+          {activeTab === 'quiz' && (
+            quizItems.length > 0 ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                {quizItems.map((q, idx) => (
+                  <QuizCard key={idx} index={idx} question={q.question} answer={q.answer} />
                 ))}
-              </Stack>
-            </ScrollArea>
-          </Tabs.Panel>
-        </Tabs>
-      </Box>
-    </Box>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '32px 0' }}>
+                <Cards size={48} weight="light" style={{ color: 'var(--ou-gray-5, #888)' }} />
+                <span style={{ fontSize: 13, color: 'var(--ou-text-dimmed, #888)', marginTop: 8 }}>데이터에서 자동 생성할 퀴즈가 없습니다</span>
+              </div>
+            )
+          )}
+
+          {activeTab === 'overview' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ou-text-dimmed, #888)', textTransform: 'uppercase' }}>전체 챕터</span>
+              {chapters.map((ch, idx) => (
+                <div
+                  key={ch.id}
+                  onClick={() => { setSelectedChapterIdx(idx); setActiveTab('content'); }}
+                  style={{ display: 'flex', gap: 8, padding: '4px 0', cursor: 'pointer', borderBottom: '0.5px solid var(--ou-border, #333)', alignItems: 'center' }}
+                >
+                  <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', width: 24, textAlign: 'right' }}>{idx + 1}</span>
+                  <span style={{ fontSize: 10, padding: '1px 6px', border: '0.5px solid var(--ou-border, #333)', borderRadius: 4 }}>{ch.contentType}</span>
+                  <span style={{ fontSize: 13, flex: 1 }}>{ch.title}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
 
-/** 간이 퀴즈 카드 */
 function QuizCard({ index, question, answer }: { index: number; question: string; answer: string }) {
   const [revealed, setRevealed] = useState(false);
 
   return (
-    <Box
-      p="md"
+    <div
+      onClick={() => setRevealed(r => !r)}
       style={{
-        border: '0.5px solid var(--mantine-color-default-border)',
+        padding: 16,
+        border: '0.5px solid var(--ou-border, #333)',
         borderRadius: 8,
         cursor: 'pointer',
       }}
-      onClick={() => setRevealed(r => !r)}
     >
-      <Group gap="xs" mb="xs">
-        <Badge variant="light" color="gray" size="xs">Q{index + 1}</Badge>
-        <Text fz="sm" fw={500}>{question}</Text>
-      </Group>
-      {revealed && (
-        <Text fz="sm" c="dimmed" pl={28} style={{ lineHeight: 1.6 }}>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 8, alignItems: 'center' }}>
+        <span style={{ fontSize: 10, padding: '1px 6px', border: '0.5px solid var(--ou-border, #333)', borderRadius: 4 }}>Q{index + 1}</span>
+        <span style={{ fontSize: 13, fontWeight: 500 }}>{question}</span>
+      </div>
+      {revealed ? (
+        <span style={{ fontSize: 13, color: 'var(--ou-text-dimmed, #888)', paddingLeft: 28, lineHeight: 1.6 }}>
           {answer}
-        </Text>
+        </span>
+      ) : (
+        <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', paddingLeft: 28 }}>눌러서 답 확인</span>
       )}
-      {!revealed && (
-        <Text fz="xs" c="dimmed" pl={28}>눌러서 답 확인</Text>
-      )}
-    </Box>
+    </div>
   );
 }

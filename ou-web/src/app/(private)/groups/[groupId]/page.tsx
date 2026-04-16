@@ -1,9 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect, notFound } from 'next/navigation';
-import {
-  Box, Stack, Title, Text, Paper, Group, Badge, Button,
-  Avatar, Divider, SimpleGrid,
-} from '@mantine/core';
 import { UserPlus, UsersThree } from '@phosphor-icons/react/dist/ssr';
 
 async function handleInvite(formData: FormData) {
@@ -14,7 +10,6 @@ async function handleInvite(formData: FormData) {
     headers: { 'Content-Type': 'application/json' },
   });
   const data = await res.json();
-  // In a real implementation, this would be handled client-side
   return data;
 }
 
@@ -59,107 +54,104 @@ export default async function GroupDetailPage({ params }: { params: { groupId: s
   const isOwner = membership.role === 'owner';
 
   return (
-    <Box px="xl" py="lg" maw={960} mx="auto">
-      <Stack gap="lg">
+    <div style={{ padding: '16px 24px', maxWidth: 960, margin: '0 auto' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         {/* Header */}
-        <Group justify="space-between" align="flex-start">
-          <Stack gap={4}>
-            <Title order={2} fw={600}>{group.name}</Title>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <h2 style={{ margin: 0, fontWeight: 600 }}>{group.name}</h2>
             {group.description && (
-              <Text size="sm" c="dimmed">{group.description}</Text>
+              <span style={{ fontSize: 14, color: 'var(--color-dimmed)' }}>{group.description}</span>
             )}
-          </Stack>
+          </div>
           {isOwner && (
-            <Button
-              variant="outline"
-              color="dark"
-              size="sm"
-              leftSection={<UserPlus size={16} />}
-              style={{ borderWidth: '0.5px' }}
-              component="a"
+            <a
               href={`/api/groups/${params.groupId}/invite`}
               data-method="POST"
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 14px',
+                border: '0.5px solid #1a1a1a', borderRadius: 6, fontSize: 14, color: '#1a1a1a',
+                textDecoration: 'none', cursor: 'pointer',
+              }}
             >
-              초대하기
-            </Button>
+              <UserPlus size={16} /> 초대하기
+            </a>
           )}
-        </Group>
+        </div>
 
-        <Divider color="gray.2" size={0.5} />
+        <hr style={{ border: 'none', borderTop: '0.5px solid #e5e7eb', margin: 0 }} />
 
         {/* Members */}
-        <Stack gap="sm">
-          <Group gap="xs">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <UsersThree size={18} />
-            <Text fw={600} size="sm">멤버 ({members?.length || 0})</Text>
-          </Group>
-          <Stack gap="xs">
+            <span style={{ fontWeight: 600, fontSize: 14 }}>멤버 ({members?.length || 0})</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {members?.map((member) => {
               const profileArr = member.profiles as unknown as { display_name: string | null; avatar_url: string | null }[] | null;
               const profile = profileArr?.[0] ?? null;
               return (
-                <Group key={member.user_id} gap="sm">
-                  <Avatar
-                    src={profile?.avatar_url}
-                    size="sm"
-                    radius="xl"
+                <div key={member.user_id} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div
+                    style={{
+                      width: 28, height: 28, borderRadius: '50%', background: '#e5e7eb',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: 12, overflow: 'hidden',
+                    }}
                   >
-                    {profile?.display_name?.[0] || '?'}
-                  </Avatar>
-                  <Text size="sm">{profile?.display_name || '알 수 없음'}</Text>
-                  <Badge
-                    variant="outline"
-                    color="gray"
-                    size="xs"
-                    style={{ borderWidth: '0.5px' }}
-                  >
+                    {profile?.avatar_url
+                      ? <img src={profile.avatar_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      : (profile?.display_name?.[0] || '?')
+                    }
+                  </div>
+                  <span style={{ fontSize: 14 }}>{profile?.display_name || '알 수 없음'}</span>
+                  <span style={{ fontSize: 11, padding: '1px 8px', borderRadius: 12, border: '0.5px solid #9ca3af', color: '#6b7280' }}>
                     {member.role}
-                  </Badge>
-                </Group>
+                  </span>
+                </div>
               );
             })}
-          </Stack>
-        </Stack>
+          </div>
+        </div>
 
-        <Divider color="gray.2" size={0.5} />
+        <hr style={{ border: 'none', borderTop: '0.5px solid #e5e7eb', margin: 0 }} />
 
         {/* DataNodes */}
-        <Stack gap="sm">
-          <Text fw={600} size="sm">기록 ({nodes?.length || 0})</Text>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <span style={{ fontWeight: 600, fontSize: 14 }}>기록 ({nodes?.length || 0})</span>
           {(!nodes || nodes.length === 0) ? (
-            <Text size="sm" c="dimmed">아직 등록된 기록이 없습니다.</Text>
+            <span style={{ fontSize: 14, color: 'var(--color-dimmed)' }}>아직 등록된 기록이 없습니다.</span>
           ) : (
-            <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="sm">
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 8 }}>
               {nodes.map((node) => (
-                <Paper
+                <div
                   key={node.id}
-                  p="md"
-                  radius="md"
-                  style={{ border: '0.5px solid var(--mantine-color-gray-3)' }}
+                  style={{ padding: 16, borderRadius: 8, border: '0.5px solid #d1d5db' }}
                 >
-                  <Stack gap={4}>
-                    <Text size="sm" fw={500} lineClamp={1}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    <span style={{ fontSize: 14, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {node.title || node.id}
-                    </Text>
-                    <Group gap="xs">
+                    </span>
+                    <div style={{ display: 'flex', gap: 8 }}>
                       {node.domain && (
-                        <Badge variant="outline" color="gray" size="xs" style={{ borderWidth: '0.5px' }}>
+                        <span style={{ fontSize: 11, padding: '1px 8px', borderRadius: 12, border: '0.5px solid #9ca3af', color: '#6b7280' }}>
                           {node.domain}
-                        </Badge>
+                        </span>
                       )}
                       {node.confidence && (
-                        <Badge variant="outline" color="gray" size="xs" style={{ borderWidth: '0.5px' }}>
+                        <span style={{ fontSize: 11, padding: '1px 8px', borderRadius: 12, border: '0.5px solid #9ca3af', color: '#6b7280' }}>
                           {node.confidence}
-                        </Badge>
+                        </span>
                       )}
-                    </Group>
-                  </Stack>
-                </Paper>
+                    </div>
+                  </div>
+                </div>
               ))}
-            </SimpleGrid>
+            </div>
           )}
-        </Stack>
-      </Stack>
-    </Box>
+        </div>
+      </div>
+    </div>
   );
 }

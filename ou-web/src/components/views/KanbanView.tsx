@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useCallback, useMemo } from 'react';
-import { Group, Stack, Paper, Text, Badge, ScrollArea, Box } from '@mantine/core';
 import { Circle } from '@phosphor-icons/react';
 import type { ViewProps } from './registry';
 
@@ -75,34 +74,41 @@ export function KanbanView({ nodes }: ViewProps) {
   }, []);
 
   return (
-    <ScrollArea>
-      <Group gap="md" p="md" align="flex-start" wrap="nowrap">
+    <div style={{ overflow: 'auto' }}>
+      <div style={{ display: 'flex', flexDirection: 'row', gap: 16, padding: 16, alignItems: 'flex-start', flexWrap: 'nowrap' }}>
         {columns.map(col => {
           const colTasks = getTasksByStatus(col.id);
           const isOver = dragOverCol === col.id;
           return (
-            <Stack
+            <div
               key={col.id}
-              gap="xs"
-              style={{ minWidth: 220, flex: 1 }}
+              style={{ display: 'flex', flexDirection: 'column', gap: 8, minWidth: 220, flex: 1 }}
               onDragOver={e => handleDragOver(e, col.id)}
               onDragLeave={() => setDragOverCol(null)}
               onDrop={e => handleDrop(e, col.id)}
             >
-              <Group gap="xs" mb={4}>
-                <Text fz="sm" fw={600}>{col.label}</Text>
-                <Badge size="xs" variant="light" color="gray">{colTasks.length}</Badge>
-              </Group>
+              <div style={{ display: 'flex', flexDirection: 'row', gap: 8, alignItems: 'center', marginBottom: 4 }}>
+                <span style={{ fontSize: 13, fontWeight: 600 }}>{col.label}</span>
+                <span style={{
+                  fontSize: 10,
+                  padding: '1px 6px',
+                  borderRadius: 4,
+                  backgroundColor: 'var(--ou-bg-subtle, rgba(255,255,255,0.06))',
+                  color: 'var(--ou-text-dimmed, #888)',
+                }}>{colTasks.length}</span>
+              </div>
 
-              <Stack
-                gap="xs"
+              <div
                 style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 8,
                   minHeight: 60,
                   borderRadius: 8,
                   border: colTasks.length === 0 || isOver
-                    ? `1.5px dashed var(--mantine-color-default-border)`
+                    ? '1.5px dashed var(--ou-border, #333)'
                     : '1.5px solid transparent',
-                  background: isOver ? 'var(--mantine-color-gray-1)' : undefined,
+                  background: isOver ? 'var(--ou-bg-subtle, rgba(255,255,255,0.04))' : undefined,
                   transition: 'background 200ms, border-color 200ms',
                   padding: 4,
                 }}
@@ -110,56 +116,57 @@ export function KanbanView({ nodes }: ViewProps) {
                 {colTasks.map(task => {
                   const isDragging = dragId === task.id;
                   return (
-                    <Paper
+                    <div
                       key={task.id}
-                      p="sm"
                       draggable
                       onDragStart={e => handleDragStart(e, task.id)}
                       onDragEnd={handleDragEnd}
                       style={{
-                        border: '0.5px solid var(--mantine-color-default-border)',
+                        padding: 12,
+                        border: '0.5px solid var(--ou-border, #333)',
+                        borderRadius: 8,
                         opacity: isDragging ? 0.4 : 1,
                         cursor: 'grab',
                         transition: 'opacity 200ms, box-shadow 200ms',
                         boxShadow: isDragging ? '0 4px 12px rgba(0,0,0,0.15)' : undefined,
                       }}
                     >
-                      <Group gap={6} align="center" mb={4} wrap="nowrap">
+                      <div style={{ display: 'flex', flexDirection: 'row', gap: 6, alignItems: 'center', marginBottom: 4, flexWrap: 'nowrap' }}>
                         <Circle
                           size={8}
                           weight="fill"
                           style={{ opacity: getPriorityOpacity(task.domain_data?.priority), flexShrink: 0 }}
                         />
-                        <Text fz="sm" fw={500} lineClamp={1} style={{ flex: 1 }}>
+                        <span style={{ fontSize: 13, fontWeight: 500, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {task.domain_data?.title ?? ((task.raw ?? '').slice(0, 50) || '태스크')}
-                        </Text>
-                      </Group>
+                        </span>
+                      </div>
                       {task.domain_data?.description && (
-                        <Text fz={11} c="dimmed" lineClamp={2} mt={2}>
+                        <p style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', margin: '2px 0 0', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
                           {task.domain_data.description}
-                        </Text>
+                        </p>
                       )}
                       {task.domain_data?.due && (
-                        <Text fz={11} c="dimmed" mt={4}>
+                        <p style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', margin: '4px 0 0' }}>
                           마감: {task.domain_data.due}
-                        </Text>
+                        </p>
                       )}
-                    </Paper>
+                    </div>
                   );
                 })}
 
                 {colTasks.length === 0 && (
-                  <Box py="lg">
-                    <Text fz="xs" c="dimmed" ta="center">
+                  <div style={{ padding: '24px 0' }}>
+                    <p style={{ fontSize: 12, color: 'var(--ou-text-dimmed, #888)', textAlign: 'center', margin: 0 }}>
                       {isOver ? '여기에 놓기' : '비어있음'}
-                    </Text>
-                  </Box>
+                    </p>
+                  </div>
                 )}
-              </Stack>
-            </Stack>
+              </div>
+            </div>
           );
         })}
-      </Group>
-    </ScrollArea>
+      </div>
+    </div>
   );
 }

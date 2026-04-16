@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Box, Text, Loader, Table, Tabs, ScrollArea } from '@mantine/core';
 
 interface SheetData {
   name: string;
@@ -56,67 +55,72 @@ export function XLSXViewer({ url, preRenderedSheets }: XLSXViewerProps) {
 
   if (loading) {
     return (
-      <Box p="xl" style={{ display: 'flex', justifyContent: 'center' }}>
-        <Loader size="sm" color="gray" />
-      </Box>
+      <div style={{ padding: 24, display: 'flex', justifyContent: 'center' }}>
+        <span style={{ color: 'var(--mantine-color-dimmed)', fontSize: 'var(--mantine-font-size-sm)' }}>불러오는 중...</span>
+      </div>
     );
   }
 
   if (error || sheets.length === 0) {
     return (
-      <Box p="xl">
-        <Text c="dimmed">스프레드시트를 표시할 수 없었어요.</Text>
-      </Box>
+      <div style={{ padding: 24 }}>
+        <span style={{ color: 'var(--mantine-color-dimmed)' }}>스프레드시트를 표시할 수 없었어요.</span>
+      </div>
     );
   }
 
   const activeSheet = sheets.find(s => s.name === activeTab) ?? sheets[0];
 
   return (
-    <Box p="md">
+    <div style={{ padding: 16 }}>
       {sheets.length > 1 && (
-        <Tabs value={activeTab} onChange={setActiveTab} mb="md">
-          <Tabs.List>
-            {sheets.map(s => (
-              <Tabs.Tab key={s.name} value={s.name}>
-                {s.name}
-              </Tabs.Tab>
-            ))}
-          </Tabs.List>
-        </Tabs>
+        <div style={{ display: 'flex', gap: 0, marginBottom: 16, borderBottom: '1px solid var(--mantine-color-default-border)' }}>
+          {sheets.map(s => (
+            <button
+              key={s.name}
+              onClick={() => setActiveTab(s.name)}
+              style={{
+                padding: '8px 16px',
+                border: 'none',
+                borderBottom: activeTab === s.name ? '2px solid var(--mantine-color-gray-4)' : '2px solid transparent',
+                background: 'transparent',
+                cursor: 'pointer',
+                fontWeight: activeTab === s.name ? 600 : 400,
+                color: 'inherit',
+                fontSize: 'var(--mantine-font-size-sm)',
+              }}
+            >
+              {s.name}
+            </button>
+          ))}
+        </div>
       )}
 
-      <ScrollArea>
-        <Table
-          striped
-          highlightOnHover
-          withTableBorder
-          withColumnBorders
-          fz="sm"
-        >
-          <Table.Thead>
-            <Table.Tr>
+      <div style={{ overflow: 'auto' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--mantine-font-size-sm)' }}>
+          <thead>
+            <tr>
               {activeSheet.headers.map(h => (
-                <Table.Th key={h} style={{ whiteSpace: 'nowrap' }}>{h}</Table.Th>
+                <th key={h} style={{ whiteSpace: 'nowrap', padding: '8px 12px', borderBottom: '1px solid var(--mantine-color-default-border)', textAlign: 'left', fontWeight: 600 }}>{h}</th>
               ))}
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>
+            </tr>
+          </thead>
+          <tbody>
             {activeSheet.rows.slice(0, 200).map((row, i) => (
-              <Table.Tr key={i}>
+              <tr key={i} style={{ background: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.02)' }}>
                 {activeSheet.headers.map(h => (
-                  <Table.Td key={h}>{String(row[h] ?? '')}</Table.Td>
+                  <td key={h} style={{ padding: '6px 12px', borderBottom: '0.5px solid var(--mantine-color-default-border)' }}>{String(row[h] ?? '')}</td>
                 ))}
-              </Table.Tr>
+              </tr>
             ))}
-          </Table.Tbody>
-        </Table>
+          </tbody>
+        </table>
         {activeSheet.rows.length > 200 && (
-          <Text c="dimmed" fz="sm" ta="center" mt="sm">
+          <span style={{ color: 'var(--mantine-color-dimmed)', fontSize: 'var(--mantine-font-size-sm)', display: 'block', textAlign: 'center', marginTop: 8 }}>
             {activeSheet.rows.length - 200}행 더 있어요
-          </Text>
+          </span>
         )}
-      </ScrollArea>
-    </Box>
+      </div>
+    </div>
   );
 }

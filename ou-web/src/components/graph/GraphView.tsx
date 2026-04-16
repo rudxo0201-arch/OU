@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef, useCallback, useImperativeHandle, forwardRef } from 'react';
-import { Box } from '@mantine/core';
 
 interface GraphNode {
   id: string;
@@ -539,7 +538,7 @@ export const GraphView = forwardRef<GraphViewHandle, GraphViewProps>(
     const resolvedHeight = fullscreen ? '100vh' : height;
 
     return (
-      <Box style={{
+      <div style={{
         position: fullscreen ? 'absolute' : 'relative',
         inset: fullscreen ? 0 : undefined,
         borderRadius: fullscreen ? 0 : 8,
@@ -554,7 +553,7 @@ export const GraphView = forwardRef<GraphViewHandle, GraphViewProps>(
             cursor: 'grab',
           }}
         />
-      </Box>
+      </div>
     );
   }
 );

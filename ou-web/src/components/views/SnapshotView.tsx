@@ -1,9 +1,6 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import {
-  Box, Group, Text, Stack, SimpleGrid, Divider, Badge, TextInput,
-} from '@mantine/core';
 import { CalendarBlank, CurrencyCircleDollar, Users, Smiley } from '@phosphor-icons/react';
 import dayjs from 'dayjs';
 import 'dayjs/locale/ko';
@@ -14,26 +11,14 @@ dayjs.locale('ko');
 dayjs.extend(isBetween);
 
 const DOMAIN_LABELS: Record<string, string> = {
-  schedule: '일정',
-  task: '할 일',
-  habit: '습관',
-  knowledge: '지식',
-  idea: '아이디어',
-  relation: '관계',
-  emotion: '감정',
-  finance: '가계',
-  product: '상품',
-  broadcast: '방송',
-  education: '교육',
-  media: '미디어',
-  location: '장소',
-  unresolved: '미분류',
+  schedule: '일정', task: '할 일', habit: '습관', knowledge: '지식',
+  idea: '아이디어', relation: '관계', emotion: '감정', finance: '가계',
+  product: '상품', broadcast: '방송', education: '교육', media: '미디어',
+  location: '장소', unresolved: '미분류',
 };
 
 export function SnapshotView({ nodes }: ViewProps) {
-  const [startDate, setStartDate] = useState(
-    dayjs().subtract(30, 'day').format('YYYY-MM-DD'),
-  );
+  const [startDate, setStartDate] = useState(dayjs().subtract(30, 'day').format('YYYY-MM-DD'));
   const [endDate, setEndDate] = useState(dayjs().format('YYYY-MM-DD'));
 
   const filtered = useMemo(() => {
@@ -47,7 +32,6 @@ export function SnapshotView({ nodes }: ViewProps) {
     });
   }, [nodes, startDate, endDate]);
 
-  // Domain breakdown
   const domainBreakdown = useMemo(() => {
     const map: Record<string, number> = {};
     for (const n of filtered) {
@@ -57,7 +41,6 @@ export function SnapshotView({ nodes }: ViewProps) {
     return Object.entries(map).sort((a, b) => b[1] - a[1]);
   }, [filtered]);
 
-  // Total spending
   const totalSpending = useMemo(() => {
     let sum = 0;
     for (const n of filtered) {
@@ -69,7 +52,6 @@ export function SnapshotView({ nodes }: ViewProps) {
     return sum;
   }, [filtered]);
 
-  // Most met people
   const topPeople = useMemo(() => {
     const map: Record<string, number> = {};
     for (const n of filtered) {
@@ -78,12 +60,9 @@ export function SnapshotView({ nodes }: ViewProps) {
       if (!name) continue;
       map[name] = (map[name] ?? 0) + 1;
     }
-    return Object.entries(map)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 5);
+    return Object.entries(map).sort((a, b) => b[1] - a[1]).slice(0, 5);
   }, [filtered]);
 
-  // Emotion summary
   const topEmotions = useMemo(() => {
     const map: Record<string, number> = {};
     for (const n of filtered) {
@@ -92,12 +71,9 @@ export function SnapshotView({ nodes }: ViewProps) {
       if (!emotion) continue;
       map[emotion] = (map[emotion] ?? 0) + 1;
     }
-    return Object.entries(map)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 5);
+    return Object.entries(map).sort((a, b) => b[1] - a[1]).slice(0, 5);
   }, [filtered]);
 
-  // Mini timeline (key events)
   const timeline = useMemo(() => {
     return filtered
       .filter(n => n.domain_data?.title || n.domain_data?.name)
@@ -116,131 +92,106 @@ export function SnapshotView({ nodes }: ViewProps) {
   }, [filtered]);
 
   return (
-    <Stack gap="lg" p="md">
-      {/* Date range selector */}
-      <Group gap="sm" align="flex-end">
-        <TextInput
-          label="시작일"
-          type="date"
-          size="xs"
-          value={startDate}
-          onChange={e => setStartDate(e.target.value)}
-          styles={{ input: { border: '0.5px solid var(--mantine-color-default-border)' } }}
-        />
-        <Text fz="xs" c="dimmed" pb={6}>~</Text>
-        <TextInput
-          label="종료일"
-          type="date"
-          size="xs"
-          value={endDate}
-          onChange={e => setEndDate(e.target.value)}
-          styles={{ input: { border: '0.5px solid var(--mantine-color-default-border)' } }}
-        />
-      </Group>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24, padding: 16 }}>
+      {/* Date range */}
+      <div style={{ display: 'flex', gap: 12, alignItems: 'flex-end' }}>
+        <div>
+          <label style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', display: 'block', marginBottom: 4 }}>시작일</label>
+          <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)}
+            style={{ padding: '6px 8px', fontSize: 12, border: '0.5px solid var(--ou-border, #333)', borderRadius: 6, background: 'transparent', color: 'inherit' }} />
+        </div>
+        <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', paddingBottom: 6 }}>~</span>
+        <div>
+          <label style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', display: 'block', marginBottom: 4 }}>종료일</label>
+          <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)}
+            style={{ padding: '6px 8px', fontSize: 12, border: '0.5px solid var(--ou-border, #333)', borderRadius: 6, background: 'transparent', color: 'inherit' }} />
+        </div>
+      </div>
 
-      {/* Stats panel */}
-      <SimpleGrid cols={{ base: 2, sm: 3 }} spacing="xs">
-        <Box
-          px="sm" py="xs"
-          style={{ border: '0.5px solid var(--mantine-color-default-border)', borderRadius: 8 }}
-        >
-          <Group gap={4} mb={2}>
+      {/* Stats */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 8 }}>
+        <div style={{ padding: '8px 12px', border: '0.5px solid var(--ou-border, #333)', borderRadius: 8 }}>
+          <div style={{ display: 'flex', gap: 4, marginBottom: 2, alignItems: 'center' }}>
             <CalendarBlank size={12} />
-            <Text fz={10} c="dimmed">전체 기록</Text>
-          </Group>
-          <Text fz="lg" fw={700}>{filtered.length}건</Text>
-        </Box>
+            <span style={{ fontSize: 10, color: 'var(--ou-text-dimmed, #888)' }}>전체 기록</span>
+          </div>
+          <span style={{ fontSize: 18, fontWeight: 700 }}>{filtered.length}건</span>
+        </div>
         {totalSpending > 0 && (
-          <Box
-            px="sm" py="xs"
-            style={{ border: '0.5px solid var(--mantine-color-default-border)', borderRadius: 8 }}
-          >
-            <Group gap={4} mb={2}>
+          <div style={{ padding: '8px 12px', border: '0.5px solid var(--ou-border, #333)', borderRadius: 8 }}>
+            <div style={{ display: 'flex', gap: 4, marginBottom: 2, alignItems: 'center' }}>
               <CurrencyCircleDollar size={12} />
-              <Text fz={10} c="dimmed">총 지출</Text>
-            </Group>
-            <Text fz="lg" fw={700}>{totalSpending.toLocaleString()}원</Text>
-          </Box>
+              <span style={{ fontSize: 10, color: 'var(--ou-text-dimmed, #888)' }}>총 지출</span>
+            </div>
+            <span style={{ fontSize: 18, fontWeight: 700 }}>{totalSpending.toLocaleString()}원</span>
+          </div>
         )}
         {domainBreakdown.map(([domain, count]) => (
-          <Box
-            key={domain}
-            px="sm" py="xs"
-            style={{ border: '0.5px solid var(--mantine-color-default-border)', borderRadius: 8 }}
-          >
-            <Text fz={10} c="dimmed">{DOMAIN_LABELS[domain] ?? domain}</Text>
-            <Text fz="lg" fw={700}>{count}</Text>
-          </Box>
+          <div key={domain} style={{ padding: '8px 12px', border: '0.5px solid var(--ou-border, #333)', borderRadius: 8 }}>
+            <span style={{ fontSize: 10, color: 'var(--ou-text-dimmed, #888)', display: 'block' }}>{DOMAIN_LABELS[domain] ?? domain}</span>
+            <span style={{ fontSize: 18, fontWeight: 700 }}>{count}</span>
+          </div>
         ))}
-      </SimpleGrid>
+      </div>
 
       {/* Top people */}
       {topPeople.length > 0 && (
-        <Box>
-          <Group gap={4} mb="xs">
+        <div>
+          <div style={{ display: 'flex', gap: 4, marginBottom: 8, alignItems: 'center' }}>
             <Users size={14} />
-            <Text fz="sm" fw={600}>이 시기에 자주 만난 사람</Text>
-          </Group>
-          <Group gap="xs">
+            <span style={{ fontSize: 13, fontWeight: 600 }}>이 시기에 자주 만난 사람</span>
+          </div>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             {topPeople.map(([name, count]) => (
-              <Badge key={name} variant="light" color="gray" size="sm">
+              <span key={name} style={{ fontSize: 10, padding: '2px 8px', border: '0.5px solid var(--ou-border, #333)', borderRadius: 4 }}>
                 {name} ({count}회)
-              </Badge>
+              </span>
             ))}
-          </Group>
-        </Box>
+          </div>
+        </div>
       )}
 
-      {/* Emotion summary */}
+      {/* Emotions */}
       {topEmotions.length > 0 && (
-        <Box>
-          <Group gap={4} mb="xs">
+        <div>
+          <div style={{ display: 'flex', gap: 4, marginBottom: 8, alignItems: 'center' }}>
             <Smiley size={14} />
-            <Text fz="sm" fw={600}>감정 요약</Text>
-          </Group>
-          <Group gap="xs">
+            <span style={{ fontSize: 13, fontWeight: 600 }}>감정 요약</span>
+          </div>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             {topEmotions.map(([emotion, count]) => (
-              <Badge key={emotion} variant="outline" color="gray" size="sm">
+              <span key={emotion} style={{ fontSize: 10, padding: '2px 8px', border: '0.5px solid var(--ou-border, #333)', borderRadius: 4 }}>
                 {emotion} ({count})
-              </Badge>
+              </span>
             ))}
-          </Group>
-        </Box>
+          </div>
+        </div>
       )}
 
-      {/* Mini timeline */}
+      {/* Timeline */}
       {timeline.length > 0 && (
         <>
-          <Divider color="var(--mantine-color-default-border)" />
-          <Box>
-            <Text fz="sm" fw={600} mb="sm">주요 기록</Text>
-            <Stack gap={4}>
+          <div style={{ borderTop: '0.5px solid var(--ou-border, #333)' }} />
+          <div>
+            <span style={{ fontSize: 13, fontWeight: 600, display: 'block', marginBottom: 12 }}>주요 기록</span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
               {timeline.map(item => (
-                <Group
-                  key={item.id}
-                  px="sm" py="xs"
-                  gap="sm"
-                  wrap="nowrap"
-                  style={{
-                    border: '0.5px solid var(--mantine-color-default-border)',
-                    borderRadius: 8,
-                  }}
-                >
-                  <Text fz={10} c="dimmed" style={{ width: 56, flexShrink: 0 }}>
+                <div key={item.id} style={{ display: 'flex', padding: '8px 12px', gap: 12, flexWrap: 'nowrap', alignItems: 'center', border: '0.5px solid var(--ou-border, #333)', borderRadius: 8 }}>
+                  <span style={{ fontSize: 10, color: 'var(--ou-text-dimmed, #888)', width: 56, flexShrink: 0 }}>
                     {item.date ? dayjs(item.date).format('MM.DD') : ''}
-                  </Text>
-                  <Badge variant="light" color="gray" size="xs" style={{ flexShrink: 0 }}>
+                  </span>
+                  <span style={{ fontSize: 10, padding: '1px 6px', border: '0.5px solid var(--ou-border, #333)', borderRadius: 4, flexShrink: 0 }}>
                     {DOMAIN_LABELS[item.domain] ?? item.domain}
-                  </Badge>
-                  <Text fz="xs" lineClamp={1} style={{ flex: 1, minWidth: 0 }}>
+                  </span>
+                  <span style={{ fontSize: 11, flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {item.title}
-                  </Text>
-                </Group>
+                  </span>
+                </div>
               ))}
-            </Stack>
-          </Box>
+            </div>
+          </div>
         </>
       )}
-    </Stack>
+    </div>
   );
 }

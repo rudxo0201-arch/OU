@@ -3,16 +3,11 @@
 import { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import {
-  Stack, Tooltip, UnstyledButton, Text, Box,
-  ActionIcon
-} from '@mantine/core';
-import {
   ChatTeardrop, Planet, Target, MagnifyingGlass,
   Gear, SignIn, SignOut,
   Moon, Sun, CaretLeft, CaretRight, Crown,
   Newspaper, ChatCircle, Storefront, UsersThree, Lightning
 } from '@phosphor-icons/react';
-import { useMantineColorScheme } from '@mantine/core';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigationStore } from '@/stores/navigationStore';
 import { createClient } from '@/lib/supabase/client';
@@ -40,7 +35,6 @@ export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, signOut, isAdmin } = useAuth();
-  const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const { collapsed, toggleCollapsed, savedViews } = useNavigationStore();
   const [unresolvedCount, setUnresolvedCount] = useState(0);
   const [nodeCount, setNodeCount] = useState(0);
@@ -80,75 +74,93 @@ export function Sidebar() {
     const active = pathname.startsWith(item.href);
     const Icon = item.icon;
     return (
-      <Tooltip key={item.id} label={item.label} position="right" disabled={expanded}>
-        <UnstyledButton
-          className={classes.navButton}
-          data-active={active || undefined}
-          data-expanded={expanded || undefined}
-          onClick={() => handleNav(item.href, isPrivate)}
-          style={{ position: 'relative' }}
-        >
-          <Icon size={22} weight={active ? 'fill' : 'light'} />
-          {expanded && <Text fz="sm" ml="xs">{item.label}</Text>}
-          {badge != null && badge > 0 && (
-            <Box
-              style={{
-                position: 'absolute',
-                top: 4,
-                right: collapsed ? 4 : 8,
-                background: 'var(--mantine-color-text)',
-                borderRadius: '50%',
-                width: 16,
-                height: 16,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: 9,
-                color: 'var(--mantine-color-body)',
-                fontWeight: 700,
-              }}
-            >
-              {badge > 9 ? '9+' : badge}
-            </Box>
-          )}
-        </UnstyledButton>
-      </Tooltip>
+      <button
+        key={item.id}
+        title={expanded ? undefined : item.label}
+        className={classes.navButton}
+        data-active={active || undefined}
+        data-expanded={expanded || undefined}
+        onClick={() => handleNav(item.href, isPrivate)}
+        style={{
+          position: 'relative',
+          background: 'none',
+          border: 'none',
+          cursor: 'pointer',
+          color: 'inherit',
+          font: 'inherit',
+          padding: 0,
+          display: 'flex',
+          alignItems: 'center',
+        }}
+      >
+        <Icon size={22} weight={active ? 'fill' : 'light'} />
+        {expanded && <span style={{ fontSize: 'var(--mantine-font-size-sm, 14px)', marginLeft: 8 }}>{item.label}</span>}
+        {badge != null && badge > 0 && (
+          <div
+            style={{
+              position: 'absolute',
+              top: 4,
+              right: collapsed ? 4 : 8,
+              background: 'var(--ou-text-body, #fff)',
+              borderRadius: '50%',
+              width: 16,
+              height: 16,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: 9,
+              color: 'var(--ou-space, #060810)',
+              fontWeight: 700,
+            }}
+          >
+            {badge > 9 ? '9+' : badge}
+          </div>
+        )}
+      </button>
     );
   };
 
   return (
-    <Box
+    <div
       className={classes.sidebar}
       data-expanded={expanded || undefined}
     >
-      <Stack h="100%" gap={0}>
-        {/* 로고 — 로그인 여부에 따라 /my 또는 / */}
-        <Box
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', gap: 0 }}>
+        {/* 로고 -- 로그인 여부에 따라 /my 또는 / */}
+        <div
           className={classes.brandArea}
           onClick={() => router.push(user ? '/my' : '/')}
           style={{ cursor: 'pointer' }}
         >
-          <Text className={classes.brandText} fw={700} fz={collapsed ? 16 : 20}>
-            {collapsed ? 'O' : 'OU'}
-          </Text>
-        </Box>
+          <img
+            src="/ou-logo.png"
+            alt="OU"
+            style={{
+              width: collapsed ? 24 : 40,
+              height: 'auto',
+              objectFit: 'contain',
+              transition: 'width 200ms ease',
+              filter: 'brightness(0.9)',
+            }}
+          />
+        </div>
 
         {user && (
-          <Box px="xs" py={4} style={{ display: 'flex', justifyContent: 'center' }}>
+          <div style={{ padding: '4px 10px', display: 'flex', justifyContent: 'center' }}>
             <NotificationBell />
-          </Box>
+          </div>
         )}
 
         {user && expanded && (
-          <Box px="md" py={4}>
+          <div style={{ padding: '4px 16px' }}>
             <RankBadge nodeCount={nodeCount} variant="compact" />
-          </Box>
+          </div>
         )}
 
-        <Box style={{ height: '0.5px', background: 'var(--ou-border-subtle)' }} />
+        <div style={{ height: '0.5px', background: 'var(--ou-border-subtle)' }} />
 
         {/* 메인 영역 */}
-        <Stack gap={4} p="xs" flex={1} style={{ overflowY: 'auto', overflowX: 'hidden' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, padding: 10, flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
           {/* 검색 */}
           {renderNavItem(
             { id: 'search', label: '검색', icon: MagnifyingGlass, href: '/search' },
@@ -159,125 +171,137 @@ export function Sidebar() {
           {/* 코어 */}
           {CORE_NAV.map(item => renderNavItem(item, undefined, true))}
 
-          {/* 정확도 — 항상 표시, 미해결 항목이 있으면 배지 */}
+          {/* 정확도 -- 항상 표시, 미해결 항목이 있으면 배지 */}
           {renderNavItem(
             { id: 'accuracy', label: '정확도 높이기', icon: Target, href: '/accuracy' },
             unresolvedCount > 0 ? unresolvedCount : undefined,
             true
           )}
 
-          {/* 커뮤니티 — 항상 표시, 비로그인 시 auth gate */}
+          {/* 커뮤니티 -- 항상 표시, 비로그인 시 auth gate */}
           {expanded && (
-            <Text className={classes.sectionLabel}>커뮤니티</Text>
+            <span className={classes.sectionLabel}>커뮤니티</span>
           )}
-          {!expanded && <Box my={4} style={{ height: '0.5px', background: 'var(--ou-border-subtle)' }} />}
+          {!expanded && <div style={{ margin: '4px 0', height: '0.5px', background: 'var(--ou-border-subtle)' }} />}
           {COMMUNITY_NAV.map(item => renderNavItem(item, undefined, true))}
 
           {/* 탐색 */}
           {expanded && (
-            <Text className={classes.sectionLabel}>탐색</Text>
+            <span className={classes.sectionLabel}>탐색</span>
           )}
-          {!expanded && <Box my={4} style={{ height: '0.5px', background: 'var(--ou-border-subtle)' }} />}
+          {!expanded && <div style={{ margin: '4px 0', height: '0.5px', background: 'var(--ou-border-subtle)' }} />}
           {EXPLORE_NAV.map(item => renderNavItem(item, undefined, false))}
 
           {/* 저장된 뷰 */}
           {savedViews.length > 0 && (
             <>
               {expanded && (
-                <Text className={classes.sectionLabel}>저장된 뷰</Text>
+                <span className={classes.sectionLabel}>저장된 뷰</span>
               )}
-              {!expanded && <Box my={4} style={{ height: '0.5px', background: 'var(--ou-border-subtle)' }} />}
+              {!expanded && <div style={{ margin: '4px 0', height: '0.5px', background: 'var(--ou-border-subtle)' }} />}
               {savedViews.map(view => (
-                <Tooltip key={view.id} label={view.name} position="right" disabled={expanded}>
-                  <UnstyledButton
-                    className={classes.navButton}
-                    data-active={pathname === `/view/${view.id}` || undefined}
-                    data-expanded={expanded || undefined}
-                    onClick={() => handleNav(`/view/${view.id}`, true)}
-                  >
-                    <Text fz={20}>{view.icon ?? '◆'}</Text>
-                    {expanded && (
-                      <Text fz="sm" ml="xs" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {view.name}
-                      </Text>
-                    )}
-                  </UnstyledButton>
-                </Tooltip>
+                <button
+                  key={view.id}
+                  title={expanded ? undefined : view.name}
+                  className={classes.navButton}
+                  data-active={pathname === `/view/${view.id}` || undefined}
+                  data-expanded={expanded || undefined}
+                  onClick={() => handleNav(`/view/${view.id}`, true)}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', font: 'inherit', padding: 0, display: 'flex', alignItems: 'center' }}
+                >
+                  <span style={{ fontSize: 20 }}>{view.icon ?? '◆'}</span>
+                  {expanded && (
+                    <span style={{ fontSize: 'var(--mantine-font-size-sm, 14px)', marginLeft: 8, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {view.name}
+                    </span>
+                  )}
+                </button>
               ))}
             </>
           )}
-        </Stack>
+        </div>
 
         {/* 하단 영역 */}
-        <Stack gap={4} p="xs">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, padding: 10 }}>
           {isAdmin && (
-            <Tooltip label="관리자" position="right" disabled={expanded}>
-              <UnstyledButton
-                className={classes.navButton}
-                data-active={pathname.startsWith('/admin') || undefined}
-                data-expanded={expanded || undefined}
-                onClick={() => router.push('/admin')}
-              >
-                <Crown size={22} weight={pathname.startsWith('/admin') ? 'fill' : 'light'} />
-                {expanded && <Text fz="sm" ml="xs">관리자</Text>}
-              </UnstyledButton>
-            </Tooltip>
+            <button
+              title={expanded ? undefined : '관리자'}
+              className={classes.navButton}
+              data-active={pathname.startsWith('/admin') || undefined}
+              data-expanded={expanded || undefined}
+              onClick={() => router.push('/admin')}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', font: 'inherit', padding: 0, display: 'flex', alignItems: 'center' }}
+            >
+              <Crown size={22} weight={pathname.startsWith('/admin') ? 'fill' : 'light'} />
+              {expanded && <span style={{ fontSize: 'var(--mantine-font-size-sm, 14px)', marginLeft: 8 }}>관리자</span>}
+            </button>
           )}
 
-          <ActionIcon
-            variant="subtle"
-            color="gray"
-            onClick={() => toggleColorScheme()}
+          <button
+            onClick={() => {
+              // Theme toggle removed - always dark
+            }}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              color: 'var(--ou-text-muted, rgba(255,255,255,0.5))',
+              padding: 4,
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
           >
-            {colorScheme === 'dark'
-              ? <Sun size={20} weight="light" />
-              : <Moon size={20} weight="light" />
+            <Sun size={20} weight="light" />
+          </button>
+
+          <button
+            title={expanded ? undefined : '설정'}
+            className={classes.navButton}
+            data-active={pathname.startsWith('/settings') || undefined}
+            data-expanded={expanded || undefined}
+            onClick={() => handleNav('/settings', true)}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', font: 'inherit', padding: 0, display: 'flex', alignItems: 'center' }}
+          >
+            <Gear size={22} weight={pathname.startsWith('/settings') ? 'fill' : 'light'} />
+            {expanded && <span style={{ fontSize: 'var(--mantine-font-size-sm, 14px)', marginLeft: 8 }}>설정</span>}
+          </button>
+
+          <button
+            title={expanded ? undefined : (user ? '로그아웃' : '로그인')}
+            className={classes.navButton}
+            data-expanded={expanded || undefined}
+            onClick={() => user ? signOut() : router.push('/login')}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', font: 'inherit', padding: 0, display: 'flex', alignItems: 'center' }}
+          >
+            {user
+              ? <SignOut size={22} weight="light" />
+              : <SignIn size={22} weight="light" />
             }
-          </ActionIcon>
+            {expanded && <span style={{ fontSize: 'var(--mantine-font-size-sm, 14px)', marginLeft: 8 }}>{user ? '로그아웃' : '로그인'}</span>}
+          </button>
 
-          <Tooltip label="설정" position="right" disabled={expanded}>
-            <UnstyledButton
-              className={classes.navButton}
-              data-active={pathname.startsWith('/settings') || undefined}
-              data-expanded={expanded || undefined}
-              onClick={() => handleNav('/settings', true)}
-            >
-              <Gear size={22} weight={pathname.startsWith('/settings') ? 'fill' : 'light'} />
-              {expanded && <Text fz="sm" ml="xs">설정</Text>}
-            </UnstyledButton>
-          </Tooltip>
-
-          <Tooltip
-            label={user ? '로그아웃' : '로그인'}
-            position="right"
-            disabled={expanded}
-          >
-            <UnstyledButton
-              className={classes.navButton}
-              data-expanded={expanded || undefined}
-              onClick={() => user ? signOut() : router.push('/login')}
-            >
-              {user
-                ? <SignOut size={22} weight="light" />
-                : <SignIn size={22} weight="light" />
-              }
-              {expanded && <Text fz="sm" ml="xs">{user ? '로그아웃' : '로그인'}</Text>}
-            </UnstyledButton>
-          </Tooltip>
-
-          <ActionIcon
-            variant="subtle"
-            color="gray"
+          <button
             onClick={toggleCollapsed}
-            mt={4}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              color: 'var(--ou-text-muted, rgba(255,255,255,0.5))',
+              padding: 4,
+              marginTop: 4,
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
           >
             {collapsed
               ? <CaretRight size={16} weight="light" />
               : <CaretLeft size={16} weight="light" />
             }
-          </ActionIcon>
-        </Stack>
-      </Stack>
-    </Box>
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }

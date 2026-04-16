@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo } from 'react';
-import { Stack, Text, Box } from '@mantine/core';
 import type { ViewProps } from './registry';
 
 interface FlowNode {
@@ -32,10 +31,10 @@ export function FlowchartView({ nodes }: ViewProps) {
   const cx = svgW / 2;
 
   return (
-    <Stack gap={0} p="md">
-      <Text fz="xs" c="dimmed" mb="md">Flowchart</Text>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 0, padding: 16 }}>
+      <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', marginBottom: 16 }}>Flowchart</span>
 
-      <Box style={{ overflowX: 'auto' }}>
+      <div style={{ overflowX: 'auto' }}>
         <svg
           width={svgW}
           height={svgH}
@@ -52,7 +51,7 @@ export function FlowchartView({ nodes }: ViewProps) {
               markerHeight="6"
               orient="auto-start-reverse"
             >
-              <polygon points="0 0, 10 3.5, 0 7" fill="var(--mantine-color-gray-5)" />
+              <polygon points="0 0, 10 3.5, 0 7" fill="var(--ou-gray-5, #888)" />
             </marker>
           </defs>
 
@@ -63,7 +62,6 @@ export function FlowchartView({ nodes }: ViewProps) {
 
             return (
               <g key={node.id}>
-                {/* Node rect */}
                 <rect
                   x={x}
                   y={y}
@@ -72,31 +70,29 @@ export function FlowchartView({ nodes }: ViewProps) {
                   rx={8}
                   ry={8}
                   fill="none"
-                  stroke="var(--mantine-color-default-border)"
+                  stroke="var(--ou-border, #333)"
                   strokeWidth={0.5}
                 />
 
-                {/* Title */}
                 <text
                   x={cx}
                   y={y + NODE_H / 2}
                   textAnchor="middle"
                   dominantBaseline="central"
                   fontSize={13}
-                  fill="var(--mantine-color-text)"
+                  fill="currentColor"
                   fontFamily="inherit"
                 >
-                  {node.title.length > 28 ? node.title.slice(0, 28) + '…' : node.title}
+                  {node.title.length > 28 ? node.title.slice(0, 28) + '...' : node.title}
                 </text>
 
-                {/* Arrow to next */}
                 {!isLast && (
                   <line
                     x1={cx}
                     y1={y + NODE_H}
                     x2={cx}
                     y2={y + NODE_H + GAP_Y}
-                    stroke="var(--mantine-color-gray-5)"
+                    stroke="var(--ou-gray-5, #888)"
                     strokeWidth={1}
                     markerEnd="url(#fc-arrow)"
                   />
@@ -105,7 +101,7 @@ export function FlowchartView({ nodes }: ViewProps) {
             );
           })}
         </svg>
-      </Box>
-    </Stack>
+      </div>
+    </div>
   );
 }

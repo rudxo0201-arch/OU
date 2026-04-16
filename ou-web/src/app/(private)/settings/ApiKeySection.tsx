@@ -1,11 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import {
-  Stack, Title, Text, Paper, Group, Button, TextInput, Modal,
-  ActionIcon, CopyButton, Tooltip, Code, Badge,
-} from '@mantine/core';
-import { notifications } from '@mantine/notifications';
 import { Key, Trash, Copy, Check, Plus, PlugsConnected } from '@phosphor-icons/react';
 
 interface ApiKey {
@@ -24,6 +19,8 @@ export function ApiKeySection() {
   const [createdKey, setCreatedKey] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
   const [guideOpen, setGuideOpen] = useState(false);
+  const [copiedKey, setCopiedKey] = useState(false);
+  const [copiedConfig, setCopiedConfig] = useState(false);
 
   const fetchKeys = async () => {
     try {
@@ -53,7 +50,7 @@ export function ApiKeySection() {
       setNewKeyName('');
       fetchKeys();
     } catch {
-      notifications.show({ title: '오류', message: '키 생성에 실패했습니다', color: 'red' });
+      alert('키 생성에 실패했습니다');
     } finally {
       setCreating(false);
     }
@@ -67,9 +64,9 @@ export function ApiKeySection() {
         body: JSON.stringify({ keyId }),
       });
       fetchKeys();
-      notifications.show({ title: '완료', message: '키가 폐기되었습니다', color: 'gray' });
+      alert('키가 폐기되었습니다');
     } catch {
-      notifications.show({ title: '오류', message: '키 폐기에 실패했습니다', color: 'red' });
+      alert('키 폐기에 실패했습니다');
     }
   };
 
@@ -84,194 +81,207 @@ export function ApiKeySection() {
     },
   }, null, 2);
 
+  const copyToClipboard = async (text: string, setter: (v: boolean) => void) => {
+    await navigator.clipboard.writeText(text);
+    setter(true);
+    setTimeout(() => setter(false), 2000);
+  };
+
   return (
     <>
-      <Paper p="lg" radius="md" withBorder>
-        <Stack gap="md">
-          <Group justify="space-between">
-            <Group gap="xs">
+      <div style={{ padding: 20, borderRadius: 8, border: '1px solid var(--color-default-border)' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <Key size={20} weight="bold" />
-              <Title order={4}>API Keys</Title>
-            </Group>
-            <Group gap="xs">
-              <Button
-                variant="subtle"
-                size="xs"
-                leftSection={<PlugsConnected size={14} />}
+              <h4 style={{ margin: 0 }}>API Keys</h4>
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button
                 onClick={() => setGuideOpen(true)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, display: 'flex', alignItems: 'center', gap: 4, color: 'var(--color-text)' }}
               >
-                연결 가이드
-              </Button>
-              <Button
-                size="xs"
-                leftSection={<Plus size={14} />}
+                <PlugsConnected size={14} /> 연결 가이드
+              </button>
+              <button
                 onClick={() => { setCreateModalOpen(true); setCreatedKey(null); }}
+                style={{ background: '#1a1a1a', color: '#fff', border: 'none', borderRadius: 6, padding: '4px 12px', cursor: 'pointer', fontSize: 13, display: 'flex', alignItems: 'center', gap: 4 }}
               >
-                새 키 생성
-              </Button>
-            </Group>
-          </Group>
+                <Plus size={14} /> 새 키 생성
+              </button>
+            </div>
+          </div>
 
-          <Text size="sm" c="dimmed">
+          <span style={{ fontSize: 14, color: 'var(--color-dimmed)' }}>
             AI 클라이언트를 OU에 연결하면 모든 대화가 자동으로 기록됩니다.
-          </Text>
+          </span>
 
           {loading ? (
-            <Text size="sm" c="dimmed">불러오는 중...</Text>
+            <span style={{ fontSize: 14, color: 'var(--color-dimmed)' }}>불러오는 중...</span>
           ) : keys.length === 0 ? (
-            <Text size="sm" c="dimmed">생성된 키가 없습니다.</Text>
+            <span style={{ fontSize: 14, color: 'var(--color-dimmed)' }}>생성된 키가 없습니다.</span>
           ) : (
-            <Stack gap="xs">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {keys.map(k => (
-                <Paper key={k.id} p="sm" radius="sm" bg="gray.0" style={{ border: '1px solid var(--mantine-color-gray-2)' }}>
-                  <Group justify="space-between">
-                    <Group gap="xs">
-                      <Code>{k.key_prefix}</Code>
-                      <Text size="sm" fw={500}>{k.name}</Text>
-                    </Group>
-                    <Group gap="xs">
+                <div key={k.id} style={{ padding: 10, borderRadius: 6, background: '#f9fafb', border: '1px solid #e5e7eb' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <code style={{ fontSize: 12, background: '#e5e7eb', padding: '2px 6px', borderRadius: 4 }}>{k.key_prefix}</code>
+                      <span style={{ fontSize: 14, fontWeight: 500 }}>{k.name}</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       {k.last_used_at && (
-                        <Badge size="xs" variant="light" color="gray">
+                        <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 12, border: '1px solid #e5e7eb', color: 'var(--color-dimmed)' }}>
                           마지막 사용: {new Date(k.last_used_at).toLocaleDateString('ko-KR')}
-                        </Badge>
+                        </span>
                       )}
-                      <Tooltip label="폐기">
-                        <ActionIcon
-                          variant="subtle"
-                          color="red"
-                          size="sm"
-                          onClick={() => handleRevoke(k.id)}
-                        >
-                          <Trash size={14} />
-                        </ActionIcon>
-                      </Tooltip>
-                    </Group>
-                  </Group>
-                </Paper>
+                      <button
+                        title="폐기"
+                        onClick={() => handleRevoke(k.id)}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#dc2626', padding: 4 }}
+                      >
+                        <Trash size={14} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
               ))}
-            </Stack>
+            </div>
           )}
-        </Stack>
-      </Paper>
+        </div>
+      </div>
 
       {/* 키 생성 모달 */}
-      <Modal
-        opened={createModalOpen}
-        onClose={() => { setCreateModalOpen(false); setCreatedKey(null); }}
-        title="새 API Key 생성"
-        size="md"
-      >
-        {createdKey ? (
-          <Stack gap="md">
-            <Text size="sm" fw={500} c="red.7">
-              이 키는 다시 볼 수 없습니다. 지금 복사해 주세요.
-            </Text>
-            <Paper p="sm" radius="sm" bg="dark.9" style={{ wordBreak: 'break-all' }}>
-              <Group justify="space-between" align="flex-start">
-                <Code c="green.4" style={{ flex: 1, fontSize: 12 }}>
-                  {createdKey}
-                </Code>
-                <CopyButton value={createdKey}>
-                  {({ copied, copy }) => (
-                    <Tooltip label={copied ? '복사됨' : '복사'}>
-                      <ActionIcon variant="subtle" color={copied ? 'green' : 'gray'} onClick={copy}>
-                        {copied ? <Check size={16} /> : <Copy size={16} />}
-                      </ActionIcon>
-                    </Tooltip>
-                  )}
-                </CopyButton>
-              </Group>
-            </Paper>
+      {createModalOpen && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+          <div style={{ background: '#fff', borderRadius: 12, padding: 24, maxWidth: 480, width: '90%', maxHeight: '80vh', overflow: 'auto' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <h3 style={{ margin: 0 }}>새 API Key 생성</h3>
+              <button onClick={() => { setCreateModalOpen(false); setCreatedKey(null); }} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 18 }}>×</button>
+            </div>
+            {createdKey ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <span style={{ fontSize: 14, fontWeight: 500, color: '#dc2626' }}>
+                  이 키는 다시 볼 수 없습니다. 지금 복사해 주세요.
+                </span>
+                <div style={{ padding: 10, borderRadius: 6, background: '#111', wordBreak: 'break-all' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <code style={{ color: '#4ade80', flex: 1, fontSize: 12 }}>
+                      {createdKey}
+                    </code>
+                    <button
+                      onClick={() => copyToClipboard(createdKey, setCopiedKey)}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: copiedKey ? '#4ade80' : '#9ca3af', padding: 4 }}
+                    >
+                      {copiedKey ? <Check size={16} /> : <Copy size={16} />}
+                    </button>
+                  </div>
+                </div>
 
-            <Text size="sm" c="dimmed">
-              Claude Code 설정에 아래 내용을 추가하세요:
-            </Text>
-            <Paper p="sm" radius="sm" bg="gray.1">
-              <Group justify="space-between" align="flex-start">
-                <Code block style={{ flex: 1, fontSize: 11 }}>
-                  {mcpConfig(createdKey)}
-                </Code>
-                <CopyButton value={mcpConfig(createdKey)}>
-                  {({ copied, copy }) => (
-                    <ActionIcon variant="subtle" color={copied ? 'green' : 'gray'} onClick={copy} mt={4}>
-                      {copied ? <Check size={14} /> : <Copy size={14} />}
-                    </ActionIcon>
-                  )}
-                </CopyButton>
-              </Group>
-            </Paper>
+                <span style={{ fontSize: 14, color: 'var(--color-dimmed)' }}>
+                  Claude Code 설정에 아래 내용을 추가하세요:
+                </span>
+                <div style={{ padding: 10, borderRadius: 6, background: '#f3f4f6' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <pre style={{ flex: 1, fontSize: 11, margin: 0, whiteSpace: 'pre-wrap', fontFamily: 'monospace' }}>
+                      {mcpConfig(createdKey)}
+                    </pre>
+                    <button
+                      onClick={() => copyToClipboard(mcpConfig(createdKey), setCopiedConfig)}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: copiedConfig ? '#4ade80' : '#9ca3af', padding: 4, marginTop: 4 }}
+                    >
+                      {copiedConfig ? <Check size={14} /> : <Copy size={14} />}
+                    </button>
+                  </div>
+                </div>
 
-            <Button fullWidth onClick={() => { setCreateModalOpen(false); setCreatedKey(null); }}>
-              확인
-            </Button>
-          </Stack>
-        ) : (
-          <Stack gap="md">
-            <TextInput
-              label="키 이름"
-              placeholder="예: My Claude Code"
-              value={newKeyName}
-              onChange={e => setNewKeyName(e.currentTarget.value)}
-            />
-            <Button fullWidth onClick={handleCreate} loading={creating} disabled={!newKeyName.trim()}>
-              생성
-            </Button>
-          </Stack>
-        )}
-      </Modal>
+                <button
+                  onClick={() => { setCreateModalOpen(false); setCreatedKey(null); }}
+                  style={{ width: '100%', padding: '8px 16px', borderRadius: 6, border: 'none', background: '#1a1a1a', color: '#fff', cursor: 'pointer', fontSize: 14 }}
+                >
+                  확인
+                </button>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 14, fontWeight: 500, marginBottom: 4 }}>키 이름</label>
+                  <input
+                    type="text"
+                    placeholder="예: My Claude Code"
+                    value={newKeyName}
+                    onChange={e => setNewKeyName(e.target.value)}
+                    style={{ width: '100%', padding: '8px 12px', borderRadius: 6, border: '1px solid #d1d5db', fontSize: 14, boxSizing: 'border-box' }}
+                  />
+                </div>
+                <button
+                  onClick={handleCreate}
+                  disabled={creating || !newKeyName.trim()}
+                  style={{ width: '100%', padding: '8px 16px', borderRadius: 6, border: 'none', background: '#1a1a1a', color: '#fff', cursor: 'pointer', fontSize: 14, opacity: creating || !newKeyName.trim() ? 0.5 : 1 }}
+                >
+                  {creating ? '...' : '생성'}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* 연결 가이드 모달 */}
-      <Modal
-        opened={guideOpen}
-        onClose={() => setGuideOpen(false)}
-        title="AI 클라이언트 연결 가이드"
-        size="lg"
-      >
-        <Stack gap="lg">
-          <div>
-            <Text fw={600} mb="xs">Claude Code</Text>
-            <Text size="sm" c="dimmed" mb="xs">
-              설정 파일에 MCP 서버를 추가하세요:
-            </Text>
-            <Code block style={{ fontSize: 11 }}>
-              {mcpConfig('ou_sk_your_key_here')}
-            </Code>
-          </div>
+      {guideOpen && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+          <div style={{ background: '#fff', borderRadius: 12, padding: 24, maxWidth: 600, width: '90%', maxHeight: '80vh', overflow: 'auto' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <h3 style={{ margin: 0 }}>AI 클라이언트 연결 가이드</h3>
+              <button onClick={() => setGuideOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 18 }}>×</button>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+              <div>
+                <span style={{ fontWeight: 600, display: 'block', marginBottom: 8 }}>Claude Code</span>
+                <span style={{ fontSize: 14, color: 'var(--color-dimmed)', display: 'block', marginBottom: 8 }}>
+                  설정 파일에 MCP 서버를 추가하세요:
+                </span>
+                <pre style={{ fontSize: 11, background: '#f3f4f6', padding: 12, borderRadius: 6, margin: 0, whiteSpace: 'pre-wrap', fontFamily: 'monospace' }}>
+                  {mcpConfig('ou_sk_your_key_here')}
+                </pre>
+              </div>
 
-          <div>
-            <Text fw={600} mb="xs">claude.ai</Text>
-            <Text size="sm" c="dimmed">
-              Settings → MCP Servers → Add Server에서 URL과 API Key를 입력하세요.
-            </Text>
-          </div>
+              <div>
+                <span style={{ fontWeight: 600, display: 'block', marginBottom: 8 }}>claude.ai</span>
+                <span style={{ fontSize: 14, color: 'var(--color-dimmed)' }}>
+                  Settings &rarr; MCP Servers &rarr; Add Server에서 URL과 API Key를 입력하세요.
+                </span>
+              </div>
 
-          <div>
-            <Text fw={600} mb="xs">기타 MCP 호환 클라이언트</Text>
-            <Text size="sm" c="dimmed">
-              MCP SSE 엔드포인트: <Code>/api/mcp/sse</Code>
-              <br />
-              인증: <Code>Authorization: Bearer ou_sk_...</Code>
-            </Text>
-          </div>
+              <div>
+                <span style={{ fontWeight: 600, display: 'block', marginBottom: 8 }}>기타 MCP 호환 클라이언트</span>
+                <span style={{ fontSize: 14, color: 'var(--color-dimmed)' }}>
+                  MCP SSE 엔드포인트: <code style={{ background: '#f3f4f6', padding: '2px 6px', borderRadius: 4 }}>/api/mcp/sse</code>
+                  <br />
+                  인증: <code style={{ background: '#f3f4f6', padding: '2px 6px', borderRadius: 4 }}>Authorization: Bearer ou_sk_...</code>
+                </span>
+              </div>
 
-          <div>
-            <Text fw={600} mb="xs">ChatGPT</Text>
-            <Text size="sm" c="dimmed">
-              Settings → Connectors → Add MCP Server에서 URL과 API Key를 입력하세요.
-              <br />
-              URL: <Code>/api/mcp/sse</Code>
-            </Text>
-          </div>
+              <div>
+                <span style={{ fontWeight: 600, display: 'block', marginBottom: 8 }}>ChatGPT</span>
+                <span style={{ fontSize: 14, color: 'var(--color-dimmed)' }}>
+                  Settings &rarr; Connectors &rarr; Add MCP Server에서 URL과 API Key를 입력하세요.
+                  <br />
+                  URL: <code style={{ background: '#f3f4f6', padding: '2px 6px', borderRadius: 4 }}>/api/mcp/sse</code>
+                </span>
+              </div>
 
-          <div>
-            <Text fw={600} mb="xs">Gemini / 기타</Text>
-            <Text size="sm" c="dimmed">
-              MCP 미지원 서비스는 대화 내보내기(JSON) 후
-              OU Chat View에서 업로드하면 자동으로 구조화됩니다.
-            </Text>
+              <div>
+                <span style={{ fontWeight: 600, display: 'block', marginBottom: 8 }}>Gemini / 기타</span>
+                <span style={{ fontSize: 14, color: 'var(--color-dimmed)' }}>
+                  MCP 미지원 서비스는 대화 내보내기(JSON) 후
+                  OU Chat View에서 업로드하면 자동으로 구조화됩니다.
+                </span>
+              </div>
+            </div>
           </div>
-        </Stack>
-      </Modal>
+        </div>
+      )}
     </>
   );
 }

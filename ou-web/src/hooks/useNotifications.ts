@@ -3,7 +3,6 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { notifications as mantineNotifications } from '@mantine/notifications';
 
 export interface NotificationItem {
   id: string;
@@ -159,13 +158,9 @@ export function useNotifications() {
 
         const preview = msg.content?.substring(0, 60) || '새 메시지';
 
-        // Show toast notification
-        mantineNotifications.show({
-          title: '새 메시지',
-          message: preview,
-          color: 'dark',
-          autoClose: 4000,
-        });
+        // Show alert notification (replacing mantine notifications)
+        // In production this should use a custom toast system
+        console.log('[Notification] 새 메시지:', preview);
 
         // Update notification items
         setNotifications(prev => {
@@ -201,13 +196,7 @@ export function useNotifications() {
 
         const preview = node.title || node.raw?.substring(0, 40) || '새 글이 공유되었어요';
 
-        // Show toast
-        mantineNotifications.show({
-          title: '새 피드',
-          message: preview,
-          color: 'dark',
-          autoClose: 3000,
-        });
+        console.log('[Notification] 새 피드:', preview);
 
         setUnreadCount(c => c + 1);
       })
@@ -233,12 +222,7 @@ export function useNotifications() {
           name = profile.display_name || profile.handle || '회원';
         }
 
-        mantineNotifications.show({
-          title: '새 팔로워',
-          message: `${name}님이 팔로우했습니다`,
-          color: 'dark',
-          autoClose: 3000,
-        });
+        console.log('[Notification] 새 팔로워:', name);
 
         setNotifications(prev => [{
           id: `follow-${follow.follower_id}`,

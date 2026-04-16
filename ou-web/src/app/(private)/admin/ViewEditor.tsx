@@ -1,11 +1,6 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import {
-  Stack, Group, TextInput, Select, Table, Text, Badge, ActionIcon,
-  Pagination, Modal, Textarea, Button, Checkbox, Paper, Loader, Tabs,
-} from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
 import { MagnifyingGlass, PencilSimple, Trash, Eye, PaintBrush, Code } from '@phosphor-icons/react';
 import { useSelection } from '@/hooks/useSelection';
 import type { SavedViewRow } from '@/types/admin';
@@ -18,15 +13,16 @@ export function ViewEditor() {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
-  const [viewType, setViewType] = useState<string | null>(null);
+  const [viewType, setViewType] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [editView, setEditView] = useState<SavedViewRow | null>(null);
-  const [editOpened, { open: openEdit, close: closeEdit }] = useDisclosure(false);
+  const [editOpened, setEditOpened] = useState(false);
   const [filterJson, setFilterJson] = useState('');
   const [layoutJson, setLayoutJson] = useState('');
   const [editName, setEditName] = useState('');
-  const [editVisibility, setEditVisibility] = useState<string | null>('private');
+  const [editVisibility, setEditVisibility] = useState<string>('private');
   const [saving, setSaving] = useState(false);
+  const [layoutTab, setLayoutTab] = useState<'visual' | 'json'>('visual');
   const PAGE_SIZE = 20;
 
   const pageIds = useMemo(() => views.map(v => v.id), [views]);
@@ -64,10 +60,9 @@ export function ViewEditor() {
     setFilterJson(JSON.stringify(view.filter_config, null, 2));
     setLayoutJson(JSON.stringify(view.layout_config, null, 2));
     setEditVisibility(view.visibility ?? 'private');
-    // 스토어에도 layoutConfig 로드 (비주얼 에디터용)
     const lc = (view.layout_config as LayoutConfig) ?? {};
     useViewEditorStore.setState({ layoutConfig: lc, viewType: view.view_type });
-    openEdit();
+    setEditOpened(true);
   };
 
   const handleSave = async () => {
@@ -76,7 +71,6 @@ export function ViewEditor() {
     try {
       let filterConfig, layoutConfig;
       try { filterConfig = JSON.parse(filterJson); } catch { filterConfig = editView.filter_config; }
-      // 비주얼 에디터에서 변경했으면 스토어 값 사용, 아니면 JSON textarea 값 사용
       const storeLayout = adminLayoutConfig;
       if (Object.keys(storeLayout).length > 0) {
         layoutConfig = storeLayout;
@@ -97,7 +91,7 @@ export function ViewEditor() {
           },
         }),
       });
-      closeEdit();
+      setEditOpened(false);
       fetchViews();
     } finally {
       setSaving(false);
@@ -115,169 +109,195 @@ export function ViewEditor() {
     fetchViews();
   };
 
+  const totalPages = Math.ceil(total / PAGE_SIZE);
+  const viewTypeOptions = ['calendar', 'task', 'knowledge_graph', 'chart', 'mindmap', 'heatmap', 'journal', 'timeline', 'flashcard', 'document', 'export', 'dictionary'];
+
   return (
-    <Stack gap="md">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       {/* Filters */}
-      <Group gap="sm">
-        <TextInput
-          placeholder="뷰 이름 검색..."
-          leftSection={<MagnifyingGlass size={16} />}
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          w={240}
-          size="xs"
-        />
-        <Select
-          placeholder="뷰 타입"
-          data={['calendar', 'task', 'knowledge_graph', 'chart', 'mindmap', 'heatmap', 'journal', 'timeline', 'flashcard', 'document', 'export', 'dictionary']}
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+        <div style={{ position: 'relative' }}>
+          <MagnifyingGlass size={16} style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', color: '#868e96' }} />
+          <input
+            placeholder="뷰 이름 검색..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            style={{ width: 240, padding: '4px 8px 4px 28px', border: '1px solid #dee2e6', borderRadius: 4, fontSize: 12 }}
+          />
+        </div>
+        <select
           value={viewType}
-          onChange={setViewType}
-          clearable
-          w={180}
-          size="xs"
-        />
-        <Text fz="xs" c="dimmed">총 {total.toLocaleString()}개</Text>
-      </Group>
+          onChange={e => setViewType(e.target.value)}
+          style={{ width: 180, padding: '4px 8px', border: '1px solid #dee2e6', borderRadius: 4, fontSize: 12 }}
+        >
+          <option value="">뷰 타입</option>
+          {viewTypeOptions.map(t => <option key={t} value={t}>{t}</option>)}
+        </select>
+        <span style={{ fontSize: 12, color: '#868e96' }}>총 {total.toLocaleString()}개</span>
+      </div>
 
       {/* Batch actions */}
       {selection.selected.size > 0 && (
-        <Paper p="xs">
-          <Group gap="xs">
-            <Text fz="xs" c="dimmed">{selection.selected.size}개 선택</Text>
-            <Button size="xs" variant="light" color="red" onClick={handleBatchDelete}>
+        <div style={{ padding: 8, background: '#fff', borderRadius: 8, border: '1px solid #e0e0e0' }}>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <span style={{ fontSize: 12, color: '#868e96' }}>{selection.selected.size}개 선택</span>
+            <button onClick={handleBatchDelete} style={{ padding: '4px 12px', background: '#ffe3e3', color: '#c92a2a', border: 'none', borderRadius: 4, cursor: 'pointer', fontSize: 12 }}>
               선택 삭제
-            </Button>
-            <Button size="xs" variant="light" color="gray" onClick={() => selection.clearAll()}>
+            </button>
+            <button onClick={() => selection.clearAll()} style={{ padding: '4px 12px', background: '#f8f9fa', border: '1px solid #dee2e6', borderRadius: 4, cursor: 'pointer', fontSize: 12 }}>
               선택 해제
-            </Button>
-          </Group>
-        </Paper>
+            </button>
+          </div>
+        </div>
       )}
 
       {/* Table */}
-      <Table highlightOnHover fz="xs">
-        <Table.Thead>
-          <Table.Tr>
-            <Table.Th w={36}>
-              <Checkbox
-                size="xs"
+      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
+        <thead>
+          <tr>
+            <th style={{ width: 36, padding: '6px 8px', borderBottom: '2px solid #e0e0e0' }}>
+              <input
+                type="checkbox"
                 checked={selection.headerCheckbox.checked}
-                indeterminate={selection.headerCheckbox.indeterminate}
+                ref={el => { if (el) el.indeterminate = selection.headerCheckbox.indeterminate; }}
                 onChange={() => {
                   if (selection.headerCheckbox.checked) selection.deselectPage(pageIds);
                   else selection.selectPage(pageIds);
                 }}
               />
-            </Table.Th>
-            <Table.Th>이름</Table.Th>
-            <Table.Th w={100}>타입</Table.Th>
-            <Table.Th w={80}>공개</Table.Th>
-            <Table.Th w={110}>생성일</Table.Th>
-            <Table.Th w={50} />
-          </Table.Tr>
-        </Table.Thead>
-        <Table.Tbody>
+            </th>
+            <th style={{ textAlign: 'left', padding: '6px 8px', borderBottom: '2px solid #e0e0e0' }}>이름</th>
+            <th style={{ textAlign: 'left', padding: '6px 8px', borderBottom: '2px solid #e0e0e0', width: 100 }}>타입</th>
+            <th style={{ textAlign: 'left', padding: '6px 8px', borderBottom: '2px solid #e0e0e0', width: 80 }}>공개</th>
+            <th style={{ textAlign: 'left', padding: '6px 8px', borderBottom: '2px solid #e0e0e0', width: 110 }}>생성일</th>
+            <th style={{ width: 50, padding: '6px 8px', borderBottom: '2px solid #e0e0e0' }} />
+          </tr>
+        </thead>
+        <tbody>
           {loading ? (
-            <Table.Tr>
-              <Table.Td colSpan={6}>
-                <Group justify="center" py="md"><Loader size="sm" /></Group>
-              </Table.Td>
-            </Table.Tr>
+            <tr>
+              <td colSpan={6} style={{ textAlign: 'center', padding: '16px' }}>
+                <span>...</span>
+              </td>
+            </tr>
           ) : views.length === 0 ? (
-            <Table.Tr>
-              <Table.Td colSpan={6}>
-                <Text c="dimmed" ta="center" py="md">뷰가 없어요.</Text>
-              </Table.Td>
-            </Table.Tr>
+            <tr>
+              <td colSpan={6} style={{ textAlign: 'center', padding: '16px', color: '#868e96' }}>뷰가 없어요.</td>
+            </tr>
           ) : views.map(v => (
-            <Table.Tr key={v.id}>
-              <Table.Td>
-                <Checkbox
-                  size="xs"
+            <tr key={v.id} style={{ borderBottom: '1px solid #f1f3f5' }}>
+              <td style={{ padding: '6px 8px' }}>
+                <input
+                  type="checkbox"
                   checked={selection.isSelected(v.id)}
                   onChange={() => selection.toggle(v.id)}
                 />
-              </Table.Td>
-              <Table.Td>
-                <Text fz="xs" fw={500} lineClamp={1}>{v.name}</Text>
-              </Table.Td>
-              <Table.Td>
-                <Badge variant="light" color="gray" size="xs">{v.view_type}</Badge>
-              </Table.Td>
-              <Table.Td>
-                <Badge variant="light" color={v.visibility === 'public' ? 'dark' : 'gray'} size="xs">
+              </td>
+              <td style={{ padding: '6px 8px' }}>
+                <span style={{ fontSize: 12, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{v.name}</span>
+              </td>
+              <td style={{ padding: '6px 8px' }}>
+                <span style={{ background: '#f1f3f5', padding: '1px 8px', borderRadius: 10, fontSize: 10 }}>{v.view_type}</span>
+              </td>
+              <td style={{ padding: '6px 8px' }}>
+                <span style={{ background: v.visibility === 'public' ? '#343a40' : '#f1f3f5', color: v.visibility === 'public' ? '#fff' : '#495057', padding: '1px 8px', borderRadius: 10, fontSize: 10 }}>
                   {v.visibility ?? 'private'}
-                </Badge>
-              </Table.Td>
-              <Table.Td>
-                <Text fz="xs" c="dimmed">{new Date(v.created_at).toLocaleDateString('ko-KR')}</Text>
-              </Table.Td>
-              <Table.Td>
-                <ActionIcon variant="subtle" size="xs" onClick={() => handleEdit(v)}>
+                </span>
+              </td>
+              <td style={{ padding: '6px 8px', fontSize: 12, color: '#868e96' }}>
+                {new Date(v.created_at).toLocaleDateString('ko-KR')}
+              </td>
+              <td style={{ padding: '6px 8px' }}>
+                <button onClick={() => handleEdit(v)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}>
                   <PencilSimple size={14} />
-                </ActionIcon>
-              </Table.Td>
-            </Table.Tr>
+                </button>
+              </td>
+            </tr>
           ))}
-        </Table.Tbody>
-      </Table>
+        </tbody>
+      </table>
 
-      <Group justify="center">
-        <Pagination total={Math.ceil(total / PAGE_SIZE)} value={page} onChange={setPage} size="sm" />
-      </Group>
+      {totalPages > 1 && (
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 4 }}>
+          {Array.from({ length: totalPages }, (_, i) => i + 1).slice(Math.max(0, page - 3), page + 2).map(p => (
+            <button
+              key={p}
+              onClick={() => setPage(p)}
+              style={{
+                padding: '4px 10px', border: '1px solid #dee2e6', borderRadius: 4, cursor: 'pointer', fontSize: 12,
+                background: p === page ? '#333' : '#fff',
+                color: p === page ? '#fff' : '#333',
+              }}
+            >
+              {p}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Edit Modal */}
-      <Modal opened={editOpened} onClose={closeEdit} title="뷰 편집" centered size="lg">
-        <Stack gap="md">
-          <TextInput label="이름" value={editName} onChange={e => setEditName(e.target.value)} />
-          <Select
-            label="공개 범위"
-            data={['private', 'link', 'public']}
-            value={editVisibility}
-            onChange={setEditVisibility}
-          />
-          <Textarea
-            label="필터 설정 (JSON)"
-            value={filterJson}
-            onChange={e => setFilterJson(e.target.value)}
-            minRows={4}
-            autosize
-            ff="monospace"
-            fz="xs"
-          />
+      {editOpened && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }} onClick={() => setEditOpened(false)}>
+          <div style={{ background: '#fff', borderRadius: 8, padding: 24, width: '90%', maxWidth: 640, maxHeight: '80vh', overflow: 'auto' }} onClick={e => e.stopPropagation()}>
+            <h3 style={{ margin: '0 0 16px 0', fontSize: 16 }}>뷰 편집</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 500, marginBottom: 4 }}>이름</label>
+                <input value={editName} onChange={e => setEditName(e.target.value)} style={{ width: '100%', padding: '6px 10px', border: '1px solid #dee2e6', borderRadius: 4, fontSize: 13 }} />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 500, marginBottom: 4 }}>공개 범위</label>
+                <select value={editVisibility} onChange={e => setEditVisibility(e.target.value)} style={{ width: '100%', padding: '6px 10px', border: '1px solid #dee2e6', borderRadius: 4, fontSize: 13 }}>
+                  <option value="private">private</option>
+                  <option value="link">link</option>
+                  <option value="public">public</option>
+                </select>
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 500, marginBottom: 4 }}>필터 설정 (JSON)</label>
+                <textarea
+                  value={filterJson}
+                  onChange={e => setFilterJson(e.target.value)}
+                  rows={4}
+                  style={{ width: '100%', padding: '6px 10px', border: '1px solid #dee2e6', borderRadius: 4, fontSize: 12, fontFamily: 'monospace', resize: 'vertical' }}
+                />
+              </div>
 
-          {/* 레이아웃: 비주얼 에디터 / JSON 탭 전환 */}
-          <Tabs defaultValue="visual" variant="outline">
-            <Tabs.List>
-              <Tabs.Tab value="visual" leftSection={<PaintBrush size={14} />}>
-                디자인
-              </Tabs.Tab>
-              <Tabs.Tab value="json" leftSection={<Code size={14} />}>
-                JSON
-              </Tabs.Tab>
-            </Tabs.List>
-            <Tabs.Panel value="visual" pt="sm">
-              <LayoutDesignPanel viewType={editView?.view_type} />
-            </Tabs.Panel>
-            <Tabs.Panel value="json" pt="sm">
-              <Textarea
-                label="레이아웃 설정 (JSON)"
-                value={layoutJson}
-                onChange={e => setLayoutJson(e.target.value)}
-                minRows={4}
-                autosize
-                ff="monospace"
-                fz="xs"
-              />
-            </Tabs.Panel>
-          </Tabs>
+              {/* Layout tabs */}
+              <div>
+                <div style={{ display: 'flex', borderBottom: '1px solid #dee2e6', marginBottom: 8 }}>
+                  <button onClick={() => setLayoutTab('visual')} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 12px', border: 'none', borderBottom: layoutTab === 'visual' ? '2px solid #333' : '2px solid transparent', background: 'none', cursor: 'pointer', fontSize: 12, fontWeight: layoutTab === 'visual' ? 600 : 400 }}>
+                    <PaintBrush size={14} /> 디자인
+                  </button>
+                  <button onClick={() => setLayoutTab('json')} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 12px', border: 'none', borderBottom: layoutTab === 'json' ? '2px solid #333' : '2px solid transparent', background: 'none', cursor: 'pointer', fontSize: 12, fontWeight: layoutTab === 'json' ? 600 : 400 }}>
+                    <Code size={14} /> JSON
+                  </button>
+                </div>
+                {layoutTab === 'visual' ? (
+                  <LayoutDesignPanel viewType={editView?.view_type} />
+                ) : (
+                  <div>
+                    <label style={{ display: 'block', fontSize: 12, fontWeight: 500, marginBottom: 4 }}>레이아웃 설정 (JSON)</label>
+                    <textarea
+                      value={layoutJson}
+                      onChange={e => setLayoutJson(e.target.value)}
+                      rows={4}
+                      style={{ width: '100%', padding: '6px 10px', border: '1px solid #dee2e6', borderRadius: 4, fontSize: 12, fontFamily: 'monospace', resize: 'vertical' }}
+                    />
+                  </div>
+                )}
+              </div>
 
-          <Group justify="flex-end" gap="xs">
-            <Button variant="light" color="gray" onClick={closeEdit}>취소</Button>
-            <Button color="dark" loading={saving} onClick={handleSave}>저장</Button>
-          </Group>
-        </Stack>
-      </Modal>
-    </Stack>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+                <button onClick={() => setEditOpened(false)} style={{ padding: '6px 14px', background: '#f8f9fa', border: '1px solid #dee2e6', borderRadius: 4, cursor: 'pointer', fontSize: 12 }}>취소</button>
+                <button disabled={saving} onClick={handleSave} style={{ padding: '6px 14px', background: '#343a40', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer', fontSize: 12 }}>
+                  {saving ? '...' : '저장'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
