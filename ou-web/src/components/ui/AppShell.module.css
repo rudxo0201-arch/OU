@@ -3,9 +3,10 @@
 }
 
 .main {
-  margin-left: var(--sidebar-width, 60px);
+  margin-left: var(--sidebar-width, 68px);
   transition: margin-left 200ms ease;
   min-height: 100vh;
+  background: transparent;
 }
 
 @media (max-width: 768px) {

@@ -26,6 +26,23 @@ export function NodeViewClient({ node, triples, sections, sentences, viewTypeOve
       })
     : '';
 
+  /* ── Section title style ── */
+  const sectionTitleStyle: React.CSSProperties = {
+    fontSize: 10,
+    textTransform: 'uppercase',
+    letterSpacing: 3,
+    color: 'var(--ou-text-dimmed)',
+    fontWeight: 500,
+  };
+
+  /* ── Card style ── */
+  const cardStyle: React.CSSProperties = {
+    background: 'transparent',
+    border: '0.5px solid var(--ou-border-subtle)',
+    borderRadius: 'var(--ou-radius-card)',
+    boxShadow: 'var(--ou-glow-sm)',
+  };
+
   return (
     <Stack gap="lg" p="xl">
       {/* 데이터뷰 렌더링 (매칭되는 뷰가 있으면) */}
@@ -35,19 +52,21 @@ export function NodeViewClient({ node, triples, sections, sentences, viewTypeOve
 
       {/* 원문 */}
       {node.raw && (
-        <Paper p="md" radius="md" style={{ border: '0.5px solid var(--mantine-color-default-border)' }}>
+        <Paper p="md" radius="md" style={cardStyle}>
           <Stack gap="xs">
-            <Text fz="xs" c="dimmed" fw={500}>원문</Text>
-            <Text fz="sm" style={{ whiteSpace: 'pre-wrap' }}>{node.raw}</Text>
+            <Text style={sectionTitleStyle}>원문</Text>
+            <Text fz="sm" style={{ whiteSpace: 'pre-wrap', color: 'var(--ou-text-body)' }}>
+              {node.raw}
+            </Text>
           </Stack>
         </Paper>
       )}
 
       {/* 구조화된 문장 */}
       {sections.length > 0 && (
-        <Paper p="md" radius="md" style={{ border: '0.5px solid var(--mantine-color-default-border)' }}>
+        <Paper p="md" radius="md" style={cardStyle}>
           <Stack gap="sm">
-            <Text fz="xs" c="dimmed" fw={500}>구조</Text>
+            <Text style={sectionTitleStyle}>구조</Text>
             {sections.map(sec => {
               const sectionSentences = sentences
                 .filter(s => s.section_id === sec.id)
@@ -55,10 +74,12 @@ export function NodeViewClient({ node, triples, sections, sentences, viewTypeOve
               return (
                 <Box key={sec.id}>
                   {sec.heading && (
-                    <Text fz="sm" fw={600} mb={4}>{sec.heading}</Text>
+                    <Text fz="sm" fw={600} mb={4} style={{ color: 'var(--ou-text-strong)' }}>
+                      {sec.heading}
+                    </Text>
                   )}
                   {sectionSentences.map(s => (
-                    <Text key={s.id} fz="sm" c="dimmed" pl="sm">
+                    <Text key={s.id} fz="sm" pl="sm" style={{ color: 'var(--ou-text-body)' }}>
                       {s.text}
                     </Text>
                   ))}
@@ -71,14 +92,36 @@ export function NodeViewClient({ node, triples, sections, sentences, viewTypeOve
 
       {/* 트리플 (관계) */}
       {triples.length > 0 && (
-        <Paper p="md" radius="md" style={{ border: '0.5px solid var(--mantine-color-default-border)' }}>
+        <Paper p="md" radius="md" style={cardStyle}>
           <Stack gap="xs">
-            <Text fz="xs" c="dimmed" fw={500}>관계</Text>
+            <Text style={sectionTitleStyle}>관계</Text>
             {triples.map((t, i) => (
               <Group key={i} gap="xs">
-                <Badge variant="light" color="gray" size="sm">{t.subject}</Badge>
-                <Text fz="xs" c="dimmed">{t.predicate}</Text>
-                <Badge variant="light" color="gray" size="sm">{t.object}</Badge>
+                <Badge
+                  variant="light"
+                  color="gray"
+                  size="sm"
+                  style={{
+                    background: 'var(--ou-surface-muted)',
+                    border: '0.5px solid var(--ou-border-subtle)',
+                    color: 'var(--ou-text-body)',
+                  }}
+                >
+                  {t.subject}
+                </Badge>
+                <Text fz="xs" style={{ color: 'var(--ou-text-dimmed)' }}>{t.predicate}</Text>
+                <Badge
+                  variant="light"
+                  color="gray"
+                  size="sm"
+                  style={{
+                    background: 'var(--ou-surface-muted)',
+                    border: '0.5px solid var(--ou-border-subtle)',
+                    color: 'var(--ou-text-body)',
+                  }}
+                >
+                  {t.object}
+                </Badge>
               </Group>
             ))}
           </Stack>
@@ -87,17 +130,26 @@ export function NodeViewClient({ node, triples, sections, sentences, viewTypeOve
 
       {/* 메타 정보 */}
       <Group gap="xs">
-        {date && <Text fz="xs" c="dimmed">{date}</Text>}
+        {date && <Text fz="xs" style={{ color: 'var(--ou-text-dimmed)' }}>{date}</Text>}
         {node.confidence && (
           <>
-            <Divider orientation="vertical" />
-            <Text fz="xs" c="dimmed">{node.confidence}</Text>
+            <Divider orientation="vertical" color="var(--ou-border-subtle)" />
+            <Text fz="xs" style={{ color: 'var(--ou-text-dimmed)' }}>{node.confidence}</Text>
           </>
         )}
         {node.domain && (
           <>
-            <Divider orientation="vertical" />
-            <Badge variant="light" color="gray" size="xs">
+            <Divider orientation="vertical" color="var(--ou-border-subtle)" />
+            <Badge
+              variant="light"
+              color="gray"
+              size="xs"
+              style={{
+                background: 'var(--ou-surface-muted)',
+                border: '0.5px solid var(--ou-border-subtle)',
+                color: 'var(--ou-text-dimmed)',
+              }}
+            >
               {DOMAIN_LABELS[node.domain] || node.domain}
             </Badge>
           </>

@@ -15,7 +15,7 @@ export interface ChatMessage {
   ocrResult?: { text: string; imageType: string };
   /** 파일 업로드 결과 */
   fileResult?: {
-    fileType: 'pdf' | 'text' | 'ou' | 'ppt' | 'hwp';
+    fileType: 'pdf' | 'text' | 'ou' | 'ppt' | 'hwp' | 'docx' | 'xlsx' | 'video' | 'audio';
     fileName: string;
     pageCount?: number;
     textContent?: string;

@@ -94,29 +94,82 @@ export function SavedViewCarousel({ views: initialViews, nodes = [] }: SavedView
             {views.map(view => (
               <Menu key={view.id} position="top-start" withinPortal>
                 <Menu.Target>
-                  <GlassCard
-                    px="md"
-                    py="sm"
+                  <div
                     style={{
                       cursor: 'pointer',
                       flexShrink: 0,
                       minWidth: 140,
-                      transition: 'background 150ms',
+                      padding: '10px 14px',
+                      background: 'transparent',
+                      border: '0.5px solid var(--ou-border-subtle)',
+                      borderRadius: 'var(--ou-radius-card)',
+                      boxShadow: 'var(--ou-glow-sm)',
+                      transition: 'border-color var(--ou-transition), box-shadow var(--ou-transition)',
                     }}
                     onClick={() => setActiveView(view)}
+                    onMouseEnter={e => {
+                      (e.currentTarget as HTMLElement).style.borderColor = 'var(--ou-border-hover)';
+                      (e.currentTarget as HTMLElement).style.boxShadow = 'var(--ou-glow-hover)';
+                    }}
+                    onMouseLeave={e => {
+                      (e.currentTarget as HTMLElement).style.borderColor = 'var(--ou-border-subtle)';
+                      (e.currentTarget as HTMLElement).style.boxShadow = 'var(--ou-glow-sm)';
+                    }}
                   >
                     <Group gap="xs" wrap="nowrap">
-                      <Text fz={16}>{view.icon ?? '◆'}</Text>
+                      {/* orb-block.sm style icon */}
+                      <div style={{
+                        width: 28,
+                        height: 28,
+                        borderRadius: '50%',
+                        border: '0.5px solid var(--ou-border-muted)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: 14,
+                        flexShrink: 0,
+                        boxShadow: 'var(--ou-glow-xs)',
+                      }}>
+                        {view.icon ?? '◆'}
+                      </div>
                       <div>
-                        <Text fz="xs" fw={500} style={{ whiteSpace: 'nowrap' }}>
+                        <Text
+                          fz={13}
+                          fw={500}
+                          style={{ whiteSpace: 'nowrap', color: 'var(--ou-text-strong)' }}
+                        >
                           {view.name}
                         </Text>
-                        <Text fz={10} c="dimmed">{view.view_type}</Text>
+                        {/* badge-block style domain */}
+                        {view.view_type && (
+                          <Text
+                            fz={10}
+                            style={{
+                              color: 'var(--ou-text-dimmed)',
+                              display: 'inline-block',
+                              padding: '1px 6px',
+                              borderRadius: 'var(--ou-radius-pill)',
+                              border: '0.5px solid var(--ou-border-faint)',
+                              marginTop: 2,
+                            }}
+                          >
+                            {view.view_type}
+                          </Text>
+                        )}
                       </div>
                     </Group>
-                  </GlassCard>
+                  </div>
                 </Menu.Target>
-                <Menu.Dropdown>
+                <Menu.Dropdown
+                  style={{
+                    background: 'var(--ou-surface-muted)',
+                    backdropFilter: 'blur(20px)',
+                    WebkitBackdropFilter: 'blur(20px)',
+                    border: '0.5px solid var(--ou-border-subtle)',
+                    boxShadow: 'var(--ou-glow-md)',
+                    borderRadius: 'var(--ou-radius-md)',
+                  }}
+                >
                   <Menu.Item
                     leftSection={<ShareNetwork size={14} />}
                     onClick={() => {
@@ -157,13 +210,29 @@ export function SavedViewCarousel({ views: initialViews, nodes = [] }: SavedView
         </ScrollArea>
       </div>
 
-      {/* Rename Modal */}
+      {/* Rename Modal — glass-block */}
       <Modal
         opened={!!renameId}
         onClose={() => { setRenameId(null); setRenameValue(''); }}
-        title={<Text fw={600}>이름 변경</Text>}
+        title={<Text fw={600} style={{ color: 'var(--ou-text-strong)' }}>이름 변경</Text>}
         centered
         size="xs"
+        styles={{
+          content: {
+            background: 'var(--ou-surface-muted)',
+            backdropFilter: 'blur(24px)',
+            WebkitBackdropFilter: 'blur(24px)',
+            border: '0.5px solid var(--ou-border-subtle)',
+            boxShadow: 'var(--ou-glow-lg)',
+            borderRadius: 'var(--ou-radius-card)',
+          },
+          header: {
+            background: 'transparent',
+          },
+          body: {
+            background: 'transparent',
+          },
+        }}
       >
         <Stack gap="md">
           <TextInput
@@ -174,50 +243,112 @@ export function SavedViewCarousel({ views: initialViews, nodes = [] }: SavedView
               if (e.key === 'Enter') handleRename();
             }}
             autoFocus
+            styles={{
+              input: {
+                background: 'transparent',
+                border: '0.5px solid var(--ou-border-subtle)',
+                borderRadius: 'var(--ou-radius-pill)',
+                color: 'var(--ou-text-body)',
+              },
+            }}
           />
           <Group justify="flex-end">
-            <Button variant="subtle" color="gray" onClick={() => setRenameId(null)}>
+            <Button
+              variant="subtle"
+              color="gray"
+              onClick={() => setRenameId(null)}
+              style={{
+                borderRadius: 'var(--ou-radius-pill)',
+              }}
+            >
               취소
             </Button>
-            <Button color="gray" onClick={handleRename} disabled={!renameValue.trim()}>
+            <Button
+              color="gray"
+              onClick={handleRename}
+              disabled={!renameValue.trim()}
+              style={{
+                borderRadius: 'var(--ou-radius-pill)',
+                border: '0.5px solid var(--ou-border-subtle)',
+              }}
+            >
               변경
             </Button>
           </Group>
         </Stack>
       </Modal>
 
-      {/* Delete Confirmation Modal */}
+      {/* Delete Confirmation Modal — glass-block */}
       <Modal
         opened={!!deleteId}
         onClose={() => setDeleteId(null)}
-        title={<Text fw={600}>뷰 삭제</Text>}
+        title={<Text fw={600} style={{ color: 'var(--ou-text-strong)' }}>뷰 삭제</Text>}
         centered
         size="xs"
+        styles={{
+          content: {
+            background: 'var(--ou-surface-muted)',
+            backdropFilter: 'blur(24px)',
+            WebkitBackdropFilter: 'blur(24px)',
+            border: '0.5px solid var(--ou-border-subtle)',
+            boxShadow: 'var(--ou-glow-lg)',
+            borderRadius: 'var(--ou-radius-card)',
+          },
+          header: {
+            background: 'transparent',
+          },
+          body: {
+            background: 'transparent',
+          },
+        }}
       >
         <Stack gap="md">
-          <Text fz="sm">
-            <Text span fw={600}>{viewToDelete?.name}</Text> 뷰를 삭제하시겠어요?
+          <Text fz="sm" style={{ color: 'var(--ou-text-body)' }}>
+            <Text span fw={600} style={{ color: 'var(--ou-text-strong)' }}>{viewToDelete?.name}</Text> 뷰를 삭제하시겠어요?
           </Text>
           <Group justify="flex-end">
-            <Button variant="subtle" color="gray" onClick={() => setDeleteId(null)}>
+            <Button
+              variant="subtle"
+              color="gray"
+              onClick={() => setDeleteId(null)}
+              style={{ borderRadius: 'var(--ou-radius-pill)' }}
+            >
               취소
             </Button>
-            <Button color="gray" onClick={handleDelete}>
+            <Button
+              color="gray"
+              onClick={handleDelete}
+              style={{
+                borderRadius: 'var(--ou-radius-pill)',
+                border: '0.5px solid var(--ou-border-subtle)',
+              }}
+            >
               삭제
             </Button>
           </Group>
         </Stack>
       </Modal>
 
-      {/* Saved View Rendering Modal */}
+      {/* Saved View Rendering Modal — glass-block */}
       <Modal
         opened={!!activeView}
         onClose={() => setActiveView(null)}
-        title={<Text fw={600}>{activeView?.icon ?? '◆'} {activeView?.name}</Text>}
+        title={<Text fw={600} style={{ color: 'var(--ou-text-strong)' }}>{activeView?.icon ?? '◆'} {activeView?.name}</Text>}
         centered
         size="xl"
         styles={{
-          body: { padding: 0, maxHeight: '70vh', overflow: 'auto' },
+          content: {
+            background: 'var(--ou-surface-muted)',
+            backdropFilter: 'blur(24px)',
+            WebkitBackdropFilter: 'blur(24px)',
+            border: '0.5px solid var(--ou-border-subtle)',
+            boxShadow: 'var(--ou-glow-lg)',
+            borderRadius: 'var(--ou-radius-card)',
+          },
+          header: {
+            background: 'transparent',
+          },
+          body: { padding: 0, maxHeight: '70vh', overflow: 'auto', background: 'transparent' },
         }}
       >
         {activeView && (() => {

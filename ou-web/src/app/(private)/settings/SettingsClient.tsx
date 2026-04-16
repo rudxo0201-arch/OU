@@ -2,9 +2,9 @@
 
 import { useState, useRef } from 'react';
 import {
-  Stack, Title, Text, Paper, Group, Button, Badge, Divider, Avatar,
+  Stack, Text, Group, Button, Badge, Avatar,
   TextInput, Textarea, Modal, Switch, Progress, FileButton,
-  Tooltip,
+  Tooltip, Box,
 } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import {
@@ -41,6 +41,96 @@ const PLAN_LIMITS: Record<string, number> = {
   team: 5000,
 };
 
+/* ── Shared styles ── */
+const sectionStyle: React.CSSProperties = {
+  background: 'transparent',
+  border: '0.5px solid var(--ou-border-subtle)',
+  borderRadius: 'var(--ou-radius-card)',
+  padding: 24,
+  boxShadow: 'var(--ou-glow-sm)',
+  transition: 'var(--ou-transition)',
+};
+
+const dividerStyle: React.CSSProperties = {
+  height: '0.5px',
+  background: 'var(--ou-border-faint)',
+  border: 'none',
+  margin: '4px 0',
+};
+
+const labelStyle: React.CSSProperties = {
+  color: 'var(--ou-text-dimmed)',
+  fontSize: 11,
+  fontWeight: 500,
+};
+
+const inputStyles = {
+  label: { color: 'var(--ou-text-dimmed)', fontSize: 11, fontWeight: 500, marginBottom: 4 },
+  input: {
+    background: 'transparent',
+    border: '0.5px solid var(--ou-border-subtle)',
+    borderRadius: 'var(--ou-radius-pill)',
+    color: 'var(--ou-text-bright)',
+    fontSize: 13,
+    transition: 'var(--ou-transition)',
+    '&:focus': {
+      borderColor: 'var(--ou-border-strong)',
+      boxShadow: 'var(--ou-glow-md)',
+    },
+  },
+};
+
+const textareaStyles = {
+  label: { color: 'var(--ou-text-dimmed)', fontSize: 11, fontWeight: 500, marginBottom: 4 },
+  input: {
+    background: 'transparent',
+    border: '0.5px solid var(--ou-border-subtle)',
+    borderRadius: 'var(--ou-radius-card)',
+    color: 'var(--ou-text-bright)',
+    fontSize: 13,
+    transition: 'var(--ou-transition)',
+    '&:focus': {
+      borderColor: 'var(--ou-border-strong)',
+      boxShadow: 'var(--ou-glow-md)',
+    },
+  },
+};
+
+const pillBtnStyle: React.CSSProperties = {
+  background: 'transparent',
+  border: '0.5px solid var(--ou-border-subtle)',
+  borderRadius: 'var(--ou-radius-pill)',
+  color: 'var(--ou-text-body)',
+  fontSize: 13,
+  fontWeight: 500,
+  fontFamily: 'inherit',
+  cursor: 'pointer',
+  transition: 'var(--ou-transition)',
+  boxShadow: 'var(--ou-glow-xs)',
+  padding: '8px 20px',
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: 8,
+};
+
+const filledBtnStyle: React.CSSProperties = {
+  background: 'rgba(255,255,255,0.9)',
+  color: '#111',
+  border: 'none',
+  borderRadius: 'var(--ou-radius-pill)',
+  fontSize: 13,
+  fontWeight: 600,
+  fontFamily: 'inherit',
+  cursor: 'pointer',
+  transition: 'var(--ou-transition)',
+  padding: '10px 24px',
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: 8,
+  width: '100%',
+};
+
 /* ── 소셜 계정 연결 버튼 ── */
 function SocialLinkButton({ provider, label, icon }: { provider: string; label: string; icon: React.ReactNode }) {
   const [linking, setLinking] = useState(false);
@@ -70,33 +160,51 @@ function SocialLinkButton({ provider, label, icon }: { provider: string; label: 
         options: { redirectTo: `${window.location.origin}/auth/callback?next=/settings` },
       });
       if (error) {
-        const { notifications } = await import('@mantine/notifications');
-        notifications.show({ message: `${label} 연결에 실패했어요.`, color: 'red' });
+        notifications.show({ message: `${label} 연결에 실패했어요.`, color: 'gray' });
       }
     } catch {
-      const { notifications } = await import('@mantine/notifications');
-      notifications.show({ message: `${label} 연결에 실패했어요.`, color: 'red' });
+      notifications.show({ message: `${label} 연결에 실패했어요.`, color: 'gray' });
     } finally {
       setLinking(false);
     }
   };
 
   return (
-    <Button
-      variant="light"
-      color="gray"
-      size="sm"
-      leftSection={icon}
-      rightSection={linked ? <Badge size="xs" variant="light" color="teal">연결됨</Badge> : null}
+    <button
       onClick={handleLink}
-      loading={linking}
-      disabled={linked}
-      fullWidth
-      justify="flex-start"
-      styles={{ root: { fontWeight: 500 } }}
+      disabled={linked || linking}
+      style={{
+        ...pillBtnStyle,
+        width: '100%',
+        justifyContent: 'flex-start',
+        opacity: linked ? 0.5 : linking ? 0.7 : 1,
+        cursor: linked ? 'default' : linking ? 'wait' : 'pointer',
+      }}
+      onMouseEnter={e => {
+        if (!linked && !linking) {
+          e.currentTarget.style.borderColor = 'var(--ou-border-hover)';
+          e.currentTarget.style.boxShadow = 'var(--ou-glow-sm)';
+        }
+      }}
+      onMouseLeave={e => {
+        e.currentTarget.style.borderColor = 'var(--ou-border-subtle)';
+        e.currentTarget.style.boxShadow = 'var(--ou-glow-xs)';
+      }}
     >
-      {label}
-    </Button>
+      {icon}
+      <span style={{ flex: 1, textAlign: 'left' }}>{label}</span>
+      {linked && (
+        <span style={{
+          fontSize: 10,
+          color: 'var(--ou-text-dimmed)',
+          padding: '2px 10px',
+          borderRadius: 'var(--ou-radius-pill)',
+          border: '0.5px solid var(--ou-border-subtle)',
+        }}>
+          연결됨
+        </span>
+      )}
+    </button>
   );
 }
 
@@ -140,7 +248,7 @@ export function SettingsClient({ profile, subscription, nodeCount }: SettingsCli
         notifications.show({ message: '저장했어요.', color: 'gray' });
       }
     } catch {
-      notifications.show({ message: '저장에 실패했어요.', color: 'red' });
+      notifications.show({ message: '저장에 실패했어요.', color: 'gray' });
     } finally {
       setSaving(false);
     }
@@ -166,7 +274,7 @@ export function SettingsClient({ profile, subscription, nodeCount }: SettingsCli
       .upload(path, file, { upsert: true });
 
     if (error) {
-      notifications.show({ message: '업로드에 실패했어요.', color: 'red' });
+      notifications.show({ message: '업로드에 실패했어요.', color: 'gray' });
       return;
     }
 
@@ -219,7 +327,7 @@ export function SettingsClient({ profile, subscription, nodeCount }: SettingsCli
 
       notifications.show({ message: '내보내기를 완료했어요.', color: 'gray' });
     } catch {
-      notifications.show({ message: '내보내기에 실패했어요.', color: 'red' });
+      notifications.show({ message: '내보내기에 실패했어요.', color: 'gray' });
     } finally {
       setExporting(false);
     }
@@ -248,7 +356,7 @@ export function SettingsClient({ profile, subscription, nodeCount }: SettingsCli
       });
       router.refresh();
     } catch {
-      notifications.show({ message: '.ou 파일 형식이 올바르지 않아요.', color: 'red' });
+      notifications.show({ message: '.ou 파일 형식이 올바르지 않아요.', color: 'gray' });
     } finally {
       setImporting(false);
       resetRef.current?.();
@@ -262,18 +370,24 @@ export function SettingsClient({ profile, subscription, nodeCount }: SettingsCli
     window.location.href = '/';
   };
 
+  const SectionHeader = ({ icon, title }: { icon: React.ReactNode; title: string }) => (
+    <>
+      <Group gap={8}>
+        <Box style={{ color: 'var(--ou-text-dimmed)' }}>{icon}</Box>
+        <Text style={{ color: 'var(--ou-text-strong)', fontSize: 13, fontWeight: 600 }}>{title}</Text>
+      </Group>
+      <div style={dividerStyle} />
+    </>
+  );
+
   return (
     <Stack gap="xl" p="xl" maw={560} mx="auto" pb={80}>
-      <Title order={2}>설정</Title>
+      <Text style={{ color: 'var(--ou-text-strong)', fontSize: 22, fontWeight: 600 }}>설정</Text>
 
       {/* ─── 1. 프로필 ─── */}
-      <Paper p="lg">
+      <div style={sectionStyle}>
         <Stack gap="md">
-          <Group gap="xs">
-            <User size={18} weight="light" />
-            <Text fw={600} fz="sm">프로필</Text>
-          </Group>
-          <Divider />
+          <SectionHeader icon={<User size={18} weight="light" />} title="프로필" />
 
           <Group justify="center" py="sm">
             <FileButton onChange={handleAvatarUpload} accept="image/*">
@@ -285,7 +399,11 @@ export function SettingsClient({ profile, subscription, nodeCount }: SettingsCli
                     size={80}
                     radius="xl"
                     color="gray"
-                    style={{ cursor: 'pointer' }}
+                    style={{
+                      cursor: 'pointer',
+                      border: '0.5px solid var(--ou-border-muted)',
+                      boxShadow: 'var(--ou-glow-sm)',
+                    }}
                     component="button"
                   >
                     {(profile?.display_name ?? '?')[0]}
@@ -296,33 +414,40 @@ export function SettingsClient({ profile, subscription, nodeCount }: SettingsCli
           </Group>
 
           {/* 등급 */}
-          <Paper p="sm" withBorder={false} style={{ background: 'var(--mantine-color-default-hover)' }}>
+          <Box style={{
+            padding: 12,
+            borderRadius: 'var(--ou-radius-md)',
+            border: '0.5px solid var(--ou-border-faint)',
+            background: 'var(--ou-surface-faint)',
+          }}>
             <RankBadge nodeCount={nodeCount} variant="full" />
-          </Paper>
+          </Box>
 
           <Stack gap="xs">
-            <Text fz="xs" c="dimmed">이름</Text>
+            <Text style={labelStyle}>이름</Text>
             <TextInput
               value={displayName}
               onChange={e => setDisplayName(e.target.value)}
               placeholder="표시 이름"
               size="sm"
+              styles={inputStyles}
             />
           </Stack>
 
           <Stack gap="xs">
-            <Text fz="xs" c="dimmed">핸들</Text>
+            <Text style={labelStyle}>핸들</Text>
             <TextInput
               value={handle}
               onChange={e => setHandle(e.target.value)}
               placeholder="handle"
               size="sm"
-              leftSection={<Text fz="sm" c="dimmed">@</Text>}
+              leftSection={<Text style={{ fontSize: 13, color: 'var(--ou-text-dimmed)' }}>@</Text>}
+              styles={inputStyles}
             />
           </Stack>
 
           <Stack gap="xs">
-            <Text fz="xs" c="dimmed">소개</Text>
+            <Text style={labelStyle}>소개</Text>
             <Textarea
               value={bio}
               onChange={e => setBio(e.target.value)}
@@ -331,50 +456,62 @@ export function SettingsClient({ profile, subscription, nodeCount }: SettingsCli
               autosize
               minRows={2}
               maxRows={4}
+              styles={textareaStyles}
             />
           </Stack>
 
-          <Button
-            variant="light"
-            color="gray"
-            size="sm"
+          <button
             onClick={handleSaveProfile}
-            loading={saving}
-            disabled={!profileChanged}
+            disabled={!profileChanged || saving}
+            style={{
+              ...filledBtnStyle,
+              opacity: !profileChanged || saving ? 0.3 : 1,
+              cursor: !profileChanged || saving ? 'not-allowed' : 'pointer',
+            }}
+            onMouseEnter={e => {
+              if (profileChanged && !saving) e.currentTarget.style.background = '#fff';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = 'rgba(255,255,255,0.9)';
+            }}
           >
-            저장
-          </Button>
+            {saving ? '...' : '저장'}
+          </button>
         </Stack>
-      </Paper>
+      </div>
 
       {/* ─── 2. 계정 ─── */}
-      <Paper p="lg">
+      <div style={sectionStyle}>
         <Stack gap="md">
-          <Group gap="xs">
-            <ShieldCheck size={18} weight="light" />
-            <Text fw={600} fz="sm">계정</Text>
-          </Group>
-          <Divider />
+          <SectionHeader icon={<ShieldCheck size={18} weight="light" />} title="계정" />
 
           <Stack gap={4}>
-            <Text fz="xs" c="dimmed">이메일</Text>
-            <Text fz="sm">{profile?.email ?? '-'}</Text>
+            <Text style={labelStyle}>이메일</Text>
+            <Text style={{ color: 'var(--ou-text-body)', fontSize: 13 }}>{profile?.email ?? '-'}</Text>
           </Stack>
 
-          <Button
-            variant="subtle"
-            color="gray"
-            size="xs"
-            justify="flex-start"
-            px={0}
+          <button
             onClick={() => router.push('/reset-password')}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: 'var(--ou-text-dimmed)',
+              fontSize: 12,
+              cursor: 'pointer',
+              fontFamily: 'inherit',
+              padding: 0,
+              textAlign: 'left',
+              transition: 'var(--ou-transition)',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.color = 'var(--ou-text-body)')}
+            onMouseLeave={e => (e.currentTarget.style.color = 'var(--ou-text-dimmed)')}
           >
             비밀번호 변경
-          </Button>
+          </button>
 
           {/* 소셜 계정 연결 */}
-          <Divider />
-          <Text fz="xs" c="dimmed">계정 연결</Text>
+          <div style={dividerStyle} />
+          <Text style={labelStyle}>계정 연결</Text>
           <Stack gap="xs">
             <SocialLinkButton
               provider="google"
@@ -399,74 +536,98 @@ export function SettingsClient({ profile, subscription, nodeCount }: SettingsCli
             />
           </Stack>
         </Stack>
-      </Paper>
+      </div>
 
       {/* ─── 3. 구독 ─── */}
-      <Paper p="lg">
+      <div style={sectionStyle}>
         <Stack gap="md">
           <Group justify="space-between">
-            <Group gap="xs">
-              <CreditCard size={18} weight="light" />
-              <Text fw={600} fz="sm">구독</Text>
+            <Group gap={8}>
+              <Box style={{ color: 'var(--ou-text-dimmed)' }}><CreditCard size={18} weight="light" /></Box>
+              <Text style={{ color: 'var(--ou-text-strong)', fontSize: 13, fontWeight: 600 }}>구독</Text>
             </Group>
-            <Badge variant="light" color="gray">{PLAN_LABELS[planId] ?? planId}</Badge>
+            <span style={{
+              fontSize: 10,
+              color: 'var(--ou-text-dimmed)',
+              padding: '3px 12px',
+              borderRadius: 'var(--ou-radius-pill)',
+              border: '0.5px solid var(--ou-border-subtle)',
+              boxShadow: 'var(--ou-glow-xs)',
+            }}>
+              {PLAN_LABELS[planId] ?? planId}
+            </span>
           </Group>
-          <Divider />
+          <div style={dividerStyle} />
 
           <Group justify="space-between">
-            <Text fz="sm" c="dimmed">현재 플랜</Text>
-            <Text fz="sm" fw={500}>{PLAN_LABELS[planId] ?? planId}</Text>
+            <Text style={{ ...labelStyle, fontSize: 13 }}>현재 플랜</Text>
+            <Text style={{ color: 'var(--ou-text-body)', fontSize: 13, fontWeight: 500 }}>{PLAN_LABELS[planId] ?? planId}</Text>
           </Group>
 
           <Stack gap={4}>
             <Group justify="space-between">
-              <Text fz="xs" c="dimmed">사용량</Text>
-              <Text fz="xs" c="dimmed">{nodeCount} / {tokenLimit}턴</Text>
+              <Text style={labelStyle}>사용량</Text>
+              <Text style={labelStyle}>{nodeCount} / {tokenLimit}턴</Text>
             </Group>
             <Progress
               value={Math.min((nodeCount / tokenLimit) * 100, 100)}
               size="xs"
               color="gray"
+              styles={{
+                root: { background: 'var(--ou-surface-muted)', borderRadius: 'var(--ou-radius-pill)' },
+                section: { borderRadius: 'var(--ou-radius-pill)' },
+              }}
             />
           </Stack>
 
           {planId === 'free' && (
-            <Button
-              variant="light"
-              color="gray"
-              size="sm"
-              rightSection={<ArrowRight size={14} />}
+            <button
               onClick={() => router.push('/settings/upgrade')}
+              style={pillBtnStyle}
+              onMouseEnter={e => {
+                e.currentTarget.style.borderColor = 'var(--ou-border-hover)';
+                e.currentTarget.style.boxShadow = 'var(--ou-glow-sm)';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.borderColor = 'var(--ou-border-subtle)';
+                e.currentTarget.style.boxShadow = 'var(--ou-glow-xs)';
+              }}
             >
-              업그레이드
-            </Button>
+              업그레이드 <ArrowRight size={14} />
+            </button>
           )}
           {planId !== 'free' && (
-            <Button
-              variant="subtle"
-              color="gray"
-              size="xs"
+            <button
               onClick={() => router.push('/settings/upgrade')}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: 'var(--ou-text-dimmed)',
+                fontSize: 12,
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+                padding: 0,
+                textAlign: 'left',
+                transition: 'var(--ou-transition)',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.color = 'var(--ou-text-body)')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'var(--ou-text-dimmed)')}
             >
               플랜 변경
-            </Button>
+            </button>
           )}
         </Stack>
-      </Paper>
+      </div>
 
       {/* ─── 4. 알림 ─── */}
-      <Paper p="lg">
+      <div style={sectionStyle}>
         <Stack gap="md">
-          <Group gap="xs">
-            <Bell size={18} weight="light" />
-            <Text fw={600} fz="sm">알림</Text>
-          </Group>
-          <Divider />
+          <SectionHeader icon={<Bell size={18} weight="light" />} title="알림" />
 
           <Group justify="space-between">
             <Stack gap={2}>
-              <Text fz="sm">이메일 알림</Text>
-              <Text fz="xs" c="dimmed">새 소식이나 업데이트를 이메일로 받아요</Text>
+              <Text style={{ color: 'var(--ou-text-body)', fontSize: 13 }}>이메일 알림</Text>
+              <Text style={labelStyle}>새 소식이나 업데이트를 이메일로 받아요</Text>
             </Stack>
             <Switch
               checked={emailNotify}
@@ -477,8 +638,8 @@ export function SettingsClient({ profile, subscription, nodeCount }: SettingsCli
 
           <Group justify="space-between">
             <Stack gap={2}>
-              <Text fz="sm">푸시 알림</Text>
-              <Text fz="xs" c="dimmed">곧 지원할 예정이에요</Text>
+              <Text style={{ color: 'var(--ou-text-body)', fontSize: 13 }}>푸시 알림</Text>
+              <Text style={labelStyle}>곧 지원할 예정이에요</Text>
             </Stack>
             <Switch
               checked={pushNotify}
@@ -488,59 +649,63 @@ export function SettingsClient({ profile, subscription, nodeCount }: SettingsCli
             />
           </Group>
         </Stack>
-      </Paper>
+      </div>
 
       {/* ─── 5. AI 연결 (API Keys) ─── */}
       <ApiKeySection />
 
       {/* ─── 6. 보안 ─── */}
-      <Paper p="lg">
+      <div style={sectionStyle}>
         <Stack gap="md">
-          <Group gap="xs">
-            <ShieldCheck size={18} weight="light" />
-            <Text fw={600} fz="sm">보안</Text>
-          </Group>
-          <Divider />
+          <SectionHeader icon={<ShieldCheck size={18} weight="light" />} title="보안" />
 
           <Stack gap={4}>
-            <Text fz="sm">활성 세션</Text>
-            <Text fz="xs" c="dimmed">현재 세션 1개 활성 중</Text>
+            <Text style={{ color: 'var(--ou-text-body)', fontSize: 13 }}>활성 세션</Text>
+            <Text style={labelStyle}>현재 세션 1개 활성 중</Text>
           </Stack>
 
           <Group justify="space-between">
             <Stack gap={2}>
-              <Text fz="sm">2단계 인증</Text>
-              <Text fz="xs" c="dimmed">곧 지원할 예정이에요</Text>
+              <Text style={{ color: 'var(--ou-text-body)', fontSize: 13 }}>2단계 인증</Text>
+              <Text style={labelStyle}>곧 지원할 예정이에요</Text>
             </Stack>
             <Switch checked={false} color="gray" disabled />
           </Group>
         </Stack>
-      </Paper>
+      </div>
 
       {/* ─── 6. 데이터 ─── */}
-      <Paper p="lg">
+      <div style={sectionStyle}>
         <Stack gap="md">
-          <Group gap="xs">
-            <Database size={18} weight="light" />
-            <Text fw={600} fz="sm">데이터</Text>
-          </Group>
-          <Divider />
+          <SectionHeader icon={<Database size={18} weight="light" />} title="데이터" />
 
-          <Text fz="xs" c="dimmed">
+          <Text style={labelStyle}>
             현재 {nodeCount}개의 데이터가 저장되어 있어요
           </Text>
 
           <Group grow>
-            <Button
-              variant="light"
-              color="gray"
-              size="sm"
-              leftSection={<Export size={16} />}
+            <button
               onClick={handleExport}
-              loading={exporting}
+              disabled={exporting}
+              style={{
+                ...pillBtnStyle,
+                justifyContent: 'center',
+                opacity: exporting ? 0.5 : 1,
+              }}
+              onMouseEnter={e => {
+                if (!exporting) {
+                  e.currentTarget.style.borderColor = 'var(--ou-border-hover)';
+                  e.currentTarget.style.boxShadow = 'var(--ou-glow-sm)';
+                }
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.borderColor = 'var(--ou-border-subtle)';
+                e.currentTarget.style.boxShadow = 'var(--ou-glow-xs)';
+              }}
             >
-              내보내기 (.ou)
-            </Button>
+              <Export size={16} />
+              {exporting ? '...' : '내보내기 (.ou)'}
+            </button>
 
             <FileButton
               onChange={handleImport}
@@ -548,57 +713,95 @@ export function SettingsClient({ profile, subscription, nodeCount }: SettingsCli
               resetRef={resetRef}
             >
               {(props) => (
-                <Button
+                <button
                   {...props}
-                  variant="light"
-                  color="gray"
-                  size="sm"
-                  leftSection={<Upload size={16} />}
-                  loading={importing}
+                  disabled={importing}
+                  style={{
+                    ...pillBtnStyle,
+                    justifyContent: 'center',
+                    opacity: importing ? 0.5 : 1,
+                  }}
+                  onMouseEnter={e => {
+                    if (!importing) {
+                      e.currentTarget.style.borderColor = 'var(--ou-border-hover)';
+                      e.currentTarget.style.boxShadow = 'var(--ou-glow-sm)';
+                    }
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.borderColor = 'var(--ou-border-subtle)';
+                    e.currentTarget.style.boxShadow = 'var(--ou-glow-xs)';
+                  }}
                 >
-                  가져오기 (.ou)
-                </Button>
+                  <Upload size={16} />
+                  {importing ? '...' : '가져오기 (.ou)'}
+                </button>
               )}
             </FileButton>
           </Group>
         </Stack>
-      </Paper>
+      </div>
 
-      {/* ─── 7. 계정 삭제 ─── */}
-      <Paper p="lg" style={{ borderColor: 'var(--mantine-color-red-9)' }}>
+      {/* ─── 7. 위험 구역 ─── */}
+      <div style={{
+        ...sectionStyle,
+        borderColor: 'var(--ou-border-muted)',
+      }}>
         <Stack gap="md">
-          <Group gap="xs">
-            <Warning size={18} weight="light" color="var(--mantine-color-red-6)" />
-            <Text fw={600} fz="sm" c="red">위험 구역</Text>
+          <Group gap={8}>
+            <Box style={{ color: 'var(--ou-text-dimmed)' }}><Warning size={18} weight="light" /></Box>
+            <Text style={{ color: 'var(--ou-text-dimmed)', fontSize: 13, fontWeight: 600 }}>위험 구역</Text>
           </Group>
-          <Divider />
+          <div style={dividerStyle} />
 
-          <Text fz="sm" c="dimmed">
+          <Text style={{ color: 'var(--ou-text-dimmed)', fontSize: 13 }}>
             계정을 삭제하면 모든 대화 기록과 저장된 내용이 사라져요. 되돌릴 수 없어요.
           </Text>
 
-          <Button
-            variant="light"
-            color="gray"
-            leftSection={<SignOut size={18} />}
+          <button
             onClick={signOut}
-            fullWidth
+            style={{
+              ...pillBtnStyle,
+              width: '100%',
+              justifyContent: 'center',
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.borderColor = 'var(--ou-border-hover)';
+              e.currentTarget.style.boxShadow = 'var(--ou-glow-sm)';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.borderColor = 'var(--ou-border-subtle)';
+              e.currentTarget.style.boxShadow = 'var(--ou-glow-xs)';
+            }}
           >
+            <SignOut size={18} />
             로그아웃
-          </Button>
+          </button>
 
-          <Button
-            variant="subtle"
-            color="red"
-            leftSection={<Trash size={18} />}
+          <button
             onClick={() => setDeleteModalOpen(true)}
-            fullWidth
-            size="sm"
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: 'var(--ou-text-dimmed)',
+              fontSize: 12,
+              cursor: 'pointer',
+              fontFamily: 'inherit',
+              padding: '8px 0',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              transition: 'var(--ou-transition)',
+              width: '100%',
+              justifyContent: 'center',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.color = 'var(--ou-text-body)')}
+            onMouseLeave={e => (e.currentTarget.style.color = 'var(--ou-text-dimmed)')}
           >
+            <Trash size={16} />
             계정 삭제
-          </Button>
+          </button>
         </Stack>
-      </Paper>
+      </div>
 
       {/* ─── 삭제 확인 모달 ─── */}
       <Modal
@@ -609,38 +812,64 @@ export function SettingsClient({ profile, subscription, nodeCount }: SettingsCli
         }}
         title="정말 계정을 삭제하시겠어요?"
         centered
+        styles={{
+          content: {
+            background: 'var(--mantine-color-body)',
+            border: '0.5px solid var(--ou-border-subtle)',
+            borderRadius: 'var(--ou-radius-card)',
+            boxShadow: 'var(--ou-glow-lg)',
+          },
+          header: {
+            background: 'transparent',
+          },
+          title: {
+            color: 'var(--ou-text-strong)',
+            fontWeight: 600,
+          },
+        }}
       >
         <Stack gap="md">
-          <Text fz="sm" c="dimmed">
+          <Text style={{ color: 'var(--ou-text-dimmed)', fontSize: 13 }}>
             삭제하면 모든 대화 기록과 저장된 내용이 사라져요. 이 작업은 되돌릴 수 없어요.
           </Text>
-          <Text fz="sm">
-            계속하려면 아래에 <Text span fw={600}>&quot;삭제&quot;</Text>를 입력해주세요.
+          <Text style={{ color: 'var(--ou-text-body)', fontSize: 13 }}>
+            계속하려면 아래에 <strong>&quot;삭제&quot;</strong>를 입력해주세요.
           </Text>
           <TextInput
             value={deleteConfirmText}
             onChange={e => setDeleteConfirmText(e.target.value)}
             placeholder="삭제"
             size="sm"
+            styles={inputStyles}
           />
           <Group justify="flex-end" gap="sm">
-            <Button
-              variant="light"
-              color="gray"
+            <button
               onClick={() => {
                 setDeleteModalOpen(false);
                 setDeleteConfirmText('');
               }}
+              style={pillBtnStyle}
+              onMouseEnter={e => {
+                e.currentTarget.style.borderColor = 'var(--ou-border-hover)';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.borderColor = 'var(--ou-border-subtle)';
+              }}
             >
               취소
-            </Button>
-            <Button
-              color="red"
+            </button>
+            <button
               onClick={handleDeleteAccount}
               disabled={deleteConfirmText !== '삭제'}
+              style={{
+                ...filledBtnStyle,
+                width: 'auto',
+                opacity: deleteConfirmText !== '삭제' ? 0.3 : 1,
+                cursor: deleteConfirmText !== '삭제' ? 'not-allowed' : 'pointer',
+              }}
             >
               삭제하기
-            </Button>
+            </button>
           </Group>
         </Stack>
       </Modal>

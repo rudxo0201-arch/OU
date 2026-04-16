@@ -2,7 +2,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import {
-  Stack, TextInput, PasswordInput, Button, Divider, Text, Paper, Center, Title, Anchor, Tabs
+  Stack, TextInput, PasswordInput, Button, Text, Center, Anchor, Box
 } from '@mantine/core';
 import { GoogleLogo } from '@phosphor-icons/react';
 import { createClient } from '@/lib/supabase/client';
@@ -42,7 +42,7 @@ function LoginForm() {
     });
     if (error) {
       console.error('Google OAuth error:', error);
-      notifications.show({ message: 'Google 로그인에 실패했어요. 잠시 후 다시 시도해주세요.', color: 'red' });
+      notifications.show({ message: 'Google 로그인에 실패했어요. 잠시 후 다시 시도해주세요.', color: 'gray' });
       setLoading(false);
     }
   }
@@ -108,50 +108,218 @@ function LoginForm() {
 
   if (needVerify) {
     return (
-      <Center h="100dvh">
-        <Stack align="center" gap="md" maw={360} p="xl">
-          <Title order={3}>이메일 인증이 필요해요</Title>
-          <Text c="dimmed" ta="center" fz="sm">
-            <strong>{email}</strong>로 보낸 인증 메일을 확인해주세요.
+      <Box
+        style={{
+          minHeight: '100dvh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: 'var(--ou-space)',
+        }}
+      >
+        <Stack
+          align="center"
+          gap="md"
+          style={{
+            maxWidth: 400,
+            width: '90%',
+            padding: 32,
+            background: 'transparent',
+            border: '0.5px solid var(--ou-border-subtle)',
+            borderRadius: 'var(--ou-radius-card)',
+            boxShadow: 'var(--ou-glow-sm)',
+          }}
+        >
+          <Text
+            style={{
+              fontFamily: 'var(--ou-font-logo)',
+              fontSize: 36,
+              fontWeight: 500,
+              color: 'var(--ou-text-bright)',
+            }}
+          >
+            OU
+          </Text>
+          <Text
+            style={{ color: 'var(--ou-text-strong)', fontSize: 16, fontWeight: 600 }}
+            ta="center"
+          >
+            이메일 인증이 필요해요
+          </Text>
+          <Text style={{ color: 'var(--ou-text-dimmed)', fontSize: 13 }} ta="center">
+            <strong style={{ color: 'var(--ou-text-body)' }}>{email}</strong>로 보낸 인증 메일을 확인해주세요.
             <br />인증이 완료되면 자동으로 이동합니다.
           </Text>
-          <Button variant="subtle" onClick={() => setNeedVerify(false)}>
+          <button
+            onClick={() => setNeedVerify(false)}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: 'var(--ou-text-dimmed)',
+              fontSize: 13,
+              cursor: 'pointer',
+              fontFamily: 'inherit',
+              padding: '8px 0',
+              transition: 'var(--ou-transition)',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.color = 'var(--ou-text-body)')}
+            onMouseLeave={e => (e.currentTarget.style.color = 'var(--ou-text-dimmed)')}
+          >
             로그인으로 돌아가기
-          </Button>
+          </button>
         </Stack>
-      </Center>
+      </Box>
     );
   }
 
+  const inputStyles = {
+    root: { width: '100%' },
+    label: { color: 'var(--ou-text-dimmed)', fontSize: 11, fontWeight: 500, marginBottom: 6 },
+    input: {
+      background: 'transparent',
+      border: '0.5px solid var(--ou-border-subtle)',
+      borderRadius: 'var(--ou-radius-pill)',
+      color: 'var(--ou-text-bright)',
+      fontSize: 14,
+      padding: '12px 20px',
+      height: 44,
+      transition: 'var(--ou-transition)',
+      '&:focus': {
+        borderColor: 'var(--ou-border-strong)',
+        boxShadow: 'var(--ou-glow-md)',
+      },
+      '&::placeholder': {
+        color: 'var(--ou-text-muted)',
+      },
+    },
+    innerInput: {
+      color: 'var(--ou-text-bright)',
+    },
+  };
+
   return (
-    <Center h="100dvh">
-      <Paper w={380} p="xl" radius="lg">
+    <Box
+      style={{
+        minHeight: '100dvh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'var(--ou-space)',
+      }}
+    >
+      <Box
+        style={{
+          maxWidth: 400,
+          width: '90%',
+          padding: 32,
+          background: 'transparent',
+          border: '0.5px solid var(--ou-border-subtle)',
+          borderRadius: 'var(--ou-radius-card)',
+          boxShadow: 'var(--ou-glow-sm)',
+        }}
+      >
         <Stack gap="lg">
+          {/* Logo */}
           <Stack gap={4} align="center">
-            <Title order={2} fw={700}>OU</Title>
-            <Text c="dimmed" size="sm">Just talk.</Text>
+            <Text
+              style={{
+                fontFamily: 'var(--ou-font-logo)',
+                fontSize: 36,
+                fontWeight: 500,
+                color: 'var(--ou-text-bright)',
+                textShadow: '0 0 40px rgba(255,255,255,0.15)',
+              }}
+            >
+              OU
+            </Text>
+            <Text style={{ color: 'var(--ou-text-dimmed)', fontSize: 13 }}>Just talk.</Text>
           </Stack>
 
-          <Button
-            leftSection={<GoogleLogo size={20} />}
-            variant="default"
-            size="md"
-            fullWidth
-            loading={loading}
+          {/* Google OAuth */}
+          <button
             onClick={handleGoogle}
+            disabled={loading}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 10,
+              width: '100%',
+              padding: '12px 24px',
+              borderRadius: 'var(--ou-radius-pill)',
+              border: '0.5px solid var(--ou-border-subtle)',
+              background: 'transparent',
+              color: 'var(--ou-text-body)',
+              fontSize: 14,
+              fontWeight: 500,
+              fontFamily: 'inherit',
+              cursor: loading ? 'wait' : 'pointer',
+              transition: 'var(--ou-transition)',
+              boxShadow: 'var(--ou-glow-xs)',
+              opacity: loading ? 0.6 : 1,
+            }}
+            onMouseEnter={e => {
+              if (!loading) {
+                e.currentTarget.style.borderColor = 'var(--ou-border-hover)';
+                e.currentTarget.style.boxShadow = 'var(--ou-glow-sm)';
+                e.currentTarget.style.color = 'var(--ou-text-strong)';
+              }
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.borderColor = 'var(--ou-border-subtle)';
+              e.currentTarget.style.boxShadow = 'var(--ou-glow-xs)';
+              e.currentTarget.style.color = 'var(--ou-text-body)';
+            }}
           >
+            <GoogleLogo size={20} />
             Google로 계속하기
-          </Button>
+          </button>
 
-          <Divider label="또는" labelPosition="center" />
+          {/* Divider */}
+          <Box
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 16,
+            }}
+          >
+            <Box style={{ flex: 1, height: '0.5px', background: 'var(--ou-border-faint)' }} />
+            <Text style={{ color: 'var(--ou-text-muted)', fontSize: 11 }}>또는</Text>
+            <Box style={{ flex: 1, height: '0.5px', background: 'var(--ou-border-faint)' }} />
+          </Box>
 
-          <Tabs value={mode} onChange={v => setMode(v as 'login' | 'signup')}>
-            <Tabs.List grow>
-              <Tabs.Tab value="login">로그인</Tabs.Tab>
-              <Tabs.Tab value="signup">회원가입</Tabs.Tab>
-            </Tabs.List>
-          </Tabs>
+          {/* Mode toggle */}
+          <Box
+            style={{
+              display: 'flex',
+              gap: 0,
+              borderBottom: '0.5px solid var(--ou-border-faint)',
+            }}
+          >
+            {(['login', 'signup'] as const).map(m => (
+              <button
+                key={m}
+                onClick={() => setMode(m)}
+                style={{
+                  flex: 1,
+                  padding: '10px 0',
+                  background: 'transparent',
+                  border: 'none',
+                  borderBottom: mode === m ? '1.5px solid var(--ou-text-body)' : '1.5px solid transparent',
+                  color: mode === m ? 'var(--ou-text-body)' : 'var(--ou-text-muted)',
+                  fontSize: 13,
+                  fontWeight: mode === m ? 600 : 400,
+                  fontFamily: 'inherit',
+                  cursor: 'pointer',
+                  transition: 'var(--ou-transition)',
+                }}
+              >
+                {m === 'login' ? '로그인' : '가입하기'}
+              </button>
+            ))}
+          </Box>
 
+          {/* Form */}
           <form onSubmit={handleSubmit}>
             <Stack gap="sm">
               <TextInput
@@ -161,6 +329,7 @@ function LoginForm() {
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 required
+                styles={inputStyles}
               />
               <PasswordInput
                 label="비밀번호"
@@ -169,39 +338,76 @@ function LoginForm() {
                 onChange={e => setPassword(e.target.value)}
                 required
                 minLength={6}
+                styles={inputStyles}
               />
-              <Button
+              <button
                 type="submit"
-                variant="filled"
-                fullWidth
-                loading={loading}
-                disabled={!email || !password}
+                disabled={loading || !email || !password}
+                style={{
+                  width: '100%',
+                  padding: '12px 24px',
+                  borderRadius: 'var(--ou-radius-pill)',
+                  border: 'none',
+                  background: 'rgba(255,255,255,0.9)',
+                  color: '#111',
+                  fontSize: 14,
+                  fontWeight: 600,
+                  fontFamily: 'inherit',
+                  cursor: loading || !email || !password ? 'not-allowed' : 'pointer',
+                  transition: 'var(--ou-transition)',
+                  opacity: loading || !email || !password ? 0.4 : 1,
+                  marginTop: 4,
+                }}
+                onMouseEnter={e => {
+                  if (!loading && email && password) {
+                    e.currentTarget.style.background = '#fff';
+                  }
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.9)';
+                }}
               >
-                {mode === 'signup' ? '회원가입' : '로그인'}
-              </Button>
+                {loading ? '...' : mode === 'signup' ? '가입하기' : '로그인'}
+              </button>
             </Stack>
           </form>
 
           {mode === 'login' && (
             <Text size="xs" ta="center">
-              <Anchor size="xs" href="/forgot-password">비밀번호를 잊으셨나요?</Anchor>
+              <Anchor
+                href="/forgot-password"
+                style={{ color: 'var(--ou-text-dimmed)', fontSize: 12, textDecoration: 'none' }}
+                onMouseEnter={e => (e.currentTarget.style.color = 'var(--ou-text-body)')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'var(--ou-text-dimmed)')}
+              >
+                비밀번호를 잊으셨나요?
+              </Anchor>
             </Text>
           )}
 
-          <Text size="xs" c="dimmed" ta="center">
+          <Text style={{ color: 'var(--ou-text-muted)', fontSize: 11 }} ta="center">
             계속하면{' '}
-            <Anchor size="xs" href="/terms-agree">이용약관</Anchor>
+            <Anchor
+              href="/terms-agree"
+              style={{ color: 'var(--ou-text-dimmed)', fontSize: 11, textDecoration: 'underline' }}
+            >
+              이용약관
+            </Anchor>
             에 동의하는 것으로 간주합니다.
           </Text>
         </Stack>
-      </Paper>
-    </Center>
+      </Box>
+    </Box>
   );
 }
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<Center h="100dvh"><Text>로딩 중...</Text></Center>}>
+    <Suspense fallback={
+      <Box style={{ minHeight: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--ou-space)' }}>
+        <Text style={{ color: 'var(--ou-text-dimmed)', fontSize: 13 }}>로딩 중...</Text>
+      </Box>
+    }>
       <LoginForm />
     </Suspense>
   );

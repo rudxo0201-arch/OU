@@ -206,48 +206,79 @@ export function UniverseClient({
         const data = await res.json();
         notifications.show({
           message: data.error || '공유에 실패했어요. 다시 시도해주세요.',
-          color: 'red',
+          color: 'gray',
         });
       }
     } catch {
       notifications.show({
         message: '공유에 실패했어요. 다시 시도해주세요.',
-        color: 'red',
+        color: 'gray',
       });
     } finally {
       setRealizeSubmitting(false);
     }
   };
 
+  /* ── Shared card style ── */
+  const cardStyle = {
+    background: 'transparent',
+    border: '0.5px solid var(--ou-border-subtle)',
+    borderRadius: 'var(--ou-radius-card)',
+    boxShadow: 'var(--ou-glow-sm)',
+    transition: 'box-shadow var(--ou-transition), border-color var(--ou-transition)',
+  };
+  const cardHoverProps = {
+    onMouseEnter: (e: React.MouseEvent<HTMLDivElement>) => {
+      e.currentTarget.style.boxShadow = 'var(--ou-glow-hover)';
+      e.currentTarget.style.borderColor = 'var(--ou-border-hover)';
+    },
+    onMouseLeave: (e: React.MouseEvent<HTMLDivElement>) => {
+      e.currentTarget.style.boxShadow = 'var(--ou-glow-sm)';
+      e.currentTarget.style.borderColor = 'var(--ou-border-subtle)';
+    },
+  };
+
+  /* ── Section title style ── */
+  const sectionTitleStyle: React.CSSProperties = {
+    fontSize: 10,
+    textTransform: 'uppercase',
+    letterSpacing: 3,
+    color: 'var(--ou-text-dimmed)',
+    fontWeight: 500,
+  };
+
   return (
-    <Box style={{ width: '100%', minHeight: '100vh' }}>
+    <Box style={{ width: '100%', minHeight: '100vh', background: 'transparent' }}>
       {/* Hero Header */}
       <Stack align="center" gap="xs" py="xl" px="xl">
-        <Planet size={36} weight="thin" color="var(--mantine-color-gray-6)" />
-        <Title order={2} fw={600}>OU Universe</Title>
-        <Text size="sm" c="dimmed">모두가 공유한 기록들</Text>
+        <Planet size={36} weight="thin" style={{ color: 'var(--ou-text-dimmed)' }} />
+        <Title order={2} fw={600} style={{ color: 'var(--ou-text-strong)' }}>
+          OU Universe
+        </Title>
+        <Text size="sm" style={{ color: 'var(--ou-text-dimmed)' }}>
+          모두가 공유한 기록들
+        </Text>
       </Stack>
 
       {/* ── Admin: OU 소개 Section ── */}
       {introNodes.length > 0 && (
         <Box maw={800} mx="auto" px="xl" mb="xl">
           <Group gap="xs" mb="md">
-            <Sparkle size={18} weight="light" color="var(--mantine-color-gray-5)" />
-            <Text fw={600} fz="lg">OU 소개</Text>
+            <Sparkle size={14} weight="light" style={{ color: 'var(--ou-text-dimmed)' }} />
+            <Text style={sectionTitleStyle}>OU 소개</Text>
           </Group>
           <Stack gap="sm">
             {introNodes.map(node => (
               <Paper
                 key={node.id}
                 p="lg"
-                withBorder
-                style={{
-                  borderColor: 'var(--mantine-color-default-border)',
-                  background: 'var(--mantine-color-dark-7, var(--mantine-color-gray-0))',
-                }}
+                style={cardStyle}
+                {...cardHoverProps}
               >
-                <Text fw={600} mb={4}>{node.title}</Text>
-                <Text fz="sm" c="dimmed" style={{ lineHeight: 1.6 }}>
+                <Text fw={600} mb={4} style={{ color: 'var(--ou-text-strong)' }}>
+                  {node.title}
+                </Text>
+                <Text fz="sm" style={{ lineHeight: 1.6, color: 'var(--ou-text-body)' }}>
                   {node.raw}
                 </Text>
               </Paper>
@@ -260,27 +291,32 @@ export function UniverseClient({
       {featureNodes.length > 0 && (
         <Box maw={800} mx="auto" px="xl" mb="xl">
           <Group gap="xs" mb="md">
-            <Lightning size={18} weight="light" color="var(--mantine-color-gray-5)" />
-            <Text fw={600} fz="lg">기능</Text>
+            <Lightning size={14} weight="light" style={{ color: 'var(--ou-text-dimmed)' }} />
+            <Text style={sectionTitleStyle}>기능</Text>
           </Group>
           <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="sm">
             {featureNodes.map(node => (
               <Paper
                 key={node.id}
                 p="md"
-                withBorder
-                style={{
-                  borderColor: 'var(--mantine-color-default-border)',
-                  background: 'var(--mantine-color-dark-7, var(--mantine-color-gray-0))',
-                }}
+                style={cardStyle}
+                {...cardHoverProps}
               >
                 <Group gap="xs" mb={8}>
-                  <ThemeIcon variant="light" color="gray" size="sm" radius="xl">
+                  <ThemeIcon
+                    variant="light"
+                    color="gray"
+                    size="sm"
+                    radius="xl"
+                    style={{ background: 'var(--ou-surface-muted)', border: 'none' }}
+                  >
                     {FEATURE_ICONS[node.title ?? ''] ?? <Lightning size={14} weight="light" />}
                   </ThemeIcon>
-                  <Text fw={600} fz="sm">{node.title}</Text>
+                  <Text fw={600} fz="sm" style={{ color: 'var(--ou-text-strong)' }}>
+                    {node.title}
+                  </Text>
                 </Group>
-                <Text fz="xs" c="dimmed" style={{ lineHeight: 1.5 }}>
+                <Text fz="xs" style={{ lineHeight: 1.5, color: 'var(--ou-text-body)' }}>
                   {node.raw}
                 </Text>
               </Paper>
@@ -293,22 +329,21 @@ export function UniverseClient({
       {usecaseNodes.length > 0 && (
         <Box maw={800} mx="auto" px="xl" mb="xl">
           <Group gap="xs" mb="md">
-            <GraduationCap size={18} weight="light" color="var(--mantine-color-gray-5)" />
-            <Text fw={600} fz="lg">활용법</Text>
+            <GraduationCap size={14} weight="light" style={{ color: 'var(--ou-text-dimmed)' }} />
+            <Text style={sectionTitleStyle}>활용법</Text>
           </Group>
           <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="sm">
             {usecaseNodes.map(node => (
               <Paper
                 key={node.id}
                 p="md"
-                withBorder
-                style={{
-                  borderColor: 'var(--mantine-color-default-border)',
-                  background: 'var(--mantine-color-dark-7, var(--mantine-color-gray-0))',
-                }}
+                style={cardStyle}
+                {...cardHoverProps}
               >
-                <Text fw={600} fz="sm" mb={4}>{node.title}</Text>
-                <Text fz="xs" c="dimmed" style={{ lineHeight: 1.5 }}>
+                <Text fw={600} fz="sm" mb={4} style={{ color: 'var(--ou-text-strong)' }}>
+                  {node.title}
+                </Text>
+                <Text fz="xs" style={{ lineHeight: 1.5, color: 'var(--ou-text-body)' }}>
                   {node.raw}
                 </Text>
               </Paper>
@@ -321,27 +356,26 @@ export function UniverseClient({
       {scenarioNodes.length > 0 && (
         <Box maw={800} mx="auto" px="xl" mb="xl">
           <Group gap="xs" mb="md">
-            <Star size={18} weight="light" color="var(--mantine-color-gray-5)" />
-            <Text fw={600} fz="lg">이런 경험, 해보셨나요?</Text>
+            <Star size={14} weight="light" style={{ color: 'var(--ou-text-dimmed)' }} />
+            <Text style={sectionTitleStyle}>이런 경험, 해보셨나요?</Text>
           </Group>
           <Stack gap="sm">
             {scenarioNodes.map(node => (
               <Paper
                 key={node.id}
                 p="lg"
-                withBorder
-                style={{
-                  borderColor: 'var(--mantine-color-default-border)',
-                  background: 'var(--mantine-color-dark-7, var(--mantine-color-gray-0))',
-                }}
+                style={cardStyle}
+                {...cardHoverProps}
               >
                 <UnstyledButton
                   component={Link}
                   href={`/scenario/${node.id}`}
                   style={{ textDecoration: 'none', color: 'inherit', display: 'block', width: '100%' }}
                 >
-                  <Text fw={600} mb={4}>{node.title}</Text>
-                  <Text fz="sm" c="dimmed" style={{ lineHeight: 1.6 }} lineClamp={3}>
+                  <Text fw={600} mb={4} style={{ color: 'var(--ou-text-strong)' }}>
+                    {node.title}
+                  </Text>
+                  <Text fz="sm" style={{ lineHeight: 1.6, color: 'var(--ou-text-body)' }} lineClamp={3}>
                     {node.raw}
                   </Text>
                 </UnstyledButton>
@@ -349,8 +383,8 @@ export function UniverseClient({
                 <Group justify="space-between" mt="md">
                   {(realizeCounts[node.id] ?? 0) > 0 ? (
                     <Group gap={4}>
-                      <CheckCircle size={14} weight="light" color="var(--mantine-color-gray-5)" />
-                      <Text fz="xs" c="dimmed">
+                      <CheckCircle size={14} weight="light" style={{ color: 'var(--ou-text-dimmed)' }} />
+                      <Text fz="xs" style={{ color: 'var(--ou-text-dimmed)' }}>
                         {realizeCounts[node.id]}명 실현
                       </Text>
                     </Group>
@@ -358,9 +392,16 @@ export function UniverseClient({
                     <Box />
                   )}
                   <Button
-                    variant="light"
+                    variant="outline"
                     color="gray"
                     size="xs"
+                    radius="xl"
+                    style={{
+                      borderWidth: '0.5px',
+                      borderColor: 'var(--ou-border-subtle)',
+                      background: 'transparent',
+                      color: 'var(--ou-text-body)',
+                    }}
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
@@ -380,27 +421,37 @@ export function UniverseClient({
       {faqNodes.length > 0 && (
         <Box maw={800} mx="auto" px="xl" mb="xl">
           <Group gap="xs" mb="md">
-            <Question size={18} weight="light" color="var(--mantine-color-gray-5)" />
-            <Text fw={600} fz="lg">자주 묻는 질문</Text>
+            <Question size={14} weight="light" style={{ color: 'var(--ou-text-dimmed)' }} />
+            <Text style={sectionTitleStyle}>자주 묻는 질문</Text>
           </Group>
           <Accordion
             variant="separated"
             styles={{
               item: {
-                borderColor: 'var(--mantine-color-default-border)',
-                background: 'var(--mantine-color-dark-7, var(--mantine-color-gray-0))',
+                background: 'transparent',
+                border: '0.5px solid var(--ou-border-subtle)',
+                borderRadius: 'var(--ou-radius-card)',
+                boxShadow: 'var(--ou-glow-sm)',
               },
-              control: { padding: 'var(--mantine-spacing-md)' },
-              panel: { padding: 'var(--mantine-spacing-md)', paddingTop: 0 },
+              control: {
+                padding: 'var(--mantine-spacing-md)',
+                color: 'var(--ou-text-strong)',
+              },
+              panel: {
+                padding: 'var(--mantine-spacing-md)',
+                paddingTop: 0,
+              },
             }}
           >
             {faqNodes.map(node => (
               <Accordion.Item key={node.id} value={node.id}>
                 <Accordion.Control>
-                  <Text fw={500} fz="sm">{node.title}</Text>
+                  <Text fw={500} fz="sm" style={{ color: 'var(--ou-text-strong)' }}>
+                    {node.title}
+                  </Text>
                 </Accordion.Control>
                 <Accordion.Panel>
-                  <Text fz="sm" c="dimmed" style={{ lineHeight: 1.6 }}>
+                  <Text fz="sm" style={{ lineHeight: 1.6, color: 'var(--ou-text-body)' }}>
                     {node.raw}
                   </Text>
                 </Accordion.Panel>
@@ -415,11 +466,12 @@ export function UniverseClient({
         <Box maw={800} mx="auto" px="xl" mb="lg">
           <Divider
             label={
-              <Text fz="xs" c="dimmed">
+              <Text fz="xs" style={{ color: 'var(--ou-text-dimmed)' }}>
                 공유된 기록들
               </Text>
             }
             labelPosition="center"
+            color="var(--ou-border-subtle)"
           />
         </Box>
       )}
@@ -428,20 +480,24 @@ export function UniverseClient({
       <Box maw={640} mx="auto" px="xl" mb="md">
         <TextInput
           placeholder="검색어를 입력하세요..."
-          leftSection={<MagnifyingGlass size={16} weight="light" />}
+          leftSection={<MagnifyingGlass size={16} weight="light" style={{ color: 'var(--ou-text-dimmed)' }} />}
           value={search}
           onChange={e => setSearch(e.target.value)}
           size="md"
+          radius="xl"
           styles={{
             input: {
-              borderColor: 'var(--mantine-color-default-border)',
+              border: '0.5px solid var(--ou-border-subtle)',
               backgroundColor: 'transparent',
+              color: 'var(--ou-text-body)',
+              boxShadow: 'var(--ou-glow-xs)',
+              transition: 'border-color var(--ou-transition), box-shadow var(--ou-transition)',
             },
           }}
         />
       </Box>
 
-      {/* Domain filter tabs - only show domains that have data */}
+      {/* Domain filter tabs - pill-block toggles */}
       {domainTabs.length > 0 && (
         <Group gap="xs" justify="center" px="xl" mb="lg">
           <UnstyledButton
@@ -449,18 +505,17 @@ export function UniverseClient({
             px="sm"
             py={6}
             style={{
-              borderRadius: 'var(--mantine-radius-xl)',
-              border: '0.5px solid var(--mantine-color-default-border)',
-              background: selectedDomain === null
-                ? 'var(--mantine-color-dark-4)'
-                : 'transparent',
-              transition: 'background 150ms',
+              borderRadius: 'var(--ou-radius-pill)',
+              border: `0.5px solid ${selectedDomain === null ? 'var(--ou-border-hover)' : 'var(--ou-border-subtle)'}`,
+              background: selectedDomain === null ? 'var(--ou-surface-muted)' : 'transparent',
+              boxShadow: selectedDomain === null ? 'var(--ou-glow-sm)' : 'none',
+              transition: 'all var(--ou-transition)',
             }}
           >
             <Text
               fz="sm"
               fw={selectedDomain === null ? 600 : 400}
-              c={selectedDomain === null ? undefined : 'dimmed'}
+              style={{ color: selectedDomain === null ? 'var(--ou-text-strong)' : 'var(--ou-text-dimmed)' }}
             >
               전체
             </Text>
@@ -472,18 +527,17 @@ export function UniverseClient({
               px="sm"
               py={6}
               style={{
-                borderRadius: 'var(--mantine-radius-xl)',
-                border: '0.5px solid var(--mantine-color-default-border)',
-                background: selectedDomain === tab.id
-                  ? 'var(--mantine-color-dark-4)'
-                  : 'transparent',
-                transition: 'background 150ms',
+                borderRadius: 'var(--ou-radius-pill)',
+                border: `0.5px solid ${selectedDomain === tab.id ? 'var(--ou-border-hover)' : 'var(--ou-border-subtle)'}`,
+                background: selectedDomain === tab.id ? 'var(--ou-surface-muted)' : 'transparent',
+                boxShadow: selectedDomain === tab.id ? 'var(--ou-glow-sm)' : 'none',
+                transition: 'all var(--ou-transition)',
               }}
             >
               <Text
                 fz="sm"
                 fw={selectedDomain === tab.id ? 600 : 400}
-                c={selectedDomain === tab.id ? undefined : 'dimmed'}
+                style={{ color: selectedDomain === tab.id ? 'var(--ou-text-strong)' : 'var(--ou-text-dimmed)' }}
               >
                 {tab.label}
               </Text>
@@ -497,25 +551,39 @@ export function UniverseClient({
         {filtered.length === 0 ? (
           <Center py={80}>
             <Stack align="center" gap="md">
-              <Planet size={48} weight="light" color="var(--mantine-color-gray-5)" />
-              <Text fw={600}>
+              <Planet size={48} weight="light" style={{ color: 'var(--ou-text-dimmed)' }} />
+              <Text fw={600} style={{ color: 'var(--ou-text-strong)' }}>
                 {search || selectedDomain ? '검색 결과가 없어요' : '아직 공유된 내용이 없어요'}
               </Text>
-              <Text c="dimmed" fz="sm" ta="center">
+              <Text fz="sm" ta="center" style={{ color: 'var(--ou-text-dimmed)' }}>
                 {search || selectedDomain
                   ? '다른 검색어나 카테고리를 시도해보세요.'
                   : '대화를 시작하고 내 기록을 공개해보세요.'}
               </Text>
               {(search || selectedDomain) ? (
                 <Button
-                  variant="light"
+                  variant="outline"
                   color="gray"
+                  radius="xl"
+                  style={{
+                    borderWidth: '0.5px',
+                    borderColor: 'var(--ou-border-subtle)',
+                    background: 'transparent',
+                    color: 'var(--ou-text-body)',
+                  }}
                   onClick={() => { setSearch(''); setSelectedDomain(null); }}
                 >
                   전체 보기
                 </Button>
               ) : (
-                <Button component={Link} href="/login" variant="light" color="gray">
+                <Button
+                  component={Link}
+                  href="/login"
+                  variant="filled"
+                  color="dark"
+                  radius="xl"
+                  style={{ color: 'white' }}
+                >
                   시작하기
                 </Button>
               )}
@@ -529,33 +597,58 @@ export function UniverseClient({
                 p="md"
                 component={Link}
                 href={`/view/${node.id}`}
-                style={{ textDecoration: 'none', color: 'inherit', cursor: 'pointer' }}
+                style={{
+                  textDecoration: 'none',
+                  color: 'inherit',
+                  cursor: 'pointer',
+                  background: 'transparent',
+                  border: '0.5px solid var(--ou-border-subtle)',
+                  borderRadius: 'var(--ou-radius-card)',
+                  boxShadow: 'var(--ou-glow-sm)',
+                  transition: 'box-shadow var(--ou-transition), border-color var(--ou-transition)',
+                }}
+                onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => {
+                  (e.currentTarget as HTMLElement).style.boxShadow = 'var(--ou-glow-hover)';
+                  (e.currentTarget as HTMLElement).style.borderColor = 'var(--ou-border-hover)';
+                }}
+                onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => {
+                  (e.currentTarget as HTMLElement).style.boxShadow = 'var(--ou-glow-sm)';
+                  (e.currentTarget as HTMLElement).style.borderColor = 'var(--ou-border-subtle)';
+                }}
               >
                 <Group justify="space-between" mb={4}>
-                  <Text size="sm" fw={500} lineClamp={1} style={{ flex: 1 }}>
+                  <Text size="sm" fw={500} lineClamp={1} style={{ flex: 1, color: 'var(--ou-text-strong)' }}>
                     {node.title || (node.raw ? node.raw.slice(0, 60) : node.id)}
                   </Text>
-                  <Badge variant="light" color="gray" size="xs">
+                  <Badge
+                    variant="light"
+                    color="gray"
+                    size="xs"
+                    style={{
+                      background: 'var(--ou-surface-muted)',
+                      border: '0.5px solid var(--ou-border-subtle)',
+                      color: 'var(--ou-text-dimmed)',
+                    }}
+                  >
                     {DOMAIN_LABELS[node.domain] ?? node.domain}
                   </Badge>
                 </Group>
                 {node.raw && node.title && (
-                  <Text size="xs" c="dimmed" lineClamp={2} mb={4}>
+                  <Text size="xs" lineClamp={2} mb={4} style={{ color: 'var(--ou-text-body)' }}>
                     {node.raw}
                   </Text>
                 )}
                 <Group justify="space-between">
                   <Text
                     fz="xs"
-                    c="dimmed"
                     component={Link}
                     href={node.profiles?.handle ? `/profile/${node.profiles.handle}` : '#'}
                     onClick={e => e.stopPropagation()}
-                    style={{ textDecoration: 'none' }}
+                    style={{ textDecoration: 'none', color: 'var(--ou-text-dimmed)' }}
                   >
                     {node.profiles?.display_name ?? '익명'}
                   </Text>
-                  <Text size="xs" c="dimmed">
+                  <Text size="xs" style={{ color: 'var(--ou-text-dimmed)' }}>
                     {new Date(node.created_at).toLocaleDateString('ko-KR')}
                   </Text>
                 </Group>
@@ -576,25 +669,42 @@ export function UniverseClient({
       <Modal
         opened={realizeModalOpen}
         onClose={() => setRealizeModalOpen(false)}
-        title={<Text fw={600}>나도 이랬어요!</Text>}
+        title={<Text fw={600} style={{ color: 'var(--ou-text-strong)' }}>나도 이랬어요!</Text>}
         size="md"
         centered
+        radius="var(--ou-radius-card)"
+        styles={{
+          content: {
+            background: 'var(--ou-space)',
+            border: '0.5px solid var(--ou-border-subtle)',
+            boxShadow: 'var(--ou-glow-lg)',
+          },
+          header: {
+            background: 'transparent',
+          },
+          body: {
+            background: 'transparent',
+          },
+        }}
       >
         {realizeTarget && (
           <Stack gap="md">
             {/* Quoted scenario */}
-            <Paper
+            <Box
               p="md"
               style={{
-                background: 'var(--mantine-color-dark-6, var(--mantine-color-gray-1))',
-                borderRadius: 'var(--mantine-radius-sm)',
+                background: 'var(--ou-surface-subtle)',
+                borderRadius: 'var(--ou-radius-md)',
+                border: '0.5px solid var(--ou-border-faint)',
               }}
             >
-              <Text fz="xs" c="dimmed" mb={4}>{realizeTarget.title}</Text>
-              <Text fz="sm" c="dimmed" style={{ lineHeight: 1.5 }} lineClamp={4}>
+              <Text fz="xs" mb={4} style={{ color: 'var(--ou-text-dimmed)' }}>
+                {realizeTarget.title}
+              </Text>
+              <Text fz="sm" style={{ lineHeight: 1.5, color: 'var(--ou-text-body)' }} lineClamp={4}>
                 {realizeTarget.raw}
               </Text>
-            </Paper>
+            </Box>
 
             <Textarea
               placeholder="당신의 이야기를 들려주세요"
@@ -603,14 +713,23 @@ export function UniverseClient({
               minRows={4}
               maxRows={8}
               autosize
+              styles={{
+                input: {
+                  border: '0.5px solid var(--ou-border-subtle)',
+                  background: 'transparent',
+                  color: 'var(--ou-text-body)',
+                },
+              }}
             />
 
             <Button
               color="dark"
               fullWidth
+              radius="xl"
               onClick={submitRealization}
               loading={realizeSubmitting}
               disabled={!realizeStory.trim()}
+              style={{ color: 'white' }}
             >
               공유하기
             </Button>

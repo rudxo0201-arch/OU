@@ -146,10 +146,10 @@ export function MyPageClient({ savedViews: initialSavedViews, nodes: initialNode
   // Unified layout — graph background + glass chat left + orb dock right
   return (
     <Box style={{ position: 'relative', width: '100%', height: '100vh', overflow: 'hidden' }}>
-      {/* Layer 0: Background */}
-      <Box style={{ position: 'absolute', inset: 0, background: 'var(--ou-bg)' }} />
+      {/* Layer 0: Background — the universe itself */}
+      <Box style={{ position: 'absolute', inset: 0, background: 'var(--ou-space)' }} />
 
-      {/* Layer 1: Graph (full screen, always visible) */}
+      {/* Layer 1: Graph (full screen, no borders — the graph IS the universe) */}
       {nodes.length > 0 ? (
         <GraphView
           ref={graphRef}
@@ -163,7 +163,7 @@ export function MyPageClient({ savedViews: initialSavedViews, nodes: initialNode
         <GenesisEmptyState />
       )}
 
-      {/* Layer 2: Chat panel — left side, glass */}
+      {/* Layer 2: Chat panel — left side, glass-block */}
       <Box style={{
         position: 'absolute',
         left: 16,
@@ -171,6 +171,13 @@ export function MyPageClient({ savedViews: initialSavedViews, nodes: initialNode
         bottom: 16,
         width: 360,
         zIndex: 10,
+        background: 'var(--ou-surface-subtle)',
+        backdropFilter: 'blur(24px)',
+        WebkitBackdropFilter: 'blur(24px)',
+        border: '0.5px solid var(--ou-border-subtle)',
+        borderRadius: 'var(--ou-radius-card)',
+        boxShadow: 'var(--ou-glow-sm)',
+        overflow: 'hidden',
       }}>
         <ChatPanel onNodeCreated={handleNodeCreated} />
       </Box>
@@ -180,7 +187,7 @@ export function MyPageClient({ savedViews: initialSavedViews, nodes: initialNode
         <OrbDock side="right" items={orbItems} />
       )}
 
-      {/* Layer 4: Floating toolbar */}
+      {/* Layer 4: Floating toolbar — pill-block buttons */}
       {nodes.length > 0 && !adminMode && (
         <FloatingToolbar
           savedViews={savedViews}
@@ -190,7 +197,7 @@ export function MyPageClient({ savedViews: initialSavedViews, nodes: initialNode
         />
       )}
 
-      {/* Layer 5: Node interactions */}
+      {/* Layer 5: Node preview — glass-block with backdrop blur */}
       {selectedNode && !adminMode && detailMode === 'preview' && (
         <NodePreviewCard
           node={selectedNode}
@@ -199,6 +206,7 @@ export function MyPageClient({ savedViews: initialSavedViews, nodes: initialNode
         />
       )}
 
+      {/* Node detail panel — glass-block sidebar */}
       {selectedNode && !adminMode && detailMode === 'detail' && (
         <NodeDetailPanel
           node={selectedNode}

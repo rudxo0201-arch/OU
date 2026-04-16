@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   Stack, Tooltip, UnstyledButton, Text, Box,
-  Divider, ActionIcon
+  ActionIcon
 } from '@mantine/core';
 import {
   ChatTeardrop, Planet, Target, MagnifyingGlass,
@@ -145,7 +145,7 @@ export function Sidebar() {
           </Box>
         )}
 
-        <Divider />
+        <Box style={{ height: '0.5px', background: 'var(--ou-border-subtle)' }} />
 
         {/* 메인 영역 */}
         <Stack gap={4} p="xs" flex={1} style={{ overflowY: 'auto', overflowX: 'hidden' }}>
@@ -170,14 +170,14 @@ export function Sidebar() {
           {expanded && (
             <Text className={classes.sectionLabel}>커뮤니티</Text>
           )}
-          {!expanded && <Divider my={4} />}
+          {!expanded && <Box my={4} style={{ height: '0.5px', background: 'var(--ou-border-subtle)' }} />}
           {COMMUNITY_NAV.map(item => renderNavItem(item, undefined, true))}
 
           {/* 탐색 */}
           {expanded && (
             <Text className={classes.sectionLabel}>탐색</Text>
           )}
-          {!expanded && <Divider my={4} />}
+          {!expanded && <Box my={4} style={{ height: '0.5px', background: 'var(--ou-border-subtle)' }} />}
           {EXPLORE_NAV.map(item => renderNavItem(item, undefined, false))}
 
           {/* 저장된 뷰 */}
@@ -186,7 +186,7 @@ export function Sidebar() {
               {expanded && (
                 <Text className={classes.sectionLabel}>저장된 뷰</Text>
               )}
-              {!expanded && <Divider my={4} />}
+              {!expanded && <Box my={4} style={{ height: '0.5px', background: 'var(--ou-border-subtle)' }} />}
               {savedViews.map(view => (
                 <Tooltip key={view.id} label={view.name} position="right" disabled={expanded}>
                   <UnstyledButton

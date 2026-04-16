@@ -21,11 +21,67 @@ export const theme = createTheme({
   components: {
     ActionIcon: {
       defaultProps: { variant: 'subtle', color: 'gray' },
+      styles: {
+        root: {
+          background: 'transparent',
+          border: '0.5px solid var(--ou-border-subtle)',
+          transition: 'border-color var(--ou-transition), box-shadow var(--ou-transition)',
+          '&:hover': {
+            borderColor: 'var(--ou-border-hover)',
+            boxShadow: 'var(--ou-glow-sm)',
+          },
+        },
+      },
     },
     Paper: {
       defaultProps: { shadow: 'none' },
       styles: {
-        root: { border: '0.5px solid var(--mantine-color-default-border)' },
+        root: {
+          background: 'transparent',
+          border: '0.5px solid var(--ou-border-subtle)',
+          boxShadow: 'var(--ou-glow-sm)',
+        },
+      },
+    },
+    Button: {
+      styles: (theme: any, props: any) => ({
+        root: props.variant === 'filled' ? {
+          backgroundColor: 'var(--ou-text-strong)',
+          color: 'var(--ou-space)',
+          border: 'none',
+          '&:hover': {
+            backgroundColor: 'var(--ou-text-bright)',
+          },
+        } : {},
+      }),
+    },
+    TextInput: {
+      styles: {
+        input: {
+          background: 'transparent',
+          border: '0.5px solid var(--ou-border-subtle)',
+          borderRadius: 'var(--ou-radius-pill)',
+          transition: 'border-color var(--ou-transition), box-shadow var(--ou-transition)',
+          '&:focus': {
+            borderColor: 'var(--ou-border-strong)',
+            boxShadow: 'var(--ou-glow-md)',
+          },
+        },
+      },
+    },
+    Modal: {
+      styles: {
+        content: {
+          background: 'var(--ou-surface-faint)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+          border: '0.5px solid var(--ou-border-subtle)',
+          borderRadius: 'var(--ou-radius-card)',
+        },
+        overlay: {
+          background: 'rgba(0,0,0,0.6)',
+          backdropFilter: 'blur(4px)',
+        },
       },
     },
   },

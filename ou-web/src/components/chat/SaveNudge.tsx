@@ -1,9 +1,9 @@
 'use client';
 
-import { Box, Group, Text, Button, CloseButton, Stack, Overlay } from '@mantine/core';
+import { Box, Text, Stack } from '@mantine/core';
 import { useRouter } from 'next/navigation';
 import { useChatStore } from '@/stores/chatStore';
-import { Warning } from '@phosphor-icons/react';
+import { Warning, X } from '@phosphor-icons/react';
 import { COPY } from '@/lib/copy';
 
 interface SaveNudgeProps {
@@ -18,6 +18,43 @@ const NUDGE_COPY: Record<string, string> = {
   session_end: '잠깐! 지금까지 나눈 대화가 사라져요.',
 };
 
+const filledBtnStyle: React.CSSProperties = {
+  background: 'rgba(255,255,255,0.9)',
+  color: '#111',
+  border: 'none',
+  borderRadius: 'var(--ou-radius-pill)',
+  fontSize: 13,
+  fontWeight: 600,
+  fontFamily: 'inherit',
+  cursor: 'pointer',
+  transition: 'var(--ou-transition)',
+  padding: '10px 24px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: 8,
+  width: '100%',
+};
+
+const pillBtnStyle: React.CSSProperties = {
+  background: 'transparent',
+  border: '0.5px solid var(--ou-border-subtle)',
+  borderRadius: 'var(--ou-radius-pill)',
+  color: 'var(--ou-text-body)',
+  fontSize: 13,
+  fontWeight: 500,
+  fontFamily: 'inherit',
+  cursor: 'pointer',
+  transition: 'var(--ou-transition)',
+  boxShadow: 'var(--ou-glow-xs)',
+  padding: '10px 24px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: 8,
+  width: '100%',
+};
+
 export function SaveNudge({ trigger, nodeCount, onDismiss }: SaveNudgeProps) {
   const router = useRouter();
 
@@ -27,7 +64,7 @@ export function SaveNudge({ trigger, nodeCount, onDismiss }: SaveNudgeProps) {
     router.push('/login?next=/chat');
   };
 
-  // session_end: 풀스크린 모달
+  // session_end: 풀스크린 모달 (dark overlay + floating-block)
   if (trigger === 'session_end') {
     return (
       <Box
@@ -40,50 +77,68 @@ export function SaveNudge({ trigger, nodeCount, onDismiss }: SaveNudgeProps) {
           justifyContent: 'center',
         }}
       >
-        <Overlay color="#000" backgroundOpacity={0.7} zIndex={1000} />
+        {/* Dark overlay */}
         <Box
-          p="xl"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'rgba(0,0,0,0.7)',
+            backdropFilter: 'blur(4px)',
+            WebkitBackdropFilter: 'blur(4px)',
+          }}
+          onClick={onDismiss}
+        />
+        {/* Floating-block modal */}
+        <Box
           style={{
             position: 'relative',
             zIndex: 1001,
             maxWidth: 400,
             width: '90%',
-            background: 'var(--mantine-color-body)',
-            border: '0.5px solid var(--mantine-color-default-border)',
-            borderRadius: 'var(--mantine-radius-lg)',
+            background: 'transparent',
+            border: '0.5px solid var(--ou-border-subtle)',
+            borderRadius: 'var(--ou-radius-card)',
+            boxShadow: 'var(--ou-glow-lg)',
+            padding: 32,
           }}
         >
           <Stack align="center" gap="lg">
-            <Warning size={40} weight="light" color="var(--mantine-color-gray-5)" />
-            <Text fw={600} fz="lg" ta="center">
+            <Warning size={40} weight="light" style={{ color: 'var(--ou-text-dimmed)' }} />
+            <Text style={{ color: 'var(--ou-text-strong)', fontSize: 18, fontWeight: 600 }} ta="center">
               {NUDGE_COPY.session_end}
             </Text>
             {nodeCount != null && nodeCount > 0 && (
-              <Text fz="sm" c="dimmed" ta="center">
+              <Text style={{ color: 'var(--ou-text-dimmed)', fontSize: 13 }} ta="center">
                 지금까지 쌓인 기록 {nodeCount}개가 모두 사라져요.
               </Text>
             )}
-            <Text fz="sm" c="dimmed" ta="center">
+            <Text style={{ color: 'var(--ou-text-dimmed)', fontSize: 13 }} ta="center">
               가입하면 모든 기록이 저장돼요.
             </Text>
             <Stack gap="xs" w="100%">
-              <Button
-                fullWidth
-                variant="filled"
-                color="dark"
+              <button
                 onClick={handleSignup}
+                style={filledBtnStyle}
+                onMouseEnter={e => (e.currentTarget.style.background = '#fff')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.9)')}
               >
                 가입하기
-              </Button>
+              </button>
               {onDismiss && (
-                <Button
-                  fullWidth
-                  variant="subtle"
-                  color="gray"
+                <button
                   onClick={onDismiss}
+                  style={pillBtnStyle}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.borderColor = 'var(--ou-border-hover)';
+                    e.currentTarget.style.boxShadow = 'var(--ou-glow-sm)';
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.borderColor = 'var(--ou-border-subtle)';
+                    e.currentTarget.style.boxShadow = 'var(--ou-glow-xs)';
+                  }}
                 >
                   나중에
-                </Button>
+                </button>
               )}
             </Stack>
           </Stack>
@@ -92,31 +147,131 @@ export function SaveNudge({ trigger, nodeCount, onDismiss }: SaveNudgeProps) {
     );
   }
 
-  return (
-    <Box
-      px="md"
-      py="sm"
-      style={{
-        borderTop: trigger === 'turn_limit' ? '0.5px solid var(--mantine-color-default-border)' : undefined,
-        border: trigger === 'view_created' ? '0.5px solid var(--mantine-color-default-border)' : undefined,
-        borderRadius: trigger === 'view_created' ? 'var(--mantine-radius-md)' : undefined,
-        background: 'var(--mantine-color-body)',
-        ...(trigger === 'turn_limit' ? { position: 'sticky' as const, top: 0, zIndex: 10 } : {}),
-      }}
-    >
-      <Group justify="space-between" wrap="nowrap">
-        <Text fz="sm" c="dimmed" style={{ flex: 1 }}>
+  // turn_limit: glass-block style bar
+  if (trigger === 'turn_limit') {
+    return (
+      <Box
+        style={{
+          position: 'sticky' as const,
+          top: 0,
+          zIndex: 10,
+          padding: '10px 16px',
+          background: 'var(--ou-surface-faint)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+          borderBottom: '0.5px solid var(--ou-border-subtle)',
+          boxShadow: 'var(--ou-glow-sm)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 12,
+        }}
+      >
+        <Text style={{ flex: 1, fontSize: 13, color: 'var(--ou-text-dimmed)' }}>
           {NUDGE_COPY[trigger]}
         </Text>
-        <Group gap="xs" wrap="nowrap">
-          <Button size="xs" variant="filled" color="dark" onClick={handleSignup}>
-            가입하기
-          </Button>
-          {onDismiss && (
-            <CloseButton size="sm" onClick={onDismiss} />
-          )}
-        </Group>
-      </Group>
+        <button
+          onClick={handleSignup}
+          style={{
+            background: 'rgba(255,255,255,0.9)',
+            color: '#111',
+            border: 'none',
+            borderRadius: 'var(--ou-radius-pill)',
+            fontSize: 12,
+            fontWeight: 600,
+            fontFamily: 'inherit',
+            cursor: 'pointer',
+            transition: 'var(--ou-transition)',
+            padding: '6px 16px',
+            flexShrink: 0,
+          }}
+          onMouseEnter={e => (e.currentTarget.style.background = '#fff')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.9)')}
+        >
+          가입하기
+        </button>
+        {onDismiss && (
+          <button
+            onClick={onDismiss}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: 'var(--ou-text-dimmed)',
+              cursor: 'pointer',
+              padding: 4,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+              transition: 'var(--ou-transition)',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.color = 'var(--ou-text-body)')}
+            onMouseLeave={e => (e.currentTarget.style.color = 'var(--ou-text-dimmed)')}
+          >
+            <X size={16} />
+          </button>
+        )}
+      </Box>
+    );
+  }
+
+  // view_created: floating-block card
+  return (
+    <Box
+      style={{
+        padding: '14px 16px',
+        background: 'transparent',
+        border: '0.5px solid var(--ou-border-subtle)',
+        borderRadius: 'var(--ou-radius-card)',
+        boxShadow: 'var(--ou-glow-sm)',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 12,
+      }}
+    >
+      <Text style={{ flex: 1, fontSize: 13, color: 'var(--ou-text-dimmed)' }}>
+        {NUDGE_COPY[trigger]}
+      </Text>
+      <button
+        onClick={handleSignup}
+        style={{
+          background: 'rgba(255,255,255,0.9)',
+          color: '#111',
+          border: 'none',
+          borderRadius: 'var(--ou-radius-pill)',
+          fontSize: 12,
+          fontWeight: 600,
+          fontFamily: 'inherit',
+          cursor: 'pointer',
+          transition: 'var(--ou-transition)',
+          padding: '6px 16px',
+          flexShrink: 0,
+        }}
+        onMouseEnter={e => (e.currentTarget.style.background = '#fff')}
+        onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.9)')}
+      >
+        가입하기
+      </button>
+      {onDismiss && (
+        <button
+          onClick={onDismiss}
+          style={{
+            background: 'transparent',
+            border: 'none',
+            color: 'var(--ou-text-dimmed)',
+            cursor: 'pointer',
+            padding: 4,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0,
+            transition: 'var(--ou-transition)',
+          }}
+          onMouseEnter={e => (e.currentTarget.style.color = 'var(--ou-text-body)')}
+          onMouseLeave={e => (e.currentTarget.style.color = 'var(--ou-text-dimmed)')}
+        >
+          <X size={16} />
+        </button>
+      )}
     </Box>
   );
 }

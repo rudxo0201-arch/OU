@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Text, Paper, Image, Group, UnstyledButton } from '@mantine/core';
+import { Box, Text, Image, Group, UnstyledButton } from '@mantine/core';
 import { FilePdf, FileText, Globe, Slideshow, ArrowRight } from '@phosphor-icons/react';
 import ReactMarkdown from 'react-markdown';
 import { useRouter } from 'next/navigation';
@@ -31,6 +31,10 @@ function FileCard({ fileResult }: { fileResult: NonNullable<ChatMessage['fileRes
     ou: <Globe size={20} />,
     ppt: <Slideshow size={20} />,
     hwp: <FileText size={20} />,
+    docx: <FileText size={20} />,
+    xlsx: <FileText size={20} />,
+    video: <FileText size={20} />,
+    audio: <FileText size={20} />,
   };
 
   const labelMap: Record<string, string> = {
@@ -39,14 +43,13 @@ function FileCard({ fileResult }: { fileResult: NonNullable<ChatMessage['fileRes
     ou: '.ou',
     ppt: 'PPT',
     hwp: 'HWP',
+    docx: 'Word',
+    xlsx: 'Excel',
+    video: '영상',
+    audio: '음성',
   };
 
-  const statusMap: Record<string, string> = {
-    ppt: 'PPT 분석은 준비 중이에요',
-    hwp: 'HWP 분석은 준비 중이에요',
-  };
-
-  const hasLink = fileResult.fileType === 'pdf' && fileResult.nodeId;
+  const hasLink = !!fileResult.nodeId;
 
   return (
     <UnstyledButton
@@ -60,27 +63,27 @@ function FileCard({ fileResult }: { fileResult: NonNullable<ChatMessage['fileRes
         px="sm"
         py={8}
         style={{
-          border: '0.5px solid var(--mantine-color-default-border)',
-          borderRadius: 10,
-          background: 'rgba(255, 255, 255, 0.02)',
+          border: '0.5px solid var(--ou-border-subtle)',
+          borderRadius: 'var(--ou-radius-md)',
+          background: 'transparent',
+          transition: 'var(--ou-transition)',
         }}
       >
-        <Box style={{ flexShrink: 0, color: 'var(--mantine-color-dimmed)' }}>
+        <Box style={{ flexShrink: 0, color: 'var(--ou-text-dimmed)' }}>
           {iconMap[fileResult.fileType] ?? <FileText size={20} />}
         </Box>
         <Box style={{ flex: 1, minWidth: 0 }}>
-          <Text fz="xs" fw={500} truncate>
+          <Text style={{ fontSize: 12, fontWeight: 500, color: 'var(--ou-text-body)' }} truncate>
             {fileResult.fileName}
           </Text>
-          <Text fz={10} c="dimmed">
-            {statusMap[fileResult.fileType]
-              ?? (fileResult.pageCount
-                ? `${labelMap[fileResult.fileType]} · ${fileResult.pageCount}쪽`
-                : labelMap[fileResult.fileType])}
+          <Text style={{ fontSize: 10, color: 'var(--ou-text-dimmed)' }}>
+            {fileResult.pageCount
+              ? `${labelMap[fileResult.fileType]} · ${fileResult.pageCount}쪽`
+              : labelMap[fileResult.fileType]}
           </Text>
         </Box>
         {hasLink && (
-          <ArrowRight size={12} style={{ color: 'var(--mantine-color-dimmed)', flexShrink: 0 }} />
+          <ArrowRight size={12} style={{ color: 'var(--ou-text-dimmed)', flexShrink: 0 }} />
         )}
       </Group>
     </UnstyledButton>
@@ -121,11 +124,16 @@ export function MessageBubble({ message, userMessage, prevUserMessage, onAddInfo
   return (
     <Box style={{ display: 'flex', flexDirection: 'column', alignItems: isUser ? 'flex-end' : 'flex-start' }}>
       {isUser ? (
-        <Paper
-          p="sm"
+        /* ── User bubble: bubble-block.user ── */
+        <Box
           style={{
             maxWidth: '70%',
-            borderRadius: '18px 18px 4px 18px',
+            padding: '14px 16px',
+            background: 'var(--ou-surface-subtle)',
+            border: '1px solid var(--ou-border-medium)',
+            borderRadius: '20px 20px 4px 20px',
+            marginLeft: 'auto',
+            boxShadow: 'var(--ou-glow-md)',
           }}
         >
           {/* 이미지 미리보기 */}
@@ -146,19 +154,34 @@ export function MessageBubble({ message, userMessage, prevUserMessage, onAddInfo
               <FileCard fileResult={message.fileResult} />
             </Box>
           )}
-          <Text fz="sm" style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+          <Text style={{
+            whiteSpace: 'pre-wrap',
+            wordBreak: 'break-word',
+            fontSize: 13,
+            color: 'var(--ou-text-bright)',
+            lineHeight: 1.6,
+          }}>
             {cleanDisplayText(message.content, !!message.imagePreview, !!message.fileResult) || message.content}
           </Text>
-        </Paper>
+        </Box>
       ) : (
+        /* ── Assistant: bubble-block.assistant ── */
         <Box
           style={{
-            maxWidth: '85%',
-            paddingLeft: 12,
-            borderLeft: '2px solid rgba(255, 255, 255, 0.08)',
+            maxWidth: '90%',
+            paddingLeft: 14,
+            borderLeft: '1.5px solid var(--ou-border-muted)',
           }}
         >
-          <Box className="ou-markdown" style={{ fontSize: 14, lineHeight: 1.7, wordBreak: 'break-word' }}>
+          <Box
+            className="ou-markdown"
+            style={{
+              fontSize: 13,
+              lineHeight: 1.8,
+              wordBreak: 'break-word',
+              color: 'var(--ou-text-body)',
+            }}
+          >
             <ReactMarkdown>{message.content}</ReactMarkdown>
             {message.streaming && (
               <Box
@@ -179,7 +202,7 @@ export function MessageBubble({ message, userMessage, prevUserMessage, onAddInfo
                       width: 4,
                       height: 4,
                       borderRadius: '50%',
-                      background: 'var(--mantine-color-gray-5)',
+                      background: 'var(--ou-text-dimmed)',
                       animation: `ou-pulse-dot 1.2s ease-in-out ${i * 0.2}s infinite`,
                     }}
                   />

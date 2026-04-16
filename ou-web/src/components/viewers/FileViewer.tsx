@@ -4,15 +4,25 @@ import { useState, useEffect } from 'react';
 import { Box, Text } from '@mantine/core';
 import { PDFViewer } from './PDFViewer';
 import { OUFileViewer } from './OUFileViewer';
+import { DOCXViewer } from './DOCXViewer';
+import { XLSXViewer } from './XLSXViewer';
+import { PPTViewer } from './PPTViewer';
 import type { OUFile } from '@/lib/ou-format/types';
 
 interface FileViewerProps {
   url: string;
   fileType: string;
   highlightPage?: number;
+  /** 서버에서 전달된 추가 데이터 (slides, docx_html, sheets, extracted_text 등) */
+  nodeData?: {
+    slides?: Array<{ index: number; heading: string; body: string }>;
+    docx_html?: string;
+    sheets?: Array<{ name: string; headers: string[]; rows: Record<string, unknown>[] }>;
+    extracted_text?: string;
+  };
 }
 
-export function FileViewer({ url, fileType, highlightPage }: FileViewerProps) {
+export function FileViewer({ url, fileType, highlightPage, nodeData }: FileViewerProps) {
   if (fileType === 'pdf') {
     return <PDFViewer url={url} highlightPage={highlightPage} />;
   }
@@ -26,6 +36,66 @@ export function FileViewer({ url, fileType, highlightPage }: FileViewerProps) {
       <Box p="md" style={{ display: 'flex', justifyContent: 'center' }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={url} alt="업로드 이미지" style={{ maxWidth: '100%', maxHeight: '80vh' }} />
+      </Box>
+    );
+  }
+
+  // 영상
+  if (fileType === 'video') {
+    return (
+      <Box p="md" style={{ display: 'flex', justifyContent: 'center' }}>
+        <video
+          src={url}
+          controls
+          style={{ maxWidth: '100%', maxHeight: '80vh', borderRadius: 8 }}
+        />
+      </Box>
+    );
+  }
+
+  // 음성
+  if (fileType === 'audio') {
+    return (
+      <Box p="xl" style={{ display: 'flex', justifyContent: 'center' }}>
+        <audio src={url} controls style={{ width: '100%', maxWidth: 600 }} />
+      </Box>
+    );
+  }
+
+  // DOCX
+  if (fileType === 'docx') {
+    return <DOCXViewer url={url} preRenderedHtml={nodeData?.docx_html} />;
+  }
+
+  // XLSX
+  if (fileType === 'xlsx') {
+    return <XLSXViewer url={url} preRenderedSheets={nodeData?.sheets} />;
+  }
+
+  // PPT/PPTX
+  if (fileType === 'pptx' || fileType === 'ppt') {
+    return (
+      <PPTViewer
+        slides={nodeData?.slides}
+        extractedText={nodeData?.extracted_text}
+      />
+    );
+  }
+
+  // HWP/HWPX — 텍스트 기반 렌더링
+  if (fileType === 'hwp' || fileType === 'hwpx') {
+    if (nodeData?.extracted_text) {
+      return (
+        <Box p="xl" maw={700} mx="auto">
+          <Text fz="sm" style={{ whiteSpace: 'pre-wrap', lineHeight: 1.7 }}>
+            {nodeData.extracted_text}
+          </Text>
+        </Box>
+      );
+    }
+    return (
+      <Box p="xl">
+        <Text c="dimmed">문서 내용을 표시할 수 없었어요.</Text>
       </Box>
     );
   }

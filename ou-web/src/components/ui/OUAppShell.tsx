@@ -12,7 +12,7 @@ interface OUAppShellProps {
 
 export function OUAppShell({ children }: OUAppShellProps) {
   const { collapsed } = useNavigationStore();
-  const sidebarWidth = collapsed ? '60px' : '220px';
+  const sidebarWidth = collapsed ? '68px' : '220px';
 
   return (
     <>

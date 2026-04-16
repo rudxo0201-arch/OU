@@ -5,7 +5,7 @@ import { NodeViewClient } from './NodeViewClient';
 import { VisibilityToggle } from '@/components/ui/VisibilityToggle';
 import { ShareButton } from '@/components/ui/ShareButton';
 import { notFound } from 'next/navigation';
-import { Box, Title, Text, Stack, Group } from '@mantine/core';
+import { Box, Title, Text, Stack, Group, Badge } from '@mantine/core';
 import type { Metadata } from 'next';
 
 const DOMAIN_LABELS: Record<string, string> = {
@@ -101,23 +101,38 @@ export default async function ViewPage({ params }: { params: { nodeId: string } 
     .order('order_idx');
 
   return (
-    <Stack gap={0} style={{ minHeight: '100vh' }}>
+    <Stack gap={0} style={{ minHeight: '100vh', background: 'transparent' }}>
       <Box
         px="xl"
         py="md"
-        style={{ borderBottom: '0.5px solid var(--mantine-color-default-border)' }}
+        style={{ borderBottom: '0.5px solid var(--ou-border-faint)' }}
       >
         <Group justify="space-between" align="flex-start">
           <Box>
-            <Title order={4}>
+            <Title order={4} style={{ color: 'var(--ou-text-strong)' }}>
               {node.raw
                 ? (node.raw.length > 80 ? node.raw.slice(0, 77) + '...' : node.raw)
                 : DOMAIN_LABELS[node.domain] || '데이터'}
             </Title>
-            <Text fz="xs" c="dimmed">
-              {DOMAIN_LABELS[node.domain] || node.domain || ''}
-              {node.source_file_type ? ` — ${node.source_file_type.toUpperCase()}` : ''}
-            </Text>
+            <Group gap="xs" mt={4}>
+              <Badge
+                variant="light"
+                color="gray"
+                size="xs"
+                style={{
+                  background: 'var(--ou-surface-muted)',
+                  border: '0.5px solid var(--ou-border-subtle)',
+                  color: 'var(--ou-text-dimmed)',
+                }}
+              >
+                {DOMAIN_LABELS[node.domain] || node.domain || ''}
+              </Badge>
+              {node.source_file_type && (
+                <Text fz="xs" style={{ color: 'var(--ou-text-dimmed)' }}>
+                  {node.source_file_type.toUpperCase()}
+                </Text>
+              )}
+            </Group>
           </Box>
           {isOwner && (
             <Group gap="sm">
@@ -135,12 +150,7 @@ export default async function ViewPage({ params }: { params: { nodeId: string } 
       </Box>
 
       <Box style={{ flex: 1, overflow: 'auto' }}>
-        {hasFile && fileUrl && node.source_file_type !== 'pdf' ? (
-          <FileViewer
-            url={fileUrl}
-            fileType={node.source_file_type ?? 'unknown'}
-          />
-        ) : (
+        {hasFile && fileUrl && node.source_file_type === 'pdf' ? (
           <NodeViewClient
             node={{
               ...node,
@@ -152,7 +162,30 @@ export default async function ViewPage({ params }: { params: { nodeId: string } 
             triples={triples ?? []}
             sections={sections ?? []}
             sentences={sentences ?? []}
-            viewTypeOverride={node.source_file_type === 'pdf' ? 'document' : undefined}
+            viewTypeOverride="document"
+          />
+        ) : hasFile && fileUrl ? (
+          <FileViewer
+            url={fileUrl}
+            fileType={node.source_file_type ?? 'unknown'}
+            nodeData={{
+              slides: (node.domain_data as any)?.slides,
+              docx_html: (node.domain_data as any)?.docx_html,
+              sheets: (node.domain_data as any)?.sheets,
+              extracted_text: (node.domain_data as any)?.extracted_text,
+            }}
+          />
+        ) : (
+          <NodeViewClient
+            node={{
+              ...node,
+              domain_data: {
+                ...(node.domain_data as any ?? {}),
+              },
+            }}
+            triples={triples ?? []}
+            sections={sections ?? []}
+            sentences={sentences ?? []}
           />
         )}
       </Box>

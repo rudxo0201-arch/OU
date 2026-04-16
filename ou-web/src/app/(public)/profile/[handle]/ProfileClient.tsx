@@ -192,37 +192,73 @@ export function ProfileClient({ persona, nodes, totalNodeCount }: { persona: Per
     }
   };
 
+  /* ── Card style ── */
+  const cardStyle: React.CSSProperties = {
+    background: 'transparent',
+    border: '0.5px solid var(--ou-border-subtle)',
+    borderRadius: 'var(--ou-radius-card)',
+    boxShadow: 'var(--ou-glow-sm)',
+    cursor: 'pointer',
+    transition: 'box-shadow var(--ou-transition), border-color var(--ou-transition)',
+  };
+
   return (
-    <Stack gap="xl" maw={800} mx="auto" p="xl">
+    <Stack gap="xl" maw={800} mx="auto" p="xl" style={{ background: 'transparent' }}>
       {/* Header: avatar, name, bio, actions */}
-      <Group align="flex-start" wrap="nowrap">
+      <Stack align="center" gap="md">
+        {/* Avatar as orb-block */}
         <Avatar
           src={persona.avatar_url ?? undefined}
           size={96}
-          radius="xl"
-          style={{ border: '0.5px solid var(--mantine-color-default-border)' }}
+          radius="50%"
+          style={{
+            border: '0.5px solid var(--ou-border-subtle)',
+            boxShadow: 'var(--ou-glow-md)',
+          }}
         />
-        <Stack gap={4} flex={1}>
-          <Group gap="xs" align="baseline">
-            <Text fw={700} fz="xl">{persona.display_name ?? persona.handle}</Text>
-            <Text c="dimmed" fz="sm">@{persona.handle}</Text>
-          </Group>
+        <Stack gap={4} align="center">
+          <Text fw={700} fz="xl" style={{ color: 'var(--ou-text-strong)' }}>
+            {persona.display_name ?? persona.handle}
+          </Text>
+          <Text fz="sm" style={{ color: 'var(--ou-text-dimmed)' }}>
+            @{persona.handle}
+          </Text>
 
-          {persona.bio && <Text fz="sm" mt={4}>{persona.bio}</Text>}
+          {persona.bio && (
+            <Text fz="sm" mt={4} ta="center" style={{ color: 'var(--ou-text-body)' }}>
+              {persona.bio}
+            </Text>
+          )}
 
-          {/* Stats */}
+          {/* Stats — badge-block style */}
           {statsLoading ? (
             <Loader size="xs" color="gray" mt={4} />
           ) : (
-            <Group gap="lg" mt={4}>
-              <Text fz="sm">
-                <Text span fw={600}>{nodes.length}</Text>
-                <Text span c="dimmed" ml={4}>공개 기록</Text>
-              </Text>
-              <Text fz="sm">
-                <Text span fw={600}>{followerCount}</Text>
-                <Text span c="dimmed" ml={4}>팔로워</Text>
-              </Text>
+            <Group gap="lg" mt={8}>
+              <Badge
+                variant="light"
+                color="gray"
+                size="lg"
+                style={{
+                  background: 'var(--ou-surface-muted)',
+                  border: '0.5px solid var(--ou-border-subtle)',
+                  color: 'var(--ou-text-body)',
+                }}
+              >
+                공개 기록 {nodes.length}
+              </Badge>
+              <Badge
+                variant="light"
+                color="gray"
+                size="lg"
+                style={{
+                  background: 'var(--ou-surface-muted)',
+                  border: '0.5px solid var(--ou-border-subtle)',
+                  color: 'var(--ou-text-body)',
+                }}
+              >
+                팔로워 {followerCount}
+              </Badge>
             </Group>
           )}
 
@@ -230,47 +266,62 @@ export function ProfileClient({ persona, nodes, totalNodeCount }: { persona: Per
           <Box mt={8} maw={240}>
             <RankBadge nodeCount={totalNodeCount} variant="compact" />
           </Box>
+
+          {/* Action button — pill-block */}
+          <Box mt="md">
+            {isOwn ? (
+              <Button
+                variant="outline"
+                color="gray"
+                size="sm"
+                radius="xl"
+                style={{
+                  borderWidth: '0.5px',
+                  borderColor: 'var(--ou-border-subtle)',
+                  background: 'transparent',
+                  color: 'var(--ou-text-body)',
+                }}
+                leftSection={<PencilSimple size={16} weight="light" />}
+                onClick={() => router.push('/settings')}
+              >
+                편집
+              </Button>
+            ) : (
+              <Button
+                variant={following ? 'light' : 'outline'}
+                color="gray"
+                size="sm"
+                radius="xl"
+                style={{
+                  borderWidth: '0.5px',
+                  borderColor: following ? 'var(--ou-border-hover)' : 'var(--ou-border-subtle)',
+                  background: following ? 'var(--ou-surface-muted)' : 'transparent',
+                  color: 'var(--ou-text-body)',
+                  boxShadow: following ? 'var(--ou-glow-sm)' : 'none',
+                }}
+                leftSection={
+                  following
+                    ? <UserMinus size={16} weight="light" />
+                    : <UserPlus size={16} weight="light" />
+                }
+                loading={followLoading}
+                onClick={handleFollow}
+              >
+                {following ? '팔로잉' : '팔로우'}
+              </Button>
+            )}
+          </Box>
         </Stack>
+      </Stack>
 
-        {/* Action button */}
-        <Box>
-          {isOwn ? (
-            <Button
-              variant="outline"
-              color="dark"
-              size="sm"
-              style={{ borderWidth: '0.5px' }}
-              leftSection={<PencilSimple size={16} weight="light" />}
-              onClick={() => router.push('/settings')}
-            >
-              편집
-            </Button>
-          ) : (
-            <Button
-              variant={following ? 'light' : 'outline'}
-              color="dark"
-              size="sm"
-              style={{ borderWidth: '0.5px' }}
-              leftSection={
-                following
-                  ? <UserMinus size={16} weight="light" />
-                  : <UserPlus size={16} weight="light" />
-              }
-              loading={followLoading}
-              onClick={handleFollow}
-            >
-              {following ? '팔로잉' : '팔로우'}
-            </Button>
-          )}
-        </Box>
-      </Group>
-
-      {/* Public nodes grid */}
+      {/* Public nodes grid — card-block items */}
       {nodes.length === 0 ? (
         <Center py="xl">
           <Stack align="center" gap="xs">
-            <Globe size={36} weight="light" color="var(--mantine-color-gray-4)" />
-            <Text fz="sm" c="dimmed">공개된 기록이 없어요</Text>
+            <Globe size={36} weight="light" style={{ color: 'var(--ou-text-dimmed)' }} />
+            <Text fz="sm" style={{ color: 'var(--ou-text-dimmed)' }}>
+              공개된 기록이 없어요
+            </Text>
           </Stack>
         </Center>
       ) : (
@@ -280,11 +331,16 @@ export function ProfileClient({ persona, nodes, totalNodeCount }: { persona: Per
               key={node.id}
               p="md"
               radius="md"
-              style={{
-                border: '0.5px solid var(--mantine-color-default-border)',
-                cursor: 'pointer',
-              }}
+              style={cardStyle}
               onClick={() => router.push(`/view/${node.id}`)}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.boxShadow = 'var(--ou-glow-hover)';
+                e.currentTarget.style.borderColor = 'var(--ou-border-hover)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = 'var(--ou-glow-sm)';
+                e.currentTarget.style.borderColor = 'var(--ou-border-subtle)';
+              }}
             >
               <Group justify="space-between" mb={6}>
                 <Badge
@@ -292,16 +348,23 @@ export function ProfileClient({ persona, nodes, totalNodeCount }: { persona: Per
                   color="gray"
                   size="xs"
                   styles={{ root: { textTransform: 'none' } }}
+                  style={{
+                    background: 'var(--ou-surface-muted)',
+                    border: '0.5px solid var(--ou-border-subtle)',
+                    color: 'var(--ou-text-dimmed)',
+                  }}
                 >
                   {DOMAIN_LABELS[node.domain] ?? node.domain}
                 </Badge>
                 {node.created_at && (
-                  <Text fz={10} c="dimmed">
-                    {new Date(node.created_at).toLocaleDateString('ko-KR')}
+                  <Text fz={10} style={{ color: 'var(--ou-text-dimmed)' }}>
+                    {new Date(node.created_at as string).toLocaleDateString('ko-KR')}
                   </Text>
                 )}
               </Group>
-              <Text fz="sm" lineClamp={3}>{node.raw}</Text>
+              <Text fz="sm" lineClamp={3} style={{ color: 'var(--ou-text-body)' }}>
+                {node.raw}
+              </Text>
             </Paper>
           ))}
         </SimpleGrid>
@@ -312,8 +375,14 @@ export function ProfileClient({ persona, nodes, totalNodeCount }: { persona: Per
         <Center>
           <Button
             variant="outline"
-            color="dark"
-            style={{ borderWidth: '0.5px' }}
+            color="gray"
+            radius="xl"
+            style={{
+              borderWidth: '0.5px',
+              borderColor: 'var(--ou-border-subtle)',
+              background: 'transparent',
+              color: 'var(--ou-text-body)',
+            }}
             leftSection={<Robot size={18} weight="light" />}
             onClick={() => setChatOpen(true)}
           >
@@ -327,8 +396,11 @@ export function ProfileClient({ persona, nodes, totalNodeCount }: { persona: Per
         <Paper
           radius="md"
           style={{
-            border: '0.5px solid var(--mantine-color-default-border)',
+            border: '0.5px solid var(--ou-border-subtle)',
+            borderRadius: 'var(--ou-radius-card)',
             overflow: 'hidden',
+            background: 'transparent',
+            boxShadow: 'var(--ou-glow-sm)',
           }}
         >
           {/* Header */}
@@ -336,11 +408,11 @@ export function ProfileClient({ persona, nodes, totalNodeCount }: { persona: Per
             justify="space-between"
             px="md"
             py="sm"
-            style={{ borderBottom: '0.5px solid var(--mantine-color-default-border)' }}
+            style={{ borderBottom: '0.5px solid var(--ou-border-faint)' }}
           >
             <Group gap="xs">
-              <Robot size={18} weight="light" />
-              <Text fw={600} fz="sm">
+              <Robot size={18} weight="light" style={{ color: 'var(--ou-text-dimmed)' }} />
+              <Text fw={600} fz="sm" style={{ color: 'var(--ou-text-strong)' }}>
                 {persona.display_name ?? persona.handle}의 AI
               </Text>
             </Group>
@@ -355,8 +427,8 @@ export function ProfileClient({ persona, nodes, totalNodeCount }: { persona: Per
           </Group>
 
           {/* Disclaimer */}
-          <Box px="md" py={6} bg="var(--mantine-color-gray-0)">
-            <Text fz="xs" c="dimmed">
+          <Box px="md" py={6} style={{ background: 'var(--ou-surface-faint)' }}>
+            <Text fz="xs" style={{ color: 'var(--ou-text-dimmed)' }}>
               AI가 공개된 기록을 바탕으로 답변합니다
             </Text>
           </Box>
@@ -377,17 +449,20 @@ export function ProfileClient({ persona, nodes, totalNodeCount }: { persona: Per
                     py={6}
                     maw="80%"
                     style={{
-                      borderRadius: 'var(--mantine-radius-md)',
-                      background:
-                        msg.role === 'user'
-                          ? 'var(--mantine-color-dark-7)'
-                          : 'var(--mantine-color-gray-1)',
+                      borderRadius: 'var(--ou-radius-md)',
+                      background: msg.role === 'user'
+                        ? 'var(--ou-surface-hover)'
+                        : 'var(--ou-surface-subtle)',
+                      border: '0.5px solid var(--ou-border-faint)',
                     }}
                   >
                     <Text
                       fz="sm"
-                      c={msg.role === 'user' ? 'white' : 'dark'}
-                      style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
+                      style={{
+                        whiteSpace: 'pre-wrap',
+                        wordBreak: 'break-word',
+                        color: 'var(--ou-text-body)',
+                      }}
                     >
                       {msg.content || (streaming && i === chatMessages.length - 1 ? '...' : '')}
                     </Text>
@@ -402,12 +477,13 @@ export function ProfileClient({ persona, nodes, totalNodeCount }: { persona: Per
             px="md"
             py="sm"
             gap="xs"
-            style={{ borderTop: '0.5px solid var(--mantine-color-default-border)' }}
+            style={{ borderTop: '0.5px solid var(--ou-border-faint)' }}
           >
             <TextInput
               flex={1}
               placeholder="궁금한 것을 물어보세요"
               size="sm"
+              radius="xl"
               value={chatInput}
               onChange={e => setChatInput(e.currentTarget.value)}
               onKeyDown={e => {
@@ -418,13 +494,19 @@ export function ProfileClient({ persona, nodes, totalNodeCount }: { persona: Per
               }}
               disabled={streaming || chatMessages.length >= 20}
               styles={{
-                input: { borderWidth: '0.5px' },
+                input: {
+                  borderWidth: '0.5px',
+                  borderColor: 'var(--ou-border-subtle)',
+                  background: 'transparent',
+                  color: 'var(--ou-text-body)',
+                },
               }}
             />
             <ActionIcon
               variant="filled"
               color="dark"
               size="lg"
+              radius="xl"
               onClick={sendChatMessage}
               disabled={streaming || !chatInput.trim() || chatMessages.length >= 20}
             >
@@ -433,14 +515,16 @@ export function ProfileClient({ persona, nodes, totalNodeCount }: { persona: Per
           </Group>
 
           {chatMessages.length >= 20 && (
-            <Text fz="xs" c="dimmed" ta="center" pb="xs">
+            <Text fz="xs" ta="center" pb="xs" style={{ color: 'var(--ou-text-dimmed)' }}>
               최대 대화 수에 도달했어요
             </Text>
           )}
         </Paper>
       )}
 
-      <Text fz="xs" c="dimmed" ta="center">Made with OU</Text>
+      <Text fz="xs" ta="center" style={{ color: 'var(--ou-text-dimmed)' }}>
+        Made with OU
+      </Text>
     </Stack>
   );
 }

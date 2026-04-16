@@ -192,17 +192,26 @@ export function AccuracyClient({ entities: initialEntities }: AccuracyClientProp
     return (
       <Center h="60vh">
         <Stack align="center" gap="md">
-          <CheckCircle size={48} weight="light" color="var(--mantine-color-gray-5)" />
-          <Text fw={600} fz="lg">모든 기록이 정확해요!</Text>
-          <Text c="dimmed" fz="sm" ta="center">
+          <CheckCircle size={48} weight="light" style={{ color: 'var(--ou-text-dimmed)' }} />
+          <Text fw={600} fz="lg" style={{ color: 'var(--ou-text-strong)' }}>
+            모든 기록이 정확해요!
+          </Text>
+          <Text fz="sm" ta="center" style={{ color: 'var(--ou-text-dimmed)' }}>
             대화를 더 나눠보세요!<br />
             OU가 잘 모르는 것들이 생기면 여기서 알려드릴게요.
           </Text>
           <Button
-            variant="light"
+            variant="outline"
             color="gray"
+            radius="xl"
             leftSection={<ChatTeardrop size={18} />}
             onClick={() => router.push('/chat')}
+            style={{
+              borderWidth: '0.5px',
+              borderColor: 'var(--ou-border-subtle)',
+              background: 'transparent',
+              color: 'var(--ou-text-body)',
+            }}
           >
             대화하러 가기
           </Button>
@@ -216,12 +225,25 @@ export function AccuracyClient({ entities: initialEntities }: AccuracyClientProp
     return (
       <Center h="60vh">
         <Stack align="center" gap="md">
-          <CheckCircle size={48} weight="light" color="var(--mantine-color-gray-5)" />
-          <Text fw={600} fz="lg">모두 확인했어요!</Text>
-          <Text c="dimmed" ta="center" fz="sm">
+          <CheckCircle size={48} weight="light" style={{ color: 'var(--ou-text-dimmed)' }} />
+          <Text fw={600} fz="lg" style={{ color: 'var(--ou-text-strong)' }}>
+            모두 확인했어요!
+          </Text>
+          <Text ta="center" fz="sm" style={{ color: 'var(--ou-text-dimmed)' }}>
             덕분에 OU가 더 정확해졌어요.
           </Text>
-          <Button variant="light" color="gray" onClick={() => router.push('/my')}>
+          <Button
+            variant="outline"
+            color="gray"
+            radius="xl"
+            onClick={() => router.push('/my')}
+            style={{
+              borderWidth: '0.5px',
+              borderColor: 'var(--ou-border-subtle)',
+              background: 'transparent',
+              color: 'var(--ou-text-body)',
+            }}
+          >
             내 우주로 돌아가기
           </Button>
         </Stack>
@@ -237,62 +259,125 @@ export function AccuracyClient({ entities: initialEntities }: AccuracyClientProp
   return (
     <Stack gap="xl" p="xl" maw={600} mx="auto">
       <Stack gap="xs">
-        <Title order={2}>정확도 높이기</Title>
-        <Text c="dimmed" fz="sm">
+        <Text
+          fw={500}
+          style={{
+            fontSize: 10,
+            textTransform: 'uppercase',
+            letterSpacing: 3,
+            color: 'var(--ou-text-dimmed)',
+          }}
+        >
+          정확도 높이기
+        </Text>
+        <Text fz="sm" style={{ color: 'var(--ou-text-body)' }}>
           OU가 아직 모르는 것들이에요. 알려주시면 더 정확해져요.
         </Text>
         <Progress value={progress} size="xs" mt="xs" color="gray" />
         <Group justify="space-between">
-          <Text fz="xs" c="dimmed">{currentIdx + 1} / {entities.length}</Text>
+          <Text fz="xs" style={{ color: 'var(--ou-text-dimmed)' }}>
+            {currentIdx + 1} / {entities.length}
+          </Text>
           <Group gap="md">
-            <Text fz="xs" c="dimmed">전체 {entities.length}개</Text>
-            <Text fz="xs" c="dimmed">확인 {resolvedCount}개</Text>
-            <Text fz="xs" c="dimmed">건너뜀 {skippedCount}개</Text>
+            <Badge
+              variant="light"
+              color="gray"
+              size="sm"
+              style={{
+                background: 'var(--ou-surface-muted)',
+                border: '0.5px solid var(--ou-border-subtle)',
+                color: 'var(--ou-text-body)',
+              }}
+            >
+              전체 {entities.length}
+            </Badge>
+            <Badge
+              variant="light"
+              color="gray"
+              size="sm"
+              style={{
+                background: 'var(--ou-surface-muted)',
+                border: '0.5px solid var(--ou-border-subtle)',
+                color: 'var(--ou-text-body)',
+              }}
+            >
+              확인 {resolvedCount}
+            </Badge>
+            <Badge
+              variant="light"
+              color="gray"
+              size="sm"
+              style={{
+                background: 'var(--ou-surface-muted)',
+                border: '0.5px solid var(--ou-border-subtle)',
+                color: 'var(--ou-text-body)',
+              }}
+            >
+              건너뜀 {skippedCount}
+            </Badge>
           </Group>
         </Group>
       </Stack>
 
       {/* 정확도 향상 안내 */}
       {current && (
-        <Text fz="sm" ta="center" c="dimmed">
-          정확도가 <Text span fw={600} c="white">{currentResolvedAccuracy}%</Text> → <Text span fw={600} c="white">{nextAccuracy}%</Text> 로 높아져요
+        <Text fz="sm" ta="center" style={{ color: 'var(--ou-text-dimmed)' }}>
+          정확도가{' '}
+          <Text span fw={600} style={{ color: 'var(--ou-text-strong)' }}>
+            {currentResolvedAccuracy}%
+          </Text>
+          {' → '}
+          <Text span fw={600} style={{ color: 'var(--ou-text-strong)' }}>
+            {nextAccuracy}%
+          </Text>
+          {' '}로 높아져요
         </Text>
       )}
 
       {/* 단축키 안내 */}
       <Group gap="xs" justify="center">
-        <Keyboard size={14} color="var(--mantine-color-gray-6)" />
-        <Text fz="xs" c="dimmed">
+        <Keyboard size={14} style={{ color: 'var(--ou-text-dimmed)' }} />
+        <Text fz="xs" style={{ color: 'var(--ou-text-dimmed)' }}>
           1~4 선택 · S 건너뛰기 · Enter 직접 입력
         </Text>
       </Group>
 
       <Transition mounted={slideIn} transition="slide-left" duration={200}>
         {(styles) => (
-          <Paper p="lg" style={styles}>
+          <Paper
+            p="lg"
+            style={{
+              ...styles,
+              background: 'transparent',
+              border: '0.5px solid var(--ou-border-subtle)',
+              borderRadius: 'var(--ou-radius-card)',
+              boxShadow: 'var(--ou-glow-sm)',
+            }}
+          >
             <Stack gap="lg">
-              {/* Context */}
+              {/* Context — glass-block with border-left accent */}
               {contextMessages.length > 0 && (
                 <Stack gap="xs">
-                  <Text fz="xs" c="dimmed">이 대화에서</Text>
+                  <Text fz="xs" style={{ color: 'var(--ou-text-dimmed)' }}>이 대화에서</Text>
                   <Box
                     p="sm"
                     style={{
-                      background: 'var(--mantine-color-dark-6)',
-                      borderRadius: 8,
-                      borderLeft: '2px solid var(--mantine-color-default-border)',
+                      background: 'var(--ou-surface-subtle)',
+                      borderRadius: 'var(--ou-radius-md)',
+                      borderLeft: '2px solid var(--ou-border-muted)',
                     }}
                   >
                     {contextMessages.map((msg, i) => (
                       <Text key={i} fz="sm" mb={4}>
-                        <Text span c="dimmed" fz="xs">
+                        <Text span fz="xs" style={{ color: 'var(--ou-text-dimmed)' }}>
                           {msg.role === 'user' ? '나' : 'OU'}:{' '}
                         </Text>
                         <Text
                           span
                           style={{
+                            color: 'var(--ou-text-body)',
                             background: msg.text.includes(current.raw_text)
-                              ? 'rgba(180,180,180,0.2)'
+                              ? 'var(--ou-surface-hover)'
                               : 'transparent',
                             borderRadius: 2,
                             padding: msg.text.includes(current.raw_text) ? '0 2px' : 0,
@@ -308,16 +393,25 @@ export function AccuracyClient({ entities: initialEntities }: AccuracyClientProp
 
               {/* Question */}
               <Group gap="xs" align="center">
-                <EntityIcon size={20} weight="light" color="var(--mantine-color-gray-5)" />
-                <Text fw={600}>
-                  <Badge variant="outline" color="gray" mr="xs" size="lg">
+                <EntityIcon size={20} weight="light" style={{ color: 'var(--ou-text-dimmed)' }} />
+                <Text fw={600} style={{ color: 'var(--ou-text-strong)' }}>
+                  <Badge
+                    variant="outline"
+                    color="gray"
+                    mr="xs"
+                    size="lg"
+                    style={{
+                      borderColor: 'var(--ou-border-subtle)',
+                      color: 'var(--ou-text-strong)',
+                    }}
+                  >
                     {current.raw_text}
                   </Badge>
                   {config.question}
                 </Text>
               </Group>
 
-              {/* 확인 체크마크 */}
+              {/* 확인 체크마크 — white/bright, no green */}
               {showCheckmark && (
                 <Center>
                   <Box
@@ -325,63 +419,107 @@ export function AccuracyClient({ entities: initialEntities }: AccuracyClientProp
                       width: 48,
                       height: 48,
                       borderRadius: '50%',
-                      background: 'rgba(255,255,255,0.1)',
+                      background: 'var(--ou-surface-hover)',
+                      border: '0.5px solid var(--ou-border-subtle)',
+                      boxShadow: 'var(--ou-glow-md)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       animation: 'fadeInScale 0.3s ease-out',
                     }}
                   >
-                    <Check size={28} weight="bold" color="var(--mantine-color-gray-3)" />
+                    <Check size={28} weight="bold" style={{ color: 'var(--ou-text-bright)' }} />
                   </Box>
                 </Center>
               )}
 
-              {/* Candidate buttons */}
+              {/* Candidate buttons — pill-block style */}
               {!showCheckmark && (
               <Stack gap="xs">
                 {candidates.map((candidate, idx) => (
                   <Button
                     key={candidate}
-                    variant="light"
+                    variant="outline"
                     color="gray"
                     justify="flex-start"
+                    radius="xl"
                     loading={resolving}
                     leftSection={
                       <Group gap={4}>
                         {idx < 4 && (
-                          <Badge size="xs" variant="outline" color="gray" style={{ minWidth: 18 }}>
+                          <Badge
+                            size="xs"
+                            variant="outline"
+                            color="gray"
+                            style={{
+                              minWidth: 18,
+                              borderColor: 'var(--ou-border-subtle)',
+                              color: 'var(--ou-text-dimmed)',
+                            }}
+                          >
                             {idx + 1}
                           </Badge>
                         )}
-                        <ArrowRight size={14} />
+                        <ArrowRight size={14} style={{ color: 'var(--ou-text-dimmed)' }} />
                       </Group>
                     }
                     onClick={() => handleResolve(candidate)}
+                    style={{
+                      borderWidth: '0.5px',
+                      borderColor: 'var(--ou-border-subtle)',
+                      background: 'transparent',
+                      color: 'var(--ou-text-body)',
+                      boxShadow: 'var(--ou-glow-xs)',
+                      transition: 'all var(--ou-transition)',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.boxShadow = 'var(--ou-glow-hover)';
+                      e.currentTarget.style.borderColor = 'var(--ou-border-hover)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.boxShadow = 'var(--ou-glow-xs)';
+                      e.currentTarget.style.borderColor = 'var(--ou-border-subtle)';
+                    }}
                   >
                     {candidate}
                   </Button>
                 ))}
 
-                {/* Custom input */}
+                {/* Custom input — input-block style */}
                 <Group gap="xs" mt="xs">
                   <TextInput
                     placeholder="직접 입력..."
                     value={customInput}
                     onChange={e => setCustomInput(e.target.value)}
                     flex={1}
+                    radius="xl"
                     onKeyDown={e => {
                       if (e.key === 'Enter' && customInput.trim()) {
                         handleResolve(customInput.trim());
                       }
                     }}
+                    styles={{
+                      input: {
+                        border: '0.5px solid var(--ou-border-subtle)',
+                        background: 'transparent',
+                        color: 'var(--ou-text-body)',
+                        boxShadow: 'var(--ou-glow-xs)',
+                      },
+                    }}
                   />
                   <Button
-                    variant="light"
+                    variant="outline"
                     color="gray"
+                    radius="xl"
                     onClick={() => customInput.trim() && handleResolve(customInput.trim())}
                     disabled={!customInput.trim()}
                     loading={resolving}
+                    style={{
+                      borderWidth: '0.5px',
+                      borderColor: 'var(--ou-border-subtle)',
+                      background: 'transparent',
+                      color: 'var(--ou-text-body)',
+                    }}
                   >
                     입력
                   </Button>
@@ -389,6 +527,7 @@ export function AccuracyClient({ entities: initialEntities }: AccuracyClientProp
               </Stack>
               )}
 
+              {/* Skip button — subtle text, text-dimmed */}
               {!showCheckmark && (
               <Button
                 variant="subtle"
@@ -396,6 +535,7 @@ export function AccuracyClient({ entities: initialEntities }: AccuracyClientProp
                 size="xs"
                 onClick={handleSkip}
                 leftSection={<SkipForward size={14} />}
+                style={{ color: 'var(--ou-text-dimmed)' }}
               >
                 건너뛰기 (S)
               </Button>

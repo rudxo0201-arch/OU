@@ -95,6 +95,44 @@ export async function parseFile(
     return parseCSV(buffer.toString('utf-8'));
   }
 
+  // 확장자 기반 폴백 (브라우저가 부정확한 MIME을 보내는 경우)
+  const ext = filename.split('.').pop()?.toLowerCase();
+
+  if (mimeType.includes('hwp') || ext === 'hwp') {
+    const { parseHWP } = await import('./parsers/hwp-parser');
+    const result = await parseHWP(buffer, filename);
+    return result.sections;
+  }
+
+  if (ext === 'hwpx') {
+    const { parseHWPX } = await import('./parsers/hwpx-parser');
+    const result = await parseHWPX(buffer, filename);
+    return result.sections;
+  }
+
+  if (mimeType.includes('presentation') || mimeType.includes('powerpoint') || ext === 'pptx' || ext === 'ppt') {
+    const { parsePPT } = await import('./parsers/ppt-parser');
+    const result = await parsePPT(buffer, filename);
+    return result.slides.map(s => ({ heading: s.heading, body: s.body }));
+  }
+
+  if (mimeType.includes('wordprocessingml') || ext === 'docx') {
+    const { parseDOCX } = await import('./parsers/docx-parser');
+    const result = await parseDOCX(buffer, filename);
+    return result.sections;
+  }
+
+  if (mimeType.includes('spreadsheetml') || ext === 'xlsx' || ext === 'xls') {
+    const { parseXLSX } = await import('./parsers/xlsx-parser');
+    const result = await parseXLSX(buffer, filename);
+    return result.sections;
+  }
+
+  // 영상/음성: 파싱 불가, 원본만 R2 저장
+  if (mimeType.startsWith('video/') || mimeType.startsWith('audio/')) {
+    return [];
+  }
+
   return [];
 }
 

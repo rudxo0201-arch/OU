@@ -86,13 +86,13 @@ export function ScenarioDetailClient({
         const data = await res.json();
         notifications.show({
           message: data.error || '공유에 실패했어요. 다시 시도해주세요.',
-          color: 'red',
+          color: 'gray',
         });
       }
     } catch {
       notifications.show({
         message: '공유에 실패했어요. 다시 시도해주세요.',
-        color: 'red',
+        color: 'gray',
       });
     } finally {
       setSubmitting(false);
@@ -117,9 +117,25 @@ export function ScenarioDetailClient({
     ? `${window.location.origin}/scenario/${scenario.id}`
     : `/scenario/${scenario.id}`;
 
+  /* ── Shared styles ── */
+  const cardStyle: React.CSSProperties = {
+    background: 'transparent',
+    border: '0.5px solid var(--ou-border-subtle)',
+    borderRadius: 'var(--ou-radius-card)',
+    boxShadow: 'var(--ou-glow-sm)',
+  };
+
+  const sectionTitleStyle: React.CSSProperties = {
+    fontSize: 10,
+    textTransform: 'uppercase',
+    letterSpacing: 3,
+    color: 'var(--ou-text-dimmed)',
+    fontWeight: 500,
+  };
+
   return (
-    <Box maw={700} mx="auto" px="xl" py="xl">
-      {/* Back button */}
+    <Box maw={700} mx="auto" px="xl" py="xl" style={{ background: 'transparent' }}>
+      {/* Back button — pill-block */}
       <Button
         variant="subtle"
         color="gray"
@@ -128,34 +144,37 @@ export function ScenarioDetailClient({
         component={Link}
         href="/universe"
         mb="lg"
+        style={{ color: 'var(--ou-text-dimmed)' }}
       >
         돌아가기
       </Button>
 
-      {/* Scenario Content */}
+      {/* Scenario Content — floating-block */}
       <Paper
         p="xl"
-        withBorder
         style={{
-          borderColor: 'var(--mantine-color-default-border)',
-          background: 'var(--mantine-color-dark-7, var(--mantine-color-gray-0))',
+          ...cardStyle,
+          boxShadow: 'var(--ou-glow-md)',
         }}
         mb="lg"
       >
-        <Text fw={700} fz="xl" mb="sm">{scenario.title}</Text>
-        <Text fz="md" c="dimmed" style={{ lineHeight: 1.8 }}>
+        <Text fw={700} fz="xl" mb="sm" style={{ color: 'var(--ou-text-strong)' }}>
+          {scenario.title}
+        </Text>
+        <Text fz="md" style={{ lineHeight: 1.8, color: 'var(--ou-text-body)' }}>
           {scenario.raw}
         </Text>
 
-        <Divider my="md" />
+        <Divider my="md" color="var(--ou-border-faint)" />
 
         <Group justify="space-between">
           <Group gap={6}>
-            <CheckCircle size={16} weight="light" color="var(--mantine-color-gray-5)" />
-            <Text fz="sm" fw={500}>
+            <CheckCircle size={16} weight="light" style={{ color: 'var(--ou-text-dimmed)' }} />
+            <Text fz="sm" fw={500} style={{ color: 'var(--ou-text-body)' }}>
               {realizations.length}명이 실현했어요
             </Text>
           </Group>
+          {/* Share — pill-block */}
           <CopyButton value={shareUrl}>
             {({ copied, copy }) => (
               <Tooltip label={copied ? '복사됨' : '링크 복사'}>
@@ -163,6 +182,11 @@ export function ScenarioDetailClient({
                   variant="subtle"
                   color="gray"
                   onClick={copy}
+                  style={{
+                    border: '0.5px solid var(--ou-border-subtle)',
+                    borderRadius: 'var(--ou-radius-pill)',
+                    background: 'transparent',
+                  }}
                 >
                   {copied ? <Check size={16} /> : <Copy size={16} weight="light" />}
                 </ActionIcon>
@@ -175,13 +199,12 @@ export function ScenarioDetailClient({
       {/* Write your story */}
       <Paper
         p="lg"
-        withBorder
-        style={{
-          borderColor: 'var(--mantine-color-default-border)',
-        }}
+        style={cardStyle}
         mb="xl"
       >
-        <Text fw={600} fz="sm" mb="sm">나도 이랬어요!</Text>
+        <Text fw={600} fz="sm" mb="sm" style={{ color: 'var(--ou-text-strong)' }}>
+          나도 이랬어요!
+        </Text>
         <Textarea
           placeholder="당신의 이야기를 들려주세요"
           value={story}
@@ -190,13 +213,23 @@ export function ScenarioDetailClient({
           maxRows={6}
           autosize
           mb="sm"
+          styles={{
+            input: {
+              border: '0.5px solid var(--ou-border-subtle)',
+              background: 'transparent',
+              color: 'var(--ou-text-body)',
+            },
+          }}
         />
+        {/* CTA button — filled style */}
         <Button
           color="dark"
           fullWidth
+          radius="xl"
           onClick={handleSubmit}
           loading={submitting}
           disabled={!story.trim()}
+          style={{ color: 'white' }}
         >
           공유하기
         </Button>
@@ -205,15 +238,14 @@ export function ScenarioDetailClient({
       {/* Realizations Feed */}
       {realizations.length > 0 && (
         <Stack gap="sm">
-          <Text fw={600} fz="lg" mb="xs">실현 이야기</Text>
+          <Text style={sectionTitleStyle} mb="xs">
+            실현 이야기
+          </Text>
           {realizations.map(r => (
             <Paper
               key={r.id}
               p="md"
-              withBorder
-              style={{
-                borderColor: 'var(--mantine-color-default-border)',
-              }}
+              style={cardStyle}
             >
               <Group mb="sm">
                 {r.profiles?.handle ? (
@@ -221,41 +253,55 @@ export function ScenarioDetailClient({
                     href={`/profile/${r.profiles.handle}`}
                     style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none', color: 'inherit' }}
                   >
-                    <Avatar src={r.profiles?.avatar_url ?? undefined} size="sm" radius="xl" />
+                    <Avatar
+                      src={r.profiles?.avatar_url ?? undefined}
+                      size="sm"
+                      radius="xl"
+                      style={{ border: '0.5px solid var(--ou-border-subtle)' }}
+                    />
                     <div>
-                      <Text fz="sm" fw={500}>
+                      <Text fz="sm" fw={500} style={{ color: 'var(--ou-text-strong)' }}>
                         {r.profiles?.display_name ?? '익명'}
                       </Text>
-                      <Text fz="xs" c="dimmed">
+                      <Text fz="xs" style={{ color: 'var(--ou-text-dimmed)' }}>
                         {new Date(r.created_at).toLocaleDateString('ko-KR')}
                       </Text>
                     </div>
                   </Link>
                 ) : (
                   <Group gap={8}>
-                    <Avatar src={r.profiles?.avatar_url ?? undefined} size="sm" radius="xl" />
+                    <Avatar
+                      src={r.profiles?.avatar_url ?? undefined}
+                      size="sm"
+                      radius="xl"
+                      style={{ border: '0.5px solid var(--ou-border-subtle)' }}
+                    />
                     <div>
-                      <Text fz="sm" fw={500}>
+                      <Text fz="sm" fw={500} style={{ color: 'var(--ou-text-strong)' }}>
                         {r.profiles?.display_name ?? '익명'}
                       </Text>
-                      <Text fz="xs" c="dimmed">
+                      <Text fz="xs" style={{ color: 'var(--ou-text-dimmed)' }}>
                         {new Date(r.created_at).toLocaleDateString('ko-KR')}
                       </Text>
                     </div>
                   </Group>
                 )}
               </Group>
-              <Text fz="sm" style={{ lineHeight: 1.6 }} mb="sm">
+              <Text fz="sm" style={{ lineHeight: 1.6, color: 'var(--ou-text-body)' }} mb="sm">
                 {r.raw}
               </Text>
               <Group gap={4}>
                 <ActionIcon
                   variant="subtle"
-                  color={likedIds.has(r.id) ? 'dark' : 'gray'}
+                  color="gray"
                   onClick={() => handleLike(r.id)}
                   size="sm"
                 >
-                  <Heart size={16} weight={likedIds.has(r.id) ? 'fill' : 'light'} />
+                  <Heart
+                    size={16}
+                    weight={likedIds.has(r.id) ? 'fill' : 'light'}
+                    style={{ color: likedIds.has(r.id) ? 'var(--ou-text-strong)' : 'var(--ou-text-dimmed)' }}
+                  />
                 </ActionIcon>
               </Group>
             </Paper>

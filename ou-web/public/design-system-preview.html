@@ -4579,7 +4579,7 @@
         </div>
         <div>
           <div style="color: var(--ou-text-dimmed); margin-bottom: 4px;">Center Force</div>
-          <input type="range" id="gvCenter" min="0" max="0.1" step="0.005" value="0.03" style="width: 100%; accent-color: #888;">
+          <input type="range" id="gvCenter" min="0" max="0.1" step="0.005" value="0.05" style="width: 100%; accent-color: #888;">
         </div>
         <div style="font-size: 10px; color: var(--ou-text-muted); line-height: 1.5;">
           Nodes: <span id="gvNodeCount">2000</span><br>
@@ -4941,6 +4941,18 @@
   (function() {
     const container = document.getElementById('graphViewContainer');
     if (!container) return;
+
+    // Defer until layout is complete so container has dimensions
+    function initGraph() {
+      if (container.clientWidth === 0 || container.clientHeight === 0) {
+        requestAnimationFrame(initGraph);
+        return;
+      }
+      runGraph();
+    }
+    requestAnimationFrame(initGraph);
+
+    function runGraph() {
     const canvas = document.createElement('canvas');
     const dpr = Math.min(window.devicePixelRatio, 2);
     const W = container.clientWidth, H = container.clientHeight;
@@ -4956,21 +4968,21 @@
     const clusters = [];
     for (let c = 0; c < NUM_CLUSTERS; c++) {
       const angle = (c / NUM_CLUSTERS) * Math.PI * 2;
-      clusters.push({ x: Math.cos(angle) * 250, y: Math.sin(angle) * 180 });
+      clusters.push({ x: Math.cos(angle) * 140, y: Math.sin(angle) * 100 });
     }
     for (let i = 0; i < NUM_NODES; i++) {
       const cl = Math.floor(Math.random() * NUM_CLUSTERS);
       const imp = Math.random();
       const isView = Math.random() < 0.03;
       nodes.push({
-        x: clusters[cl].x + (Math.random() - 0.5) * 120,
-        y: clusters[cl].y + (Math.random() - 0.5) * 120,
+        x: clusters[cl].x + (Math.random() - 0.5) * 60,
+        y: clusters[cl].y + (Math.random() - 0.5) * 60,
         vx: 0, vy: 0,
         cluster: cl,
         importance: imp,
         isView: isView,
-        radius: isView ? 4 + imp * 3 : 1.5 + imp * 2.5,
-        brightness: isView ? 0.7 : 0.3 + imp * 0.5,
+        radius: isView ? 5 + imp * 4 : 2 + imp * 3,
+        brightness: isView ? 0.8 : 0.4 + imp * 0.5,
       });
     }
     // Edges: intra-cluster dense, inter-cluster sparse
@@ -5070,7 +5082,7 @@
     }
 
     // Viewport
-    let vp = { x: 0, y: 0, scale: 0.8 };
+    let vp = { x: 0, y: 0, scale: 1.2 };
     let dragGV = false, lastGV = { x: 0, y: 0 }, hoverNode = -1;
 
     container.addEventListener('pointerdown', e => {
@@ -5147,7 +5159,7 @@
         ctx.beginPath();
         ctx.moveTo(s.x, s.y);
         ctx.lineTo(t.x, t.y);
-        ctx.strokeStyle = isLight ? `rgba(0,0,0,${0.04 * e.w})` : `rgba(255,255,255,${0.06 * e.w})`;
+        ctx.strokeStyle = isLight ? `rgba(0,0,0,${0.06 * e.w})` : `rgba(255,255,255,${0.12 * e.w})`;
         ctx.stroke();
       }
 
@@ -5231,6 +5243,7 @@
       requestAnimationFrame(render);
     }
     requestAnimationFrame(render);
+    } // end runGraph
   })();
 
   // Toast function

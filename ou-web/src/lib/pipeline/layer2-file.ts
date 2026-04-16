@@ -10,6 +10,8 @@ interface SaveNodeFromFileInput {
   fileType: string;
   r2Key: string;
   sections: Array<{ heading: string; body: string }>;
+  /** 파일 타입별 추가 데이터 (PPT slides, DOCX html, XLSX sheets 등) */
+  extraDomainData?: Record<string, unknown>;
 }
 
 export async function saveNodeFromFile(input: SaveNodeFromFileInput) {
@@ -24,6 +26,16 @@ export async function saveNodeFromFile(input: SaveNodeFromFileInput) {
     'text/plain': 'text',
     'text/markdown': 'text',
     'text/csv': 'csv',
+    'application/x-hwp': 'hwp',
+    'application/x-hwpx': 'hwpx',
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation': 'pptx',
+    'application/vnd.ms-powerpoint': 'ppt',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'docx',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'xlsx',
+    'video/mp4': 'video',
+    'video/quicktime': 'video',
+    'audio/mpeg': 'audio',
+    'audio/wav': 'audio',
   };
 
   const sourceFileType = fileTypeMap[input.fileType] ?? 'unknown';
@@ -43,6 +55,7 @@ export async function saveNodeFromFile(input: SaveNodeFromFileInput) {
     raw: input.filename,
     domain_data: {
       extracted_text: extractedText || null,
+      ...(input.extraDomainData ?? {}),
     },
     confidence: 'medium',
     resolution: input.sections.length > 0 ? 'resolved' : 'opaque',

@@ -186,70 +186,130 @@ export function MessagesClient({ userId }: { userId: string }) {
   const renderRoomList = () => (
     <Stack gap="sm" p="xl" maw={640} mx="auto">
       <Group justify="space-between" mb="sm">
-        <Text fw={600} fz="lg">메시지</Text>
+        <Text
+          fz={10}
+          fw={500}
+          style={{
+            color: 'var(--ou-text-heading)',
+            textTransform: 'uppercase',
+            letterSpacing: 3,
+          }}
+        >
+          MESSAGES
+        </Text>
+        {/* pill-block create button */}
         <Button
-          variant="light"
-          color="gray"
+          variant="default"
           size="sm"
-          leftSection={<PlusCircle size={16} />}
+          leftSection={<PlusCircle size={16} style={{ color: 'var(--ou-text-body)' }} />}
           onClick={openNewChat}
+          style={{
+            background: 'transparent',
+            border: '0.5px solid var(--ou-border-subtle)',
+            borderRadius: 'var(--ou-radius-pill)',
+            color: 'var(--ou-text-body)',
+            boxShadow: 'var(--ou-glow-sm)',
+            transition: 'border-color var(--ou-transition), box-shadow var(--ou-transition)',
+          }}
+          onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
+            (e.currentTarget as HTMLElement).style.borderColor = 'var(--ou-border-hover)';
+            (e.currentTarget as HTMLElement).style.boxShadow = 'var(--ou-glow-hover)';
+          }}
+          onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
+            (e.currentTarget as HTMLElement).style.borderColor = 'var(--ou-border-subtle)';
+            (e.currentTarget as HTMLElement).style.boxShadow = 'var(--ou-glow-sm)';
+          }}
         >
           새 대화
         </Button>
       </Group>
 
       {rooms.map(room => (
-        <Paper
+        /* card-block room item */
+        <div
           key={room.id}
-          p="md"
-          style={{ cursor: 'pointer' }}
+          style={{
+            cursor: 'pointer',
+            padding: 16,
+            background: 'transparent',
+            border: '0.5px solid var(--ou-border-subtle)',
+            borderRadius: 'var(--ou-radius-card)',
+            boxShadow: 'var(--ou-glow-sm)',
+            transition: 'border-color var(--ou-transition), box-shadow var(--ou-transition)',
+          }}
           onClick={() => router.push(`/messages/${room.id}`)}
+          onMouseEnter={e => {
+            (e.currentTarget as HTMLElement).style.borderColor = 'var(--ou-border-hover)';
+            (e.currentTarget as HTMLElement).style.boxShadow = 'var(--ou-glow-hover)';
+          }}
+          onMouseLeave={e => {
+            (e.currentTarget as HTMLElement).style.borderColor = 'var(--ou-border-subtle)';
+            (e.currentTarget as HTMLElement).style.boxShadow = 'var(--ou-glow-sm)';
+          }}
         >
           <Group gap="sm" wrap="nowrap">
+            {/* Avatar — 36px circle with border-muted */}
             <Avatar
               src={getRoomAvatar(room)}
-              size="md"
+              size={36}
               radius="xl"
               color="gray"
+              style={{
+                border: '0.5px solid var(--ou-border-muted)',
+                boxShadow: 'var(--ou-glow-xs)',
+                flexShrink: 0,
+              }}
             >
-              {!getRoomAvatar(room) && <ChatCircle size={20} weight="light" />}
+              {!getRoomAvatar(room) && <ChatCircle size={18} weight="light" style={{ color: 'var(--ou-text-dimmed)' }} />}
             </Avatar>
             <Box flex={1} style={{ overflow: 'hidden' }}>
               <Group justify="space-between" mb={2} wrap="nowrap">
                 <Group gap={6} wrap="nowrap">
-                  <Text fz="sm" fw={room.unread_count > 0 ? 700 : 500} lineClamp={1}>
+                  <Text fz="sm" fw={room.unread_count > 0 ? 700 : 500} lineClamp={1} style={{ color: 'var(--ou-text-strong)' }}>
                     {getRoomDisplayName(room)}
                   </Text>
                 </Group>
-                <Text fz="xs" c="dimmed" style={{ flexShrink: 0 }}>
+                <Text fz="xs" style={{ flexShrink: 0, color: 'var(--ou-text-dimmed)' }}>
                   {formatTime(room.updated_at)}
                 </Text>
               </Group>
               <Group gap="xs" wrap="nowrap">
                 <Text
                   fz="xs"
-                  c={room.unread_count > 0 ? undefined : 'dimmed'}
                   fw={room.unread_count > 0 ? 500 : 400}
                   lineClamp={1}
                   flex={1}
+                  style={{ color: room.unread_count > 0 ? 'var(--ou-text-body)' : 'var(--ou-text-dimmed)' }}
                 >
                   {room.last_message ?? '아직 메시지가 없어요'}
                 </Text>
+                {/* badge-block.count unread */}
                 {room.unread_count > 0 && (
-                  <Badge
-                    size="sm"
-                    variant="filled"
-                    color="dark"
-                    circle
-                    style={{ flexShrink: 0 }}
+                  <div
+                    style={{
+                      flexShrink: 0,
+                      minWidth: 20,
+                      height: 20,
+                      borderRadius: 'var(--ou-radius-pill)',
+                      border: '0.5px solid var(--ou-border-muted)',
+                      background: 'var(--ou-surface-hover)',
+                      boxShadow: 'var(--ou-glow-xs)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      padding: '0 5px',
+                      fontSize: 10,
+                      fontWeight: 600,
+                      color: 'var(--ou-text-strong)',
+                    }}
                   >
                     {room.unread_count > 9 ? '9+' : room.unread_count}
-                  </Badge>
+                  </div>
                 )}
               </Group>
             </Box>
           </Group>
-        </Paper>
+        </div>
       ))}
     </Stack>
   );
@@ -257,17 +317,23 @@ export function MessagesClient({ userId }: { userId: string }) {
   const renderEmpty = () => (
     <Center h="60vh">
       <Stack align="center" gap="md">
-        <ChatCircle size={48} weight="light" color="var(--mantine-color-gray-5)" />
-        <Text fw={600} fz="lg">아직 대화가 없어요</Text>
-        <Text fz="sm" c="dimmed" ta="center">
+        <ChatCircle size={48} weight="light" style={{ color: 'var(--ou-text-dimmed)' }} />
+        <Text fw={600} fz="lg" style={{ color: 'var(--ou-text-strong)' }}>아직 대화가 없어요</Text>
+        <Text fz="sm" ta="center" style={{ color: 'var(--ou-text-dimmed)' }}>
           친구를 초대해서 대화를 시작해보세요.
         </Text>
         <Group gap="sm">
           <Button
-            variant="light"
-            color="gray"
-            leftSection={<PlusCircle size={18} />}
+            variant="default"
+            leftSection={<PlusCircle size={18} style={{ color: 'var(--ou-text-body)' }} />}
             onClick={openNewChat}
+            style={{
+              background: 'transparent',
+              border: '0.5px solid var(--ou-border-subtle)',
+              borderRadius: 'var(--ou-radius-pill)',
+              color: 'var(--ou-text-body)',
+              boxShadow: 'var(--ou-glow-sm)',
+            }}
           >
             새 대화 시작하기
           </Button>
@@ -280,22 +346,47 @@ export function MessagesClient({ userId }: { userId: string }) {
     <>
       {rooms.length === 0 ? renderEmpty() : renderRoomList()}
 
+      {/* Modal — floating-block in modal */}
       <Modal
         opened={modalOpen}
         onClose={() => setModalOpen(false)}
-        title="새 대화"
+        title={<Text fw={600} style={{ color: 'var(--ou-text-strong)' }}>새 대화</Text>}
         centered
         styles={{
-          header: { borderBottom: '0.5px solid var(--mantine-color-default-border)' },
+          content: {
+            background: 'var(--ou-surface-muted)',
+            backdropFilter: 'blur(24px)',
+            WebkitBackdropFilter: 'blur(24px)',
+            border: '0.5px solid var(--ou-border-subtle)',
+            boxShadow: 'var(--ou-glow-lg)',
+            borderRadius: 'var(--ou-radius-card)',
+          },
+          header: {
+            background: 'transparent',
+            borderBottom: '0.5px solid var(--ou-border-faint)',
+          },
+          body: {
+            background: 'transparent',
+          },
         }}
       >
         <Stack gap="md" mt="sm">
+          {/* input-block search */}
           <TextInput
             placeholder="이름 또는 아이디로 검색"
-            leftSection={<MagnifyingGlass size={16} weight="light" />}
+            leftSection={<MagnifyingGlass size={16} weight="light" style={{ color: 'var(--ou-text-dimmed)' }} />}
             value={query}
             onChange={(e) => searchUsers(e.currentTarget.value)}
             autoFocus
+            styles={{
+              input: {
+                background: 'transparent',
+                border: '0.5px solid var(--ou-border-subtle)',
+                borderRadius: 'var(--ou-radius-pill)',
+                color: 'var(--ou-text-body)',
+                boxShadow: 'var(--ou-glow-sm)',
+              },
+            }}
           />
 
           {searching && (
@@ -313,20 +404,36 @@ export function MessagesClient({ userId }: { userId: string }) {
                   disabled={creating}
                   py="sm"
                   px="xs"
-                  style={{ borderRadius: 'var(--mantine-radius-md)' }}
+                  style={{
+                    borderRadius: 'var(--ou-radius-card)',
+                    border: '0.5px solid transparent',
+                    transition: 'border-color var(--ou-transition), background var(--ou-transition)',
+                  }}
+                  onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
+                    (e.currentTarget as HTMLElement).style.borderColor = 'var(--ou-border-subtle)';
+                    (e.currentTarget as HTMLElement).style.background = 'var(--ou-surface-faint)';
+                  }}
+                  onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
+                    (e.currentTarget as HTMLElement).style.borderColor = 'transparent';
+                    (e.currentTarget as HTMLElement).style.background = 'transparent';
+                  }}
                 >
                   <Group gap="sm">
                     <Avatar
                       src={profile.avatar_url ?? undefined}
                       size="sm"
                       radius="xl"
+                      style={{
+                        border: '0.5px solid var(--ou-border-muted)',
+                        boxShadow: 'var(--ou-glow-xs)',
+                      }}
                     />
                     <Box>
-                      <Text fz="sm" fw={500}>
+                      <Text fz="sm" fw={500} style={{ color: 'var(--ou-text-strong)' }}>
                         {profile.display_name || profile.handle}
                       </Text>
                       {profile.handle && (
-                        <Text fz="xs" c="dimmed">@{profile.handle}</Text>
+                        <Text fz="xs" style={{ color: 'var(--ou-text-dimmed)' }}>@{profile.handle}</Text>
                       )}
                     </Box>
                   </Group>
@@ -336,7 +443,7 @@ export function MessagesClient({ userId }: { userId: string }) {
           )}
 
           {!searching && query.length >= 2 && results.length === 0 && (
-            <Text fz="sm" c="dimmed" ta="center" py="md">
+            <Text fz="sm" ta="center" py="md" style={{ color: 'var(--ou-text-dimmed)' }}>
               검색 결과가 없어요
             </Text>
           )}
