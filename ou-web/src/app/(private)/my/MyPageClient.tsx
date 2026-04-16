@@ -227,13 +227,15 @@ export function MyPageClient({ savedViews: initialSavedViews, nodes: initialNode
                   userSelect: 'none',
                 }}
               >
-                <span>{view.viewType}</span>
-                <button
-                  onClick={e => { e.stopPropagation(); removeView(view.id); }}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ou-text-dimmed)', padding: 2 }}
-                >
-                  <X size={14} />
-                </button>
+                <span>{view.viewType === 'chat' ? 'OU' : view.viewType}</span>
+                {view.viewType !== 'chat' && (
+                  <button
+                    onClick={e => { e.stopPropagation(); removeView(view.id); }}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ou-text-dimmed)', padding: 2 }}
+                  >
+                    <X size={14} />
+                  </button>
+                )}
               </div>
             )}
 
