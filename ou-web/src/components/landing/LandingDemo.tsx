@@ -258,29 +258,16 @@ export function LandingDemo() {
           minHeight: 180,
           maxHeight: 320,
           flexShrink: 0,
-          '@media (max-width: 768px)': { height: '25vh' },
+          overflow: 'hidden',
+          position: 'relative',
         }}
         className="ou-sphere-container"
       >
         <DotSphere />
       </Box>
 
-      {/* 구체-콘텐츠 사이 그라데이션 오버레이 */}
-      <Box
-        style={{
-          width: '100%',
-          height: 40,
-          marginTop: -40,
-          background: 'linear-gradient(to bottom, transparent, #060810)',
-          position: 'relative',
-          zIndex: 1,
-          flexShrink: 0,
-          pointerEvents: 'none',
-        }}
-      />
-
       {/* 로고 + 입력 + 시나리오 */}
-      <Stack gap={20} align="center" style={{ flexShrink: 0, padding: '0 24px', maxWidth: 560, width: '100%' }}>
+      <Stack gap={20} align="center" style={{ flexShrink: 0, padding: '0 24px', maxWidth: 560, width: '100%', position: 'relative', zIndex: 2 }}>
         {/* 로고 */}
         <Stack gap={4} align="center">
           <Text
