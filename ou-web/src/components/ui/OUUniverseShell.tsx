@@ -14,9 +14,7 @@ export function OUUniverseShell({ children }: OUUniverseShellProps) {
   const router = useRouter();
   const pathname = usePathname();
 
-  // Orb Dock = 저장된 뷰 노드 전용 (네비게이션 아이템 아님)
-  // 뷰가 없으면 빈 배열 → Dock 안 보임
-  const systemOrbs: SystemOrbItem[] = [];
+  // SystemOrbDock 제거됨 — ViewOrbDock이 MyPageClient에서 직접 관리
 
   return (
     <div
@@ -69,8 +67,7 @@ export function OUUniverseShell({ children }: OUUniverseShellProps) {
         {children}
       </div>
 
-      {/* Left orb dock -- system navigation */}
-      <SystemOrbDock side="left" items={systemOrbs} />
+      {/* SystemOrbDock 제거 — ViewOrbDock이 MyPageClient에서 관리 */}
     </div>
   );
 }

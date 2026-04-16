@@ -1,22 +1,16 @@
 'use client';
 
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import type { GraphViewHandle } from '@/components/graph/GraphView';
 import { useAuth } from '@/hooks/useAuth';
-import { useViewEditorStore } from '@/stores/viewEditorStore';
-import { useNavigationStore } from '@/stores/navigationStore';
+import { VIEW_REGISTRY } from '@/components/views/registry';
+import { ViewOrbDock, type ViewOrb } from '@/components/ui/ViewOrbDock';
+import { GenesisEmptyState } from '@/components/my/GenesisEmptyState';
+import { PencilSimple, X, GearSix, Check } from '@phosphor-icons/react';
 
 const GraphView = dynamic(
   () => import('@/components/graph/GraphView').then(m => m.GraphView),
-  { ssr: false }
-);
-const AdminViewsPanel = dynamic(
-  () => import('@/components/my/AdminViewsPanel').then(m => m.AdminViewsPanel),
-  { ssr: false }
-);
-const ViewEditorDrawer = dynamic(
-  () => import('@/components/views/admin/ViewEditorDrawer').then(m => m.ViewEditorDrawer),
   { ssr: false }
 );
 const ChatPanel = dynamic(
@@ -24,13 +18,39 @@ const ChatPanel = dynamic(
   { ssr: false }
 );
 
-import { FloatingToolbar } from '@/components/my/FloatingToolbar';
-import { NodeDetailPanel } from '@/components/my/NodeDetailPanel';
-import { NodePreviewCard } from '@/components/my/NodePreviewCard';
-import { GenesisEmptyState } from '@/components/my/GenesisEmptyState';
-import { ViewFullscreen } from '@/components/ui/ViewFullscreen';
-import { OrbDock, type OrbItem } from '@/components/ui/OrbDock';
+/* ── 뷰 블록 타입 ── */
+interface ViewBlock {
+  id: string;
+  viewType: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  zIndex: number;
+}
 
+const STORAGE_KEY = 'ou-view-layout';
+
+function loadLayout(): ViewBlock[] {
+  if (typeof window === 'undefined') return getDefaultLayout();
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) return JSON.parse(saved);
+  } catch { /* ignore */ }
+  return getDefaultLayout();
+}
+
+function saveLayout(views: ViewBlock[]) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(views)); } catch { /* ignore */ }
+}
+
+function getDefaultLayout(): ViewBlock[] {
+  return [
+    { id: 'chat', viewType: 'chat', x: 16, y: 16, width: 360, height: -1, zIndex: 10 },
+  ];
+}
+
+/* ── 메인 컴포넌트 ── */
 interface MyPageClientProps {
   savedViews: any[];
   nodes: any[];
@@ -39,203 +59,277 @@ interface MyPageClientProps {
 
 export function MyPageClient({ savedViews: initialSavedViews, nodes: initialNodes, links: initialLinks = [] }: MyPageClientProps) {
   const [nodes, setNodes] = useState(initialNodes);
-  const [savedViews, setSavedViews] = useState(initialSavedViews);
-  const [selectedNode, setSelectedNode] = useState<any>(null);
-  const [detailMode, setDetailMode] = useState<'preview' | 'detail'>('preview');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [adminMode, setAdminMode] = useState(false);
-  const [fullscreenViewId, setFullscreenViewId] = useState<string | null>(null);
+  const [savedViews] = useState(initialSavedViews);
+  const [views, setViews] = useState<ViewBlock[]>(loadLayout);
+  const [editMode, setEditMode] = useState(false);
+  const [topZ, setTopZ] = useState(20);
+  const [showAddMenu, setShowAddMenu] = useState(false);
   const graphRef = useRef<GraphViewHandle>(null);
   const { isAdmin } = useAuth();
-  const editorIsOpen = useViewEditorStore(s => s.isOpen);
-  const { pinnedViewIds, pinView, unpinView } = useNavigationStore();
 
-  const handleNodeUpdated = useCallback((updatedNode: any) => {
-    setNodes(prev => prev.map(n => n.id === updatedNode.id ? { ...n, ...updatedNode } : n));
-    setSelectedNode((prev: any) => prev?.id === updatedNode.id ? { ...prev, ...updatedNode } : prev);
-  }, []);
-
-  const handleNodeDeleted = useCallback((nodeId: string) => {
-    setNodes(prev => prev.filter(n => n.id !== nodeId));
-    setSelectedNode(null);
-  }, []);
-
-  const handleNodeSelect = useCallback((node: any) => {
-    // View nodes open their view instead of preview card
-    if (node?.graph_type === 'view' && node?._viewId) {
-      setFullscreenViewId(node._viewId);
-      return;
-    }
-    setSelectedNode(node);
-    setDetailMode('preview');
-  }, []);
-
-  const handleRelatedNodeClick = useCallback((nodeId: string) => {
-    const relNode = nodes.find(n => n.id === nodeId);
-    if (relNode) {
-      setSelectedNode(relNode);
-      setDetailMode('preview');
-      graphRef.current?.focusNode(nodeId);
-    }
-  }, [nodes]);
-
-  const handleViewsRefresh = useCallback(async () => {
-    try {
-      const res = await fetch('/api/views');
-      if (res.ok) {
-        const { views } = await res.json();
-        setSavedViews(views ?? []);
-      }
-    } catch {
-      // Silent fail
-    }
-  }, []);
+  // 레이아웃 저장
+  useEffect(() => { saveLayout(views); }, [views]);
 
   const handleNodeCreated = useCallback((node: { id: string; domain: string; raw: string }) => {
     setNodes(prev => [...prev, { ...node, importance: 1, created_at: new Date().toISOString() }]);
     graphRef.current?.addNode({ ...node, importance: 1 });
   }, []);
 
-  const filteredNodeIds = searchQuery.trim()
-    ? new Set(
-        nodes
-          .filter(n => {
-            const q = searchQuery.toLowerCase();
-            return n.raw?.toLowerCase().includes(q) ||
-              (n.domain_data ? JSON.stringify(n.domain_data).toLowerCase().includes(q) : false);
-          })
-          .map(n => n.id)
-      )
-    : null;
+  /* ── 뷰 블록 관리 ── */
+  const bringToFront = useCallback((id: string) => {
+    setTopZ(z => z + 1);
+    setViews(prev => prev.map(v => v.id === id ? { ...v, zIndex: topZ + 1 } : v));
+  }, [topZ]);
 
-  const fullscreenView = fullscreenViewId
-    ? savedViews.find((v: any) => v.id === fullscreenViewId)
-    : null;
+  const removeView = useCallback((id: string) => {
+    setViews(prev => prev.filter(v => v.id !== id));
+  }, []);
 
-  // Build Orb items: pinned views + auto-generated (recent views not yet pinned)
-  const pinnedOrbs: OrbItem[] = savedViews
-    .filter((v: any) => pinnedViewIds.includes(v.id))
-    .map((v: any) => ({
-      id: v.id,
-      label: v.name,
-      emoji: v.icon || '📄',
-      pinned: true,
-      onClick: () => setFullscreenViewId(v.id),
-      onPin: () => pinView(v.id),
-      onUnpin: () => unpinView(v.id),
-    }));
+  const addView = useCallback((viewType: string) => {
+    const id = `${viewType}-${Date.now()}`;
+    setTopZ(z => z + 1);
+    setViews(prev => [...prev, {
+      id, viewType,
+      x: 200 + Math.random() * 200,
+      y: 80 + Math.random() * 100,
+      width: 480, height: 400,
+      zIndex: topZ + 1,
+    }]);
+    setShowAddMenu(false);
+  }, [topZ]);
 
-  // Auto orbs: most recent unpinned views (up to fill 7 total)
-  const autoSlots = Math.max(0, 7 - pinnedOrbs.length);
-  const autoOrbs: OrbItem[] = savedViews
-    .filter((v: any) => !pinnedViewIds.includes(v.id))
-    .slice(0, autoSlots)
-    .map((v: any) => ({
-      id: v.id,
-      label: v.name,
-      emoji: v.icon || '📄',
-      pinned: false,
-      onClick: () => setFullscreenViewId(v.id),
-      onPin: () => pinView(v.id),
-      onUnpin: () => unpinView(v.id),
-    }));
+  /* ── 드래그 ── */
+  const dragRef = useRef<{ id: string; startX: number; startY: number; origX: number; origY: number } | null>(null);
 
-  const orbItems: OrbItem[] = [...pinnedOrbs, ...autoOrbs];
+  const onDragStart = useCallback((id: string, e: React.MouseEvent) => {
+    if (!editMode) return;
+    e.preventDefault();
+    const view = views.find(v => v.id === id);
+    if (!view) return;
+    bringToFront(id);
+    dragRef.current = { id, startX: e.clientX, startY: e.clientY, origX: view.x, origY: view.y };
 
-  // Unified layout — graph background + glass chat left + orb dock right
+    const onMove = (ev: MouseEvent) => {
+      if (!dragRef.current) return;
+      const dx = ev.clientX - dragRef.current.startX;
+      const dy = ev.clientY - dragRef.current.startY;
+      setViews(prev => prev.map(v => v.id === dragRef.current!.id
+        ? { ...v, x: Math.max(0, dragRef.current!.origX + dx), y: Math.max(0, dragRef.current!.origY + dy) }
+        : v
+      ));
+    };
+    const onUp = () => {
+      dragRef.current = null;
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+    };
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+  }, [editMode, views, bringToFront]);
+
+  /* ── 리사이즈 ── */
+  const resizeRef = useRef<{ id: string; startX: number; startY: number; origW: number; origH: number } | null>(null);
+
+  const onResizeStart = useCallback((id: string, e: React.MouseEvent) => {
+    if (!editMode) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const view = views.find(v => v.id === id);
+    if (!view) return;
+    resizeRef.current = { id, startX: e.clientX, startY: e.clientY, origW: view.width, origH: view.height > 0 ? view.height : 600 };
+
+    const onMove = (ev: MouseEvent) => {
+      if (!resizeRef.current) return;
+      const dw = ev.clientX - resizeRef.current.startX;
+      const dh = ev.clientY - resizeRef.current.startY;
+      setViews(prev => prev.map(v => v.id === resizeRef.current!.id
+        ? { ...v, width: Math.max(280, resizeRef.current!.origW + dw), height: Math.max(200, resizeRef.current!.origH + dh) }
+        : v
+      ));
+    };
+    const onUp = () => {
+      resizeRef.current = null;
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+    };
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+  }, [editMode, views]);
+
+  /* ── Orb 데이터 ── */
+  const viewOrbs: ViewOrb[] = views
+    .filter(v => v.viewType !== 'chat')
+    .map(v => ({ id: v.id, label: v.viewType, active: true }));
+
+  /* ── 렌더링 ── */
   return (
     <div style={{ position: 'relative', width: '100%', height: '100vh', overflow: 'hidden' }}>
-      {/* Layer 0: Background — the universe itself */}
-      <div style={{ position: 'absolute', inset: 0, background: 'var(--ou-space)' }} />
+      {/* 우주 배경 */}
+      <div style={{ position: 'absolute', inset: 0, background: 'var(--ou-space, #060810)' }} />
 
-      {/* Layer 1: Graph (full screen, no borders — the graph IS the universe) */}
+      {/* 그래프 (우주 자체) */}
       {nodes.length > 0 ? (
         <GraphView
           ref={graphRef}
           nodes={nodes}
           links={initialLinks}
           fullscreen
-          onNodeSelect={handleNodeSelect}
-          highlightNodeIds={filteredNodeIds}
+          onNodeSelect={() => {}}
         />
       ) : (
         <GenesisEmptyState />
       )}
 
-      {/* Layer 2: Chat panel — left side, glass-block */}
-      <div style={{
-        position: 'absolute',
-        left: 16,
-        top: 16,
-        bottom: 16,
-        width: 360,
-        zIndex: 10,
-        background: 'var(--ou-surface-subtle)',
-        backdropFilter: 'blur(24px)',
-        WebkitBackdropFilter: 'blur(24px)',
-        border: '0.5px solid var(--ou-border-subtle)',
-        borderRadius: 'var(--ou-radius-card)',
-        boxShadow: 'var(--ou-glow-sm)',
-        overflow: 'hidden',
-      }}>
-        <ChatPanel onNodeCreated={handleNodeCreated} />
-      </div>
+      {/* 뷰 블록들 — 우주와 같은 레이어 */}
+      {views.map(view => {
+        const isChat = view.viewType === 'chat';
+        const ViewComp = isChat ? null : VIEW_REGISTRY[view.viewType];
+        const viewHeight = view.height === -1 ? 'calc(100vh - 32px)' : view.height;
 
-      {/* Layer 3: Orb Dock — right side, fixed */}
-      {orbItems.length > 0 && (
-        <OrbDock side="right" items={orbItems} />
-      )}
+        return (
+          <div
+            key={view.id}
+            onClick={() => bringToFront(view.id)}
+            style={{
+              position: 'absolute',
+              left: view.x,
+              top: view.y,
+              width: view.width,
+              height: viewHeight,
+              zIndex: view.zIndex,
+              background: 'var(--ou-surface-subtle, rgba(255,255,255,0.03))',
+              backdropFilter: 'blur(24px)',
+              WebkitBackdropFilter: 'blur(24px)',
+              border: editMode
+                ? '1px dashed var(--ou-border-hover, rgba(255,255,255,0.25))'
+                : '0.5px solid var(--ou-border-subtle, rgba(255,255,255,0.10))',
+              borderRadius: 16,
+              boxShadow: 'var(--ou-glow-sm)',
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+              transition: editMode ? 'none' : 'box-shadow 150ms',
+            }}
+          >
+            {/* 편집 모드: 드래그 핸들 + 닫기 */}
+            {editMode && (
+              <div
+                onMouseDown={e => onDragStart(view.id, e)}
+                style={{
+                  padding: '6px 12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  cursor: 'grab',
+                  borderBottom: '0.5px solid var(--ou-border-faint)',
+                  fontSize: 11,
+                  color: 'var(--ou-text-dimmed)',
+                  userSelect: 'none',
+                }}
+              >
+                <span>{view.viewType}</span>
+                <button
+                  onClick={e => { e.stopPropagation(); removeView(view.id); }}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ou-text-dimmed)', padding: 2 }}
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            )}
 
-      {/* Layer 4: Floating toolbar — pill-block buttons */}
-      {nodes.length > 0 && !adminMode && (
-        <FloatingToolbar
-          savedViews={savedViews}
-          onSearchChange={setSearchQuery}
-          isAdmin={isAdmin}
-          onAdminModeToggle={() => setAdminMode(true)}
-        />
-      )}
+            {/* 뷰 콘텐츠 */}
+            <div style={{ flex: 1, overflow: 'auto' }}>
+              {isChat ? (
+                <ChatPanel onNodeCreated={handleNodeCreated} />
+              ) : ViewComp ? (
+                <ViewComp
+                  nodes={nodes.filter(n => {
+                    // 뷰 타입에 맞는 도메인 필터링 (간단한 매핑)
+                    const domainMap: Record<string, string> = {
+                      calendar: 'schedule', chart: 'finance', task: 'task',
+                      heatmap: 'habit', journal: 'emotion', mindmap: 'idea',
+                      knowledge_graph: 'knowledge', relationship: 'relation',
+                    };
+                    const targetDomain = domainMap[view.viewType];
+                    return targetDomain ? n.domain === targetDomain : true;
+                  })}
+                />
+              ) : (
+                <div style={{ padding: 24, color: 'var(--ou-text-dimmed)', fontSize: 13 }}>
+                  {view.viewType} 뷰
+                </div>
+              )}
+            </div>
 
-      {/* Layer 5: Node preview — glass-block with backdrop blur */}
-      {selectedNode && !adminMode && detailMode === 'preview' && (
-        <NodePreviewCard
-          node={selectedNode}
-          onOpen={() => setDetailMode('detail')}
-          onClose={() => setSelectedNode(null)}
-        />
-      )}
+            {/* 편집 모드: 리사이즈 핸들 */}
+            {editMode && (
+              <div
+                onMouseDown={e => onResizeStart(view.id, e)}
+                style={{
+                  position: 'absolute', right: 0, bottom: 0,
+                  width: 20, height: 20,
+                  cursor: 'nwse-resize',
+                }}
+              />
+            )}
+          </div>
+        );
+      })}
 
-      {/* Node detail panel — glass-block sidebar */}
-      {selectedNode && !adminMode && detailMode === 'detail' && (
-        <NodeDetailPanel
-          node={selectedNode}
-          onClose={() => setSelectedNode(null)}
-          onNodeUpdated={handleNodeUpdated}
-          onNodeDeleted={handleNodeDeleted}
-          onRelatedNodeClick={handleRelatedNodeClick}
-        />
-      )}
+      {/* 편집 모드 토글 */}
+      <button
+        onClick={() => setEditMode(prev => !prev)}
+        title={editMode ? '편집 완료' : '레이아웃 편집'}
+        style={{
+          position: 'fixed', top: 20, left: 70, zIndex: 30,
+          background: 'none', border: 'none', cursor: 'pointer',
+          color: editMode ? 'var(--ou-text-bright)' : 'var(--ou-text-dimmed)',
+          transition: 'color 150ms',
+        }}
+      >
+        {editMode ? <Check size={18} weight="bold" /> : <PencilSimple size={18} weight="light" />}
+      </button>
 
-      {/* Admin controls */}
-      {adminMode && isAdmin && (
-        <AdminViewsPanel
-          views={savedViews}
-          onClose={() => setAdminMode(false)}
-          onViewsChange={setSavedViews}
-        />
-      )}
+      {/* Orb Dock — 우측 세로 가운데 */}
+      <ViewOrbDock
+        orbs={viewOrbs}
+        onOrbClick={id => bringToFront(id)}
+        onAddClick={() => setShowAddMenu(true)}
+        editMode={editMode}
+      />
 
-      {isAdmin && editorIsOpen && (
-        <ViewEditorDrawer nodes={nodes} onSaved={handleViewsRefresh} />
-      )}
-
-      {/* Fullscreen view overlay */}
-      {fullscreenView && (
-        <ViewFullscreen
-          view={fullscreenView}
-          nodes={nodes}
-          onClose={() => setFullscreenViewId(null)}
-        />
+      {/* 뷰 추가 메뉴 */}
+      {showAddMenu && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 100,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <div
+            style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)' }}
+            onClick={() => setShowAddMenu(false)}
+          />
+          <div style={{
+            position: 'relative', zIndex: 1,
+            background: 'var(--ou-surface-subtle)', backdropFilter: 'blur(24px)',
+            border: '0.5px solid var(--ou-border-subtle)', borderRadius: 16,
+            padding: 24, maxWidth: 400, width: '90%',
+          }}>
+            <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 16, color: 'var(--ou-text-strong)' }}>
+              뷰 추가
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+              {['calendar', 'chart', 'task', 'heatmap', 'journal', 'timeline', 'mindmap', 'knowledge_graph', 'flashcard', 'table', 'dashboard', 'gantt', 'matrix', 'quiz', 'gallery', 'treemap'].map(vt => (
+                <button
+                  key={vt}
+                  onClick={() => addView(vt)}
+                  className="pill-block"
+                >
+                  {vt}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
