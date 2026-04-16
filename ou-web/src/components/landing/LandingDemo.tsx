@@ -351,8 +351,6 @@ export function LandingDemo() {
         </div>
       </div>
 
-      </div>{/* 콘텐츠 래퍼 닫힘 */}
-
       {/* Footer */}
       <div style={{
         position: 'absolute', bottom: 16, left: '50%', transform: 'translateX(-50%)',
