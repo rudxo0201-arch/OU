@@ -215,6 +215,27 @@ export function LandingDemo() {
         fontFamily: "'Pretendard Variable', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
       }}
     >
+      {/* 별 배경 */}
+      <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 0 }}>
+        {Array.from({ length: 60 }, (_, i) => (
+          <span
+            key={i}
+            style={{
+              position: 'absolute',
+              width: Math.random() > 0.7 ? 2 : 1,
+              height: Math.random() > 0.7 ? 2 : 1,
+              borderRadius: '50%',
+              background: 'rgba(255,255,255,0.5)',
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animation: `twinkle ${2 + Math.random() * 3}s ease-in-out infinite alternate`,
+              animationDelay: `${Math.random() * 3}s`,
+            }}
+          />
+        ))}
+      </div>
+      <style>{`@keyframes twinkle { 0% { opacity: 0.15; } 100% { opacity: 0.7; } }`}</style>
+
       {/* 우상단: Log in / 가입하기 */}
       <div style={{ position: 'absolute', top: 20, right: 24, zIndex: 10, display: 'flex', alignItems: 'center', gap: 0 }}>
         <button
@@ -232,22 +253,22 @@ export function LandingDemo() {
         </button>
       </div>
 
-      {/* 구체 */}
-      <div style={{ width: '100%', height: '30vh', minHeight: 180, maxHeight: 320, flexShrink: 0, overflow: 'hidden', position: 'relative' }}>
+      {/* 구체 — 전체 배경 */}
+      <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
         <DotSphere />
       </div>
 
-      {/* 로고 + 입력 + 시나리오 */}
-      <div style={{ flexShrink: 0, padding: '0 24px', maxWidth: 560, width: '100%', position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20 }}>
+      {/* 콘텐츠 — 구체 위에 떠 있음 */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', maxWidth: 480, padding: '0 24px', position: 'relative', zIndex: 2 }}>
         {/* 로고 */}
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-          <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: 48, fontWeight: 900, lineHeight: 1, color: '#fff', letterSpacing: '2px' }}>
+          <div style={{ fontFamily: "var(--font-orbitron, 'Orbitron'), sans-serif", fontSize: 48, fontWeight: 900, lineHeight: 1, color: '#fff', letterSpacing: '2px' }}>
             OU
           </div>
-          <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.35)', letterSpacing: '5px', textTransform: 'uppercase' as const }}>
+          <div style={{ fontFamily: "var(--font-orbitron, 'Orbitron'), sans-serif", fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.35)', letterSpacing: '5px', textTransform: 'uppercase' as const }}>
             OWN UNIVERSE
           </div>
-          <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: 14, color: 'rgba(255,255,255,0.25)', letterSpacing: '3px', marginTop: 8 }}>
+          <div style={{ fontFamily: "var(--font-orbitron, 'Orbitron'), sans-serif", fontSize: 14, color: 'rgba(255,255,255,0.25)', letterSpacing: '3px', marginTop: 8 }}>
             Just talk.
           </div>
         </div>
@@ -329,6 +350,8 @@ export function LandingDemo() {
           })}
         </div>
       </div>
+
+      </div>{/* 콘텐츠 래퍼 닫힘 */}
 
       {/* Footer */}
       <div style={{
