@@ -204,7 +204,7 @@ export function LandingDemo() {
       style={{
         height: '100dvh',
         overflow: 'hidden',
-        background: '#0a0a0a',
+        background: '#060810',
         position: 'relative',
         display: 'flex',
         flexDirection: 'column',
@@ -237,14 +237,38 @@ export function LandingDemo() {
           onMouseEnter={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.8)'; }}
           onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.4)'; }}
         >
-          Sign up
+          가입하기
         </UnstyledButton>
       </Group>
 
       {/* 구체 */}
-      <Box style={{ width: '100%', height: '35vh', minHeight: 200, maxHeight: 400, flexShrink: 0 }}>
+      <Box
+        style={{
+          width: '100%',
+          height: '30vh',
+          minHeight: 180,
+          maxHeight: 320,
+          flexShrink: 0,
+          '@media (max-width: 768px)': { height: '25vh' },
+        }}
+        className="ou-sphere-container"
+      >
         <DotSphere />
       </Box>
+
+      {/* 구체-콘텐츠 사이 그라데이션 오버레이 */}
+      <Box
+        style={{
+          width: '100%',
+          height: 40,
+          marginTop: -40,
+          background: 'linear-gradient(to bottom, transparent, #060810)',
+          position: 'relative',
+          zIndex: 1,
+          flexShrink: 0,
+          pointerEvents: 'none',
+        }}
+      />
 
       {/* 로고 + 입력 + 시나리오 */}
       <Stack gap={20} align="center" style={{ flexShrink: 0, padding: '0 24px', maxWidth: 560, width: '100%' }}>
@@ -273,6 +297,17 @@ export function LandingDemo() {
             }}
           >
             OWN UNIVERSE
+          </Text>
+          <Text
+            style={{
+              fontFamily: 'var(--ou-font-logo)',
+              fontSize: 14,
+              color: 'rgba(255,255,255,0.25)',
+              letterSpacing: '3px',
+              marginTop: 8,
+            }}
+          >
+            Just talk.
           </Text>
         </Stack>
 
@@ -313,7 +348,20 @@ export function LandingDemo() {
         </Box>
 
         {/* 시나리오 버튼 */}
-        <Group gap={8} justify="center" wrap="wrap">
+        <Group
+          gap={8}
+          justify="center"
+          wrap="wrap"
+          className="ou-scenario-buttons"
+          style={{
+            width: '100%',
+            overflowX: 'auto',
+            flexWrap: 'wrap',
+            WebkitOverflowScrolling: 'touch',
+            msOverflowStyle: 'none',
+            scrollbarWidth: 'none',
+          }}
+        >
           {scenarios.map(scenario => {
             const IconComponent = (Icons as any)[scenario.icon] ?? Icons.Star;
             return (
@@ -346,6 +394,40 @@ export function LandingDemo() {
           })}
         </Group>
       </Stack>
+
+      {/* Footer */}
+      <Text
+        style={{
+          position: 'absolute',
+          bottom: 16,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          fontSize: 11,
+          color: 'rgba(255,255,255,0.15)',
+          letterSpacing: '1px',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        ouuniverse.com
+      </Text>
+
+      {/* Mobile responsive styles */}
+      <style>{`
+        @media (max-width: 768px) {
+          .ou-sphere-container {
+            height: 25vh !important;
+          }
+          .ou-scenario-buttons {
+            flex-wrap: nowrap !important;
+            justify-content: flex-start !important;
+            overflow-x: auto !important;
+            padding-bottom: 4px;
+          }
+          .ou-scenario-buttons::-webkit-scrollbar {
+            display: none;
+          }
+        }
+      `}</style>
     </Box>
   );
 }

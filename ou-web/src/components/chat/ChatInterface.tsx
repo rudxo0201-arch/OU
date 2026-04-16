@@ -57,8 +57,9 @@ export function ChatInterface({ onboarding, graphNodes = [], initialScenarioId, 
       const restored = useChatStore.getState().restoreGuest();
       if (restored) {
         useChatStore.getState().clearGuestBackup();
-        // 복원된 노드를 그래프 패널에도 반영
+        // 복원된 노드를 그래프 패널에도 반영 + DB에 저장
         const restoredMsgs = useChatStore.getState().messages;
+        const guestNodes: Array<{ content: string; domain: string; domain_data?: Record<string, any> }> = [];
         restoredMsgs.forEach(m => {
           if (m.nodeCreated) {
             graphPanelRef.current?.addNode({
@@ -67,8 +68,21 @@ export function ChatInterface({ onboarding, graphNodes = [], initialScenarioId, 
               raw: m.content,
               importance: 1,
             });
+            guestNodes.push({
+              content: m.content,
+              domain: m.nodeCreated.domain,
+              domain_data: m.nodeCreated.domain_data,
+            });
           }
         });
+        // 게스트 노드를 DB에 마이그레이션
+        if (guestNodes.length > 0) {
+          fetch('/api/nodes/migrate-guest', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nodes: guestNodes }),
+          }).catch(() => { /* 실패해도 채팅은 유지 */ });
+        }
         return; // 복원됐으면 온보딩 스킵
       }
     }

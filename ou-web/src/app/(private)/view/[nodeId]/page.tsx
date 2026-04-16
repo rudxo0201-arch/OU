@@ -3,6 +3,7 @@ import { getSignedViewUrl } from '@/lib/storage/r2';
 import { FileViewer } from '@/components/viewers/FileViewer';
 import { NodeViewClient } from './NodeViewClient';
 import { VisibilityToggle } from '@/components/ui/VisibilityToggle';
+import { ShareButton } from '@/components/ui/ShareButton';
 import { notFound } from 'next/navigation';
 import { Box, Title, Text, Stack, Group } from '@mantine/core';
 import type { Metadata } from 'next';
@@ -119,10 +120,16 @@ export default async function ViewPage({ params }: { params: { nodeId: string } 
             </Text>
           </Box>
           {isOwner && (
-            <VisibilityToggle
-              nodeId={node.id}
-              currentVisibility={node.visibility ?? 'private'}
-            />
+            <Group gap="sm">
+              <ShareButton
+                nodeId={node.id}
+                title={node.raw ?? undefined}
+              />
+              <VisibilityToggle
+                nodeId={node.id}
+                currentVisibility={node.visibility ?? 'private'}
+              />
+            </Group>
           )}
         </Group>
       </Box>

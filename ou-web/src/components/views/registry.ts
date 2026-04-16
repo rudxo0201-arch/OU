@@ -36,6 +36,17 @@ export const VIEW_REGISTRY: Record<string, ComponentType<ViewProps>> = {
   transcript:      dynamic(() => import('./TranscriptView').then(m => m.TranscriptView), { ssr: false }),
   dev_workspace:   dynamic(() => import('./DevWorkspaceView').then(m => m.DevWorkspaceView), { ssr: false }),
   explorer:        dynamic(() => import('./ExplorerView').then(m => m.ExplorerView), { ssr: false }),
+  clock:           dynamic(() => import('./ClockView').then(m => m.ClockView), { ssr: false }),
+  daily_card:      dynamic(() => import('./DailyCardView').then(m => m.DailyCardView), { ssr: false }),
+  export:          dynamic(() => import('./ExportView').then(m => m.ExportView), { ssr: false }),
+  org_chart:       dynamic(() => import('./OrgChartView').then(m => m.OrgChartView), { ssr: false }),
+  flowchart:       dynamic(() => import('./FlowchartView').then(m => m.FlowchartView), { ssr: false }),
+  gantt:           dynamic(() => import('./GanttView').then(m => m.GanttView), { ssr: false }),
+  matrix:          dynamic(() => import('./MatrixView').then(m => m.MatrixView), { ssr: false }),
+  gallery:         dynamic(() => import('./GalleryView').then(m => m.GalleryView), { ssr: false }),
+  dashboard:       dynamic(() => import('./DashboardView').then(m => m.DashboardView), { ssr: false }),
+  quiz:            dynamic(() => import('./QuizView').then(m => m.QuizView), { ssr: false }),
+  treemap:         dynamic(() => import('./TreemapView').then(m => m.TreemapView), { ssr: false }),
 };
 
 /* ── View Meta: 뷰별 동작 속성 ── */
@@ -66,6 +77,17 @@ export const VIEW_META: Record<string, ViewMeta> = {
   transcript:      { previewOnClick: false },
   dev_workspace:   { previewOnClick: false },
   explorer:        { previewOnClick: false },
+  clock:           { previewOnClick: false },
+  daily_card:      { previewOnClick: false },
+  export:          { previewOnClick: false },
+  org_chart:       { previewOnClick: false },
+  flowchart:       { previewOnClick: false },
+  gantt:           { previewOnClick: false },
+  matrix:          { previewOnClick: false },
+  gallery:         { previewOnClick: true },
+  dashboard:       { previewOnClick: false },
+  quiz:            { previewOnClick: false },
+  treemap:         { previewOnClick: true },
 };
 
 export function getViewMeta(viewType: string): ViewMeta {

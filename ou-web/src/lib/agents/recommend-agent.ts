@@ -169,6 +169,111 @@ const detectors: PatternDetector[] = [
     }
     return null;
   },
+
+  // Emotion/journal nodes → journal view
+  (nodes) => {
+    const emotionNodes = nodes.filter((n) => n.domain === 'emotion');
+    if (emotionNodes.length >= 3) {
+      return {
+        viewType: 'journal',
+        reason: `감정 기록이 ${emotionNodes.length}개 쌓였어요. 일기로 정리하면 패턴이 보여요.`,
+        priority: 2,
+        domain: 'emotion',
+        meta: { count: emotionNodes.length },
+      };
+    }
+    return null;
+  },
+
+  // Many idea nodes → mindmap view
+  (nodes) => {
+    const ideaNodes = nodes.filter((n) => n.domain === 'idea');
+    if (ideaNodes.length >= 4) {
+      return {
+        viewType: 'mindmap',
+        reason: `아이디어가 ${ideaNodes.length}개 있어요. 마인드맵으로 연결하면 새로운 발상이 보여요.`,
+        priority: 2,
+        domain: 'idea',
+        meta: { count: ideaNodes.length },
+      };
+    }
+    return null;
+  },
+
+  // Task + schedule mix → gantt view
+  (nodes) => {
+    const taskNodes = nodes.filter((n) => n.domain === 'task');
+    const scheduleNodes = nodes.filter((n) => n.domain === 'schedule');
+    const total = taskNodes.length + scheduleNodes.length;
+    if (total >= 5 && taskNodes.length >= 2 && scheduleNodes.length >= 2) {
+      return {
+        viewType: 'gantt',
+        reason: `할 일과 일정이 함께 쌓이고 있어요. 간트 차트로 전체 일정을 관리해보세요.`,
+        priority: 2,
+        meta: { tasks: taskNodes.length, schedules: scheduleNodes.length },
+      };
+    }
+    return null;
+  },
+
+  // Task nodes with priority → matrix view
+  (nodes) => {
+    const taskNodes = nodes.filter((n) => n.domain === 'task');
+    if (taskNodes.length >= 4) {
+      return {
+        viewType: 'matrix',
+        reason: `할 일이 ${taskNodes.length}개예요. 중요도·긴급도 매트릭스로 우선순위를 정리해보세요.`,
+        priority: 3,
+        domain: 'task',
+        meta: { count: taskNodes.length },
+      };
+    }
+    return null;
+  },
+
+  // Knowledge nodes → flashcard/quiz for study
+  (nodes) => {
+    const knowledgeNodes = nodes.filter((n) => n.domain === 'knowledge');
+    if (knowledgeNodes.length >= 5) {
+      return {
+        viewType: 'flashcard',
+        reason: `지식 데이터가 ${knowledgeNodes.length}개 쌓였어요. 플래시카드로 복습해보세요.`,
+        priority: 3,
+        domain: 'knowledge',
+        meta: { count: knowledgeNodes.length },
+      };
+    }
+    return null;
+  },
+
+  // Many nodes overall → treemap for overview
+  (nodes) => {
+    if (nodes.length >= 20) {
+      const domainSet = new Set(nodes.map((n) => n.domain));
+      if (domainSet.size >= 3) {
+        return {
+          viewType: 'treemap',
+          reason: `데이터가 ${nodes.length}개나 있어요. 트리맵으로 어떤 영역에 데이터가 많은지 한눈에 보세요.`,
+          priority: 4,
+          meta: { totalNodes: nodes.length, domains: domainSet.size },
+        };
+      }
+    }
+    return null;
+  },
+
+  // Daily card for active users with diverse data
+  (nodes) => {
+    if (nodes.length >= 10) {
+      return {
+        viewType: 'daily_card',
+        reason: `매일 카드 한 장으로 데이터를 복습해보세요. 잊고 있던 내용을 떠올려드려요.`,
+        priority: 4,
+        meta: { totalNodes: nodes.length },
+      };
+    }
+    return null;
+  },
 ];
 
 /**

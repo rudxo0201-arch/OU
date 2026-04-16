@@ -4,7 +4,8 @@ import { useState } from 'react';
 import {
   Group, Text, ScrollArea, Menu, Modal, TextInput, Button, Stack,
 } from '@mantine/core';
-import { PencilSimple, Trash } from '@phosphor-icons/react';
+import { PencilSimple, Trash, ShareNetwork } from '@phosphor-icons/react';
+import { notifications } from '@mantine/notifications';
 import { useRouter } from 'next/navigation';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { ViewRenderer } from '@/components/views/ViewRenderer';
@@ -116,6 +117,23 @@ export function SavedViewCarousel({ views: initialViews, nodes = [] }: SavedView
                   </GlassCard>
                 </Menu.Target>
                 <Menu.Dropdown>
+                  <Menu.Item
+                    leftSection={<ShareNetwork size={14} />}
+                    onClick={() => {
+                      const url = `${window.location.origin}/view/${view.id}`;
+                      navigator.clipboard.writeText(url).then(() => {
+                        notifications.show({
+                          message: '복사됨!',
+                          color: 'gray',
+                          autoClose: 2000,
+                        });
+                      }).catch(() => {
+                        // Silent fail
+                      });
+                    }}
+                  >
+                    링크 복사
+                  </Menu.Item>
                   <Menu.Item
                     leftSection={<PencilSimple size={14} />}
                     onClick={() => {

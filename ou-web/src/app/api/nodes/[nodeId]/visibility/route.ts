@@ -1,6 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
+export async function GET(
+  _req: NextRequest,
+  { params }: { params: { nodeId: string } }
+) {
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    const { data: node } = await supabase
+      .from('data_nodes')
+      .select('visibility, user_id')
+      .eq('id', params.nodeId)
+      .single();
+
+    if (!node) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+    if (node.user_id !== user.id) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+
+    return NextResponse.json({ visibility: node.visibility ?? 'private' });
+  } catch (e) {
+    console.error('[Visibility GET] Unexpected error:', e);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
+
 export async function PATCH(
   req: NextRequest,
   { params }: { params: { nodeId: string } }
