@@ -21,9 +21,13 @@ const nextConfig = {
   },
 };
 
-export default withSentryConfig(nextConfig, {
-  silent: true,
-  disableLogger: true,
-  hideSourceMaps: true,
-  tunnelRoute: '/monitoring',
-});
+const hasSentryDsn = !!process.env.NEXT_PUBLIC_SENTRY_DSN;
+
+export default hasSentryDsn
+  ? withSentryConfig(nextConfig, {
+      silent: true,
+      disableLogger: true,
+      hideSourceMaps: true,
+      tunnelRoute: '/monitoring',
+    })
+  : nextConfig;
