@@ -117,7 +117,6 @@ async function main() {
           confidence: herb.nature ? 'high' : 'medium',
           source_type: 'manual',
           resolution: 'resolved',
-          importance: herb.starred ? 5 : 3,
           is_admin_node: true,
         };
       });
