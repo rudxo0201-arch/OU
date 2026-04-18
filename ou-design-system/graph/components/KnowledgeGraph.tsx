@@ -5,8 +5,8 @@ import { Box, Stack, Text, Slider, Switch, Group, ActionIcon, Tooltip, TextInput
 import { MagnifyingGlass, ArrowsIn, GearSix, CaretDown, CaretRight, ArrowCounterClockwise, Crosshair, Plus } from '@phosphor-icons/react';
 import { useMantineColorScheme } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { useGraphSettingsStore, DEFAULT_GRAPH_SETTINGS } from '@/stores/graphSettingsStore';
-import type { Attractor } from '../../lib/workers/graph-physics.types';
+import { useGraphSettingsStore, DEFAULT_GRAPH_SETTINGS } from '../stores/graphSettingsStore';
+import type { Attractor } from '../workers/graph-physics.types';
 
 export interface GraphNode {
   id: string;
@@ -244,7 +244,7 @@ export function KnowledgeGraph({ nodes, edges, onNodeClick, hideSettingsButton, 
       colorHex = parseInt(rawColor.slice(1), 16);
     }
 
-    for (const [id, { index }] of nodeMap) {
+    for (const [id, { index }] of Array.from(nodeMap)) {
       const nx = positions[index * 2], ny = positions[index * 2 + 1];
       if (nx < vx0 - pad || nx > vx1 + pad || ny < vy0 - pad || ny > vy1 + pad) continue;
 
@@ -372,7 +372,7 @@ export function KnowledgeGraph({ nodes, edges, onNodeClick, hideSettingsButton, 
               }
             }
             let hc = 0;
-            for (const [id, { index, node }] of nodeMap) {
+            for (const [id, { index, node }] of Array.from(nodeMap)) {
               if (hov && id === hov.id) continue;
               const nx = positions[index * 2], ny = positions[index * 2 + 1];
               if (nx < vx0 - pad || nx > vx1 + pad || ny < vy0 - pad || ny > vy1 + pad) continue;
@@ -388,7 +388,7 @@ export function KnowledgeGraph({ nodes, edges, onNodeClick, hideSettingsButton, 
             }
           } else if (k > zoomThreshold) {
             let lc2 = 0;
-            for (const [, { index, node }] of nodeMap) {
+            for (const [, { index, node }] of Array.from(nodeMap)) {
               if (lc2 >= MAX_LABELS) break;
               const nx = positions[index * 2], ny = positions[index * 2 + 1];
               if (nx < vx0 - pad || nx > vx1 + pad || ny < vy0 - pad || ny > vy1 + pad) continue;
@@ -570,7 +570,7 @@ export function KnowledgeGraph({ nodes, edges, onNodeClick, hideSettingsButton, 
         const wx = (sx - t.x) / t.k, wy = (sy - t.y) / t.k;
         const searchR = Math.max(15, 8 / t.k);
         let best: GraphNode | null = null, bestDist = searchR;
-        for (const [, { index, node }] of nMap) {
+        for (const [, { index, node }] of Array.from(nMap)) {
           const nx = positionsRef.current[index * 2], ny = positionsRef.current[index * 2 + 1];
           const dist = Math.sqrt((wx - nx) ** 2 + (wy - ny) ** 2);
           if (dist < bestDist) { bestDist = dist; best = node; }

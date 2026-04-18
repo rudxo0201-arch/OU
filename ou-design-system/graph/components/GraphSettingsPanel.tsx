@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Box, Stack, Text, Slider, Switch, Group, Collapse, UnstyledButton } from '@mantine/core';
 import { CaretDown, CaretRight, ArrowCounterClockwise } from '@phosphor-icons/react';
-import { useGraphSettingsStore, DEFAULT_GRAPH_SETTINGS } from '@/stores/graphSettingsStore';
+import { useGraphSettingsStore, DEFAULT_GRAPH_SETTINGS } from '../stores/graphSettingsStore';
 
 export function GraphSettingsPanel() {
   const gs = useGraphSettingsStore();
