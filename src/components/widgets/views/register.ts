@@ -4,6 +4,7 @@ import { ClockWidget } from './ClockWidget';
 import { TodaySummaryWidget } from './TodaySummaryWidget';
 import { RecentNodesWidget } from './RecentNodesWidget';
 import { QuickMemoWidget } from './QuickMemoWidget';
+import { ViewWidget } from './ViewWidget';
 
 registerWidget({
   type: 'ou-view',
@@ -56,6 +57,51 @@ registerWidget({
   scrollable: 'none',
   minSize: [1, 1],
   defaultSize: [2, 2],
+  removable: true,
+  needsCard: true,
+});
+
+// 범용 뷰 위젯 — 아무 뷰든 홈 위젯으로
+registerWidget({
+  type: 'view-boncho',
+  label: '본초학',
+  component: ViewWidget,
+  scrollable: 'both',
+  minSize: [3, 2],
+  defaultSize: [6, 4],
+  removable: true,
+  needsCard: true,
+});
+
+registerWidget({
+  type: 'view-dictionary',
+  label: '한자사전',
+  component: ViewWidget,
+  scrollable: 'both',
+  minSize: [3, 2],
+  defaultSize: [6, 4],
+  removable: true,
+  needsCard: true,
+});
+
+registerWidget({
+  type: 'view-todo',
+  label: '투두',
+  component: ViewWidget,
+  scrollable: 'vertical',
+  minSize: [2, 2],
+  defaultSize: [3, 3],
+  removable: true,
+  needsCard: true,
+});
+
+registerWidget({
+  type: 'view-calendar',
+  label: '캘린더',
+  component: ViewWidget,
+  scrollable: 'vertical',
+  minSize: [3, 2],
+  defaultSize: [4, 3],
   removable: true,
   needsCard: true,
 });
