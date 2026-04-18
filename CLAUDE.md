@@ -93,7 +93,7 @@ opposite_of / requires / example_of / involves / located_at / occurs_at
 
 ### UI / 디자인
 - **색상**: 흰~흑 계열만. 유채색 배경·테두리 금지
-- **예외**: 별(importance) → `var(--mantine-color-yellow-5)`
+- **예외**: 별(importance) → `var(--ou-accent-primary)`
 - **인증 게이트**: 비로그인 버튼 `disabled` 금지 → 클릭 시 `/login`
 
 ### 아키텍처
@@ -108,7 +108,7 @@ opposite_of / requires / example_of / involves / located_at / occurs_at
 | 영역 | 기술 |
 |------|------|
 | Framework | Next.js 14 (App Router) + TypeScript |
-| UI | Mantine v7 + Phosphor Icons |
+| UI | 순수 CSS 토큰 시스템 + Phosphor Icons |
 | State | Zustand |
 | 그래프 | PixiJS (WebGL) + d3-force Web Worker |
 | 인증 | Supabase Auth |

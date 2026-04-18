@@ -7,7 +7,14 @@
 set -euo pipefail
 
 OU_API_URL="${OU_API_URL:-https://ouuniverse.com}"
-OU_API_KEY="${OU_API_KEY:-}"
+
+# API Key: 환경변수 우선, 없으면 .mcp.json에서 추출
+if [ -z "${OU_API_KEY:-}" ]; then
+  MCP_FILE="$(dirname "$0")/../.mcp.json"
+  if [ -f "$MCP_FILE" ]; then
+    OU_API_KEY=$(grep -o 'ou_sk_[a-f0-9]*' "$MCP_FILE" 2>/dev/null | head -1 || echo "")
+  fi
+fi
 
 # API Key 없으면 조용히 종료
 if [ -z "$OU_API_KEY" ]; then

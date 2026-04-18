@@ -12,6 +12,7 @@ interface GraphNode {
   id: string;
   domain: string;
   label: string;
+  raw: string | null;
   confidence: string;
   createdAt: string;
   isAdmin: boolean;
@@ -41,10 +42,12 @@ const NODE_VERTEX = /* glsl */ `
   attribute float baseSize;
   attribute float aNodeId;
   attribute float aHighlight;
+  attribute float aDomainBright;
   attribute vec3 aPos;
 
   varying float vIsSelected;
   varying float vHighlight;
+  varying float vBright;
 
   void main() {
     vec3 finalPos = aPos * uSpread;
@@ -53,6 +56,7 @@ const NODE_VERTEX = /* glsl */ `
 
     vIsSelected = abs(aNodeId - uSelectedNode) < 0.5 ? 1.0 : 0.0;
     vHighlight = aHighlight;
+    vBright = aDomainBright;
 
     float finalSize;
     if (vIsSelected > 0.5) finalSize = baseSize * uSizeMult * 2.5;
@@ -68,11 +72,13 @@ const NODE_VERTEX = /* glsl */ `
 const NODE_FRAGMENT = /* glsl */ `
   varying float vIsSelected;
   varying float vHighlight;
+  varying float vBright;
   void main() {
     float d = length(gl_PointCoord - vec2(0.5));
     if (d > 0.5) discard;
     float alpha = smoothstep(0.5, 0.1, d);
-    vec3 color = mix(vec3(0.85, 0.85, 0.85), vec3(1.0, 1.0, 1.0), vIsSelected);
+    vec3 baseColor = vec3(vBright);
+    vec3 color = mix(baseColor, vec3(1.0, 1.0, 1.0), vIsSelected);
     if (vHighlight == 1.0) { alpha *= 0.12; }
     else if (vHighlight == 2.0) { color = vec3(1.0); alpha = min(1.0, alpha * 2.0); }
     gl_FragColor = vec4(color, alpha + vIsSelected * 0.4);
@@ -84,11 +90,14 @@ const EDGE_VERTEX = /* glsl */ `
   uniform float uSpread;
   attribute vec3 aPos;
   attribute float aHighlight;
+  attribute float aEdgeBright;
   varying float vHighlight;
+  varying float vEdgeBright;
   void main() {
     vec3 finalPos = aPos * uSpread;
     finalPos.z *= (1.0 - uFlatten);
     vHighlight = aHighlight;
+    vEdgeBright = aEdgeBright;
     gl_Position = projectionMatrix * modelViewMatrix * vec4(finalPos, 1.0);
   }
 `;
@@ -96,9 +105,10 @@ const EDGE_VERTEX = /* glsl */ `
 const EDGE_FRAGMENT = /* glsl */ `
   uniform float uOpacity;
   varying float vHighlight;
+  varying float vEdgeBright;
   void main() {
-    float alpha = uOpacity;
-    vec3 color = vec3(0.5, 0.5, 0.5);
+    float alpha = uOpacity * vEdgeBright;
+    vec3 color = vec3(vEdgeBright);
     if (vHighlight == 1.0) { alpha *= 0.08; }
     else if (vHighlight == 2.0) { alpha = min(1.0, uOpacity * 6.0 + 0.3); color = vec3(0.9, 0.9, 0.9); }
     gl_FragColor = vec4(color, alpha);
@@ -121,11 +131,43 @@ interface Topology {
   edgeNodeMap: Int32Array;
 }
 
+// ─── Domain brightness map (greyscale only, per CLAUDE.md) ──────────
+const DOMAIN_BRIGHTNESS: Record<string, number> = {
+  schedule: 1.0,
+  emotion: 0.95,
+  idea: 0.9,
+  task: 0.85,
+  education: 0.8,
+  knowledge: 0.75,
+  development: 0.7,
+  habit: 0.65,
+  finance: 0.6,
+  media: 0.55,
+  health: 0.5,
+};
+const DEFAULT_BRIGHTNESS = 0.7;
+
+// ─── Edge relation visual weight ────────────────────────────────────
+const EDGE_WEIGHT: Record<string, { bright: number; thick: number }> = {
+  is_a: { bright: 0.9, thick: 2.0 },
+  part_of: { bright: 0.85, thick: 1.8 },
+  causes: { bright: 0.7, thick: 1.4 },
+  requires: { bright: 0.7, thick: 1.4 },
+  derived_from: { bright: 0.65, thick: 1.2 },
+  involves: { bright: 0.6, thick: 1.0 },
+  example_of: { bright: 0.6, thick: 1.0 },
+  located_at: { bright: 0.55, thick: 1.0 },
+  occurs_at: { bright: 0.55, thick: 1.0 },
+  opposite_of: { bright: 0.5, thick: 0.8 },
+  related_to: { bright: 0.4, thick: 0.6 },
+};
+const DEFAULT_EDGE_WEIGHT = { bright: 0.4, thick: 0.6 };
+
 // ─── Build topology from real data ───────────────────────────────────
 function buildFromRealData(
   nodes: GraphNode[],
   edges: GraphEdge[],
-): { topology: Topology; edgeIndices: number[] } {
+): { topology: Topology; edgeIndices: number[]; edgeRelTypes: string[] } {
   const nNodes = nodes.length;
   const idToIdx = new Map<string, number>();
   nodes.forEach((n, i) => idToIdx.set(n.id, i));
@@ -133,6 +175,7 @@ function buildFromRealData(
   // Build adjacency from real edges
   const adjacency: number[][] = Array.from({ length: nNodes }, () => []);
   const edgeIndices: number[] = [];
+  const edgeRelTypes: string[] = [];
   const nodeEdgesList: number[][] = Array.from({ length: nNodes }, () => []);
 
   let edgeIdx = 0;
@@ -143,6 +186,7 @@ function buildFromRealData(
     adjacency[si].push(ti);
     adjacency[ti].push(si);
     edgeIndices.push(si, ti);
+    edgeRelTypes.push(e.relationType);
     nodeEdgesList[si].push(edgeIdx);
     nodeEdgesList[ti].push(edgeIdx);
     edgeIdx++;
@@ -218,6 +262,7 @@ function buildFromRealData(
       edgeNodeMap: new Int32Array(edgeIndices),
     },
     edgeIndices,
+    edgeRelTypes,
   };
 }
 
@@ -267,11 +312,20 @@ export function UniverseView({ visible }: Props) {
     realId: string;
     degree: number;
     confidence: string;
+    raw: string | null;
+    sections: { id: string; heading: string; sentences: { id: string; text: string }[] }[] | null;
+    triples: { id: string; subject: string; predicate: string; object: string; confidence: string }[] | null;
+    relations: { id: string; raw?: string; domain: string; predicate?: string }[] | null;
   } | null>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'empty' | 'error'>('loading');
   const [searchQuery, setSearchQuery] = useState('');
   const [searchOpen, setSearchOpen] = useState(false);
+  const [searchResults, setSearchResults] = useState<{ idx: number; label: string }[]>([]);
   const [visibleLabels, setVisibleLabels] = useState<{ x: number; y: number; label: string }[]>([]);
+  const [allDomains, setAllDomains] = useState<string[]>([]);
+  const [domainFilter, setDomainFilter] = useState<Set<string>>(new Set());
+  const [confidenceFilter, setConfidenceFilter] = useState<Set<string>>(new Set(['high', 'medium', 'low']));
+  const [dateFilter, setDateFilter] = useState<'all' | '1d' | '1w' | '1m'>('all');
 
   const ZOOM_THRESHOLD = 1600;
 
@@ -346,6 +400,10 @@ export function UniverseView({ visible }: Props) {
         state.graphNodes = data.nodes;
         state.graphEdges = data.edges ?? [];
         buildMeshes(state, data.nodes, data.edges ?? []);
+        // Initialize domain filter with all present domains
+        const domainArr = Array.from(new Set(data.nodes.map((n: GraphNode) => n.domain))).sort() as string[];
+        setAllDomains(domainArr);
+        setDomainFilter(new Set(domainArr));
         setStatus('ready');
         // Build initial projection cache
         rebuildProjCache(state);
@@ -695,6 +753,50 @@ export function UniverseView({ visible }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, dimension]);
 
+  // ─── Filter effect ────────────────────────────────────────────────
+  useEffect(() => {
+    const s = sceneRef.current;
+    if (!s || !s.pointsMesh || !s.linesMesh || s.selectedNodeId !== -1) return;
+    const topo = s.topology;
+    if (topo.nNodes === 0) return;
+
+    const nArr = (s.pointsMesh.geometry.attributes.aHighlight as THREE.BufferAttribute).array as Float32Array;
+    const eArr = (s.linesMesh.geometry.attributes.aHighlight as THREE.BufferAttribute).array as Float32Array;
+
+    // Date threshold
+    let dateThreshold = 0;
+    if (dateFilter !== 'all') {
+      const now = Date.now();
+      const ms = dateFilter === '1d' ? 86400000 : dateFilter === '1w' ? 604800000 : 2592000000;
+      dateThreshold = now - ms;
+    }
+
+    const nodeVisible = new Uint8Array(topo.nNodes);
+    for (let i = 0; i < topo.nNodes; i++) {
+      const domain = topo.nodeDomains[i];
+      const conf = topo.nodeConfidences[i];
+      const domainOk = domainFilter.size === 0 || domainFilter.has(domain);
+      const confOk = confidenceFilter.has(conf);
+      const dateOk = dateFilter === 'all' || (s.graphNodes[i] && new Date(s.graphNodes[i].createdAt).getTime() >= dateThreshold);
+      nodeVisible[i] = (domainOk && confOk && dateOk) ? 1 : 0;
+      nArr[i] = nodeVisible[i] ? 0.0 : 1.0;
+    }
+
+    // Edges: dim if either endpoint is filtered out
+    const map = topo.edgeNodeMap;
+    const nEdges = map.length / 2;
+    for (let i = 0; i < nEdges; i++) {
+      const n1 = map[i * 2], n2 = map[i * 2 + 1];
+      const vis = (nodeVisible[n1] && nodeVisible[n2]) ? 0.0 : 1.0;
+      eArr[i * 2] = vis;
+      eArr[i * 2 + 1] = vis;
+    }
+
+    (s.pointsMesh.geometry.attributes.aHighlight as THREE.BufferAttribute).needsUpdate = true;
+    (s.linesMesh.geometry.attributes.aHighlight as THREE.BufferAttribute).needsUpdate = true;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [domainFilter, confidenceFilter, dateFilter]);
+
   // ─── Build meshes from real data ─────────────────────────────────
 
   function buildMeshes(
@@ -702,7 +804,7 @@ export function UniverseView({ visible }: Props) {
     nodes: GraphNode[],
     edges: GraphEdge[],
   ) {
-    const { topology, edgeIndices } = buildFromRealData(nodes, edges);
+    const { topology, edgeIndices, edgeRelTypes } = buildFromRealData(nodes, edges);
     state.topology = topology;
     const nNodes = topology.nNodes;
 
@@ -710,11 +812,13 @@ export function UniverseView({ visible }: Props) {
     const sizes = new Float32Array(nNodes);
     const ids = new Float32Array(nNodes);
     const highlights = new Float32Array(nNodes);
+    const domainBrights = new Float32Array(nNodes);
     const degs = topology.nodeAdjacency.map(a => a.length);
     const maxDeg = Math.max(1, ...degs);
     for (let i = 0; i < nNodes; i++) {
       ids[i] = i;
       highlights[i] = 0.0;
+      domainBrights[i] = DOMAIN_BRIGHTNESS[topology.nodeDomains[i]] ?? DEFAULT_BRIGHTNESS;
       const t = Math.sqrt(degs[i] / maxDeg); // sqrt for smoother scaling
       sizes[i] = 1.5 + t * 16; // range: 1.5 (isolated) to 17.5 (max hub)
     }
@@ -726,6 +830,7 @@ export function UniverseView({ visible }: Props) {
     nodeGeo.setAttribute('baseSize', new THREE.BufferAttribute(sizes, 1));
     nodeGeo.setAttribute('aNodeId', new THREE.BufferAttribute(ids, 1));
     nodeGeo.setAttribute('aHighlight', new THREE.BufferAttribute(highlights, 1));
+    nodeGeo.setAttribute('aDomainBright', new THREE.BufferAttribute(domainBrights, 1));
 
     const nodeMat = new THREE.ShaderMaterial({
       uniforms: state.uniforms,
@@ -741,16 +846,21 @@ export function UniverseView({ visible }: Props) {
     const nEdges = edgeIndices.length / 2;
     const edgePos = new Float32Array(nEdges * 2 * 3);
     const edgeHL = new Float32Array(nEdges * 2);
+    const edgeBrights = new Float32Array(nEdges * 2);
     for (let i = 0; i < nEdges; i++) {
       const n1 = edgeIndices[i * 2], n2 = edgeIndices[i * 2 + 1];
       edgePos[i * 6] = topology.positions[n1 * 3]; edgePos[i * 6 + 1] = topology.positions[n1 * 3 + 1]; edgePos[i * 6 + 2] = topology.positions[n1 * 3 + 2];
       edgePos[i * 6 + 3] = topology.positions[n2 * 3]; edgePos[i * 6 + 4] = topology.positions[n2 * 3 + 1]; edgePos[i * 6 + 5] = topology.positions[n2 * 3 + 2];
+      const ew = EDGE_WEIGHT[edgeRelTypes[i]] ?? DEFAULT_EDGE_WEIGHT;
+      edgeBrights[i * 2] = ew.bright;
+      edgeBrights[i * 2 + 1] = ew.bright;
     }
 
     const edgeGeo = new THREE.BufferGeometry();
     edgeGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(nEdges * 2 * 3), 3));
     edgeGeo.setAttribute('aPos', new THREE.BufferAttribute(edgePos, 3));
     edgeGeo.setAttribute('aHighlight', new THREE.BufferAttribute(edgeHL, 1));
+    edgeGeo.setAttribute('aEdgeBright', new THREE.BufferAttribute(edgeBrights, 1));
 
     const edgeMat = new THREE.ShaderMaterial({
       uniforms: state.uniforms,
@@ -844,14 +954,36 @@ export function UniverseView({ visible }: Props) {
   function showCard(state: NonNullable<typeof sceneRef.current>, nodeId: number) {
     state.uniforms.uSelectedNode.value = nodeId;
     const topo = state.topology;
+    const realId = topo.nodeIds[nodeId];
+    const graphNode = state.graphNodes.find(n => n.id === realId);
     setSelectedCard({
       id: nodeId,
       title: topo.nodeLabels[nodeId] || `Node ${nodeId}`,
       domain: topo.nodeDomains[nodeId] || 'knowledge',
       tag: `#${topo.nodeDomains[nodeId] || 'concept'}`,
-      realId: topo.nodeIds[nodeId],
+      realId,
       degree: topo.nodeAdjacency[nodeId]?.length ?? 0,
       confidence: topo.nodeConfidences[nodeId] || 'medium',
+      raw: graphNode?.raw ?? null,
+      sections: null,
+      triples: null,
+      relations: null,
+    });
+    // Fetch detail data in parallel
+    Promise.all([
+      fetch(`/api/nodes/${realId}/content`).then(r => r.ok ? r.json() : null).catch(() => null),
+      fetch(`/api/nodes/${realId}/triples`).then(r => r.ok ? r.json() : null).catch(() => null),
+      fetch(`/api/nodes/${realId}/relations`).then(r => r.ok ? r.json() : null).catch(() => null),
+    ]).then(([contentData, triplesData, relData]) => {
+      setSelectedCard(prev => {
+        if (!prev || prev.realId !== realId) return prev;
+        return {
+          ...prev,
+          sections: contentData?.sections ?? null,
+          triples: triplesData?.triples ?? null,
+          relations: relData?.relations ?? null,
+        };
+      });
     });
   }
 
@@ -929,6 +1061,19 @@ export function UniverseView({ visible }: Props) {
     return closestId;
   }
 
+  const navigateToNode = useCallback((nodeRealId: string) => {
+    const s = sceneRef.current;
+    if (!s) return;
+    const idx = s.topology.nodeIds.indexOf(nodeRealId);
+    if (idx === -1) return;
+    const spread = s.uniforms.uSpread?.value ?? 1;
+    const p = s.topology.positions;
+    s.controls.target.set(p[idx * 3] * spread, p[idx * 3 + 1] * spread, p[idx * 3 + 2] * spread);
+    s.camera.position.set(p[idx * 3] * spread, p[idx * 3 + 1] * spread, p[idx * 3 + 2] * spread + 400);
+    s.selectedNodeId = idx;
+    applyHL(s, idx);
+    showCard(s, idx);
+  }, []);
   const handleCloseCard = useCallback(() => { const s = sceneRef.current; if (s) exitLocal(s); }, []);
   const updateControl = useCallback((key: string, value: number) => { setControlValues(prev => ({ ...prev, [key]: value })); }, []);
 
@@ -968,32 +1113,44 @@ export function UniverseView({ visible }: Props) {
           </h3>
 
           {/* Search */}
-          <div style={{ marginBottom: 16 }}>
+          <div style={{ marginBottom: 16, position: 'relative' }}>
             <input
               type="text"
               placeholder="노드 검색... ( / )"
               value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
+              onChange={e => {
+                const q = e.target.value;
+                setSearchQuery(q);
+                const s = sceneRef.current;
+                if (!s || !q.trim()) { setSearchResults([]); return; }
+                const lower = q.trim().toLowerCase();
+                const parts = lower.split(/\s+/);
+                const results: { idx: number; label: string }[] = [];
+                for (let i = 0; i < s.topology.nNodes && results.length < 10; i++) {
+                  const label = s.topology.nodeLabels[i].toLowerCase();
+                  const domain = s.topology.nodeDomains[i].toLowerCase();
+                  const match = parts.every(p => label.includes(p) || domain.includes(p));
+                  if (match) results.push({ idx: i, label: s.topology.nodeLabels[i] });
+                }
+                setSearchResults(results);
+              }}
               onFocus={() => setSearchOpen(true)}
               onKeyDown={e => {
-                if (e.key === 'Enter' && searchQuery.trim()) {
-                  // Find and focus first match
+                if (e.key === 'Enter' && searchResults.length > 0) {
                   const s = sceneRef.current;
                   if (!s) return;
-                  const q = searchQuery.trim().toLowerCase();
-                  const idx = s.topology.nodeLabels.findIndex(l => l.toLowerCase().includes(q));
-                  if (idx !== -1) {
-                    s.selectedNodeId = idx;
-                    applyHL(s, idx);
-                    showCard(s, idx);
-                    // Zoom to node
-                    const spread = s.uniforms.uSpread?.value ?? 1;
-                    const p = s.topology.positions;
-                    s.controls.target.set(p[idx * 3] * spread, p[idx * 3 + 1] * spread, p[idx * 3 + 2] * spread);
-                    s.camera.position.set(p[idx * 3] * spread, p[idx * 3 + 1] * spread, p[idx * 3 + 2] * spread + 400);
-                  }
+                  const idx = searchResults[0].idx;
+                  s.selectedNodeId = idx;
+                  applyHL(s, idx);
+                  showCard(s, idx);
+                  const spread = s.uniforms.uSpread?.value ?? 1;
+                  const p = s.topology.positions;
+                  s.controls.target.set(p[idx * 3] * spread, p[idx * 3 + 1] * spread, p[idx * 3 + 2] * spread);
+                  s.camera.position.set(p[idx * 3] * spread, p[idx * 3 + 1] * spread, p[idx * 3 + 2] * spread + 400);
+                  setSearchResults([]);
+                  setSearchQuery('');
                 }
-                if (e.key === 'Escape') { setSearchQuery(''); setSearchOpen(false); (e.target as HTMLElement).blur(); }
+                if (e.key === 'Escape') { setSearchQuery(''); setSearchResults([]); setSearchOpen(false); (e.target as HTMLElement).blur(); }
               }}
               ref={el => { if (searchOpen && el) el.focus(); }}
               style={{
@@ -1003,6 +1160,44 @@ export function UniverseView({ visible }: Props) {
                 outline: 'none',
               }}
             />
+            {searchResults.length > 0 && (
+              <div style={{
+                position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 4,
+                background: 'rgba(0,0,0,0.9)', border: '1px solid rgba(255,255,255,0.15)',
+                borderRadius: 4, overflow: 'hidden', zIndex: 200,
+              }}>
+                {searchResults.map((r, i) => (
+                  <button
+                    key={r.idx}
+                    onClick={() => {
+                      const s = sceneRef.current;
+                      if (!s) return;
+                      s.selectedNodeId = r.idx;
+                      applyHL(s, r.idx);
+                      showCard(s, r.idx);
+                      const spread = s.uniforms.uSpread?.value ?? 1;
+                      const p = s.topology.positions;
+                      s.controls.target.set(p[r.idx * 3] * spread, p[r.idx * 3 + 1] * spread, p[r.idx * 3 + 2] * spread);
+                      s.camera.position.set(p[r.idx * 3] * spread, p[r.idx * 3 + 1] * spread, p[r.idx * 3 + 2] * spread + 400);
+                      setSearchResults([]);
+                      setSearchQuery('');
+                    }}
+                    style={{
+                      display: 'block', width: '100%', padding: '6px 10px',
+                      background: i === 0 ? 'rgba(255,255,255,0.08)' : 'transparent',
+                      border: 'none', color: '#fff', fontSize: 11, textAlign: 'left', cursor: 'pointer',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; }}
+                    onMouseLeave={e => { if (i !== 0) e.currentTarget.style.background = 'transparent'; }}
+                  >
+                    <span>{r.label}</span>
+                    <span style={{ float: 'right', fontSize: 9, color: 'rgba(255,255,255,0.3)' }}>
+                      {sceneRef.current?.topology.nodeDomains[r.idx]}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* 2D/3D */}
@@ -1043,6 +1238,78 @@ export function UniverseView({ visible }: Props) {
           >
             초기화 (R)
           </button>
+
+          {/* Domain filter */}
+          <div style={{ marginTop: 20, borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: 16 }}>
+            <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: 1 }}>도메인</div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+              {allDomains.map(d => (
+                <button
+                  key={d}
+                  onClick={() => {
+                    setDomainFilter(prev => {
+                      const next = new Set(prev);
+                      if (next.has(d)) next.delete(d); else next.add(d);
+                      return next;
+                    });
+                  }}
+                  style={{
+                    padding: '3px 8px', fontSize: 10, borderRadius: 3, cursor: 'pointer',
+                    background: domainFilter.has(d) ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.03)',
+                    color: domainFilter.has(d) ? '#fff' : 'rgba(255,255,255,0.25)',
+                    border: `1px solid ${domainFilter.has(d) ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.08)'}`,
+                    transition: 'all 0.15s',
+                  }}
+                >{d}</button>
+              ))}
+            </div>
+          </div>
+
+          {/* Confidence filter */}
+          <div style={{ marginTop: 12 }}>
+            <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: 1 }}>신뢰도</div>
+            <div style={{ display: 'flex', gap: 4 }}>
+              {(['high', 'medium', 'low'] as const).map(c => (
+                <button
+                  key={c}
+                  onClick={() => {
+                    setConfidenceFilter(prev => {
+                      const next = new Set(prev);
+                      if (next.has(c)) next.delete(c); else next.add(c);
+                      return next;
+                    });
+                  }}
+                  style={{
+                    flex: 1, padding: '4px 0', fontSize: 10, borderRadius: 3, cursor: 'pointer',
+                    background: confidenceFilter.has(c) ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.03)',
+                    color: confidenceFilter.has(c) ? '#fff' : 'rgba(255,255,255,0.25)',
+                    border: `1px solid ${confidenceFilter.has(c) ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.08)'}`,
+                    transition: 'all 0.15s',
+                  }}
+                >{c}</button>
+              ))}
+            </div>
+          </div>
+
+          {/* Date filter */}
+          <div style={{ marginTop: 12 }}>
+            <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: 1 }}>기간</div>
+            <div style={{ display: 'flex', gap: 4 }}>
+              {([['all', '전체'], ['1d', '1일'], ['1w', '1주'], ['1m', '1달']] as const).map(([val, label]) => (
+                <button
+                  key={val}
+                  onClick={() => setDateFilter(val)}
+                  style={{
+                    flex: 1, padding: '4px 0', fontSize: 10, borderRadius: 3, cursor: 'pointer',
+                    background: dateFilter === val ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.03)',
+                    color: dateFilter === val ? '#fff' : 'rgba(255,255,255,0.25)',
+                    border: `1px solid ${dateFilter === val ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.08)'}`,
+                    transition: 'all 0.15s',
+                  }}
+                >{label}</button>
+              ))}
+            </div>
+          </div>
         </div>
       )}
 
@@ -1063,36 +1330,114 @@ export function UniverseView({ visible }: Props) {
 
       {/* Info Card */}
       <div style={{
-        position: 'absolute', top: 20, right: selectedCard ? 20 : -400, width: 320,
-        background: 'rgba(0, 0, 0, 0.8)', backdropFilter: 'blur(20px)',
-        border: '1px solid rgba(255, 255, 255, 0.2)', borderRadius: 12, padding: 25,
+        position: 'absolute', top: 20, right: selectedCard ? 20 : -420, width: 360,
+        background: 'rgba(0, 0, 0, 0.85)', backdropFilter: 'blur(20px)',
+        border: '1px solid rgba(255, 255, 255, 0.15)', borderRadius: 12, padding: 0,
         boxShadow: '-5px 10px 30px rgba(0,0,0,0.5)', transition: 'right 0.4s cubic-bezier(0.2, 0.8, 0.2, 1)', zIndex: 200,
+        maxHeight: '80vh', overflowY: 'auto',
       }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 15 }}>
-          <h2 style={{ margin: 0, fontSize: 18, fontWeight: 600, lineHeight: 1.3, color: '#fff' }}>{selectedCard?.title}</h2>
-          <button onClick={handleCloseCard} style={{ background: 'none', border: 'none', color: '#888', fontSize: 24, cursor: 'pointer', lineHeight: 1, padding: 0, marginLeft: 15 }}>&times;</button>
-        </div>
-        <span style={{
-          display: 'inline-block', background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.7)',
-          padding: '4px 10px', borderRadius: 20, fontSize: 11, fontWeight: 600, marginBottom: 15,
-          border: '1px solid rgba(255,255,255,0.2)',
-        }}>
-          {selectedCard?.tag}
-        </span>
-        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.8, marginBottom: 20 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span>연결</span><span style={{ color: '#fff' }}>{selectedCard?.degree}개</span>
+        {/* Header */}
+        <div style={{ padding: '20px 20px 0', position: 'sticky', top: 0, background: 'rgba(0,0,0,0.85)', zIndex: 1 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+            <h2 style={{ margin: 0, fontSize: 16, fontWeight: 600, lineHeight: 1.3, color: '#fff' }}>{selectedCard?.title}</h2>
+            <button onClick={handleCloseCard} style={{ background: 'none', border: 'none', color: '#888', fontSize: 20, cursor: 'pointer', lineHeight: 1, padding: 0, marginLeft: 15 }}>&times;</button>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span>신뢰도</span><span style={{ color: '#fff' }}>{selectedCard?.confidence}</span>
+          <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+            <span style={{
+              display: 'inline-block', background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.6)',
+              padding: '3px 8px', borderRadius: 4, fontSize: 10, fontWeight: 600,
+            }}>
+              {selectedCard?.tag}
+            </span>
+            <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', lineHeight: '22px' }}>
+              연결 {selectedCard?.degree} · {selectedCard?.confidence}
+            </span>
           </div>
         </div>
-        <div style={{
-          borderTop: '1px dashed rgba(255,255,255,0.15)', paddingTop: 15, fontSize: 11, color: '#666',
-          display: 'flex', justifyContent: 'space-between',
-        }}>
-          <span>{selectedCard?.domain}</span>
-          <span style={{ fontFamily: 'monospace', fontSize: 10 }}>{selectedCard?.realId?.slice(0, 8)}</span>
+
+        <div style={{ padding: '0 20px 20px' }}>
+          {/* Raw text */}
+          {selectedCard?.raw && (
+            <div style={{ marginBottom: 16 }}>
+              <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: 1 }}>원본</div>
+              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, maxHeight: 80, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {selectedCard.raw.slice(0, 200)}{selectedCard.raw.length > 200 ? '…' : ''}
+              </div>
+            </div>
+          )}
+
+          {/* Triples */}
+          {selectedCard?.triples && selectedCard.triples.length > 0 && (
+            <div style={{ marginBottom: 16 }}>
+              <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: 1 }}>트리플</div>
+              {selectedCard.triples.slice(0, 8).map(t => (
+                <div key={t.id} style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', lineHeight: 1.8, display: 'flex', gap: 4 }}>
+                  <span style={{ color: '#fff' }}>{t.subject}</span>
+                  <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: 10 }}>{t.predicate}</span>
+                  <span style={{ color: 'rgba(255,255,255,0.7)' }}>{t.object}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Sections */}
+          {selectedCard?.sections && selectedCard.sections.length > 0 && (
+            <div style={{ marginBottom: 16 }}>
+              <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: 1 }}>섹션</div>
+              {selectedCard.sections.slice(0, 5).map(sec => (
+                <div key={sec.id} style={{ marginBottom: 8 }}>
+                  {sec.heading && <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)', fontWeight: 600, marginBottom: 2 }}>{sec.heading}</div>}
+                  {sec.sentences.slice(0, 3).map(s => (
+                    <div key={s.id} style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', lineHeight: 1.6 }}>{s.text}</div>
+                  ))}
+                  {sec.sentences.length > 3 && <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.2)' }}>+{sec.sentences.length - 3}문장</div>}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Related nodes */}
+          {selectedCard?.relations && selectedCard.relations.length > 0 && (
+            <div style={{ marginBottom: 8 }}>
+              <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: 1 }}>연결 노드</div>
+              {selectedCard.relations.slice(0, 8).map(rel => (
+                <button
+                  key={rel.id}
+                  onClick={() => navigateToNode(rel.id)}
+                  style={{
+                    display: 'block', width: '100%', textAlign: 'left', padding: '6px 8px', marginBottom: 4,
+                    background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',
+                    borderRadius: 4, cursor: 'pointer', transition: 'background 0.15s',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; }}
+                >
+                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', lineHeight: 1.4 }}>
+                    {rel.raw ? (rel.raw.length > 40 ? rel.raw.slice(0, 40) + '…' : rel.raw) : rel.id.slice(0, 8)}
+                  </div>
+                  <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.25)', marginTop: 2 }}>
+                    {rel.predicate && <span>{rel.predicate} · </span>}{rel.domain}
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Loading indicator for detail data */}
+          {selectedCard && selectedCard.triples === null && selectedCard.sections === null && (
+            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', textAlign: 'center', padding: '10px 0' }}>
+              불러오는 중...
+            </div>
+          )}
+
+          {/* Footer */}
+          <div style={{
+            borderTop: '1px dashed rgba(255,255,255,0.1)', paddingTop: 12, marginTop: 8,
+            fontSize: 10, color: 'rgba(255,255,255,0.2)', display: 'flex', justifyContent: 'space-between',
+          }}>
+            <span>{selectedCard?.domain}</span>
+            <span style={{ fontFamily: 'monospace' }}>{selectedCard?.realId?.slice(0, 8)}</span>
+          </div>
         </div>
       </div>
 

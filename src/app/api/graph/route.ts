@@ -43,6 +43,7 @@ export async function GET() {
       id: n.id,
       domain: n.domain,
       label: extractLabel(n),
+      raw: n.raw,
       confidence: n.confidence,
       createdAt: n.created_at,
       isAdmin: n.is_admin_node ?? false,

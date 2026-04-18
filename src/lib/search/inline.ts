@@ -1,15 +1,29 @@
 import { SupabaseClient } from '@supabase/supabase-js';
+import OpenAI from 'openai';
 
 interface SearchResult {
   id: string;
   domain: string;
   raw: string;
   created_at: string;
+  similarity?: number;
+}
+
+let _openai: OpenAI | null = null;
+function getOpenAI(): OpenAI | null {
+  if (!process.env.OPENAI_API_KEY) return null;
+  if (!_openai) _openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  return _openai;
 }
 
 /**
- * 인라인 검색 — API 호출 없이 직접 사용자 데이터를 검색
- * 키워드 검색만 수행 (벡터 검색은 비용/속도 이슈로 chat route에서는 키워드만)
+ * 인라인 검색 — 하이브리드: 키워드 + 시맨틱(벡터) 검색
+ *
+ * 1. 키워드 검색 (ilike) — 즉시, 비용 0
+ * 2. 시맨틱 검색 (pgvector) — 의미적 매칭, ~$0.00002/query
+ * 3. 결과 병합 + 중복 제거 + 최신순 정렬
+ *
+ * 시맨틱 검색 실패 시 키워드 결과만 반환 (graceful degradation)
  *
  * @param includeAdminInternal - true면 _admin_internal 노드도 포함 (관리자 본인 조회 시)
  */
@@ -20,43 +34,92 @@ export async function searchUserData(
   limit = 5,
   includeAdminInternal = false,
 ): Promise<SearchResult[]> {
-  // 키워드 추출: 조사/어미 제거, 2글자 이상만
   const keywords = extractKeywords(query);
-  if (keywords.length === 0) return [];
-
   const results: SearchResult[] = [];
   const seenIds = new Set<string>();
 
-  // 각 키워드로 검색
-  for (const keyword of keywords.slice(0, 3)) {
-    let q = supabase
-      .from('data_nodes')
-      .select('id, domain, raw, created_at')
-      .eq('user_id', userId)
-      .ilike('raw', `%${keyword}%`)
-      .order('created_at', { ascending: false })
-      .limit(limit);
+  // ── 1. 키워드 검색 (비용 0) ──
+  if (keywords.length > 0) {
+    for (const keyword of keywords.slice(0, 3)) {
+      let q = supabase
+        .from('data_nodes')
+        .select('id, domain, raw, created_at')
+        .eq('user_id', userId)
+        .ilike('raw', `%${keyword}%`)
+        .order('created_at', { ascending: false })
+        .limit(limit);
 
-    // 관리자 본인이 아니면 admin_internal 노드 제외
-    if (!includeAdminInternal) {
-      q = q.not('domain_data->>_admin_internal', 'eq', 'true');
-    }
+      if (!includeAdminInternal) {
+        q = q.not('domain_data->>_admin_internal', 'eq', 'true');
+      }
 
-    const { data } = await q;
-
-    if (data) {
-      for (const row of data) {
-        if (!seenIds.has(row.id)) {
-          seenIds.add(row.id);
-          results.push(row);
+      const { data } = await q;
+      if (data) {
+        for (const row of data) {
+          if (!seenIds.has(row.id)) {
+            seenIds.add(row.id);
+            results.push(row);
+          }
         }
       }
     }
   }
 
-  // 최신순 정렬, limit 적용
+  // ── 2. 시맨틱 검색 (벡터) ──
+  try {
+    const openai = getOpenAI();
+    if (openai && query.trim().length >= 2) {
+      const embRes = await openai.embeddings.create({
+        model: 'text-embedding-3-small',
+        input: query,
+      });
+      const queryEmbedding = embRes.data[0].embedding;
+
+      const { data: vectorResults } = await supabase.rpc('match_sentences', {
+        query_embedding: queryEmbedding,
+        match_threshold: 0.65,
+        match_count: limit * 2,
+        p_user_id: userId,
+      });
+
+      if (vectorResults) {
+        // 벡터 결과에서 node_id로 노드 정보 가져오기
+        const vectorNodeIds = (vectorResults as { node_id: string; similarity: number }[])
+          .filter(r => !seenIds.has(r.node_id))
+          .map(r => ({ node_id: r.node_id, similarity: r.similarity }));
+
+        if (vectorNodeIds.length > 0) {
+          const { data: nodes } = await supabase
+            .from('data_nodes')
+            .select('id, domain, raw, created_at')
+            .in('id', vectorNodeIds.map(v => v.node_id))
+            .eq('user_id', userId);
+
+          if (nodes) {
+            const simMap = new Map(vectorNodeIds.map(v => [v.node_id, v.similarity]));
+            for (const node of nodes) {
+              if (!seenIds.has(node.id)) {
+                seenIds.add(node.id);
+                results.push({ ...node, similarity: simMap.get(node.id) });
+              }
+            }
+          }
+        }
+      }
+    }
+  } catch (e) {
+    // 시맨틱 검색 실패 시 키워드 결과만 사용 (graceful degradation)
+    console.warn('[Search/inline] Semantic search unavailable:', (e as Error).message);
+  }
+
+  // 시맨틱 유사도가 있는 결과를 우선, 나머지는 최신순
   return results
-    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    .sort((a, b) => {
+      if (a.similarity && b.similarity) return b.similarity - a.similarity;
+      if (a.similarity) return -1;
+      if (b.similarity) return 1;
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    })
     .slice(0, limit);
 }
 
