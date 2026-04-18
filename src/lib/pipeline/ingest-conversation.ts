@@ -62,8 +62,8 @@ export async function ingestConversation({
     .map(m => m.content)
     .join('\n');
 
-  // 도메인 분류 (비용 0)
-  const { domain, viewHint, confidence } = await classifyDomain(fullText);
+  // 도메인 분류 — 복합 도메인 지원
+  const { domain, domains, viewHint, viewHints, confidence } = await classifyDomain(fullText);
 
   // domain_data 추출 (비용 0)
   const domainData = {
@@ -93,16 +93,18 @@ export async function ingestConversation({
     pair_id: userMsg?.id ?? null,
   }).select().single();
 
-  // data_node 생성
+  // data_node 생성 — 복합 도메인 포함
   const { data: node, error: nodeErr } = await supabase.from('data_nodes').insert({
     user_id: userId,
     message_id: assistantMsg?.id ?? userMsg?.id,
     domain,
+    domains: domains ?? [domain],
     raw: fullText,
     source_type: sourceType,
     confidence,
     resolution: 'resolved',
     view_hint: viewHint,
+    view_hints: viewHints ?? (viewHint ? [viewHint] : []),
     visibility: 'private',
     domain_data: domainData,
   }).select().single();
