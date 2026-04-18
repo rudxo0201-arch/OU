@@ -6,7 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { WidgetGrid, type GridTransition } from '@/components/widgets/WidgetGrid';
 import { DockBar } from '@/components/widgets/DockBar';
 import { UniverseView } from '@/components/widgets/UniverseView';
-import { OUChatWindow } from '@/components/chat/OUChatWindow';
+import { OrbFullscreen } from '@/components/chat/OrbFullscreen';
 import { useChatStore } from '@/stores/chatStore';
 import { useWidgetStore } from '@/stores/widgetStore';
 
@@ -20,21 +20,27 @@ export default function MyPage() {
   const { user, isLoading, signOut } = useAuth();
   const router = useRouter();
   const [mode, setMode] = useState<Mode>('dashboard');
-  const [chatOpen, setChatOpen] = useState(false);
+  const [orbExpanded, setOrbExpanded] = useState(false);
   const hasOuWidget = useWidgetStore(s => (s.pages[s.currentPageIndex]?.widgets ?? []).some(w => w.type === 'ou-view'));
   const { currentPageIndex, pages, setCurrentPage } = useWidgetStore();
   const timerRef = useRef<NodeJS.Timeout>();
 
-  // ⌘+K shortcut
+  // ⌘+K shortcut + Orb expand event
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
+    const keyHandler = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
-        setChatOpen(prev => !prev);
+        setOrbExpanded(prev => !prev);
       }
     };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
+    const orbHandler = () => setOrbExpanded(true);
+
+    window.addEventListener('keydown', keyHandler);
+    window.addEventListener('orb-expand', orbHandler);
+    return () => {
+      window.removeEventListener('keydown', keyHandler);
+      window.removeEventListener('orb-expand', orbHandler);
+    };
   }, []);
 
   const toggleUniverse = useCallback(() => {
@@ -105,8 +111,8 @@ export default function MyPage() {
       {/* macOS-style Menu Bar */}
       <MenuBar showLogo={!hasOuWidget} email={user?.email} onSettings={() => router.push('/settings')} onLogout={signOut} />
 
-      {/* OU Chat floating window */}
-      <OUChatWindow open={chatOpen} onClose={() => setChatOpen(false)} />
+      {/* Orb fullscreen overlay */}
+      <OrbFullscreen open={orbExpanded} onClose={() => setOrbExpanded(false)} />
 
       {/* Page indicator dots (iPad style) */}
       {mode === 'dashboard' && pages.length > 1 && (

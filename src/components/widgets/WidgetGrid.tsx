@@ -91,12 +91,13 @@ export function WidgetGrid({ transition = 'idle' }: Props) {
     updateLayout(layout.map(l => ({ i: l.i, x: l.x, y: l.y, w: l.w, h: l.h })));
   }, [updateLayout]);
 
+  // rAF로 한 프레임 미뤄서 CSS 트랜지션과 상태 업데이트 겹침 방지
   const handleDragStop = useCallback((_layout: Layout[]) => {
-    handleLayoutChange(_layout);
+    requestAnimationFrame(() => handleLayoutChange(_layout));
   }, [handleLayoutChange]);
 
   const handleResizeStop = useCallback((_layout: Layout[]) => {
-    handleLayoutChange(_layout);
+    requestAnimationFrame(() => handleLayoutChange(_layout));
   }, [handleLayoutChange]);
 
   const handleRemove = useCallback((id: string) => {
@@ -116,7 +117,6 @@ export function WidgetGrid({ transition = 'idle' }: Props) {
 
   const layout: Layout[] = widgets.map(w => {
     const def = getWidgetDef(w.type);
-    const noResize = !def?.needsCard; // cardless widgets don't show resize handles
     return {
       i: w.id,
       x: w.x,
@@ -125,7 +125,6 @@ export function WidgetGrid({ transition = 'idle' }: Props) {
       h: w.h,
       minW: def?.minSize[0] ?? 1,
       minH: def?.minSize[1] ?? 1,
-      ...(noResize ? { isResizable: false } : {}),
     };
   });
 

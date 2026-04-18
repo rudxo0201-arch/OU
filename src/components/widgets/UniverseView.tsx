@@ -234,6 +234,9 @@ export function UniverseView({ visible }: Props) {
     dragNodeId: number;
     dragPlane: THREE.Plane;
     dragOffset: THREE.Vector3;
+    worker: unknown; // Worker | null — use `as Worker` when calling methods
+    graphNodes: GraphNode[];
+    graphEdges: GraphEdge[];
     raf: number;
   } | null>(null);
 
@@ -241,6 +244,8 @@ export function UniverseView({ visible }: Props) {
     size: 0.8,
     gravity: 1.0,
     repel: 1.0,
+    linkForce: 0.3,
+    linkDistance: 80,
     opacity: 0.05,
   });
 
@@ -314,7 +319,9 @@ export function UniverseView({ visible }: Props) {
       topology: emptyTopo, uniforms, targetUniforms,
       selectedNodeId: -1, hoveredNodeId: -1, dragNodeId: -1,
       dragPlane: new THREE.Plane(new THREE.Vector3(0, 0, 1), 0),
-      dragOffset: new THREE.Vector3(), raf: 0,
+      dragOffset: new THREE.Vector3(),
+      worker: null, graphNodes: [], graphEdges: [],
+      raf: 0,
     };
     sceneRef.current = state;
 
@@ -323,6 +330,8 @@ export function UniverseView({ visible }: Props) {
       .then(res => { if (!res.ok) throw new Error('API error'); return res.json(); })
       .then(data => {
         if (!data.nodes || data.nodes.length === 0) { setStatus('empty'); return; }
+        state.graphNodes = data.nodes;
+        state.graphEdges = data.edges;
         buildMeshes(state, data.nodes, data.edges);
         setStatus('ready');
       })
@@ -391,11 +400,14 @@ export function UniverseView({ visible }: Props) {
         const inter = new THREE.Vector3();
         raycaster.ray.intersectPlane(state.dragPlane, inter);
         if (inter) state.dragOffset.copy(pos).sub(inter);
+        // Notify worker
+        if (state.worker) (state.worker as any).postMessage({ type: 'DRAG_START', data: { id: state.topology.nodeIds[hitId] } });
       }
     };
 
     const onPointerUp = (e: PointerEvent) => {
       const wasDragging = state.dragNodeId !== -1;
+      if (wasDragging && state.worker) (state.worker as Worker).postMessage({ type: 'DRAG_END', data: { id: state.topology.nodeIds[state.dragNodeId] } });
       state.dragNodeId = -1; controls.enabled = true;
       if (wasDragging && didDrag) { renderer.domElement.style.cursor = 'pointer'; return; }
       if (Math.hypot(e.clientX - clickStartX, e.clientY - clickStartY) > 5) return;
@@ -415,7 +427,11 @@ export function UniverseView({ visible }: Props) {
         getMouseNDC(e); raycaster.setFromCamera(mouseNDC, camera);
         const inter = new THREE.Vector3();
         raycaster.ray.intersectPlane(state.dragPlane, inter);
-        if (inter) { inter.add(state.dragOffset); updateNodePos(state.dragNodeId, inter); }
+        if (inter) {
+          inter.add(state.dragOffset);
+          updateNodePos(state.dragNodeId, inter);
+          if (state.worker) (state.worker as Worker).postMessage({ type: 'DRAG_MOVE', data: { id: state.topology.nodeIds[state.dragNodeId], x: inter.x, y: inter.y } });
+        }
         return;
       }
       const zoom = camera.position.distanceTo(controls.target);
@@ -466,6 +482,8 @@ export function UniverseView({ visible }: Props) {
       container.removeEventListener('pointerdown', onPointerDown, { capture: true });
       container.removeEventListener('pointerup', onPointerUp, { capture: true });
       container.removeEventListener('pointermove', onPointerMove, { capture: true });
+      (state.worker as any)?.postMessage({ type: 'STOP' });
+      (state.worker as any)?.terminate();
       renderer.dispose(); composer.dispose();
       if (renderer.domElement.parentNode) container.removeChild(renderer.domElement);
       sceneRef.current = null;
@@ -479,6 +497,19 @@ export function UniverseView({ visible }: Props) {
     s.targetUniforms.size = controlValues.size;
     s.targetUniforms.opacity = controlValues.opacity;
     s.targetUniforms.spread = controlValues.repel / controlValues.gravity;
+
+    // Forward force params to worker (2D mode)
+    if (s.worker) {
+      (s.worker as Worker).postMessage({
+        type: 'UPDATE_FORCES',
+        data: {
+          centerForce: controlValues.gravity * 0.05,
+          repelForce: controlValues.repel * 120,
+          linkForce: controlValues.linkForce,
+          linkDistance: controlValues.linkDistance,
+        },
+      });
+    }
   }, [controlValues]);
 
   useEffect(() => {
@@ -488,12 +519,84 @@ export function UniverseView({ visible }: Props) {
       s.controls.mouseButtons.RIGHT = THREE.MOUSE.PAN;
       s.controls.enableRotate = false;
       s.targetUniforms.flatten = 1.0;
+
+      // Start d3-force worker for live physics (Obsidian-style)
+      if (!s.worker && s.graphNodes.length > 0) {
+        const worker = new Worker(
+          new URL('@/lib/workers/graph-physics.worker.ts', import.meta.url)
+        );
+        s.worker = worker;
+
+        const topo = s.topology;
+        const idToIdx = new Map<string, number>();
+        topo.nodeIds.forEach((id, i) => idToIdx.set(id, i));
+
+        // Init worker with current positions
+        const physicsNodes = s.graphNodes.map((n, i) => ({
+          id: n.id,
+          degree: topo.nodeAdjacency[i]?.length ?? 0,
+          x: topo.positions[i * 3],
+          y: topo.positions[i * 3 + 1],
+        }));
+        const physicsLinks = s.graphEdges
+          .filter(e => idToIdx.has(e.source) && idToIdx.has(e.target))
+          .map(e => ({ source: e.source, target: e.target, weight: e.weight }));
+
+        worker.postMessage({
+          type: 'INIT',
+          data: {
+            nodes: physicsNodes,
+            links: physicsLinks,
+            centerForce: controlValues.gravity * 0.05,
+            repelForce: controlValues.repel * 120,
+            linkForce: controlValues.linkForce,
+            linkDistance: controlValues.linkDistance,
+          },
+        });
+
+        // Receive tick updates
+        worker.onmessage = (e: MessageEvent) => {
+          if (e.data.type === 'TICK') {
+            const topo = s.topology;
+            if (!s.pointsMesh || !s.linesMesh) return;
+            const nodeAttr = s.pointsMesh.geometry.attributes.aPos as THREE.BufferAttribute;
+            const edgeAttr = s.linesMesh.geometry.attributes.aPos as THREE.BufferAttribute;
+
+            for (const pos of e.data.nodes) {
+              const idx = idToIdx.get(pos.id);
+              if (idx === undefined) continue;
+              topo.positions[idx * 3] = pos.x;
+              topo.positions[idx * 3 + 1] = pos.y;
+              topo.positions[idx * 3 + 2] = 0; // flat in 2D
+              nodeAttr.setXYZ(idx, pos.x, pos.y, 0);
+            }
+            nodeAttr.needsUpdate = true;
+
+            // Update edge positions
+            const map = topo.edgeNodeMap;
+            const nEdges = map.length / 2;
+            for (let i = 0; i < nEdges; i++) {
+              const n1 = map[i * 2], n2 = map[i * 2 + 1];
+              edgeAttr.setXYZ(i * 2, topo.positions[n1 * 3], topo.positions[n1 * 3 + 1], 0);
+              edgeAttr.setXYZ(i * 2 + 1, topo.positions[n2 * 3], topo.positions[n2 * 3 + 1], 0);
+            }
+            edgeAttr.needsUpdate = true;
+          }
+        };
+      }
     } else {
+      // 3D mode: stop worker
+      if (s.worker) {
+        (s.worker as Worker).postMessage({ type: 'STOP' });
+        (s.worker as any).terminate();
+        s.worker = null;
+      }
       s.controls.enableRotate = true;
       s.targetUniforms.flatten = 0.0;
       if (mode === 'orbit') { s.controls.mouseButtons.LEFT = THREE.MOUSE.ROTATE; s.controls.mouseButtons.RIGHT = THREE.MOUSE.PAN; s.controls.target.set(0, 0, 0); }
       else { s.controls.mouseButtons.LEFT = THREE.MOUSE.PAN; s.controls.mouseButtons.RIGHT = THREE.MOUSE.ROTATE; }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, dimension]);
 
   // ─── Build meshes from real data ─────────────────────────────────
@@ -729,7 +832,13 @@ export function UniverseView({ visible }: Props) {
 
           <ControlSlider label="노드 크기" value={controlValues.size} min={0.1} max={3.0} step={0.1} onChange={v => updateControl('size', v)} />
           <ControlSlider label="중심 인력" value={controlValues.gravity} min={0.2} max={3.0} step={0.1} onChange={v => updateControl('gravity', v)} />
-          <ControlSlider label="반발력 / 거리" value={controlValues.repel} min={0.2} max={3.0} step={0.1} onChange={v => updateControl('repel', v)} />
+          <ControlSlider label="반발력" value={controlValues.repel} min={0.2} max={3.0} step={0.1} onChange={v => updateControl('repel', v)} />
+          {dimension === '2D' && (
+            <>
+              <ControlSlider label="링크 장력" value={controlValues.linkForce} min={0.01} max={1.0} step={0.01} onChange={v => updateControl('linkForce', v)} />
+              <ControlSlider label="링크 거리" value={controlValues.linkDistance} min={20} max={300} step={10} onChange={v => updateControl('linkDistance', v)} />
+            </>
+          )}
           <ControlSlider label="선 투명도" value={controlValues.opacity} min={0.01} max={0.2} step={0.01} onChange={v => updateControl('opacity', v)} />
         </div>
       )}

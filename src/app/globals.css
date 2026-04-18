@@ -150,8 +150,8 @@ input, textarea {
 }
 
 @keyframes wiggle {
-  0%, 100% { transform: rotate(-0.5deg); }
-  50% { transform: rotate(0.5deg); }
+  0%, 100% { transform: rotate(-0.15deg); }
+  50% { transform: rotate(0.15deg); }
 }
 
 @keyframes float {

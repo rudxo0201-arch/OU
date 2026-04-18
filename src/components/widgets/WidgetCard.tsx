@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import type { ScrollPolicy } from './types';
 import { getWidgetDef } from './registry';
 import styles from './WidgetGrid.module.css';
@@ -12,7 +13,7 @@ interface Props {
   editMode?: boolean;
 }
 
-export function WidgetCard({ widgetId, type, removable, onRemove, editMode }: Props) {
+export const WidgetCard = memo(function WidgetCard({ widgetId, type, removable, onRemove, editMode }: Props) {
   const def = getWidgetDef(type);
   const scrollable: ScrollPolicy = def?.scrollable ?? 'none';
   const Comp = def?.component;
@@ -27,7 +28,7 @@ export function WidgetCard({ widgetId, type, removable, onRemove, editMode }: Pr
   const cardClassName = editMode ? styles.cardEdit : styles.cardNormal;
 
   return (
-    <div className={cardClassName} style={editMode ? { animation: 'wiggle 0.3s ease-in-out infinite' } : undefined}>
+    <div className={cardClassName} style={editMode ? { animation: 'wiggle 1.5s ease-in-out infinite' } : undefined}>
       {/* Remove button — only in edit mode */}
       {editMode && removable !== false && onRemove && (
         <button className={styles.removeBtn} onClick={onRemove} title="위젯 제거"
@@ -42,7 +43,7 @@ export function WidgetCard({ widgetId, type, removable, onRemove, editMode }: Pr
       </div>
     </div>
   );
-}
+});
 
 function FallbackWidget({ type }: { type: string }) {
   return (

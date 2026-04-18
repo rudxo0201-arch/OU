@@ -1,19 +1,18 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
 import { useChatStore } from '@/stores/chatStore';
 
 export function OuViewWidget() {
   const [input, setInput] = useState('');
-  const router = useRouter();
 
   const openOrb = useCallback((text?: string) => {
     if (text) {
       useChatStore.getState().setPendingMessage(text);
     }
-    router.push('/chat');
-  }, [router]);
+    // 커스텀 이벤트로 /my에 알림 → OrbFullscreen 열기
+    window.dispatchEvent(new CustomEvent('orb-expand'));
+  }, []);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
