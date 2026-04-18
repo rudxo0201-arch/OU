@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OU — OWN UNIVERSE</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #060810;
+  --border: rgba(255,255,255,0.10);
+  --glow-subtle: rgba(255,255,255,0.06);
+  --glow-mid: rgba(255,255,255,0.10);
+  --glow-strong: rgba(255,255,255,0.15);
+  --glass-bg: rgba(255,255,255,0.015);
+  --text-95: rgba(255,255,255,0.95);
+  --text-80: rgba(255,255,255,0.80);
+  --text-60: rgba(255,255,255,0.60);
+  --text-40: rgba(255,255,255,0.40);
+  --text-25: rgba(255,255,255,0.25);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text-95);
+  font-family: 'Pretendard Variable', Pretendard, -apple-system, sans-serif;
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+/* Stars */
+.stars-container { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+.star {
+  position: absolute;
+  width: 2px; height: 2px;
+  background: white;
+  border-radius: 50%;
+  animation: twinkle var(--dur) ease-in-out infinite;
+  opacity: 0;
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0.05; }
+  50% { opacity: var(--peak, 0.6); }
+}
+
+/* Nav */
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 32px;
+  backdrop-filter: blur(16px);
+  background: rgba(6,8,16,0.6);
+  border-bottom: 0.5px solid var(--border);
+}
+.nav-left { display: flex; align-items: center; gap: 10px; }
+.nav-logo {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700; font-size: 22px;
+  color: var(--text-95);
+  letter-spacing: 2px;
+}
+.badge-beta {
+  font-size: 10px; padding: 2px 8px;
+  border: 0.5px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-40);
+  font-weight: 500;
+}
+.nav-right { display: flex; gap: 10px; }
+.btn-login {
+  padding: 8px 20px; border-radius: 999px;
+  border: 0.5px solid var(--border);
+  background: transparent; color: var(--text-80);
+  font-size: 14px; cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+.btn-login:hover { border-color: rgba(255,255,255,0.3); }
+.btn-signup {
+  padding: 8px 20px; border-radius: 999px;
+  border: none; background: white; color: #060810;
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  font-family: inherit;
+  transition: opacity 0.2s;
+}
+.btn-signup:hover { opacity: 0.9; }
+
+/* Hero */
+#hero {
+  position: relative;
+  width: 100%; height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+#hero canvas {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+}
+.hero-overlay {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: none;
+}
+.hero-content {
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; height: 100%;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+.hero-content.visible { opacity: 1; }
+.hero-right {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 12px;
+}
+.hero-logo {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 900; font-size: 72px;
+  color: var(--text-95);
+  letter-spacing: 6px;
+}
+.hero-subtitle {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 14px; letter-spacing: 8px;
+  color: var(--text-40);
+  font-weight: 400;
+}
+.hero-tagline {
+  position: absolute;
+  bottom: 120px;
+  text-align: center;
+  font-size: 22px;
+  color: var(--text-60);
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+.hero-tagline.visible { opacity: 1; }
+.hero-arrow {
+  position: absolute;
+  bottom: 40px;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+  cursor: pointer;
+  pointer-events: auto;
+}
+.hero-arrow.visible { opacity: 1; }
+.hero-arrow i {
+  font-size: 32px;
+  color: var(--text-40);
+  animation: bounce 2s ease-in-out infinite;
+}
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+
+/* Sections */
+.section {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  padding: 80px 40px;
+}
+.section-inner {
+  max-width: 1100px; width: 100%;
+  display: flex; gap: 60px; align-items: flex-start;
+}
+.section-half { flex: 1; min-width: 0; }
+
+.section-title {
+  font-size: 32px; font-weight: 700;
+  margin-bottom: 40px;
+  color: var(--text-95);
+  text-align: center;
+  width: 100%;
+}
+.section-title-left {
+  text-align: left;
+}
+
+/* Glass card */
+.glass-card {
+  backdrop-filter: blur(16px);
+  background: var(--glass-bg);
+  border: 0.5px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px var(--glow-subtle);
+}
+
+/* Scattered apps */
+.scattered-apps {
+  position: relative;
+  height: 400px;
+  opacity: 0.4;
+}
+.app-card {
+  position: absolute;
+  width: 180px;
+  padding: 16px;
+  backdrop-filter: blur(16px);
+  background: var(--glass-bg);
+  border: 0.5px solid var(--border);
+  border-radius: 16px;
+}
+.app-card-header {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 12px;
+  font-size: 13px; color: var(--text-60);
+  font-weight: 500;
+}
+.app-card-header i { font-size: 18px; color: var(--text-40); }
+.skeleton-line {
+  height: 8px; border-radius: 4px;
+  background: rgba(255,255,255,0.06);
+  margin-bottom: 6px;
+}
+.skeleton-line:last-child { width: 60%; }
+.app-card:nth-child(1) { top: 20px; left: 10px; transform: rotate(-4deg); }
+.app-card:nth-child(2) { top: 60px; left: 140px; transform: rotate(3deg); }
+.app-card:nth-child(3) { top: 160px; left: 30px; transform: rotate(-2deg); }
+.app-card:nth-child(4) { top: 200px; left: 180px; transform: rotate(5deg); }
+.app-card:nth-child(5) { top: 300px; left: 80px; transform: rotate(-3deg); }
+
+/* Chat demo */
+.chat-demo {
+  display: flex; flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+  max-height: 500px;
+  overflow: hidden;
+}
+.chat-msg {
+  display: flex;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.chat-msg.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.chat-msg.user { justify-content: flex-end; }
+.chat-msg.assistant { justify-content: flex-start; }
+
+.chat-bubble-user {
+  background: rgba(255,255,255,0.04);
+  border: 0.5px solid var(--border);
+  border-radius: 20px 20px 4px 20px;
+  padding: 12px 18px;
+  font-size: 14px;
+  color: var(--text-80);
+  max-width: 280px;
+  box-shadow: 0 2px 12px var(--glow-subtle);
+}
+.chat-bubble-assistant {
+  border-left: 1.5px solid rgba(255,255,255,0.15);
+  padding: 8px 16px;
+  font-size: 14px;
+  color: var(--text-60);
+  max-width: 320px;
+}
+.chat-bubble-assistant .typing-cursor {
+  display: inline-block;
+  width: 2px; height: 14px;
+  background: var(--text-40);
+  margin-left: 2px;
+  animation: blink-cursor 0.6s step-end infinite;
+  vertical-align: text-bottom;
+}
+@keyframes blink-cursor {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Inline views */
+.inline-view {
+  margin-top: 8px;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.inline-view.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Knowledge card */
+.knowledge-card {
+  backdrop-filter: blur(16px);
+  background: var(--glass-bg);
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  width: 280px;
+}
+.knowledge-card-title {
+  font-size: 11px;
+  color: var(--text-25);
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+.knowledge-hierarchy {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.knowledge-level {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.knowledge-node {
+  padding: 6px 12px;
+  border: 0.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--text-80);
+  background: rgba(255,255,255,0.03);
+}
+.knowledge-node.primary {
+  border-color: rgba(255,255,255,0.2);
+  color: var(--text-95);
+  box-shadow: 0 0 8px var(--glow-subtle);
+}
+.knowledge-arrow {
+  font-size: 14px;
+  color: var(--text-25);
+}
+.knowledge-connector {
+  width: 20px;
+  height: 1px;
+  background: rgba(255,255,255,0.08);
+  flex-shrink: 0;
+}
+
+/* Section 2 tabs */
+.tab-container {
+  backdrop-filter: blur(16px);
+  background: var(--glass-bg);
+  border: 0.5px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.tab-header {
+  display: flex; border-bottom: 0.5px solid var(--border);
+}
+.tab-btn {
+  flex: 1;
+  padding: 12px 16px;
+  background: none; border: none;
+  color: var(--text-40);
+  font-size: 13px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: color 0.2s, box-shadow 0.2s;
+  border-bottom: 1.5px solid transparent;
+}
+.tab-btn.active {
+  color: var(--text-95);
+  border-bottom-color: rgba(255,255,255,0.3);
+  box-shadow: 0 2px 8px var(--glow-subtle);
+}
+.tab-content {
+  padding: 20px;
+  min-height: 200px;
+}
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* Book gallery */
+.book-gallery {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+.book-card {
+  backdrop-filter: blur(16px);
+  background: rgba(255,255,255,0.03);
+  border: 0.5px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.book-card-title {
+  font-size: 13px;
+  color: var(--text-80);
+  font-weight: 600;
+}
+.book-card-author {
+  font-size: 11px;
+  color: var(--text-40);
+}
+.book-card-tag {
+  display: inline-block;
+  font-size: 10px;
+  color: var(--text-25);
+  border: 0.5px solid rgba(255,255,255,0.06);
+  border-radius: 4px;
+  padding: 2px 6px;
+  margin-top: 4px;
+  width: fit-content;
+}
+
+/* Relationship graph (SVG) */
+.relationship-graph { width: 100%; height: 220px; }
+
+/* Memo table */
+.memo-table {
+  width: 100%;
+  font-size: 12px;
+  border-collapse: collapse;
+}
+.memo-table th {
+  text-align: left;
+  color: var(--text-25);
+  padding: 6px 8px;
+  border-bottom: 0.5px solid var(--border);
+  font-weight: 500;
+}
+.memo-table td {
+  padding: 8px;
+  color: var(--text-60);
+  border-bottom: 0.5px solid rgba(255,255,255,0.03);
+}
+
+/* Section 3 full width */
+.section-full {
+  max-width: 800px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Knowledge graph (section 3) */
+.knowledge-graph-container {
+  backdrop-filter: blur(16px);
+  background: var(--glass-bg);
+  border: 0.5px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  margin-top: 20px;
+}
+.knowledge-graph-svg {
+  width: 100%;
+  height: 340px;
+}
+.knowledge-graph-caption {
+  text-align: center;
+  font-size: 15px;
+  color: var(--text-40);
+  margin-top: 20px;
+}
+
+/* Mic hint */
+.mic-hint {
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px;
+  margin-top: 32px;
+  color: var(--text-25);
+  font-size: 13px;
+}
+.mic-hint i { font-size: 18px; }
+
+/* CTA */
+.cta-section {
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 120px 40px;
+  gap: 32px;
+}
+.cta-logo {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 900; font-size: 56px;
+  color: var(--text-95);
+  letter-spacing: 4px;
+}
+.btn-cta {
+  padding: 14px 40px;
+  border-radius: 999px;
+  border: none;
+  background: white;
+  color: #060810;
+  font-size: 16px; font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow: 0 0 30px var(--glow-mid);
+  transition: box-shadow 0.3s, transform 0.2s;
+}
+.btn-cta:hover {
+  box-shadow: 0 0 50px var(--glow-strong);
+  transform: scale(1.02);
+}
+
+/* Footer */
+footer {
+  position: relative; z-index: 1;
+  text-align: center;
+  padding: 40px 20px 60px;
+  font-size: 12px;
+  color: var(--text-25);
+  letter-spacing: 2px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  nav { padding: 12px 16px; }
+  .nav-logo { font-size: 18px; }
+  .section { padding: 60px 20px; }
+  .section-inner { flex-direction: column; gap: 40px; }
+  .hero-logo { font-size: 48px; }
+  .hero-subtitle { font-size: 11px; letter-spacing: 5px; }
+  .hero-tagline { font-size: 18px; bottom: 100px; padding: 0 20px; }
+  .section-title { font-size: 24px; }
+  .scattered-apps { height: 340px; }
+  .app-card { width: 150px; padding: 12px; }
+  .app-card:nth-child(2) { left: 100px; }
+  .app-card:nth-child(4) { left: 120px; }
+  .book-gallery { grid-template-columns: 1fr; }
+  .knowledge-card { width: 100%; }
+  .cta-logo { font-size: 40px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Stars -->
+<div class="stars-container" id="stars"></div>
+
+<!-- Nav -->
+<nav>
+  <div class="nav-left">
+    <span class="nav-logo">OU</span>
+    <span class="badge-beta">Beta</span>
+  </div>
+  <div class="nav-right">
+    <button class="btn-login">Log in</button>
+    <button class="btn-signup">Sign up</button>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section id="hero">
+  <canvas id="heroCanvas"></canvas>
+  <div class="hero-overlay">
+    <div class="hero-content" id="heroContent">
+      <div class="hero-right">
+        <div class="hero-logo">OU</div>
+        <div class="hero-subtitle">OWN UNIVERSE</div>
+      </div>
+    </div>
+    <div class="hero-tagline" id="heroTagline1">나만의 우주를 만드세요</div>
+    <div class="hero-tagline" id="heroTagline2" style="display:none;">이 우주는 이런 것들을 가능하게 해요</div>
+    <div class="hero-arrow" id="heroArrow">
+      <a href="#section1" style="text-decoration:none;">
+        <i class="ph ph-caret-down"></i>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Section 1: 읽은 책이 어딘가에 묻혀요 -->
+<section class="section" id="section1">
+  <div>
+    <h2 class="section-title">"<i class="ph ph-books" style="vertical-align:middle;margin-right:4px;"></i> 읽은 책이 어딘가에 묻혀요"</h2>
+    <div class="section-inner">
+      <div class="section-half">
+        <div class="scattered-apps">
+          <div class="app-card">
+            <div class="app-card-header"><i class="ph ph-books"></i> 독서노트</div>
+            <div class="skeleton-line" style="width:90%"></div>
+            <div class="skeleton-line" style="width:60%"></div>
+          </div>
+          <div class="app-card">
+            <div class="app-card-header"><i class="ph ph-highlighter"></i> 밑줄앱</div>
+            <div class="skeleton-line" style="width:80%"></div>
+            <div class="skeleton-line" style="width:50%"></div>
+          </div>
+          <div class="app-card">
+            <div class="app-card-header"><i class="ph ph-article"></i> 블로그</div>
+            <div class="skeleton-line" style="width:85%"></div>
+            <div class="skeleton-line" style="width:45%"></div>
+          </div>
+          <div class="app-card">
+            <div class="app-card-header"><i class="ph ph-notepad"></i> 메모장</div>
+            <div class="skeleton-line" style="width:75%"></div>
+            <div class="skeleton-line" style="width:55%"></div>
+          </div>
+          <div class="app-card">
+            <div class="app-card-header"><i class="ph ph-book-open-text"></i> 리디북스</div>
+            <div class="skeleton-line" style="width:70%"></div>
+            <div class="skeleton-line" style="width:40%"></div>
+          </div>
+        </div>
+      </div>
+      <div class="section-half">
+        <div class="glass-card chat-demo" id="chat1">
+          <!-- Messages injected by JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 2: 읽은 책이 서로 연결돼요 -->
+<section class="section" id="section2">
+  <div>
+    <h2 class="section-title">"<i class="ph ph-sparkle" style="vertical-align:middle;margin-right:4px;"></i> 읽은 책이 서로 연결돼요"</h2>
+    <div class="section-inner">
+      <div class="section-half">
+        <div class="glass-card chat-demo" id="chat2">
+          <!-- Messages injected by JS -->
+        </div>
+      </div>
+      <div class="section-half">
+        <div class="tab-container" id="viewTabs">
+          <div class="tab-header">
+            <button class="tab-btn active" data-tab="bookshelf"><i class="ph ph-books"></i> 책장</button>
+            <button class="tab-btn" data-tab="connections"><i class="ph ph-graph"></i> 연결</button>
+            <button class="tab-btn" data-tab="memos"><i class="ph ph-note"></i> 메모</button>
+          </div>
+          <div class="tab-content">
+            <div class="tab-panel active" id="tab-bookshelf">
+              <div class="book-gallery">
+                <div class="book-card">
+                  <div class="book-card-title">사피엔스</div>
+                  <div class="book-card-author">유발 하라리</div>
+                  <div class="book-card-tag">인지혁명</div>
+                </div>
+                <div class="book-card">
+                  <div class="book-card-title">총, 균, 쇠</div>
+                  <div class="book-card-author">재레드 다이아몬드</div>
+                  <div class="book-card-tag">지리적 결정론</div>
+                </div>
+                <div class="book-card">
+                  <div class="book-card-title">이기적 유전자</div>
+                  <div class="book-card-author">리처드 도킨스</div>
+                  <div class="book-card-tag">진화</div>
+                </div>
+                <div class="book-card">
+                  <div class="book-card-title">생각에 관한 생각</div>
+                  <div class="book-card-author">대니얼 카너먼</div>
+                  <div class="book-card-tag">인지편향</div>
+                </div>
+              </div>
+            </div>
+            <div class="tab-panel" id="tab-connections">
+              <svg class="relationship-graph" viewBox="0 0 340 220">
+                <!-- Edges -->
+                <line x1="80" y1="60" x2="250" y2="50" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+                <line x1="80" y1="60" x2="170" y2="110" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+                <line x1="250" y1="50" x2="170" y2="110" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+                <line x1="80" y1="60" x2="60" y2="170" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+                <line x1="250" y1="50" x2="280" y2="170" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+                <line x1="60" y1="170" x2="170" y2="110" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+                <line x1="280" y1="170" x2="170" y2="110" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+                <!-- Book nodes (larger) -->
+                <circle cx="80" cy="60" r="22" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/>
+                <text x="80" y="64" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="9" font-family="Pretendard Variable">사피엔스</text>
+                <circle cx="250" cy="50" r="22" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/>
+                <text x="250" y="54" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="9" font-family="Pretendard Variable">총, 균, 쇠</text>
+                <circle cx="60" cy="170" r="20" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+                <text x="60" y="174" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="8" font-family="Pretendard Variable">이기적</text>
+                <text x="60" y="184" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="8" font-family="Pretendard Variable">유전자</text>
+                <circle cx="280" cy="170" r="20" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+                <text x="280" y="168" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="8" font-family="Pretendard Variable">생각에</text>
+                <text x="280" y="178" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="8" font-family="Pretendard Variable">관한 생각</text>
+                <!-- Concept nodes (smaller) -->
+                <circle cx="170" cy="110" r="14" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+                <text x="170" y="114" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="8" font-family="Pretendard Variable">인지혁명</text>
+                <!-- Edge labels -->
+                <text x="160" y="78" text-anchor="middle" fill="rgba(255,255,255,0.2)" font-size="7" font-family="Pretendard Variable">문명 발전</text>
+                <text x="120" y="92" text-anchor="middle" fill="rgba(255,255,255,0.2)" font-size="7" font-family="Pretendard Variable">허구의 힘</text>
+                <text x="215" y="85" text-anchor="middle" fill="rgba(255,255,255,0.2)" font-size="7" font-family="Pretendard Variable">지리적 결정론</text>
+                <text x="60" y="120" text-anchor="middle" fill="rgba(255,255,255,0.2)" font-size="7" font-family="Pretendard Variable">진화</text>
+                <text x="272" y="118" text-anchor="middle" fill="rgba(255,255,255,0.2)" font-size="7" font-family="Pretendard Variable">인지편향</text>
+              </svg>
+            </div>
+            <div class="tab-panel" id="tab-memos">
+              <table class="memo-table">
+                <thead><tr><th>책</th><th>챕터</th><th>메모</th><th>날짜</th></tr></thead>
+                <tbody>
+                  <tr><td>사피엔스</td><td>3장</td><td>인지혁명 핵심 = 허구를 믿는 능력</td><td>4/17</td></tr>
+                  <tr><td>총, 균, 쇠</td><td>1장</td><td>환경이 문명 발전 속도를 결정</td><td>4/15</td></tr>
+                  <tr><td>이기적 유전자</td><td>2장</td><td>이타적 행동도 유전자 전략</td><td>4/12</td></tr>
+                  <tr><td>생각에 관한 생각</td><td>5장</td><td>시스템 1은 자동, 시스템 2는 느림</td><td>4/10</td></tr>
+                  <tr><td>사피엔스</td><td>5장</td><td>농업혁명은 역사 최대의 사기</td><td>4/8</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 3: 메모가 쌓이는 게 아니라 연결돼요 -->
+<section class="section" id="section3">
+  <div>
+    <h2 class="section-title">"<i class="ph ph-graph" style="vertical-align:middle;margin-right:4px;"></i> 메모가 쌓이는 게 아니라 연결돼요"</h2>
+    <div class="section-full">
+      <div class="knowledge-graph-container">
+        <svg class="knowledge-graph-svg" viewBox="0 0 700 340">
+          <!-- Edges between books and concepts -->
+          <!-- 사피엔스 edges -->
+          <line x1="140" y1="80" x2="320" y2="140" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+          <line x1="140" y1="80" x2="240" y2="210" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+          <line x1="140" y1="80" x2="420" y2="80" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+          <!-- 총균쇠 edges -->
+          <line x1="350" y1="50" x2="320" y2="140" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+          <line x1="350" y1="50" x2="490" y2="130" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+          <line x1="350" y1="50" x2="420" y2="80" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+          <!-- 이기적 유전자 edges -->
+          <line x1="120" y1="230" x2="240" y2="210" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+          <line x1="120" y1="230" x2="320" y2="140" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+          <line x1="120" y1="230" x2="240" y2="290" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+          <!-- 생각에 관한 생각 edges -->
+          <line x1="560" y1="60" x2="490" y2="130" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+          <line x1="560" y1="60" x2="420" y2="80" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+          <!-- 호모 데우스 edges -->
+          <line x1="540" y1="230" x2="490" y2="130" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+          <line x1="540" y1="230" x2="420" y2="80" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+          <line x1="540" y1="230" x2="320" y2="140" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+          <!-- 21세기를 위한 21가지 제언 edges -->
+          <line x1="320" y1="290" x2="320" y2="140" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+          <line x1="320" y1="290" x2="240" y2="210" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+          <line x1="320" y1="290" x2="490" y2="130" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+          <!-- Concept-concept edges -->
+          <line x1="320" y1="140" x2="420" y2="80" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+          <line x1="320" y1="140" x2="490" y2="130" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+          <line x1="240" y1="210" x2="320" y2="140" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+          <line x1="240" y1="290" x2="240" y2="210" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+
+          <!-- Book nodes (larger, brighter) -->
+          <circle cx="140" cy="80" r="28" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.22)" stroke-width="0.8"/>
+          <text x="140" y="84" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-size="10" font-family="Pretendard Variable" font-weight="600">사피엔스</text>
+
+          <circle cx="350" cy="50" r="26" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.22)" stroke-width="0.8"/>
+          <text x="350" y="54" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-size="10" font-family="Pretendard Variable" font-weight="600">총, 균, 쇠</text>
+
+          <circle cx="120" cy="230" r="24" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.18)" stroke-width="0.8"/>
+          <text x="120" y="228" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="9" font-family="Pretendard Variable" font-weight="600">이기적</text>
+          <text x="120" y="240" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="9" font-family="Pretendard Variable" font-weight="600">유전자</text>
+
+          <circle cx="560" cy="60" r="24" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.18)" stroke-width="0.8"/>
+          <text x="560" y="56" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="8" font-family="Pretendard Variable" font-weight="600">생각에</text>
+          <text x="560" y="68" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="8" font-family="Pretendard Variable" font-weight="600">관한 생각</text>
+
+          <circle cx="540" cy="230" r="24" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.18)" stroke-width="0.8"/>
+          <text x="540" y="228" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="9" font-family="Pretendard Variable" font-weight="600">호모</text>
+          <text x="540" y="240" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="9" font-family="Pretendard Variable" font-weight="600">데우스</text>
+
+          <circle cx="320" cy="290" r="22" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.15)" stroke-width="0.8"/>
+          <text x="320" y="286" text-anchor="middle" fill="rgba(255,255,255,0.75)" font-size="7" font-family="Pretendard Variable" font-weight="600">21세기를</text>
+          <text x="320" y="298" text-anchor="middle" fill="rgba(255,255,255,0.75)" font-size="7" font-family="Pretendard Variable" font-weight="600">위한 21가지</text>
+
+          <!-- Concept nodes (smaller) -->
+          <circle cx="320" cy="140" r="16" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+          <text x="320" y="144" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="8" font-family="Pretendard Variable">인지혁명</text>
+
+          <circle cx="420" cy="80" r="14" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+          <text x="420" y="76" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="7" font-family="Pretendard Variable">문명의</text>
+          <text x="420" y="86" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="7" font-family="Pretendard Variable">방향</text>
+
+          <circle cx="490" cy="130" r="15" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+          <text x="490" y="128" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="7" font-family="Pretendard Variable">환경과</text>
+          <text x="490" y="138" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="7" font-family="Pretendard Variable">결정론</text>
+
+          <circle cx="240" cy="210" r="14" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+          <text x="240" y="214" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="8" font-family="Pretendard Variable">진화</text>
+
+          <circle cx="240" cy="290" r="13" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.10)" stroke-width="0.5"/>
+          <text x="240" y="294" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-size="7" font-family="Pretendard Variable">이타주의</text>
+        </svg>
+      </div>
+      <div class="knowledge-graph-caption">읽을수록 내 지식 우주가 커져요</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-logo">OU</div>
+  <button class="btn-cta">시작하기</button>
+</section>
+
+<!-- Footer -->
+<footer>OU &mdash; OWN UNIVERSE</footer>
+
+<script>
+// ============ STARS ============
+(function() {
+  const container = document.getElementById('stars');
+  for (let i = 0; i < 120; i++) {
+    const star = document.createElement('span');
+    star.className = 'star';
+    star.style.left = Math.random() * 100 + '%';
+    star.style.top = Math.random() * 100 + '%';
+    star.style.setProperty('--dur', (3 + Math.random() * 5) + 's');
+    star.style.setProperty('--peak', (0.2 + Math.random() * 0.6).toFixed(2));
+    star.style.animationDelay = (Math.random() * 5) + 's';
+    star.style.width = star.style.height = (1 + Math.random() * 1.5) + 'px';
+    container.appendChild(star);
+  }
+})();
+
+// ============ HERO GRAPH ANIMATION ============
+(function() {
+  const canvas = document.getElementById('heroCanvas');
+  const ctx = canvas.getContext('2d');
+  let W, H;
+  function resize() {
+    W = canvas.width = canvas.offsetWidth * devicePixelRatio;
+    H = canvas.height = canvas.offsetHeight * devicePixelRatio;
+    ctx.scale(devicePixelRatio, devicePixelRatio);
+  }
+  resize();
+  window.addEventListener('resize', () => {
+    ctx.setTransform(1,0,0,1,0,0);
+    resize();
+  });
+
+  const cW = () => canvas.offsetWidth;
+  const cH = () => canvas.offsetHeight;
+
+  // Generate sphere nodes (golden angle)
+  const TOTAL = 2000;
+  const allNodes = [];
+  const phi_g = Math.PI * (3 - Math.sqrt(5));
+  for (let i = 0; i < TOTAL; i++) {
+    const y = 1 - (i / (TOTAL - 1)) * 2;
+    const radius = Math.sqrt(1 - y * y);
+    const theta = phi_g * i;
+    const x = Math.cos(theta) * radius;
+    const z = Math.sin(theta) * radius;
+    allNodes.push({
+      sx: x, sy: y, sz: z,
+      opacity: 0.1 + Math.random() * 0.6,
+      size: 0.5 + Math.random() * 1.5
+    });
+  }
+
+  // Generate edges between nearby nodes
+  const edges = [];
+  const MAX_EDGES = 3000;
+  for (let i = 0; i < TOTAL && edges.length < MAX_EDGES; i++) {
+    for (let j = i + 1; j < TOTAL && edges.length < MAX_EDGES; j++) {
+      const dx = allNodes[i].sx - allNodes[j].sx;
+      const dy = allNodes[i].sy - allNodes[j].sy;
+      const dz = allNodes[i].sz - allNodes[j].sz;
+      const dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
+      if (dist < 0.15) {
+        edges.push([i, j, 0.02 + Math.random() * 0.03]);
+      }
+    }
+  }
+
+  let spawnedCount = 0;
+  let phase = 'spawning';
+  let startTime = null;
+  let zoomLevel = 1;
+  let graphOffsetX = 0;
+  let rotAngle = 0;
+
+  function projectNode(n, cx, cy, scale) {
+    const cosA = Math.cos(rotAngle), sinA = Math.sin(rotAngle);
+    const rx = n.sx * cosA - n.sz * sinA;
+    const rz = n.sx * sinA + n.sz * cosA;
+    const perspective = 2.5 / (2.5 + rz);
+    return {
+      x: cx + rx * scale * perspective,
+      y: cy + n.sy * scale * perspective,
+      p: perspective,
+    };
+  }
+
+  function animate(ts) {
+    if (!startTime) startTime = ts;
+    const elapsed = (ts - startTime) / 1000;
+    ctx.setTransform(1,0,0,1,0,0);
+    ctx.clearRect(0, 0, cW(), cH());
+
+    rotAngle = elapsed * 0.05;
+
+    // Spawning phases
+    if (phase === 'spawning') {
+      if (elapsed < 3) {
+        spawnedCount = Math.min(20, Math.floor(elapsed / 3 * 20));
+      } else if (elapsed < 5) {
+        spawnedCount = 20 + Math.min(200, Math.floor((elapsed - 3) / 2 * 200));
+      } else if (elapsed < 6) {
+        spawnedCount = 220 + Math.min(TOTAL - 220, Math.floor((elapsed - 5) / 1 * (TOTAL - 220)));
+      } else {
+        spawnedCount = TOTAL;
+        phase = 'zoomout';
+      }
+    }
+
+    // Zoom out
+    let targetScale;
+    if (phase === 'spawning') {
+      const visRatio = spawnedCount / TOTAL;
+      zoomLevel = 1 + visRatio * 2;
+      targetScale = Math.min(cW(), cH()) * 0.12 * zoomLevel;
+    } else {
+      if (elapsed < 8) {
+        const t = (elapsed - 6) / 2;
+        zoomLevel = 3 - t * 1.5;
+        targetScale = Math.min(cW(), cH()) * 0.12 * zoomLevel;
+      } else {
+        zoomLevel = 1.5;
+        targetScale = Math.min(cW(), cH()) * 0.12 * zoomLevel;
+        if (phase === 'zoomout') phase = 'slidelogo';
+      }
+    }
+
+    // Slide graph left + show logo
+    let cx = cW() / 2;
+    if (phase === 'slidelogo' || phase === 'tagline1' || phase === 'tagline2' || phase === 'arrow') {
+      const slideT = Math.min(1, (elapsed - 8) / 1.5);
+      const ease = slideT * (2 - slideT);
+      graphOffsetX = -cW() * 0.18 * ease;
+      cx += graphOffsetX;
+
+      if (slideT >= 1 && phase === 'slidelogo') {
+        document.getElementById('heroContent').classList.add('visible');
+        document.querySelector('.hero-right').style.transform = 'translateX(' + (cW() * 0.22) + 'px)';
+        setTimeout(() => { phase = 'tagline1'; }, 800);
+      }
+    }
+
+    if (phase === 'tagline1') {
+      document.getElementById('heroTagline1').classList.add('visible');
+      setTimeout(() => {
+        document.getElementById('heroTagline1').style.display = 'none';
+        document.getElementById('heroTagline2').style.display = '';
+        setTimeout(() => {
+          document.getElementById('heroTagline2').classList.add('visible');
+          phase = 'tagline2';
+        }, 100);
+      }, 2500);
+      phase = 'waitTagline';
+    }
+
+    if (phase === 'tagline2') {
+      setTimeout(() => {
+        document.getElementById('heroTagline2').style.display = 'none';
+        document.getElementById('heroArrow').classList.add('visible');
+        phase = 'arrow';
+      }, 2500);
+      phase = 'waitArrow';
+    }
+
+    const cy = cH() / 2;
+    const scale = targetScale;
+
+    // Draw edges
+    const count = Math.min(spawnedCount, TOTAL);
+    for (let e = 0; e < edges.length; e++) {
+      if (edges[e][0] >= count || edges[e][1] >= count) continue;
+      const a = projectNode(allNodes[edges[e][0]], cx, cy, scale);
+      const b = projectNode(allNodes[edges[e][1]], cx, cy, scale);
+      ctx.beginPath();
+      ctx.moveTo(a.x, a.y);
+      ctx.lineTo(b.x, b.y);
+      ctx.strokeStyle = 'rgba(255,255,255,' + (edges[e][2] * Math.min(a.p, b.p)) + ')';
+      ctx.lineWidth = 0.5;
+      ctx.stroke();
+    }
+
+    // Draw nodes
+    for (let i = 0; i < count; i++) {
+      const p = projectNode(allNodes[i], cx, cy, scale);
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, allNodes[i].size * p.p, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255,255,255,' + (allNodes[i].opacity * p.p * 0.8) + ')';
+      ctx.fill();
+    }
+
+    requestAnimationFrame(animate);
+  }
+  requestAnimationFrame(animate);
+})();
+
+// ============ TABS ============
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const parent = btn.closest('.tab-container');
+    parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    parent.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+// ============ CHAT DEMOS ============
+const chatScripts = {
+  chat1: [
+    { role: 'user', text: "'사피엔스' 3장 읽었는데, 인지혁명 핵심은 허구를 믿는 능력이래" },
+    { role: 'assistant', text: '사피엔스 3장, 인지혁명의 핵심 기록했어요.', afterView: 'knowledgeCard' },
+    { role: 'user', text: "예전에 읽은 '총균쇠'에서도 비슷한 얘기 나왔는데" },
+    { role: 'assistant', text: '총균쇠와 사피엔스의 연결점을 기록했어요.' },
+  ],
+  chat2: [
+    { role: 'user', text: '올해 읽은 책 보여줘' },
+    { role: 'assistant', text: '올해 읽으신 책을 보여드릴게요.' },
+    { role: 'user', text: '읽은 책들 사이에 공통점 있어?' },
+    { role: 'assistant', text: '책들 사이의 연결을 보여드릴게요.' },
+  ],
+  chat3: []
+};
+
+function createInlineView(type) {
+  const wrap = document.createElement('div');
+  wrap.className = 'inline-view';
+
+  if (type === 'knowledgeCard') {
+    const card = document.createElement('div');
+    card.className = 'knowledge-card';
+    card.innerHTML = `
+      <div class="knowledge-card-title">독서 기록</div>
+      <div class="knowledge-hierarchy">
+        <div class="knowledge-level">
+          <div class="knowledge-node primary">사피엔스</div>
+          <div class="knowledge-connector"></div>
+          <div class="knowledge-node">3장</div>
+        </div>
+        <div class="knowledge-level" style="padding-left:20px;">
+          <div class="knowledge-arrow"><i class="ph ph-arrow-bend-down-right" style="font-size:12px;"></i></div>
+          <div class="knowledge-node">인지혁명</div>
+          <div class="knowledge-connector"></div>
+          <div class="knowledge-node">허구를 믿는 능력</div>
+        </div>
+      </div>`;
+    wrap.appendChild(card);
+  }
+
+  return wrap;
+}
+
+function createChatBubble(msg) {
+  const div = document.createElement('div');
+  div.className = 'chat-msg ' + msg.role;
+  const bubble = document.createElement('div');
+  bubble.className = msg.role === 'user' ? 'chat-bubble-user' : 'chat-bubble-assistant';
+  div.appendChild(bubble);
+  return { div, bubble };
+}
+
+function typeText(bubble, text, speed) {
+  return new Promise(resolve => {
+    let i = 0;
+    const cursor = document.createElement('span');
+    cursor.className = 'typing-cursor';
+    bubble.appendChild(cursor);
+    const interval = setInterval(() => {
+      if (i < text.length) {
+        bubble.insertBefore(document.createTextNode(text[i]), cursor);
+        i++;
+      } else {
+        clearInterval(interval);
+        cursor.remove();
+        resolve();
+      }
+    }, speed);
+  });
+}
+
+async function playChat(containerId) {
+  const container = document.getElementById(containerId);
+  if (container.dataset.played) return;
+  container.dataset.played = 'true';
+  const script = chatScripts[containerId];
+
+  for (const msg of script) {
+    const { div, bubble } = createChatBubble(msg);
+    container.appendChild(div);
+
+    // Trigger visibility
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => { div.classList.add('visible'); });
+    });
+
+    if (msg.role === 'user') {
+      bubble.textContent = msg.text;
+      await new Promise(r => setTimeout(r, 800));
+    } else {
+      await new Promise(r => setTimeout(r, 400));
+      await typeText(bubble, msg.text, 30);
+
+      if (msg.afterView) {
+        const view = createInlineView(msg.afterView);
+        const viewMsg = document.createElement('div');
+        viewMsg.className = 'chat-msg assistant';
+        viewMsg.appendChild(view);
+        container.appendChild(viewMsg);
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            viewMsg.classList.add('visible');
+            view.classList.add('visible');
+          });
+        });
+        await new Promise(r => setTimeout(r, 600));
+      }
+
+      await new Promise(r => setTimeout(r, 500));
+    }
+  }
+}
+
+// ============ INTERSECTION OBSERVER ============
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      if (id === 'chat1' || id === 'chat2' || id === 'chat3') {
+        playChat(id);
+      }
+    }
+  });
+}, { threshold: 0.3 });
+
+document.querySelectorAll('.chat-demo').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

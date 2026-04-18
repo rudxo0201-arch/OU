@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OU — OWN UNIVERSE</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #060810;
+  --border: rgba(255,255,255,0.10);
+  --glow-subtle: rgba(255,255,255,0.06);
+  --glow-mid: rgba(255,255,255,0.10);
+  --glow-strong: rgba(255,255,255,0.15);
+  --glass-bg: rgba(255,255,255,0.015);
+  --text-95: rgba(255,255,255,0.95);
+  --text-80: rgba(255,255,255,0.80);
+  --text-60: rgba(255,255,255,0.60);
+  --text-40: rgba(255,255,255,0.40);
+  --text-25: rgba(255,255,255,0.25);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text-95);
+  font-family: 'Pretendard Variable', Pretendard, -apple-system, sans-serif;
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+/* Stars */
+.stars-container { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+.star {
+  position: absolute;
+  width: 2px; height: 2px;
+  background: white;
+  border-radius: 50%;
+  animation: twinkle var(--dur) ease-in-out infinite;
+  opacity: 0;
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0.05; }
+  50% { opacity: var(--peak, 0.6); }
+}
+
+/* Nav */
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 32px;
+  backdrop-filter: blur(16px);
+  background: rgba(6,8,16,0.6);
+  border-bottom: 0.5px solid var(--border);
+}
+.nav-left { display: flex; align-items: center; gap: 10px; }
+.nav-logo {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700; font-size: 22px;
+  color: var(--text-95);
+  letter-spacing: 2px;
+}
+.badge-beta {
+  font-size: 10px; padding: 2px 8px;
+  border: 0.5px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-40);
+  font-weight: 500;
+}
+.nav-right { display: flex; gap: 10px; }
+.btn-login {
+  padding: 8px 20px; border-radius: 999px;
+  border: 0.5px solid var(--border);
+  background: transparent; color: var(--text-80);
+  font-size: 14px; cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+.btn-login:hover { border-color: rgba(255,255,255,0.3); }
+.btn-signup {
+  padding: 8px 20px; border-radius: 999px;
+  border: none; background: white; color: #060810;
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  font-family: inherit;
+  transition: opacity 0.2s;
+}
+.btn-signup:hover { opacity: 0.9; }
+
+/* Hero */
+#hero {
+  position: relative;
+  width: 100%; height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+#hero canvas {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+}
+.hero-overlay {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: none;
+}
+.hero-content {
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; height: 100%;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+.hero-content.visible { opacity: 1; }
+.hero-right {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 12px;
+}
+.hero-logo {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 900; font-size: 72px;
+  color: var(--text-95);
+  letter-spacing: 6px;
+}
+.hero-subtitle {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 14px; letter-spacing: 8px;
+  color: var(--text-40);
+  font-weight: 400;
+}
+.hero-tagline {
+  position: absolute;
+  bottom: 120px;
+  text-align: center;
+  font-size: 22px;
+  color: var(--text-60);
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+.hero-tagline.visible { opacity: 1; }
+.hero-arrow {
+  position: absolute;
+  bottom: 40px;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+  cursor: pointer;
+  pointer-events: auto;
+}
+.hero-arrow.visible { opacity: 1; }
+.hero-arrow i {
+  font-size: 32px;
+  color: var(--text-40);
+  animation: bounce 2s ease-in-out infinite;
+}
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+
+/* Sections */
+.section {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  padding: 80px 40px;
+}
+.section-inner {
+  max-width: 1100px; width: 100%;
+  display: flex; gap: 60px; align-items: flex-start;
+}
+.section-half { flex: 1; min-width: 0; }
+
+.section-title {
+  font-size: 32px; font-weight: 700;
+  margin-bottom: 40px;
+  color: var(--text-95);
+  text-align: center;
+  width: 100%;
+}
+.section-title-left {
+  text-align: left;
+}
+
+/* Glass card */
+.glass-card {
+  backdrop-filter: blur(16px);
+  background: var(--glass-bg);
+  border: 0.5px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px var(--glow-subtle);
+}
+
+/* Scattered apps */
+.scattered-apps {
+  position: relative;
+  height: 400px;
+  opacity: 0.4;
+}
+.app-card {
+  position: absolute;
+  width: 180px;
+  padding: 16px;
+  backdrop-filter: blur(16px);
+  background: var(--glass-bg);
+  border: 0.5px solid var(--border);
+  border-radius: 16px;
+}
+.app-card-header {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 12px;
+  font-size: 13px; color: var(--text-60);
+  font-weight: 500;
+}
+.app-card-header i { font-size: 18px; color: var(--text-40); }
+.skeleton-line {
+  height: 8px; border-radius: 4px;
+  background: rgba(255,255,255,0.06);
+  margin-bottom: 6px;
+}
+.skeleton-line:last-child { width: 60%; }
+.app-card:nth-child(1) { top: 20px; left: 10px; transform: rotate(-4deg); }
+.app-card:nth-child(2) { top: 60px; left: 140px; transform: rotate(3deg); }
+.app-card:nth-child(3) { top: 160px; left: 30px; transform: rotate(-2deg); }
+.app-card:nth-child(4) { top: 200px; left: 180px; transform: rotate(5deg); }
+.app-card:nth-child(5) { top: 300px; left: 80px; transform: rotate(-3deg); }
+
+/* Chat demo */
+.chat-demo {
+  display: flex; flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+  max-height: 500px;
+  overflow: hidden;
+}
+.chat-msg {
+  display: flex;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.chat-msg.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.chat-msg.user { justify-content: flex-end; }
+.chat-msg.assistant { justify-content: flex-start; }
+
+.chat-bubble-user {
+  background: rgba(255,255,255,0.04);
+  border: 0.5px solid var(--border);
+  border-radius: 20px 20px 4px 20px;
+  padding: 12px 18px;
+  font-size: 14px;
+  color: var(--text-80);
+  max-width: 280px;
+  box-shadow: 0 2px 12px var(--glow-subtle);
+}
+.chat-bubble-assistant {
+  border-left: 1.5px solid rgba(255,255,255,0.15);
+  padding: 8px 16px;
+  font-size: 14px;
+  color: var(--text-60);
+  max-width: 320px;
+}
+.chat-bubble-assistant .typing-cursor {
+  display: inline-block;
+  width: 2px; height: 14px;
+  background: var(--text-40);
+  margin-left: 2px;
+  animation: blink-cursor 0.6s step-end infinite;
+  vertical-align: text-bottom;
+}
+@keyframes blink-cursor {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Inline views */
+.inline-view {
+  margin-top: 8px;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.inline-view.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Person card */
+.person-card {
+  backdrop-filter: blur(16px);
+  background: var(--glass-bg);
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  width: 260px;
+}
+.person-card-header {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 10px;
+}
+.person-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  border: 0.5px solid rgba(255,255,255,0.15);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; color: var(--text-60);
+}
+.person-name {
+  font-size: 15px; font-weight: 600;
+  color: var(--text-95);
+}
+.person-relation {
+  font-size: 11px;
+  color: var(--text-40);
+}
+.person-records {
+  font-size: 12px;
+  color: var(--text-40);
+  padding-top: 8px;
+  border-top: 0.5px solid var(--border);
+}
+.person-records i {
+  font-size: 13px;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
+/* Relationship graph */
+.relationship-graph { width: 100%; height: 320px; }
+
+/* Section 3 full width */
+.section-full {
+  max-width: 700px;
+  width: 100%;
+  margin: 0 auto;
+}
+.chat-demo-full {
+  padding: 24px;
+}
+
+/* Timeline */
+.timeline {
+  position: relative;
+  padding: 20px 0 20px 32px;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 14px; top: 0; bottom: 0;
+  width: 1px;
+  background: rgba(255,255,255,0.08);
+}
+.timeline-item {
+  position: relative;
+  margin-bottom: 28px;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.timeline-item.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.timeline-dot {
+  position: absolute;
+  left: -24px; top: 6px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  border: 0.5px solid rgba(255,255,255,0.3);
+  box-shadow: 0 0 8px var(--glow-subtle);
+}
+.timeline-date {
+  font-size: 11px;
+  color: var(--text-25);
+  margin-bottom: 6px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+.timeline-card {
+  backdrop-filter: blur(16px);
+  background: var(--glass-bg);
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 18px;
+}
+.timeline-text {
+  font-size: 14px;
+  color: var(--text-60);
+}
+.timeline-caption {
+  text-align: center;
+  margin-top: 32px;
+  font-size: 16px;
+  color: var(--text-40);
+  font-weight: 500;
+}
+
+/* CTA */
+.cta-section {
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 120px 40px;
+  gap: 32px;
+}
+.cta-logo {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 900; font-size: 56px;
+  color: var(--text-95);
+  letter-spacing: 4px;
+}
+.btn-cta {
+  padding: 14px 40px;
+  border-radius: 999px;
+  border: none;
+  background: white;
+  color: #060810;
+  font-size: 16px; font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow: 0 0 30px var(--glow-mid);
+  transition: box-shadow 0.3s, transform 0.2s;
+}
+.btn-cta:hover {
+  box-shadow: 0 0 50px var(--glow-strong);
+  transform: scale(1.02);
+}
+
+/* Footer */
+footer {
+  position: relative; z-index: 1;
+  text-align: center;
+  padding: 40px 20px 60px;
+  font-size: 12px;
+  color: var(--text-25);
+  letter-spacing: 2px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  nav { padding: 12px 16px; }
+  .nav-logo { font-size: 18px; }
+  .section { padding: 60px 20px; }
+  .section-inner { flex-direction: column; gap: 40px; }
+  .hero-logo { font-size: 48px; }
+  .hero-subtitle { font-size: 11px; letter-spacing: 5px; }
+  .hero-tagline { font-size: 18px; bottom: 100px; padding: 0 20px; }
+  .section-title { font-size: 24px; }
+  .scattered-apps { height: 340px; }
+  .app-card { width: 150px; padding: 12px; }
+  .app-card:nth-child(2) { left: 100px; }
+  .app-card:nth-child(4) { left: 120px; }
+  .person-card { width: 100%; }
+  .cta-logo { font-size: 40px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Stars -->
+<div class="stars-container" id="stars"></div>
+
+<!-- Nav -->
+<nav>
+  <div class="nav-left">
+    <span class="nav-logo">OU</span>
+    <span class="badge-beta">Beta</span>
+  </div>
+  <div class="nav-right">
+    <button class="btn-login">Log in</button>
+    <button class="btn-signup">Sign up</button>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section id="hero">
+  <canvas id="heroCanvas"></canvas>
+  <div class="hero-overlay">
+    <div class="hero-content" id="heroContent">
+      <div class="hero-right">
+        <div class="hero-logo">OU</div>
+        <div class="hero-subtitle">OWN UNIVERSE</div>
+      </div>
+    </div>
+    <div class="hero-tagline" id="heroTagline1">나만의 우주를 만드세요</div>
+    <div class="hero-tagline" id="heroTagline2" style="display:none;">이 우주는 이런 것들을 가능하게 해요</div>
+    <div class="hero-arrow" id="heroArrow">
+      <a href="#section1" style="text-decoration:none;">
+        <i class="ph ph-caret-down"></i>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Section 1 -->
+<section class="section" id="section1">
+  <div>
+    <h2 class="section-title">"<i class="ph ph-user-circle" style="vertical-align:middle;margin-right:4px;"></i> 그 사람 이름은 아는데, 뭐라고 했더라?"</h2>
+    <div class="section-inner">
+      <div class="section-half">
+        <div class="scattered-apps">
+          <div class="app-card">
+            <div class="app-card-header"><i class="ph ph-address-book"></i> 연락처</div>
+            <div class="skeleton-line" style="width:90%"></div>
+            <div class="skeleton-line" style="width:60%"></div>
+          </div>
+          <div class="app-card">
+            <div class="app-card-header"><i class="ph ph-chat-circle"></i> 카톡</div>
+            <div class="skeleton-line" style="width:80%"></div>
+            <div class="skeleton-line" style="width:50%"></div>
+          </div>
+          <div class="app-card">
+            <div class="app-card-header"><i class="ph ph-instagram-logo"></i> 인스타 DM</div>
+            <div class="skeleton-line" style="width:85%"></div>
+            <div class="skeleton-line" style="width:45%"></div>
+          </div>
+          <div class="app-card">
+            <div class="app-card-header"><i class="ph ph-identification-card"></i> 명함</div>
+            <div class="skeleton-line" style="width:75%"></div>
+            <div class="skeleton-line" style="width:55%"></div>
+          </div>
+          <div class="app-card">
+            <div class="app-card-header"><i class="ph ph-notebook"></i> 수첩</div>
+            <div class="skeleton-line" style="width:70%"></div>
+            <div class="skeleton-line" style="width:40%"></div>
+          </div>
+        </div>
+      </div>
+      <div class="section-half">
+        <div class="glass-card chat-demo" id="chat1">
+          <!-- Messages injected by JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 2 -->
+<section class="section" id="section2">
+  <div>
+    <h2 class="section-title">"<i class="ph ph-graph" style="vertical-align:middle;margin-right:4px;"></i> 사람이 기억되는 우주"</h2>
+    <div class="section-inner">
+      <div class="section-half">
+        <div class="glass-card chat-demo" id="chat2">
+          <!-- Messages injected by JS -->
+        </div>
+      </div>
+      <div class="section-half">
+        <div class="glass-card" style="padding:24px;">
+          <svg class="relationship-graph" viewBox="0 0 400 320">
+            <!-- Edges -->
+            <line x1="200" y1="160" x2="90" y2="70" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+            <line x1="200" y1="160" x2="320" y2="80" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+            <line x1="200" y1="160" x2="80" y2="230" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+            <line x1="200" y1="160" x2="330" y2="200" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+            <line x1="200" y1="160" x2="200" y2="280" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+            <!-- Cross edges -->
+            <line x1="90" y1="70" x2="80" y2="230" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+            <line x1="320" y1="80" x2="330" y2="200" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+
+            <!-- Center node: 나 -->
+            <circle cx="200" cy="160" r="24" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.25)" stroke-width="0.5"/>
+            <text x="200" y="164" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="13" font-weight="600" font-family="Pretendard Variable">나</text>
+
+            <!-- 수진 -->
+            <circle cx="90" cy="70" r="18" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+            <text x="90" y="74" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="11" font-family="Pretendard Variable">수진</text>
+
+            <!-- 민준 -->
+            <circle cx="320" cy="80" r="18" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+            <text x="320" y="84" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="11" font-family="Pretendard Variable">민준</text>
+
+            <!-- 서연 -->
+            <circle cx="330" cy="200" r="16" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+            <text x="330" y="204" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="11" font-family="Pretendard Variable">서연</text>
+
+            <!-- 김팀장 -->
+            <circle cx="80" cy="230" r="18" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+            <text x="80" y="234" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="11" font-family="Pretendard Variable">김팀장</text>
+
+            <!-- 희민 -->
+            <circle cx="200" cy="280" r="16" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+            <text x="200" y="284" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="11" font-family="Pretendard Variable">희민</text>
+
+            <!-- Edge labels -->
+            <text x="138" y="105" text-anchor="middle" fill="rgba(255,255,255,0.2)" font-size="9" font-family="Pretendard Variable">친구</text>
+            <text x="265" y="110" text-anchor="middle" fill="rgba(255,255,255,0.2)" font-size="9" font-family="Pretendard Variable">친구</text>
+            <text x="275" y="148" text-anchor="middle" fill="rgba(255,255,255,0.2)" font-size="9" font-family="Pretendard Variable">소개</text>
+            <text x="132" y="205" text-anchor="middle" fill="rgba(255,255,255,0.2)" font-size="9" font-family="Pretendard Variable">동료</text>
+            <text x="208" y="226" text-anchor="middle" fill="rgba(255,255,255,0.2)" font-size="9" font-family="Pretendard Variable">친구</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 3 -->
+<section class="section" id="section3">
+  <div>
+    <h2 class="section-title">"<i class="ph ph-clock-clockwise" style="vertical-align:middle;margin-right:4px;"></i> 3개월 뒤, 수진이 근황"</h2>
+    <div class="section-full">
+      <div class="glass-card" style="padding: 32px 28px;">
+        <div class="timeline" id="timeline1">
+          <div class="timeline-item" data-delay="0">
+            <div class="timeline-dot"></div>
+            <div class="timeline-date">2026년 4월</div>
+            <div class="timeline-card">
+              <div class="timeline-text">이직 고민 중이라고 했어요</div>
+            </div>
+          </div>
+          <div class="timeline-item" data-delay="600">
+            <div class="timeline-dot"></div>
+            <div class="timeline-date">2026년 6월</div>
+            <div class="timeline-card">
+              <div class="timeline-text">새 회사에 입사했다고 연락 왔어요</div>
+            </div>
+          </div>
+          <div class="timeline-item" data-delay="1200">
+            <div class="timeline-dot"></div>
+            <div class="timeline-date">2026년 8월</div>
+            <div class="timeline-card">
+              <div class="timeline-text">적응 잘 하고 있대요</div>
+            </div>
+          </div>
+        </div>
+        <div class="timeline-caption">이름 하나로 모든 맥락이 나와요</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-logo">OU</div>
+  <button class="btn-cta">시작하기</button>
+</section>
+
+<!-- Footer -->
+<footer>OU &mdash; OWN UNIVERSE</footer>
+
+<script>
+// ============ STARS ============
+(function() {
+  const container = document.getElementById('stars');
+  for (let i = 0; i < 120; i++) {
+    const star = document.createElement('span');
+    star.className = 'star';
+    star.style.left = Math.random() * 100 + '%';
+    star.style.top = Math.random() * 100 + '%';
+    star.style.setProperty('--dur', (3 + Math.random() * 5) + 's');
+    star.style.setProperty('--peak', (0.2 + Math.random() * 0.6).toFixed(2));
+    star.style.animationDelay = (Math.random() * 5) + 's';
+    star.style.width = star.style.height = (1 + Math.random() * 1.5) + 'px';
+    container.appendChild(star);
+  }
+})();
+
+// ============ HERO GRAPH ANIMATION ============
+(function() {
+  const canvas = document.getElementById('heroCanvas');
+  const ctx = canvas.getContext('2d');
+  let W, H;
+  function resize() {
+    W = canvas.width = canvas.offsetWidth * devicePixelRatio;
+    H = canvas.height = canvas.offsetHeight * devicePixelRatio;
+    ctx.scale(devicePixelRatio, devicePixelRatio);
+  }
+  resize();
+  window.addEventListener('resize', () => {
+    ctx.setTransform(1,0,0,1,0,0);
+    resize();
+  });
+
+  const cW = () => canvas.offsetWidth;
+  const cH = () => canvas.offsetHeight;
+
+  const TOTAL = 2000;
+  const allNodes = [];
+  const phi_g = Math.PI * (3 - Math.sqrt(5));
+  for (let i = 0; i < TOTAL; i++) {
+    const y = 1 - (i / (TOTAL - 1)) * 2;
+    const radius = Math.sqrt(1 - y * y);
+    const theta = phi_g * i;
+    const x = Math.cos(theta) * radius;
+    const z = Math.sin(theta) * radius;
+    allNodes.push({
+      sx: x, sy: y, sz: z,
+      opacity: 0.1 + Math.random() * 0.6,
+      size: 0.5 + Math.random() * 1.5
+    });
+  }
+
+  const edges = [];
+  const MAX_EDGES = 3000;
+  for (let i = 0; i < TOTAL && edges.length < MAX_EDGES; i++) {
+    for (let j = i + 1; j < TOTAL && edges.length < MAX_EDGES; j++) {
+      const dx = allNodes[i].sx - allNodes[j].sx;
+      const dy = allNodes[i].sy - allNodes[j].sy;
+      const dz = allNodes[i].sz - allNodes[j].sz;
+      const dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
+      if (dist < 0.15) {
+        edges.push([i, j, 0.02 + Math.random() * 0.03]);
+      }
+    }
+  }
+
+  let spawnedCount = 0;
+  let phase = 'spawning';
+  let startTime = null;
+  let zoomLevel = 1;
+  let graphOffsetX = 0;
+  let rotAngle = 0;
+
+  function projectNode(n, cx, cy, scale) {
+    const cosA = Math.cos(rotAngle), sinA = Math.sin(rotAngle);
+    const rx = n.sx * cosA - n.sz * sinA;
+    const rz = n.sx * sinA + n.sz * cosA;
+    const perspective = 2.5 / (2.5 + rz);
+    return {
+      x: cx + rx * scale * perspective,
+      y: cy + n.sy * scale * perspective,
+      p: perspective,
+    };
+  }
+
+  function animate(ts) {
+    if (!startTime) startTime = ts;
+    const elapsed = (ts - startTime) / 1000;
+    ctx.setTransform(1,0,0,1,0,0);
+    ctx.clearRect(0, 0, cW(), cH());
+
+    rotAngle = elapsed * 0.05;
+
+    if (phase === 'spawning') {
+      if (elapsed < 3) {
+        spawnedCount = Math.min(20, Math.floor(elapsed / 3 * 20));
+      } else if (elapsed < 5) {
+        spawnedCount = 20 + Math.min(200, Math.floor((elapsed - 3) / 2 * 200));
+      } else if (elapsed < 6) {
+        spawnedCount = 220 + Math.min(TOTAL - 220, Math.floor((elapsed - 5) / 1 * (TOTAL - 220)));
+      } else {
+        spawnedCount = TOTAL;
+        phase = 'zoomout';
+      }
+    }
+
+    let targetScale;
+    if (phase === 'spawning') {
+      const visRatio = spawnedCount / TOTAL;
+      zoomLevel = 1 + visRatio * 2;
+      targetScale = Math.min(cW(), cH()) * 0.12 * zoomLevel;
+    } else {
+      if (elapsed < 8) {
+        const t = (elapsed - 6) / 2;
+        zoomLevel = 3 - t * 1.5;
+        targetScale = Math.min(cW(), cH()) * 0.12 * zoomLevel;
+      } else {
+        zoomLevel = 1.5;
+        targetScale = Math.min(cW(), cH()) * 0.12 * zoomLevel;
+        if (phase === 'zoomout') phase = 'slidelogo';
+      }
+    }
+
+    let cx = cW() / 2;
+    if (phase === 'slidelogo' || phase === 'tagline1' || phase === 'tagline2' || phase === 'arrow') {
+      const slideT = Math.min(1, (elapsed - 8) / 1.5);
+      const ease = slideT * (2 - slideT);
+      graphOffsetX = -cW() * 0.18 * ease;
+      cx += graphOffsetX;
+
+      if (slideT >= 1 && phase === 'slidelogo') {
+        document.getElementById('heroContent').classList.add('visible');
+        document.querySelector('.hero-right').style.transform = 'translateX(' + (cW() * 0.22) + 'px)';
+        setTimeout(() => { phase = 'tagline1'; }, 800);
+      }
+    }
+
+    if (phase === 'tagline1') {
+      document.getElementById('heroTagline1').classList.add('visible');
+      setTimeout(() => {
+        document.getElementById('heroTagline1').style.display = 'none';
+        document.getElementById('heroTagline2').style.display = '';
+        setTimeout(() => {
+          document.getElementById('heroTagline2').classList.add('visible');
+          phase = 'tagline2';
+        }, 100);
+      }, 2500);
+      phase = 'waitTagline';
+    }
+
+    if (phase === 'tagline2') {
+      setTimeout(() => {
+        document.getElementById('heroTagline2').style.display = 'none';
+        document.getElementById('heroArrow').classList.add('visible');
+        phase = 'arrow';
+      }, 2500);
+      phase = 'waitArrow';
+    }
+
+    const cy = cH() / 2;
+    const scale = targetScale;
+
+    const count = Math.min(spawnedCount, TOTAL);
+    for (let e = 0; e < edges.length; e++) {
+      if (edges[e][0] >= count || edges[e][1] >= count) continue;
+      const a = projectNode(allNodes[edges[e][0]], cx, cy, scale);
+      const b = projectNode(allNodes[edges[e][1]], cx, cy, scale);
+      ctx.beginPath();
+      ctx.moveTo(a.x, a.y);
+      ctx.lineTo(b.x, b.y);
+      ctx.strokeStyle = 'rgba(255,255,255,' + (edges[e][2] * Math.min(a.p, b.p)) + ')';
+      ctx.lineWidth = 0.5;
+      ctx.stroke();
+    }
+
+    for (let i = 0; i < count; i++) {
+      const p = projectNode(allNodes[i], cx, cy, scale);
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, allNodes[i].size * p.p, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255,255,255,' + (allNodes[i].opacity * p.p * 0.8) + ')';
+      ctx.fill();
+    }
+
+    requestAnimationFrame(animate);
+  }
+  requestAnimationFrame(animate);
+})();
+
+// ============ CHAT DEMOS ============
+const chatScripts = {
+  chat1: [
+    { role: 'user', text: '오늘 수진이랑 밥 먹었는데 이직 고민 중이래' },
+    { role: 'assistant', text: '수진님 이직 고민 중이시군요. 기억할게요.', afterView: 'personCard' },
+    { role: 'user', text: '민준이 여자친구 이름이 뭐였지?' },
+    { role: 'assistant', text: '서연님이에요. 작년 12월에 소개받으셨죠.' },
+  ],
+  chat2: [
+    { role: 'user', text: '김팀장님 커피 아메리카노 좋아하시지?' },
+    { role: 'assistant', text: '네, 아이스 아메리카노 연하게 드세요.' },
+    { role: 'user', text: '내 인맥 관계도 보여줘' },
+    { role: 'assistant', text: '인맥 관계도를 보여드릴게요.' },
+  ],
+};
+
+function createInlineView(type) {
+  const wrap = document.createElement('div');
+  wrap.className = 'inline-view';
+
+  if (type === 'personCard') {
+    const card = document.createElement('div');
+    card.className = 'person-card';
+    card.innerHTML = `
+      <div class="person-card-header">
+        <div class="person-avatar"><i class="ph ph-user"></i></div>
+        <div>
+          <div class="person-name">수진</div>
+          <div class="person-relation">친구</div>
+        </div>
+      </div>
+      <div class="person-records">
+        <i class="ph ph-note"></i> 관련 기록 3건
+      </div>
+    `;
+    wrap.appendChild(card);
+  }
+
+  return wrap;
+}
+
+function createChatBubble(msg) {
+  const div = document.createElement('div');
+  div.className = 'chat-msg ' + msg.role;
+  const bubble = document.createElement('div');
+  bubble.className = msg.role === 'user' ? 'chat-bubble-user' : 'chat-bubble-assistant';
+  div.appendChild(bubble);
+  return { div, bubble };
+}
+
+function typeText(bubble, text, speed) {
+  return new Promise(resolve => {
+    let i = 0;
+    const cursor = document.createElement('span');
+    cursor.className = 'typing-cursor';
+    bubble.appendChild(cursor);
+    const interval = setInterval(() => {
+      if (i < text.length) {
+        bubble.insertBefore(document.createTextNode(text[i]), cursor);
+        i++;
+      } else {
+        clearInterval(interval);
+        cursor.remove();
+        resolve();
+      }
+    }, speed);
+  });
+}
+
+async function playChat(containerId) {
+  const container = document.getElementById(containerId);
+  if (container.dataset.played) return;
+  container.dataset.played = 'true';
+  const script = chatScripts[containerId];
+
+  for (const msg of script) {
+    const { div, bubble } = createChatBubble(msg);
+    container.appendChild(div);
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => { div.classList.add('visible'); });
+    });
+
+    if (msg.role === 'user') {
+      bubble.textContent = msg.text;
+      await new Promise(r => setTimeout(r, 800));
+    } else {
+      await new Promise(r => setTimeout(r, 400));
+      await typeText(bubble, msg.text, 30);
+
+      if (msg.afterView) {
+        const view = createInlineView(msg.afterView);
+        const viewMsg = document.createElement('div');
+        viewMsg.className = 'chat-msg assistant';
+        viewMsg.appendChild(view);
+        container.appendChild(viewMsg);
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            viewMsg.classList.add('visible');
+            view.classList.add('visible');
+          });
+        });
+        await new Promise(r => setTimeout(r, 600));
+      }
+
+      await new Promise(r => setTimeout(r, 500));
+    }
+  }
+}
+
+// ============ TIMELINE ANIMATION ============
+function playTimeline(timelineId) {
+  const timeline = document.getElementById(timelineId);
+  if (timeline.dataset.played) return;
+  timeline.dataset.played = 'true';
+  const items = timeline.querySelectorAll('.timeline-item');
+  items.forEach((item, idx) => {
+    const delay = parseInt(item.dataset.delay) || idx * 600;
+    setTimeout(() => {
+      item.classList.add('visible');
+    }, delay);
+  });
+}
+
+// ============ INTERSECTION OBSERVER ============
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      if (id === 'chat1' || id === 'chat2') {
+        playChat(id);
+      }
+      if (id === 'timeline1') {
+        playTimeline(id);
+      }
+    }
+  });
+}, { threshold: 0.3 });
+
+document.querySelectorAll('.chat-demo').forEach(el => observer.observe(el));
+const tl = document.getElementById('timeline1');
+if (tl) observer.observe(tl);
+</script>
+</body>
+</html>

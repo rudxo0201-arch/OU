@@ -1,0 +1,371 @@
+import { NextRequest } from 'next/server';
+import { createClient } from '@/lib/supabase/server';
+import { chatWithFallback } from '@/lib/llm/router';
+import type { LLMMessage } from '@/lib/llm/types';
+import { buildSystemPrompt } from '@/lib/llm/prompts';
+import { saveMessageAsync } from '@/lib/pipeline/layer2';
+import { searchUserData, isQuestion, getUserDataCounts } from '@/lib/search/inline';
+import { checkTokenLimit } from '@/lib/utils/token-limit';
+import crypto from 'crypto';
+import { generateCacheKey, getCachedResponse, setCachedResponse } from '@/lib/cache/redis';
+import { isAdminEmail } from '@/lib/auth/roles';
+import { findScenarioResponse } from '@/data/scenario-responses';
+import { classifyDomain } from '@/lib/pipeline/classifier';
+import { MODEL_PROVIDER_MAP, isOUModel } from '@/lib/llm/models';
+import { decryptLLMKey } from '@/lib/auth/llm-key';
+
+/**
+ * Determine if a request is cacheable.
+ *
+ * 캐시 전략 확장:
+ * - 일반 지식 질문: 24시간 캐시 (변하지 않는 지식)
+ * - RAG 포함 질문: RAG 해시를 캐시 키에 포함하여 1시간 캐시
+ *   (동일 사용자가 동일 질문 + 동일 데이터면 결과 동일)
+ * - 개인 맥락 참조: 캐시 불가
+ */
+function isCacheable(
+  lastMessage: string,
+  ragResults: string[],
+): { cacheable: boolean; ttl: number } {
+  // Only cache questions
+  if (!isQuestion(lastMessage)) return { cacheable: false, ttl: 0 };
+
+  // Don't cache if message references time-sensitive personal context
+  const personalKeywords = [
+    '내일', '오늘', '어제', '지난', '방금', '아까',
+  ];
+  const lower = lastMessage.toLowerCase();
+  if (personalKeywords.some(kw => lower.includes(kw))) {
+    return { cacheable: false, ttl: 0 };
+  }
+
+  // RAG 결과가 있어도 캐시 가능 (RAG 해시를 키에 포함)
+  // 단, TTL을 짧게 (개인 데이터 변경 가능)
+  if (ragResults.length > 0) {
+    return { cacheable: true, ttl: 3600 }; // 1시간
+  }
+
+  // 일반 지식 질문: 24시간 캐시
+  return { cacheable: true, ttl: 86400 };
+}
+
+export async function POST(req: NextRequest) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  let body: { messages?: Array<{ role: string; content: string }>; isGuest?: boolean; selectedModel?: string };
+  try {
+    body = await req.json();
+  } catch {
+    return new Response(JSON.stringify({ error: 'Invalid request body' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  const { messages, isGuest } = body;
+
+  if (!messages || !Array.isArray(messages) || messages.length === 0) {
+    return new Response(JSON.stringify({ error: 'messages array is required' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  try {
+    // ── 시나리오 캐싱: LLM 호출 없이 사전 생성 응답 반환 ──
+    const lastMsg = messages[messages.length - 1];
+    const scenarioMatch = findScenarioResponse(lastMsg.content);
+    if (scenarioMatch) {
+      const { domain, viewHint, confidence } = await classifyDomain(lastMsg.content);
+
+      // 노드 생성은 그대로 (데이터 파이프라인 실행)
+      saveMessageAsync({
+        userId: user?.id,
+        userMessage: lastMsg.content,
+        assistantMessage: scenarioMatch.response,
+      }).catch(() => {});
+
+      // 캐시된 응답을 SSE로 스트리밍
+      const encoder = new TextEncoder();
+      const stream = new ReadableStream({
+        start(controller) {
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text: scenarioMatch.response })}\n\n`));
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ done: true, domain, viewHint, confidence, scenarioId: scenarioMatch.id })}\n\n`));
+          controller.close();
+        },
+      });
+
+      return new Response(stream, {
+        headers: { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache' },
+      });
+    }
+
+    // 구독 플랜 + 일일 토큰 한도 체크
+    let userPlan = 'free';
+    if (user) {
+      try {
+        const { data: sub, error: subError } = await supabase
+          .from('subscriptions')
+          .select('plan')
+          .eq('user_id', user.id)
+          .single();
+
+        if (!subError && sub?.plan) {
+          userPlan = sub.plan;
+        }
+      } catch {
+        // subscriptions 테이블 없거나 row 없으면 free 폴백
+      }
+
+      try {
+        const { allowed, used, limit } = await checkTokenLimit(supabase, user.id, userPlan);
+        if (!allowed) {
+          return new Response(
+            JSON.stringify({ error: 'TOKEN_LIMIT_EXCEEDED', used, limit, plan: userPlan }),
+            {
+              status: 429,
+              headers: { 'Content-Type': 'application/json' },
+            }
+          );
+        }
+      } catch {
+        // token_usage 테이블 없으면 한도 체크 스킵
+      }
+    } else {
+      userPlan = 'guest';
+    }
+
+    // --- 동적 시스템 프롬프트 구성 ---
+    const lastUserMessage = messages[messages.length - 1]?.content ?? '';
+
+    // 대화 히스토리: 최근 20개 메시지만 전송
+    const recentMessages = messages.slice(-20) as LLMMessage[];
+
+    // 로그인 사용자: 데이터 통계 + RAG 검색
+    let dataCounts: Record<string, number> = {};
+    let totalNodes = 0;
+    let ragResults: string[] = [];
+
+    if (user) {
+      // 관리자 여부 확인 — 관리자는 자신의 운영 데이터도 RAG에 포함
+      const userIsAdmin = user.email ? isAdminEmail(user.email) : false;
+
+      // 병렬로 데이터 통계 조회 + 질문 시 RAG 검색
+      const dataCountsPromise = getUserDataCounts(supabase, user.id);
+
+      let ragPromise: Promise<string[]> = Promise.resolve([]);
+      if (isQuestion(lastUserMessage)) {
+        ragPromise = searchUserData(supabase, user.id, lastUserMessage, 5, userIsAdmin)
+          .then(results =>
+            results.map(r => {
+              const date = new Date(r.created_at).toLocaleDateString('ko-KR');
+              const domainLabel: Record<string, string> = {
+                schedule: '일정', finance: '가계부', task: '할 일',
+                emotion: '감정', idea: '아이디어', habit: '습관',
+                knowledge: '지식', relation: '인물',
+              };
+              return `[${domainLabel[r.domain] || r.domain}] ${r.raw} (${date})`;
+            })
+          )
+          .catch(() => []);
+      }
+
+      const [countResult, ragResult] = await Promise.all([dataCountsPromise, ragPromise]);
+      dataCounts = countResult.counts;
+      totalNodes = countResult.total;
+      ragResults = ragResult;
+    }
+
+    // --- Redis 캐시 체크 (확장: RAG 포함 질문도 캐시) ---
+    const { cacheable, ttl: cacheTtl } = isCacheable(lastUserMessage, ragResults);
+    let cacheKey = '';
+
+    if (cacheable) {
+      // RAG 결과가 있으면 해시를 캐시 키에 포함 (같은 질문 + 같은 데이터 = 같은 응답)
+      const ragHash = ragResults.length > 0
+        ? crypto.createHash('md5').update(ragResults.join('|')).digest('hex').slice(0, 8)
+        : '';
+      cacheKey = generateCacheKey(messages) + (ragHash ? `:rag:${ragHash}` : '');
+      const cachedResponse = await getCachedResponse(cacheKey);
+
+      if (cachedResponse) {
+        // Cache hit: SSE 스트림으로 캐시된 응답 반환
+        const encoder = new TextEncoder();
+        const cacheStream = new ReadableStream({
+          start(controller) {
+            controller.enqueue(encoder.encode(
+              `data: ${JSON.stringify({ text: cachedResponse })}\n\n`
+            ));
+            controller.enqueue(encoder.encode(
+              `data: ${JSON.stringify({ done: true, fullText: cachedResponse, provider: 'cache' })}\n\n`
+            ));
+            controller.close();
+          },
+        });
+
+        return new Response(cacheStream, {
+          headers: {
+            'Content-Type': 'text/event-stream',
+            'Cache-Control': 'no-cache',
+            'Connection': 'keep-alive',
+          },
+        });
+      }
+    }
+
+    // --- BYOK: 사용자 모델 선택 + 키 조회 ---
+    let selectedModel: string | undefined;
+    let userApiKey: string | undefined;
+    let isUserKey = false;
+
+    if (body.selectedModel && user) {
+      const providerName = MODEL_PROVIDER_MAP[body.selectedModel];
+      if (providerName) {
+        if (!isOUModel(body.selectedModel)) {
+          // BYOK 모델 → 사용자 키 필요
+          const key = await decryptLLMKey(user.id, providerName);
+          if (key) {
+            selectedModel = body.selectedModel;
+            userApiKey = key;
+            isUserKey = true;
+          } else {
+            return new Response(
+              JSON.stringify({ error: 'API_KEY_REQUIRED', provider: providerName }),
+              { status: 400, headers: { 'Content-Type': 'application/json' } }
+            );
+          }
+        } else {
+          // OU 제공 모델을 명시적으로 선택한 경우
+          selectedModel = body.selectedModel;
+        }
+      }
+    }
+
+    const systemPrompt = buildSystemPrompt({
+      dataCounts,
+      totalNodes,
+      ragResults: ragResults.length > 0 ? ragResults : undefined,
+    });
+
+    const encoder = new TextEncoder();
+
+    const stream = new ReadableStream({
+      async start(controller) {
+        try {
+          let savedData: { domain?: string; nodeId?: string; confidence?: string; domain_data?: Record<string, any> } = {};
+
+          await chatWithFallback({
+            messages: recentMessages,
+            systemPrompt,
+            userPlan,
+            userId: user?.id,
+            selectedModel,
+            userApiKey,
+            isUserKey,
+            onChunk: (text) => {
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text })}\n\n`));
+            },
+            onComplete: async (fullText, provider) => {
+              // Redis 캐시 저장 (동적 TTL: 일반 지식 24h, RAG 포함 1h)
+              if (cacheable && cacheKey) {
+                setCachedResponse(cacheKey, fullText, cacheTtl).catch(() => {});
+              }
+
+              // Layer 2: 비동기 DataNode 저장
+              let saveError = false;
+              try {
+                const result = await saveMessageAsync({
+                  userId: user?.id,
+                  userMessage: messages[messages.length - 1]?.content ?? '',
+                  assistantMessage: fullText,
+                });
+                if (result?.domain) {
+                  savedData = {
+                    domain: result.domain,
+                    nodeId: result.node?.id,
+                    confidence: result.confidence,
+                    domain_data: result.node?.domain_data,
+                  };
+                }
+              } catch (err) {
+                console.error('[Layer2] saveMessageAsync failed:', err);
+                saveError = true;
+              }
+
+              // LLM 메타 파싱: 도메인 + needsText
+              const metaMatch = fullText.match(/```json:meta\s*\n?([\s\S]*?)```/);
+              let llmDomain: string | undefined;
+              let llmNeedsText: boolean | undefined;
+              if (metaMatch) {
+                try {
+                  const meta = JSON.parse(metaMatch[1].trim());
+                  llmDomain = meta.domain;
+                  llmNeedsText = meta.needsText;
+                } catch { /* skip */ }
+              }
+
+              // 도메인 불일치 로그 + needsText 로그
+              const userInput = messages[messages.length - 1]?.content ?? '';
+              const cleanText = fullText.replace(/```json:meta\s*\n?[\s\S]*?```/, '').trim();
+              const regexNeedsText = cleanText.length > 30;
+
+              if (llmDomain || llmNeedsText !== undefined) {
+                // 불일치가 하나라도 있으면 로깅
+                const domainMismatch = llmDomain && savedData.domain && llmDomain !== savedData.domain;
+                const needsTextMismatch = llmNeedsText !== undefined && llmNeedsText !== regexNeedsText;
+
+                if (domainMismatch || needsTextMismatch) {
+                  Promise.resolve(
+                    supabase.from('domain_classification_log').insert({
+                      user_id: user?.id,
+                      input_text: userInput.slice(0, 200),
+                      regex_domain: savedData.domain ?? 'unknown',
+                      llm_domain: llmDomain ?? savedData.domain ?? 'unknown',
+                      adopted: llmDomain ?? savedData.domain ?? 'unknown',
+                    })
+                  ).catch(() => {});
+                }
+              }
+
+              // LLM 분류 우선 채택
+              if (llmDomain && savedData.domain && llmDomain !== savedData.domain) {
+                savedData.domain = llmDomain;
+              }
+
+              // needsText를 done 이벤트에 포함
+              const needsText = llmNeedsText ?? regexNeedsText;
+
+              controller.enqueue(encoder.encode(
+                `data: ${JSON.stringify({ done: true, fullText, provider, needsText, ...savedData, ...(saveError ? { saveError: true } : {}) })}\n\n`
+              ));
+              controller.close();
+            },
+            onError: (error) => {
+              controller.enqueue(encoder.encode(
+                `data: ${JSON.stringify({ error: error.message })}\n\n`
+              ));
+              controller.close();
+            },
+          });
+        } catch (e) {
+          controller.error(e);
+        }
+      },
+    });
+
+    return new Response(stream, {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+      },
+    });
+  } catch (e) {
+    console.error('[Chat] Unexpected error:', e);
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+}

@@ -1,0 +1,9268 @@
+[
+  {
+    "id": "01-1-1",
+    "name": "마황",
+    "hanja": "麻黃",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "1-1. 발산풍한약",
+    "nature": [
+      "溫"
+    ],
+    "flavor": [
+      "辛",
+      "미고(微苦)"
+    ],
+    "channelTropism": [
+      "肺經",
+      "膀胱經"
+    ],
+    "efficacy": [
+      "발한해표",
+      "선폐평천",
+      "이수소종"
+    ],
+    "indications": [
+      "외감풍한표실증",
+      "기침",
+      "천식",
+      "풍수부종"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "01-1-2",
+    "name": "계지",
+    "hanja": "桂枝",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "1-1. 발산풍한약",
+    "nature": [
+      "溫"
+    ],
+    "flavor": [
+      "辛",
+      "甘"
+    ],
+    "channelTropism": [
+      "心經",
+      "肺經",
+      "膀胱經"
+    ],
+    "efficacy": [
+      "발한해기",
+      "온통경맥",
+      "조화영위"
+    ],
+    "indications": [
+      "풍한감모",
+      "한습비증",
+      "흉비",
+      "심계",
+      "담음",
+      "경폐통경"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "01-1-3",
+    "name": "자소엽",
+    "hanja": "紫蘇葉",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "1-1. 발산풍한약",
+    "nature": [
+      "溫"
+    ],
+    "flavor": [
+      "辛"
+    ],
+    "channelTropism": [
+      "肺經",
+      "脾經"
+    ],
+    "efficacy": [
+      "발표산한",
+      "행기화위",
+      "해어독"
+    ],
+    "indications": [
+      "풍한감모",
+      "비위기체",
+      "어패중독"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "01-1-4",
+    "name": "형개",
+    "hanja": "荊芥",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "1-1. 발산풍한약",
+    "nature": [
+      "微溫"
+    ],
+    "flavor": [
+      "辛"
+    ],
+    "channelTropism": [
+      "肺經",
+      "肝經"
+    ],
+    "efficacy": [
+      "거풍해표",
+      "투진소창",
+      "지혈"
+    ],
+    "indications": [
+      "외감표증",
+      "마진불투",
+      "창양초기",
+      "출혈증"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "01-1-5",
+    "name": "강활",
+    "hanja": "羌活",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "1-1. 발산풍한약",
+    "nature": [
+      "溫"
+    ],
+    "flavor": [
+      "辛",
+      "苦"
+    ],
+    "channelTropism": [
+      "膀胱經",
+      "腎經"
+    ],
+    "efficacy": [
+      "해표산한",
+      "거풍승습",
+      "지통"
+    ],
+    "indications": [
+      "풍한감모",
+      "두통항강",
+      "풍습비통",
+      "상반신풍습동통"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "01-1-6",
+    "name": "백지",
+    "hanja": "白芷",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "1-1. 발산풍한약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "01-1-7",
+    "name": "방풍",
+    "hanja": "防風",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "1-1. 발산풍한약",
+    "nature": [
+      "微溫"
+    ],
+    "flavor": [
+      "辛",
+      "甘"
+    ],
+    "channelTropism": [
+      "膀胱經",
+      "肝經",
+      "脾經"
+    ],
+    "efficacy": [
+      "거풍해표",
+      "승습지통",
+      "지경"
+    ],
+    "indications": [
+      "외감풍한",
+      "풍습비통",
+      "두통",
+      "파상풍"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "01-1-8",
+    "name": "고본",
+    "hanja": "藁本",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "1-1. 발산풍한약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "01-1-9",
+    "name": "신이",
+    "hanja": "辛夷",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "1-1. 발산풍한약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "01-1-10",
+    "name": "세신",
+    "hanja": "細辛",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "1-1. 발산풍한약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "01-1-11",
+    "name": "생강",
+    "hanja": "生薑",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "1-1. 발산풍한약",
+    "nature": [
+      "微溫"
+    ],
+    "flavor": [
+      "辛"
+    ],
+    "channelTropism": [
+      "肺經",
+      "脾經",
+      "胃經"
+    ],
+    "efficacy": [
+      "발표산한",
+      "온중지구",
+      "온폐지해",
+      "해독"
+    ],
+    "indications": [
+      "풍한감모",
+      "위한구토",
+      "한담기해",
+      "어해독"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "01-1-12",
+    "name": "향유",
+    "hanja": "香薷",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "1-1. 발산풍한약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "01-1-13",
+    "name": "총백",
+    "hanja": "蔥白",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "1-1. 발산풍한약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "01-1-14",
+    "name": "정유",
+    "hanja": "榆柳",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "1-1. 발산풍한약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "01-1-15",
+    "name": "창이자",
+    "hanja": "蒼耳子",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "1-1. 발산풍한약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "01-2-1",
+    "name": "박하",
+    "hanja": "薄荷",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "1-2. 발산풍열약",
+    "nature": [
+      "涼"
+    ],
+    "flavor": [
+      "辛"
+    ],
+    "channelTropism": [
+      "肺經",
+      "肝經"
+    ],
+    "efficacy": [
+      "소산풍열",
+      "청리두목",
+      "이인투진",
+      "소간행기"
+    ],
+    "indications": [
+      "풍열감모",
+      "두통목적",
+      "인후종통",
+      "마진불투",
+      "간울기체"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "01-2-2",
+    "name": "우방자",
+    "hanja": "牛蒡子",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "1-2. 발산풍열약",
+    "nature": [
+      "寒"
+    ],
+    "flavor": [
+      "辛",
+      "苦"
+    ],
+    "channelTropism": [
+      "肺經",
+      "胃經"
+    ],
+    "efficacy": [
+      "소산풍열",
+      "선폐투진",
+      "이인산결",
+      "해독소종"
+    ],
+    "indications": [
+      "풍열감모",
+      "인후종통",
+      "마진불투",
+      "옹종창독"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "01-2-3",
+    "name": "상엽",
+    "hanja": "桑葉",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "1-2. 발산풍열약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "01-2-4",
+    "name": "국화",
+    "hanja": "菊花",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "1-2. 발산풍열약",
+    "nature": [
+      "微寒"
+    ],
+    "flavor": [
+      "辛",
+      "甘",
+      "苦"
+    ],
+    "channelTropism": [
+      "肺經",
+      "肝經"
+    ],
+    "efficacy": [
+      "소풍청열",
+      "평간명목",
+      "청열해독"
+    ],
+    "indications": [
+      "풍열감모",
+      "두통현훈",
+      "목적종통",
+      "옹종정창"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "01-2-5",
+    "name": "갈근",
+    "hanja": "葛根",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "1-2. 발산풍열약",
+    "nature": [
+      "涼"
+    ],
+    "flavor": [
+      "甘",
+      "辛"
+    ],
+    "channelTropism": [
+      "脾經",
+      "胃經"
+    ],
+    "efficacy": [
+      "해기퇴열",
+      "생진지갈",
+      "투진",
+      "승양지사"
+    ],
+    "indications": [
+      "외감발열",
+      "항강",
+      "소갈",
+      "마진불투",
+      "열리설사"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "01-2-6",
+    "name": "시호",
+    "hanja": "柴胡",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "1-2. 발산풍열약",
+    "nature": [
+      "微寒"
+    ],
+    "flavor": [
+      "辛",
+      "苦"
+    ],
+    "channelTropism": [
+      "肝經",
+      "膽經"
+    ],
+    "efficacy": [
+      "화해퇴열",
+      "소간해울",
+      "승거양기"
+    ],
+    "indications": [
+      "소양한열왕래",
+      "간울기체",
+      "기허하함",
+      "월경부조"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "01-2-7",
+    "name": "승마",
+    "hanja": "升麻",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "1-2. 발산풍열약",
+    "nature": [
+      "微寒"
+    ],
+    "flavor": [
+      "辛",
+      "微甘"
+    ],
+    "channelTropism": [
+      "肺經",
+      "脾經",
+      "胃經",
+      "大腸經"
+    ],
+    "efficacy": [
+      "발표투진",
+      "청열해독",
+      "승거양기"
+    ],
+    "indications": [
+      "풍열두통",
+      "치통",
+      "구창",
+      "인후종통",
+      "마진불투",
+      "기허하함"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "01-2-8",
+    "name": "만형자",
+    "hanja": "蔓荊子",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "1-2. 발산풍열약",
+    "nature": [
+      "微寒"
+    ],
+    "flavor": [
+      "辛",
+      "苦"
+    ],
+    "channelTropism": [
+      "膀胱經",
+      "肝經",
+      "胃經"
+    ],
+    "efficacy": [
+      "소산풍열",
+      "청리두목"
+    ],
+    "indications": [
+      "풍열감모두통",
+      "치통",
+      "목적종통",
+      "두목혼중"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "01-2-9",
+    "name": "담두시",
+    "hanja": "淡豆豉",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "1-2. 발산풍열약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "01-2-10",
+    "name": "선태",
+    "hanja": "蟬蛻",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "1-2. 발산풍열약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "01-2-11",
+    "name": "부평",
+    "hanja": "浮萍",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "1-2. 발산풍열약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "01-2-12",
+    "name": "목적",
+    "hanja": "木賊",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "1-2. 발산풍열약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "2-1-1",
+    "name": "석고",
+    "hanja": "石膏",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "2-1. 청열사화약",
+    "nature": [
+      "大寒"
+    ],
+    "flavor": [
+      "辛",
+      "甘"
+    ],
+    "channelTropism": [
+      "肺經",
+      "胃經"
+    ],
+    "efficacy": [
+      "청열사화",
+      "제번지갈"
+    ],
+    "indications": [
+      "기분실열",
+      "고열번갈",
+      "폐열천해",
+      "위화치통두통",
+      "창양"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "2-1-2",
+    "name": "지모",
+    "hanja": "知母",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "2-1. 청열사화약",
+    "nature": [
+      "寒"
+    ],
+    "flavor": [
+      "苦",
+      "甘"
+    ],
+    "channelTropism": [
+      "肺經",
+      "胃經",
+      "腎經"
+    ],
+    "efficacy": [
+      "청열사화",
+      "자음윤조"
+    ],
+    "indications": [
+      "열병번갈",
+      "폐열기해",
+      "골증조열",
+      "내열소갈",
+      "장조변비"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "2-1-3",
+    "name": "노근",
+    "hanja": "蘆根",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "2-1. 청열사화약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "2-1-4",
+    "name": "괄루근",
+    "hanja": "栝蔞根",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "2-1. 청열사화약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "2-1-5",
+    "name": "죽엽",
+    "hanja": "竹葉",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "2-1. 청열사화약",
+    "nature": [
+      "寒"
+    ],
+    "flavor": [
+      "甘",
+      "辛"
+    ],
+    "channelTropism": [
+      "心經",
+      "胃經",
+      "小腸經"
+    ],
+    "efficacy": [
+      "청열제번",
+      "생진이뇨"
+    ],
+    "indications": [
+      "열병번갈",
+      "구창설창",
+      "소변단적"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "2-1-6",
+    "name": "치자",
+    "hanja": "梔子",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "2-1. 청열사화약",
+    "nature": [
+      "寒"
+    ],
+    "flavor": [
+      "苦"
+    ],
+    "channelTropism": [
+      "心經",
+      "肺經",
+      "三焦經"
+    ],
+    "efficacy": [
+      "사화제번",
+      "청열이습",
+      "양혈해독",
+      "소종지통"
+    ],
+    "indications": [
+      "열병심번",
+      "황달",
+      "혈임",
+      "목적",
+      "화독창양",
+      "찰상출혈"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "2-1-7",
+    "name": "하고초",
+    "hanja": "夏枯草",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "2-1. 청열사화약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "2-1-8",
+    "name": "담죽엽",
+    "hanja": "淡竹葉",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "2-1. 청열사화약",
+    "nature": [
+      "寒"
+    ],
+    "flavor": [
+      "甘"
+    ],
+    "channelTropism": [
+      "心經",
+      "胃經",
+      "小腸經"
+    ],
+    "efficacy": [
+      "청열제번",
+      "이뇨"
+    ],
+    "indications": [
+      "열병번갈",
+      "구창",
+      "소변적삽"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "2-1-9",
+    "name": "밀몽화",
+    "hanja": "密蒙花",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "2-1. 청열사화약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "2-1-10",
+    "name": "청상자",
+    "hanja": "靑葙子",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "2-1. 청열사화약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "2-1-11",
+    "name": "괴각",
+    "hanja": "槐角",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "2-1. 청열사화약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "9-1",
+    "name": "산사",
+    "hanja": "山楂",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "9. 소식약(소)",
+    "nature": [
+      "微溫"
+    ],
+    "flavor": [
+      "酸",
+      "甘"
+    ],
+    "channelTropism": [
+      "脾經",
+      "胃經",
+      "肝經"
+    ],
+    "efficacy": [
+      "소식화적",
+      "행기산어"
+    ],
+    "indications": [
+      "육식적체",
+      "위완창만",
+      "사리복통",
+      "어혈경폐",
+      "산후어조",
+      "심복자통",
+      "산기",
+      "고지혈증"
+    ],
+    "lesson": "[본초학 1주차] 제 9장 소식약",
+    "sasang": null
+  },
+  {
+    "id": "9-2",
+    "name": "신곡",
+    "hanja": "神麯",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "9. 소식약(소)",
+    "nature": [
+      "溫"
+    ],
+    "flavor": [
+      "甘",
+      "辛"
+    ],
+    "channelTropism": [
+      "脾經",
+      "胃經"
+    ],
+    "efficacy": [
+      "소식화적",
+      "건비화위"
+    ],
+    "indications": [
+      "음식정체",
+      "소화불량",
+      "완복창만",
+      "식욕부진"
+    ],
+    "lesson": "[본초학 1주차] 제 9장 소식약",
+    "sasang": null
+  },
+  {
+    "id": "9-3",
+    "name": "맥아",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "9. 소식약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": "[본초학 1주차] 제 9장 소식약",
+    "sasang": null
+  },
+  {
+    "id": "9-4",
+    "name": "곡아",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "9. 소식약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": "[본초학 1주차] 제 9장 소식약",
+    "sasang": null
+  },
+  {
+    "id": "9-5",
+    "name": "내복자",
+    "hanja": "萊菔子",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "9. 소식약(소)",
+    "nature": [
+      "平"
+    ],
+    "flavor": [
+      "辛",
+      "甘"
+    ],
+    "channelTropism": [
+      "脾經",
+      "胃經",
+      "肺經"
+    ],
+    "efficacy": [
+      "소식제창",
+      "강기화담"
+    ],
+    "indications": [
+      "식적기체",
+      "완복창만",
+      "애부탄산",
+      "설사",
+      "담옹기천해수"
+    ],
+    "lesson": "[본초학 1주차] 제 9장 소식약",
+    "sasang": null
+  },
+  {
+    "id": "9-6",
+    "name": "계내금",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "9. 소식약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": "[본초학 1주차] 제 9장 소식약",
+    "sasang": null
+  },
+  {
+    "id": "10-1",
+    "name": "사군자",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "10. 구충약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": "[본초학 1주차] 제 10장 구충약",
+    "sasang": null
+  },
+  {
+    "id": "10-2",
+    "name": "고련피",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "10. 구충약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": "[본초학 1주차] 제 10장 구충약",
+    "sasang": null
+  },
+  {
+    "id": "10-3",
+    "name": "빈랑자",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "10. 구충약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": "[본초학 1주차] 제 10장 구충약",
+    "sasang": null
+  },
+  {
+    "id": "10-4",
+    "name": "뇌환",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "10. 구충약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": "[본초학 1주차] 제 10장 구충약",
+    "sasang": null
+  },
+  {
+    "id": "10-5",
+    "name": "학슬",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "10. 구충약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": "[본초학 1주차] 제 10장 구충약",
+    "sasang": null
+  },
+  {
+    "id": "10-6",
+    "name": "비자",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "10. 구충약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": "[본초학 1주차] 제 10장 구충약",
+    "sasang": null
+  },
+  {
+    "id": "10-7",
+    "name": "무이",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "10. 구충약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": "[본초학 1주차] 제 10장 구충약",
+    "sasang": null
+  },
+  {
+    "id": "10-8",
+    "name": "관중",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "10. 구충약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": "[본초학 1주차] 제 10장 구충약",
+    "sasang": null
+  },
+  {
+    "id": "11-1-1",
+    "name": "용아초",
+    "hanja": "龍牙草",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "11-1. 수렴지혈약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "11-1-2",
+    "name": "백급",
+    "hanja": "白芨",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "11-1. 수렴지혈약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "11-1-3",
+    "name": "종려피",
+    "hanja": "棕櫚皮",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "11-1. 수렴지혈약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "11-1-4",
+    "name": "우절",
+    "hanja": "藕節",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "11-1. 수렴지혈약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "11-2-1",
+    "name": "대계",
+    "hanja": "大薊",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "11-2. 량혈지혈약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "11-2-2",
+    "name": "소계",
+    "hanja": "小薊",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "11-2. 량혈지혈약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "11-2-3",
+    "name": "지유",
+    "hanja": "地榆",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "11-2. 량혈지혈약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "11-2-4",
+    "name": "괴화",
+    "hanja": "槐花",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "11-2. 량혈지혈약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "11-2-5",
+    "name": "측백엽",
+    "hanja": "側柏葉",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "11-2. 량혈지혈약",
+    "nature": [
+      "微寒"
+    ],
+    "flavor": [
+      "苦",
+      "澁"
+    ],
+    "channelTropism": [
+      "肺經",
+      "肝經",
+      "脾經"
+    ],
+    "efficacy": [
+      "양혈지혈",
+      "화담지해",
+      "생발오발"
+    ],
+    "indications": [
+      "혈열토혈",
+      "뉵혈",
+      "변혈",
+      "붕루",
+      "기해다담",
+      "혈열탈발"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "11-2-6",
+    "name": "백모근",
+    "hanja": "白茅根",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "11-2. 량혈지혈약",
+    "nature": [
+      "寒"
+    ],
+    "flavor": [
+      "甘"
+    ],
+    "channelTropism": [
+      "肺經",
+      "胃經",
+      "膀胱經"
+    ],
+    "efficacy": [
+      "양혈지혈",
+      "청열이뇨"
+    ],
+    "indications": [
+      "혈열출혈",
+      "열병번갈",
+      "수종",
+      "황달",
+      "열림"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "11-2-7",
+    "name": "양제근",
+    "hanja": "羊蹄根",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "11-2. 량혈지혈약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "11-3-1",
+    "name": "삼칠",
+    "hanja": "三七",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "11-3. 화어지혈약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "11-3-2",
+    "name": "포황",
+    "hanja": "蒲黃",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "11-3. 화어지혈약",
+    "nature": [
+      "平"
+    ],
+    "flavor": [
+      "甘"
+    ],
+    "channelTropism": [
+      "肝經",
+      "心包經"
+    ],
+    "efficacy": [
+      "지혈",
+      "화어",
+      "통림"
+    ],
+    "indications": [
+      "토혈",
+      "뉵혈",
+      "붕루",
+      "외상출혈",
+      "경폐통경",
+      "질박어종",
+      "혈림삽통"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "11-3-3",
+    "name": "천초근",
+    "hanja": "茜草根",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "11-3. 화어지혈약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "11-4-1",
+    "name": "애엽",
+    "hanja": "艾葉",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "11-4. 온경지혈약",
+    "nature": [
+      "溫"
+    ],
+    "flavor": [
+      "辛",
+      "苦"
+    ],
+    "channelTropism": [
+      "肝經",
+      "脾經",
+      "腎經"
+    ],
+    "efficacy": [
+      "온경지혈",
+      "산한지통",
+      "조습지양",
+      "안태"
+    ],
+    "indications": [
+      "하초허한출혈",
+      "경한복통",
+      "월경부조",
+      "궁냉불잉",
+      "태동불안",
+      "습진소양"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "12-1-1",
+    "name": "천궁",
+    "hanja": "川芎",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "12. 활혈거어약(소)",
+    "nature": [
+      "溫"
+    ],
+    "flavor": [
+      "辛"
+    ],
+    "channelTropism": [
+      "肝經",
+      "膽經",
+      "心包經"
+    ],
+    "efficacy": [
+      "활혈행기",
+      "거풍지통"
+    ],
+    "indications": [
+      "월경부조",
+      "경폐통경",
+      "징가",
+      "흉협통",
+      "두통",
+      "풍습비통"
+    ],
+    "lesson": "[본초학 3주차] 제 12장 활혈거어약(1)",
+    "sasang": null
+  },
+  {
+    "id": "12-1-2",
+    "name": "유향",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "12. 활혈거어약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": "[본초학 3주차] 제 12장 활혈거어약(1)",
+    "sasang": null
+  },
+  {
+    "id": "12-1-3",
+    "name": "몰약",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "12. 활혈거어약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": "[본초학 3주차] 제 12장 활혈거어약(1)",
+    "sasang": null
+  },
+  {
+    "id": "12-1-4",
+    "name": "현호색",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "12. 활혈거어약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": "[본초학 3주차] 제 12장 활혈거어약(1)",
+    "sasang": null
+  },
+  {
+    "id": "12-1-5",
+    "name": "울금",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "12. 활혈거어약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": "[본초학 3주차] 제 12장 활혈거어약(1)",
+    "sasang": null
+  },
+  {
+    "id": "12-1-6",
+    "name": "강황",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "12. 활혈거어약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": "[본초학 3주차] 제 12장 활혈거어약(1)",
+    "sasang": null
+  },
+  {
+    "id": "12-1-7",
+    "name": "아출",
+    "hanja": "莪朮",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "12. 활혈거어약(소)",
+    "nature": [
+      "溫"
+    ],
+    "flavor": [
+      "辛",
+      "苦"
+    ],
+    "channelTropism": [
+      "肝經",
+      "脾經"
+    ],
+    "efficacy": [
+      "파혈행기",
+      "소적지통"
+    ],
+    "indications": [
+      "혈어경폐",
+      "흉복창통",
+      "식적",
+      "부인혈어복통"
+    ],
+    "lesson": "[본초학 3주차] 제 12장 활혈거어약(1)",
+    "sasang": null
+  },
+  {
+    "id": "12-1-8",
+    "name": "삼릉",
+    "hanja": "三稜",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "12. 활혈거어약(소)",
+    "nature": [
+      "平"
+    ],
+    "flavor": [
+      "辛",
+      "苦"
+    ],
+    "channelTropism": [
+      "肝經",
+      "脾經"
+    ],
+    "efficacy": [
+      "파혈행기",
+      "소적지통"
+    ],
+    "indications": [
+      "징가적취",
+      "혈어경폐",
+      "식적창통"
+    ],
+    "lesson": "[본초학 3주차] 제 12장 활혈거어약(1)",
+    "sasang": null
+  },
+  {
+    "id": "12-1-9",
+    "name": "단삼",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "12. 활혈거어약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": "[본초학 3주차] 제 12장 활혈거어약(1)",
+    "sasang": null
+  },
+  {
+    "id": "12-1-10",
+    "name": "호장근",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "12. 활혈거어약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": "[본초학 3주차] 제 12장 활혈거어약(1)",
+    "sasang": null
+  },
+  {
+    "id": "12-1-11",
+    "name": "익모초",
+    "hanja": "益母草",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "12. 활혈거어약(소)",
+    "nature": [
+      "微寒"
+    ],
+    "flavor": [
+      "辛",
+      "苦"
+    ],
+    "channelTropism": [
+      "肝經",
+      "心包經",
+      "膀胱經"
+    ],
+    "efficacy": [
+      "활혈조경",
+      "이수소종",
+      "청열해독"
+    ],
+    "indications": [
+      "월경부조",
+      "경폐",
+      "산후어혈복통",
+      "수종",
+      "소변불리"
+    ],
+    "lesson": "[본초학 3주차] 제 12장 활혈거어약(1)",
+    "sasang": null
+  },
+  {
+    "id": "12-1-12",
+    "name": "도인",
+    "hanja": "桃仁",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "12. 활혈거어약(소)",
+    "nature": [
+      "平"
+    ],
+    "flavor": [
+      "苦",
+      "甘"
+    ],
+    "channelTropism": [
+      "心經",
+      "肝經",
+      "大腸經"
+    ],
+    "efficacy": [
+      "활혈거어",
+      "윤장통변",
+      "지해평천"
+    ],
+    "indications": [
+      "경폐",
+      "통경",
+      "징가",
+      "질박어종",
+      "폐옹장옹",
+      "장조변비",
+      "해수기천"
+    ],
+    "lesson": "[본초학 3주차] 제 12장 활혈거어약(1)",
+    "sasang": null
+  },
+  {
+    "id": "12-1-13",
+    "name": "홍화",
+    "hanja": "紅花",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "12. 활혈거어약(소)",
+    "nature": [
+      "溫"
+    ],
+    "flavor": [
+      "辛"
+    ],
+    "channelTropism": [
+      "心經",
+      "肝經"
+    ],
+    "efficacy": [
+      "활혈통경",
+      "거어지통"
+    ],
+    "indications": [
+      "경폐",
+      "통경",
+      "산후어조복통",
+      "징가",
+      "질박어종",
+      "흉비심통",
+      "어혈작통"
+    ],
+    "lesson": "[본초학 3주차] 제 12장 활혈거어약(1)",
+    "sasang": null
+  },
+  {
+    "id": "12-1-14",
+    "name": "오령지",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "12. 활혈거어약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": "[본초학 3주차] 제 12장 활혈거어약(1)",
+    "sasang": null
+  },
+  {
+    "id": "12-1-15",
+    "name": "우슬",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "12. 활혈거어약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": "[본초학 4주차] 제 12장 활혈거어약(2)",
+    "sasang": null
+  },
+  {
+    "id": "12-1-16",
+    "name": "천산갑",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "12. 활혈거어약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": "[본초학 4주차] 제 12장 활혈거어약(2)",
+    "sasang": null
+  },
+  {
+    "id": "12-1-17",
+    "name": "자충",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "12. 활혈거어약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": "[본초학 4주차] 제 12장 활혈거어약(2)",
+    "sasang": null
+  },
+  {
+    "id": "12-1-18",
+    "name": "수질",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "12. 활혈거어약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": "[본초학 4주차] 제 12장 활혈거어약(2)",
+    "sasang": null
+  },
+  {
+    "id": "12-1-19",
+    "name": "택란",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "12. 활혈거어약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": "[본초학 4주차] 제 12장 활혈거어약(2)",
+    "sasang": null
+  },
+  {
+    "id": "12-1-20",
+    "name": "능소화",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "12. 활혈거어약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": "[본초학 4주차] 제 12장 활혈거어약(2)",
+    "sasang": null
+  },
+  {
+    "id": "12-1-21",
+    "name": "자연동",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "12. 활혈거어약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": "[본초학 4주차] 제 12장 활혈거어약(2)",
+    "sasang": null
+  },
+  {
+    "id": "12-1-22",
+    "name": "왕불류행",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "12. 활혈거어약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": "[본초학 4주차] 제 12장 활혈거어약(2)",
+    "sasang": null
+  },
+  {
+    "id": "12-1-23",
+    "name": "소목",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "12. 활혈거어약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": "[본초학 4주차] 제 12장 활혈거어약(2)",
+    "sasang": null
+  },
+  {
+    "id": "12-1-24",
+    "name": "건칠",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "12. 활혈거어약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": "[본초학 4주차] 제 12장 활혈거어약(2)",
+    "sasang": null
+  },
+  {
+    "id": "12-1-25",
+    "name": "조각자",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "12. 활혈거어약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": "[본초학 4주차] 제 12장 활혈거어약(2)",
+    "sasang": null
+  },
+  {
+    "id": "12-1-26",
+    "name": "혈갈",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "12. 활혈거어약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": "[본초학 4주차] 제 12장 활혈거어약(2)",
+    "sasang": null
+  },
+  {
+    "id": "12-1-27",
+    "name": "충위자",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "12. 활혈거어약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": "[본초학 4주차] 제 12장 활혈거어약(2)",
+    "sasang": null
+  },
+  {
+    "id": "12-1-28",
+    "name": "권백",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "12. 활혈거어약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": "[본초학 4주차] 제 12장 활혈거어약(2)",
+    "sasang": null
+  },
+  {
+    "id": "12-1-29",
+    "name": "계혈등",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "12. 활혈거어약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": "[본초학 4주차] 제 12장 활혈거어약(2)",
+    "sasang": null
+  },
+  {
+    "id": "13-1-1",
+    "name": "반하",
+    "hanja": "半夏",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "13-1. 온화한담약",
+    "nature": [
+      "溫"
+    ],
+    "flavor": [
+      "辛"
+    ],
+    "channelTropism": [
+      "脾經",
+      "胃經",
+      "肺經"
+    ],
+    "efficacy": [
+      "조습화담",
+      "강역지구",
+      "소비산결"
+    ],
+    "indications": [
+      "습담한담",
+      "구토",
+      "반위",
+      "흉비결흉",
+      "매핵기"
+    ],
+    "lesson": "[본초학 5주차] 제 13장 화담지해평천약(1)",
+    "sasang": null
+  },
+  {
+    "id": "13-1-2",
+    "name": "천남성",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "13-1. 온화한담약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": "[본초학 5주차] 제 13장 화담지해평천약(1)",
+    "sasang": null
+  },
+  {
+    "id": "13-1-3",
+    "name": "백부자",
+    "hanja": "白附子",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "13-1. 온화한담약",
+    "nature": [
+      "溫"
+    ],
+    "flavor": [
+      "辛",
+      "甘"
+    ],
+    "channelTropism": [
+      "胃經",
+      "肝經"
+    ],
+    "efficacy": [
+      "거풍담",
+      "지경련",
+      "지통",
+      "해독산결"
+    ],
+    "indications": [
+      "풍담벽두통",
+      "구안와사",
+      "파상풍",
+      "경간추축",
+      "독사교상",
+      "나력담핵"
+    ],
+    "lesson": "[본초학 5주차] 제 13장 화담지해평천약(1)",
+    "sasang": null
+  },
+  {
+    "id": "13-1-4",
+    "name": "백개자",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "13-1. 온화한담약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": "[본초학 5주차] 제 13장 화담지해평천약(1)",
+    "sasang": null
+  },
+  {
+    "id": "13-1-5",
+    "name": "조협",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "13-1. 온화한담약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": "[본초학 5주차] 제 13장 화담지해평천약(1)",
+    "sasang": null
+  },
+  {
+    "id": "13-1-6",
+    "name": "선복화",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "13-1. 온화한담약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "13-1-7",
+    "name": "백전",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "13-1. 온화한담약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "13-2-1",
+    "name": "전호",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "13-2. 청화열담약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "13-2-2",
+    "name": "길경",
+    "hanja": "桔梗",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "13-2. 청화열담약",
+    "nature": [
+      "平"
+    ],
+    "flavor": [
+      "辛",
+      "苦"
+    ],
+    "channelTropism": [
+      "肺經"
+    ],
+    "efficacy": [
+      "선폐이인",
+      "거담배농"
+    ],
+    "indications": [
+      "기해담다",
+      "인통",
+      "실음",
+      "폐옹토농"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "13-2-3",
+    "name": "과루",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "13-2. 청화열담약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "13-2-4",
+    "name": "천패모",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "13-2. 청화열담약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "13-2-5",
+    "name": "절패모",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "13-2. 청화열담약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "13-2-6",
+    "name": "천축황",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "13-2. 청화열담약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "13-2-7",
+    "name": "죽여",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "13-2. 청화열담약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "13-2-8",
+    "name": "죽력",
+    "hanja": "竹瀝",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "13-2. 청화열담약",
+    "nature": [
+      "寒"
+    ],
+    "flavor": [
+      "甘"
+    ],
+    "channelTropism": [
+      "心經",
+      "肺經",
+      "胃經"
+    ],
+    "efficacy": [
+      "청열활담",
+      "진경개규"
+    ],
+    "indications": [
+      "중풍담미",
+      "담열해수",
+      "경간"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "13-2-9",
+    "name": "청몽석",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "13-2. 청화열담약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": "[본초학 6주차] 제 13장 화담지해평천약(2)",
+    "sasang": null
+  },
+  {
+    "id": "13-2-10",
+    "name": "해조",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "13-2. 청화열담약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": "[본초학 6주차] 제 13장 화담지해평천약(2)",
+    "sasang": null
+  },
+  {
+    "id": "13-2-11",
+    "name": "곤포",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "13-2. 청화열담약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": "[본초학 6주차] 제 13장 화담지해평천약(2)",
+    "sasang": null
+  },
+  {
+    "id": "13-2-12",
+    "name": "반대해",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "13-2. 청화열담약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": "[본초학 6주차] 제 13장 화담지해평천약(2)",
+    "sasang": null
+  },
+  {
+    "id": "13-2-13",
+    "name": "비파엽",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "13-2. 청화열담약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": "[본초학 6주차] 제 13장 화담지해평천약(2)",
+    "sasang": null
+  },
+  {
+    "id": "13-2-14",
+    "name": "동과자",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "13-2. 청화열담약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": "[본초학 6주차] 제 13장 화담지해평천약(2)",
+    "sasang": null
+  },
+  {
+    "id": "13-3-1",
+    "name": "행인",
+    "hanja": "杏仁",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "13-3. 지해평천약",
+    "nature": [
+      "微溫"
+    ],
+    "flavor": [
+      "苦"
+    ],
+    "channelTropism": [
+      "肺經",
+      "大腸經"
+    ],
+    "efficacy": [
+      "지해평천",
+      "윤장통변"
+    ],
+    "indications": [
+      "기해기천",
+      "흉만담다",
+      "장조변비"
+    ],
+    "lesson": "[본초학 6주차] 제 13장 화담지해평천약(2)",
+    "sasang": null
+  },
+  {
+    "id": "13-3-2",
+    "name": "백부근",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "13-3. 지해평천약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": "[본초학 6주차] 제 13장 화담지해평천약(2)",
+    "sasang": null
+  },
+  {
+    "id": "13-3-3",
+    "name": "자완",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "13-3. 지해평천약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": "[본초학 6주차] 제 13장 화담지해평천약(2)",
+    "sasang": null
+  },
+  {
+    "id": "13-3-4",
+    "name": "관동화",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "13-3. 지해평천약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "13-3-5",
+    "name": "소자",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "13-3. 지해평천약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": "소음인 (https://www.notion.so/1cf4701f579380a68d48df07358de0bd?pvs=21)"
+  },
+  {
+    "id": "13-3-6",
+    "name": "상백피",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "13-3. 지해평천약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "13-3-7",
+    "name": "정력자",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "13-3. 지해평천약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "13-3-8",
+    "name": "마두령",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "13-3. 지해평천약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "13-3-9",
+    "name": "백과",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "13-3. 지해평천약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": "태음인 (https://www.notion.so/1cf4701f5793805cba25c2435306687f?pvs=21)"
+  },
+  {
+    "id": "",
+    "name": "황백",
+    "hanja": "黃柏",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "2-2. 청열조습약",
+    "nature": [
+      "寒"
+    ],
+    "flavor": [
+      "苦"
+    ],
+    "channelTropism": [
+      "腎經",
+      "膀胱經"
+    ],
+    "efficacy": [
+      "청열조습",
+      "사화해독",
+      "퇴허열"
+    ],
+    "indications": [
+      "습열사리",
+      "황달",
+      "대하",
+      "골증조열",
+      "도한",
+      "유정"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "현삼",
+    "hanja": "玄蔘",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "2-3. 청열량혈약",
+    "nature": [
+      "微寒"
+    ],
+    "flavor": [
+      "甘",
+      "苦",
+      "鹹"
+    ],
+    "channelTropism": [
+      "肺經",
+      "胃經",
+      "腎經"
+    ],
+    "efficacy": [
+      "양혈자음",
+      "사화해독"
+    ],
+    "indications": [
+      "열병상음",
+      "골증노열",
+      "인후종통",
+      "나력결핵",
+      "옹종"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "대두황권",
+    "hanja": "大豆黃卷",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "2-2. 청열조습약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "목단피",
+    "hanja": "牡丹皮",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "2-3. 청열량혈약",
+    "nature": [
+      "微寒"
+    ],
+    "flavor": [
+      "苦",
+      "辛"
+    ],
+    "channelTropism": [
+      "心經",
+      "肝經",
+      "腎經"
+    ],
+    "efficacy": [
+      "청열량혈",
+      "활혈거어"
+    ],
+    "indications": [
+      "온병열입혈분",
+      "발반",
+      "골증조열",
+      "경폐통경",
+      "옹종",
+      "질박상"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "지황",
+    "hanja": "地黃",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "2-3. 청열량혈약",
+    "nature": [
+      "寒"
+    ],
+    "flavor": [
+      "甘",
+      "苦"
+    ],
+    "channelTropism": [
+      "心經",
+      "肝經",
+      "腎經"
+    ],
+    "efficacy": [
+      "청열양혈",
+      "양음생진"
+    ],
+    "indications": [
+      "열병상음",
+      "발반",
+      "토혈",
+      "뉵혈",
+      "소갈"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "백선피",
+    "hanja": "白鮮皮",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "2-2. 청열조습약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "자초",
+    "hanja": "紫草",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "2-3. 청열량혈약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "용담초",
+    "hanja": "龍膽草",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "2-2. 청열조습약",
+    "nature": [
+      "寒"
+    ],
+    "flavor": [
+      "苦"
+    ],
+    "channelTropism": [
+      "肝經",
+      "膽經"
+    ],
+    "efficacy": [
+      "청열조습",
+      "사간담화"
+    ],
+    "indications": [
+      "습열황달",
+      "음부종양",
+      "대하",
+      "습진",
+      "간화두통",
+      "목적이농",
+      "경풍추축",
+      "구급"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "적작약",
+    "hanja": "赤芍藥",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "2-3. 청열량혈약",
+    "nature": [
+      "微寒"
+    ],
+    "flavor": [
+      "苦"
+    ],
+    "channelTropism": [
+      "肝經"
+    ],
+    "efficacy": [
+      "청열양혈",
+      "산어지통"
+    ],
+    "indications": [
+      "열입영혈",
+      "반진",
+      "경폐",
+      "징가",
+      "질박어종",
+      "옹종정독"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "황련",
+    "hanja": "黃連",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "2-2. 청열조습약",
+    "nature": [
+      "寒"
+    ],
+    "flavor": [
+      "苦"
+    ],
+    "channelTropism": [
+      "心經",
+      "脾經",
+      "胃經",
+      "肝經",
+      "膽經",
+      "大腸經"
+    ],
+    "efficacy": [
+      "청열조습",
+      "사화해독"
+    ],
+    "indications": [
+      "습열비만",
+      "구토",
+      "사리",
+      "고열신혼",
+      "심화항성",
+      "목적",
+      "구창",
+      "옹종정독"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "황금",
+    "hanja": "黃芩",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "2-2. 청열조습약",
+    "nature": [
+      "寒"
+    ],
+    "flavor": [
+      "苦"
+    ],
+    "channelTropism": [
+      "肺經",
+      "膽經",
+      "脾經",
+      "大腸經",
+      "小腸經"
+    ],
+    "efficacy": [
+      "청열조습",
+      "사화해독",
+      "지혈",
+      "안태"
+    ],
+    "indications": [
+      "습온서습",
+      "흉민구토",
+      "폐열해수",
+      "혈열출혈",
+      "옹종정독",
+      "태동불안"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "서각",
+    "hanja": "犀角",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "2-3. 청열량혈약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "고삼",
+    "hanja": "苦蔘",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "2-2. 청열조습약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "웅담",
+    "hanja": "熊膽",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "2-4. 청열해독약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "자화지정",
+    "hanja": "紫花地丁",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "2-4. 청열해독약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "위릉채",
+    "hanja": "萎陵菜",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "2-4. 청열해독약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "포공영",
+    "hanja": "蒲公英",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "2-4. 청열해독약",
+    "nature": [
+      "寒"
+    ],
+    "flavor": [
+      "苦",
+      "甘"
+    ],
+    "channelTropism": [
+      "肝經",
+      "胃經"
+    ],
+    "efficacy": [
+      "청열해독",
+      "소옹산결",
+      "이습통림"
+    ],
+    "indications": [
+      "옹종정독",
+      "유옹",
+      "나력",
+      "목적인통",
+      "습열황달",
+      "열림삽통"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "누로",
+    "hanja": "漏蘆",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "2-4. 청열해독약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "조휴",
+    "hanja": "蚤休",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "2-4. 청열해독약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "마치현",
+    "hanja": "馬齒莧",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "2-4. 청열해독약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "백두옹",
+    "hanja": "白頭翁",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "2-4. 청열해독약",
+    "nature": [
+      "寒"
+    ],
+    "flavor": [
+      "苦"
+    ],
+    "channelTropism": [
+      "胃經",
+      "大腸經"
+    ],
+    "efficacy": [
+      "청열해독",
+      "양혈지리"
+    ],
+    "indications": [
+      "열독혈리",
+      "음양소양"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "인동등",
+    "hanja": "忍冬藤",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "2-4. 청열해독약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "패장",
+    "hanja": "敗醬",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "2-4. 청열해독약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "대청엽",
+    "hanja": "大靑葉",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "2-4. 청열해독약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "판람근",
+    "hanja": "板藍根",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "2-4. 청열해독약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "산자고",
+    "hanja": "山慈菇",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "2-4. 청열해독약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "녹두",
+    "hanja": "綠豆",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "2-4. 청열해독약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "백화사설초",
+    "hanja": "白花蛇舌草",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "2-4. 청열해독약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "금은화",
+    "hanja": "金銀花",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "2-4. 청열해독약",
+    "nature": [
+      "寒"
+    ],
+    "flavor": [
+      "甘"
+    ],
+    "channelTropism": [
+      "肺經",
+      "心經",
+      "胃經"
+    ],
+    "efficacy": [
+      "청열해독",
+      "소풍산열"
+    ],
+    "indications": [
+      "옹종정독",
+      "인후종통",
+      "단독",
+      "열독혈리",
+      "풍열감모",
+      "온병발열"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "연교",
+    "hanja": "連翹",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "2-4. 청열해독약",
+    "nature": [
+      "微寒"
+    ],
+    "flavor": [
+      "苦"
+    ],
+    "channelTropism": [
+      "肺經",
+      "心經",
+      "小腸經"
+    ],
+    "efficacy": [
+      "청열해독",
+      "소옹산결",
+      "소풍산열"
+    ],
+    "indications": [
+      "옹종정독",
+      "나력",
+      "인후종통",
+      "풍열감모",
+      "온병초기"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "진피",
+    "hanja": "秦皮",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "2-4. 청열해독약",
+    "nature": [
+      "寒"
+    ],
+    "flavor": [
+      "苦",
+      "澁"
+    ],
+    "channelTropism": [
+      "肝經",
+      "膽經",
+      "大腸經"
+    ],
+    "efficacy": [
+      "청열조습",
+      "수렴지리",
+      "명목"
+    ],
+    "indications": [
+      "열독사리",
+      "적백대하",
+      "목적종통"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "청대",
+    "hanja": "靑黛",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "2-4. 청열해독약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "우황",
+    "hanja": "牛黃",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "2-4. 청열해독약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "백렴",
+    "hanja": "白蘞",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "2-4. 청열해독약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "야국화",
+    "hanja": "野菊花",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "2-4. 청열해독약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "은시호",
+    "hanja": "銀柴胡",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "2-5. 청허열약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "호황련",
+    "hanja": "胡黃連",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "2-5. 청허열약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "토복령",
+    "hanja": "土茯苓",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "2-4. 청열해독약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "반변련",
+    "hanja": "半邊蓮",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "2-4. 청열해독약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "백미",
+    "hanja": "白薇",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "2-5. 청허열약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "청호",
+    "hanja": "靑蒿",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "2-5. 청허열약",
+    "nature": [
+      "寒"
+    ],
+    "flavor": [
+      "苦",
+      "辛"
+    ],
+    "channelTropism": [
+      "肝經",
+      "膽經"
+    ],
+    "efficacy": [
+      "퇴허열",
+      "양혈",
+      "해서",
+      "절학"
+    ],
+    "indications": [
+      "온사상음",
+      "야열조량",
+      "골증노열",
+      "서사외감",
+      "학질한열"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "어성초",
+    "hanja": "魚腥草",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "2-4. 청열해독약",
+    "nature": [
+      "微寒"
+    ],
+    "flavor": [
+      "辛"
+    ],
+    "channelTropism": [
+      "肺經"
+    ],
+    "efficacy": [
+      "청열해독",
+      "소옹배농",
+      "이뇨통림"
+    ],
+    "indications": [
+      "폐옹토농",
+      "폐열해수",
+      "열독창양",
+      "습열사리",
+      "열림"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "사간",
+    "hanja": "射干",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "2-4. 청열해독약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "지골피",
+    "hanja": "地骨皮",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "2-5. 청허열약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "산두근",
+    "hanja": "山豆根",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "2-4. 청열해독약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "대황",
+    "hanja": "大黃",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "3-1. 공하약",
+    "nature": [
+      "寒"
+    ],
+    "flavor": [
+      "苦"
+    ],
+    "channelTropism": [
+      "脾經",
+      "胃經",
+      "大腸經",
+      "肝經",
+      "心包經"
+    ],
+    "efficacy": [
+      "사하공적",
+      "청열사화",
+      "양혈해독",
+      "축어통경"
+    ],
+    "indications": [
+      "실열변비",
+      "고열신혼",
+      "복통장결",
+      "혈열토혈",
+      "옹종정독",
+      "어혈경폐"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "화마인(마자인)",
+    "hanja": "火麻仁",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "3-2. 윤하약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "망초",
+    "hanja": "芒硝",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "3-1. 공하약",
+    "nature": [
+      "寒"
+    ],
+    "flavor": [
+      "苦",
+      "鹹"
+    ],
+    "channelTropism": [
+      "胃經",
+      "大腸經"
+    ],
+    "efficacy": [
+      "사하통변",
+      "윤조연견",
+      "청화소종"
+    ],
+    "indications": [
+      "실열적체",
+      "대변조결",
+      "복만장통",
+      "인통구창",
+      "목적종통"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "감수",
+    "hanja": "甘遂",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "3-3. 준하축수약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "욱리인",
+    "hanja": "郁李仁",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "3-2. 윤하약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "원화",
+    "hanja": "芫花",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "3-3. 준하축수약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "대극",
+    "hanja": "大戟",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "3-3. 준하축수약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "견우자",
+    "hanja": "牽牛子",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "3-3. 준하축수약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "노회",
+    "hanja": "蘆薈",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "3-1. 공하약",
+    "nature": [
+      "寒"
+    ],
+    "flavor": [
+      "苦"
+    ],
+    "channelTropism": [
+      "肝經",
+      "胃經",
+      "大腸經"
+    ],
+    "efficacy": [
+      "사하청간",
+      "살충"
+    ],
+    "indications": [
+      "열결변비",
+      "간경실화",
+      "두훈두통",
+      "번조역노",
+      "경간",
+      "충적복통"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "상륙",
+    "hanja": "商陸",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "3-3. 준하축수약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "속수자",
+    "hanja": "續隨子",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "3-3. 준하축수약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "파두",
+    "hanja": "巴豆",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "3-3. 준하축수약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "낙석등",
+    "hanja": "絡石藤",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "4-2. 서근활락약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "해동피",
+    "hanja": "海桐皮",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "4-1. 거풍습지비통약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "상지",
+    "hanja": "桑枝",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "4-2. 서근활락약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "마전자",
+    "hanja": "馬錢子",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "4-1. 거풍습지비통약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "독활",
+    "hanja": "獨活",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "4-1. 거풍습지비통약",
+    "nature": [
+      "微溫"
+    ],
+    "flavor": [
+      "辛",
+      "苦"
+    ],
+    "channelTropism": [
+      "腎經",
+      "膀胱經"
+    ],
+    "efficacy": [
+      "거풍습",
+      "지비통",
+      "해표"
+    ],
+    "indications": [
+      "풍한습비",
+      "요슬동통",
+      "소음두통",
+      "풍한협습표증"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "진교",
+    "hanja": "秦艽",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "4-1. 거풍습지비통약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "위령선",
+    "hanja": "威靈仙",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "4-1. 거풍습지비통약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "방기",
+    "hanja": "防己",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "4-1. 거풍습지비통약",
+    "nature": [
+      "寒"
+    ],
+    "flavor": [
+      "苦",
+      "辛"
+    ],
+    "channelTropism": [
+      "膀胱經",
+      "肺經"
+    ],
+    "efficacy": [
+      "거풍지통",
+      "이수소종"
+    ],
+    "indications": [
+      "풍습비통",
+      "수종",
+      "각기",
+      "소변불리"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "초오",
+    "hanja": "草烏",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "4-1. 거풍습지비통약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "모과",
+    "hanja": "木瓜",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "4-2. 서근활락약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "잠사",
+    "hanja": "蠶沙",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "4-1. 거풍습지비통약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "호골",
+    "hanja": "虎骨",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "4-3. 거풍습강근골약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "오초사",
+    "hanja": "烏梢蛇",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "4-2. 서근활락약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "상기생",
+    "hanja": "桑寄生",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "4-3. 거풍습강근골약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "희렴초",
+    "hanja": "豨薟草",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "4-2. 서근활락약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "곡기생",
+    "hanja": "槲寄生",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "4-3. 거풍습강근골약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "기사",
+    "hanja": "蕲蛇",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "4-2. 서근활락약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "오가피",
+    "hanja": "五加皮",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "4-3. 거풍습강근골약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "금전백화사",
+    "hanja": "金錢白花蛇",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "4-2. 서근활락약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "취오동",
+    "hanja": "臭梧桐",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "4-2. 서근활락약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "사향",
+    "hanja": "麝香",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "16. 개규약(소)",
+    "nature": [
+      "溫"
+    ],
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "빙편",
+    "hanja": "冰片",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "16. 개규약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "석창포",
+    "hanja": "石菖蒲",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "16. 개규약(소)",
+    "nature": [
+      "溫"
+    ],
+    "flavor": [
+      "辛",
+      "苦"
+    ],
+    "channelTropism": [
+      "心經",
+      "胃經"
+    ],
+    "efficacy": [
+      "개규영신",
+      "화습화위",
+      "영심안신"
+    ],
+    "indications": [
+      "담몽심규",
+      "신혼",
+      "건망",
+      "이명이롱",
+      "완비불기",
+      "소화불량"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "소합향",
+    "hanja": "蘇合香",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "16. 개규약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "안식향",
+    "hanja": "安息香",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "16. 개규약(소)",
+    "nature": [
+      "平"
+    ],
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "섬소",
+    "hanja": "蟾酥",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "16. 개규약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "장뇌",
+    "hanja": "樟腦",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "16. 개규약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "부소맥",
+    "hanja": "浮小麥",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "18-1. 지한약",
+    "nature": [
+      "涼"
+    ],
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "마황근",
+    "hanja": "麻黃根",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "18-1. 지한약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "나도근",
+    "hanja": "糯稻根",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "18-1. 지한약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "가자",
+    "hanja": "訶子",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "18-2. 지사약",
+    "nature": [
+      "平"
+    ],
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "육두구",
+    "hanja": "肉豆蔻",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "18-2. 지사약",
+    "nature": [
+      "溫"
+    ],
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "적석지",
+    "hanja": "赤石脂",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "18-2. 지사약",
+    "nature": [
+      "溫"
+    ],
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "오매",
+    "hanja": "烏梅",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "18-2. 지사약",
+    "nature": [
+      "平"
+    ],
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "앵속각",
+    "hanja": "罌粟殼",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "18-2. 지사약",
+    "nature": [
+      "平"
+    ],
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "우여량",
+    "hanja": "禹餘糧",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "18-2. 지사약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "석류피",
+    "hanja": "石榴",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "18-2. 지사약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "춘피",
+    "hanja": "柘白皮",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "18-2. 지사약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "오배자",
+    "hanja": "五倍子",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "18-2. 지사약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "오미자",
+    "hanja": "五味子",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "18-3. 삽정축뇨지대약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "연자육",
+    "hanja": "蓮子肉",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "18-3. 삽정축뇨지대약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "검실",
+    "hanja": "芡實",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "18-3. 삽정축뇨지대약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "산수유",
+    "hanja": "山茱萸",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "18-3. 삽정축뇨지대약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "금앵자",
+    "hanja": "金櫻子",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "18-3. 삽정축뇨지대약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "상표초",
+    "hanja": "桑螵蛸",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "18-3. 삽정축뇨지대약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "복분자",
+    "hanja": "覆盆子",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "18-3. 삽정축뇨지대약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "해표초",
+    "hanja": "海螵蛸",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "18-3. 삽정축뇨지대약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "백반",
+    "hanja": "白礬",
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "18-3. 삽정축뇨지대약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "창출",
+    "hanja": "蒼朮",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "5. 방향화습약(소)",
+    "nature": [
+      "溫"
+    ],
+    "flavor": [
+      "辛",
+      "苦"
+    ],
+    "channelTropism": [
+      "脾經",
+      "胃經",
+      "肝經"
+    ],
+    "efficacy": [
+      "조습건비",
+      "거풍산한",
+      "명목"
+    ],
+    "indications": [
+      "습조비위",
+      "완복창만",
+      "식욕부진",
+      "구토설사",
+      "풍습비증",
+      "풍한감모",
+      "야맹증"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "후박",
+    "hanja": "厚朴",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "5. 방향화습약(소)",
+    "nature": [
+      "溫"
+    ],
+    "flavor": [
+      "辛",
+      "苦"
+    ],
+    "channelTropism": [
+      "脾經",
+      "胃經",
+      "肺經",
+      "大腸經"
+    ],
+    "efficacy": [
+      "조습소담",
+      "하기제만"
+    ],
+    "indications": [
+      "습체중만",
+      "복창식적",
+      "담음천해",
+      "매핵기"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "곽곽향",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "5. 방향화습약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "사인",
+    "hanja": "砂仁",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "5. 방향화습약(소)",
+    "nature": [
+      "溫"
+    ],
+    "flavor": [
+      "辛"
+    ],
+    "channelTropism": [
+      "脾經",
+      "胃經",
+      "腎經"
+    ],
+    "efficacy": [
+      "화습행기",
+      "온중지사",
+      "안태"
+    ],
+    "indications": [
+      "습조기체",
+      "완복창통",
+      "비위허한구토설사",
+      "임신오조",
+      "태동불안"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "초두구",
+    "hanja": "草豆蔻",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "5. 방향화습약(소)",
+    "nature": [
+      "溫"
+    ],
+    "flavor": [
+      "辛"
+    ],
+    "channelTropism": [
+      "脾經",
+      "胃經"
+    ],
+    "efficacy": [
+      "조습행기",
+      "온중지구"
+    ],
+    "indications": [
+      "한습내조",
+      "완복냉통",
+      "구역구토",
+      "부식"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "초과",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "5. 방향화습약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "패란",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "5. 방향화습약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "복령",
+    "hanja": "茯苓",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "6-1. 이수퇴종약",
+    "nature": [
+      "平"
+    ],
+    "flavor": [
+      "甘",
+      "淡"
+    ],
+    "channelTropism": [
+      "心經",
+      "肺經",
+      "脾經",
+      "腎經"
+    ],
+    "efficacy": [
+      "이수삼습",
+      "건비보중",
+      "영심안신"
+    ],
+    "indications": [
+      "수종소변불리",
+      "담음현훈",
+      "비허식소",
+      "설사",
+      "심계불안",
+      "불면"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "저령",
+    "hanja": "豬苓",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "6-1. 이수퇴종약",
+    "nature": [
+      "平"
+    ],
+    "flavor": [
+      "甘",
+      "淡"
+    ],
+    "channelTropism": [
+      "腎經",
+      "膀胱經"
+    ],
+    "efficacy": [
+      "이수삼습"
+    ],
+    "indications": [
+      "소변불리",
+      "수종",
+      "설사",
+      "대하",
+      "임탁"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "택사",
+    "hanja": "澤瀉",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "6-1. 이수퇴종약",
+    "nature": [
+      "寒"
+    ],
+    "flavor": [
+      "甘"
+    ],
+    "channelTropism": [
+      "腎經",
+      "膀胱經"
+    ],
+    "efficacy": [
+      "이수삼습",
+      "설열"
+    ],
+    "indications": [
+      "소변불리",
+      "수종",
+      "설사",
+      "소변임력",
+      "유정"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "의이인",
+    "hanja": "薏苡仁",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "6-1. 이수퇴종약",
+    "nature": [
+      "微寒"
+    ],
+    "flavor": [
+      "甘",
+      "淡"
+    ],
+    "channelTropism": [
+      "脾經",
+      "胃經",
+      "肺經"
+    ],
+    "efficacy": [
+      "이수삼습",
+      "건비지사",
+      "제비",
+      "배농",
+      "해독산결"
+    ],
+    "indications": [
+      "수종",
+      "각기",
+      "소변불리",
+      "습비구련",
+      "비허설사",
+      "폐옹",
+      "장옹"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "동과피",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "6-1. 이수퇴종약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "적소두",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "6-1. 이수퇴종약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "옥촉서예",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "6-1. 이수퇴종약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "차전자",
+    "hanja": "車前子",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "6-2 이수통림약",
+    "nature": [
+      "寒"
+    ],
+    "flavor": [
+      "甘"
+    ],
+    "channelTropism": [
+      "肝經",
+      "腎經",
+      "肺經",
+      "小腸經"
+    ],
+    "efficacy": [
+      "이수통림",
+      "삼습지사",
+      "명목",
+      "거담"
+    ],
+    "indications": [
+      "열림삽통",
+      "수종",
+      "서습설사",
+      "목적종통",
+      "담열해수"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "목통",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "6-2 이수통림약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "활석",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "6-2 이수통림약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "통초",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "6-2 이수통림약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "해금사",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "6-2 이수통림약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "석위",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "6-2 이수통림약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "비해",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "6-2 이수통림약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "지부자",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "6-2 이수통림약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "편축",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "6-2 이수통림약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "구맥",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "6-2 이수통림약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "동규자",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "6-2 이수통림약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "등심초",
+    "hanja": "燈心草",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "6-2 이수통림약",
+    "nature": [
+      "微寒"
+    ],
+    "flavor": [
+      "甘",
+      "淡"
+    ],
+    "channelTropism": [
+      "心經",
+      "肺經",
+      "小腸經"
+    ],
+    "efficacy": [
+      "이뇨통림",
+      "청심강화"
+    ],
+    "indications": [
+      "림병",
+      "수종",
+      "심번불면",
+      "소아야제",
+      "창상"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "삼백초",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "6-2 이수통림약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "인진호",
+    "hanja": "茵蔯蒿",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "6-2 이수통림약",
+    "nature": [
+      "微寒"
+    ],
+    "flavor": [
+      "苦"
+    ],
+    "channelTropism": [
+      "脾經",
+      "胃經",
+      "肝經",
+      "膽經"
+    ],
+    "efficacy": [
+      "청이습열",
+      "퇴황달"
+    ],
+    "indications": [
+      "황달",
+      "습창",
+      "습진소양"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "금전초",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "6-2 이수통림약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "부자",
+    "hanja": "附子",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "7. 온리약(소)",
+    "nature": [
+      "大熱"
+    ],
+    "flavor": [
+      "辛",
+      "甘"
+    ],
+    "channelTropism": [
+      "心經",
+      "腎經",
+      "脾經"
+    ],
+    "efficacy": [
+      "회양구역",
+      "보화조양",
+      "산한지통"
+    ],
+    "indications": [
+      "망양허탈",
+      "지냉맥미",
+      "양위",
+      "완복냉통",
+      "비양불진설사",
+      "양허수종",
+      "심양부족",
+      "풍한습비"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "천오두",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "7. 온리약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "건강",
+    "hanja": "乾薑",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "7. 온리약(소)",
+    "nature": [
+      "熱"
+    ],
+    "flavor": [
+      "辛"
+    ],
+    "channelTropism": [
+      "脾經",
+      "胃經",
+      "腎經",
+      "心經",
+      "肺經"
+    ],
+    "efficacy": [
+      "온중산한",
+      "회양통맥",
+      "조습소담",
+      "온폐화음"
+    ],
+    "indications": [
+      "완복냉통",
+      "구토설사",
+      "망양증",
+      "한음천해"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "육계",
+    "hanja": "肉桂",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "7. 온리약(소)",
+    "nature": [
+      "大熱"
+    ],
+    "flavor": [
+      "辛",
+      "甘"
+    ],
+    "channelTropism": [
+      "腎經",
+      "脾經",
+      "心經",
+      "肝經"
+    ],
+    "efficacy": [
+      "보화조양",
+      "산한지통",
+      "온통경맥",
+      "인화귀원"
+    ],
+    "indications": [
+      "양위궁냉",
+      "요슬냉통",
+      "신양불족",
+      "명문화쇠",
+      "완복냉통",
+      "허양상부",
+      "음저류주",
+      "경폐통경"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "오수유",
+    "hanja": "吳茱萸",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "7. 온리약(소)",
+    "nature": [
+      "熱"
+    ],
+    "flavor": [
+      "辛",
+      "苦"
+    ],
+    "channelTropism": [
+      "肝經",
+      "脾經",
+      "胃經",
+      "腎經"
+    ],
+    "efficacy": [
+      "산한지통",
+      "강역지구",
+      "조양지사"
+    ],
+    "indications": [
+      "궐음두통",
+      "한산복통",
+      "한습각기",
+      "구역토산",
+      "오경설사"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "촉초",
+    "hanja": "蜀椒",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "7. 온리약(소)",
+    "nature": [
+      "熱"
+    ],
+    "flavor": [
+      "辛"
+    ],
+    "channelTropism": [
+      "脾經",
+      "胃經",
+      "腎經"
+    ],
+    "efficacy": [
+      "온중지통",
+      "살충지양"
+    ],
+    "indications": [
+      "완복한통",
+      "구토설사",
+      "충적복통",
+      "습진소양"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "필발",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "7. 온리약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "필징가",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "7. 온리약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "정향",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "7. 온리약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "고량강",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "7. 온리약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "소회향",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "7. 온리약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "호초",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "7. 온리약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "청피",
+    "hanja": "靑皮",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "8. 이기약(소)",
+    "nature": [
+      "溫"
+    ],
+    "flavor": [
+      "苦",
+      "辛"
+    ],
+    "channelTropism": [
+      "肝經",
+      "膽經",
+      "胃經"
+    ],
+    "efficacy": [
+      "소간파기",
+      "소적화체"
+    ],
+    "indications": [
+      "간울기체",
+      "흉협창통",
+      "유방장통",
+      "식적기체",
+      "완복창통"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "지실",
+    "hanja": "枳實",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "8. 이기약(소)",
+    "nature": [
+      "微寒"
+    ],
+    "flavor": [
+      "苦",
+      "辛",
+      "酸"
+    ],
+    "channelTropism": [
+      "脾經",
+      "胃經",
+      "大腸經"
+    ],
+    "efficacy": [
+      "파기소적",
+      "화담제비"
+    ],
+    "indications": [
+      "식적정체",
+      "복만창통",
+      "사리후중",
+      "대변불통",
+      "담체흉비"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "지각",
+    "hanja": "枳殼",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "8. 이기약(소)",
+    "nature": [
+      "微寒"
+    ],
+    "flavor": [
+      "苦",
+      "辛",
+      "酸"
+    ],
+    "channelTropism": [
+      "脾經",
+      "胃經",
+      "大腸經"
+    ],
+    "efficacy": [
+      "이기관중",
+      "행체소창"
+    ],
+    "indications": [
+      "흉협기체",
+      "창만동통",
+      "식적불화",
+      "담음내정"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "목향",
+    "hanja": "木香",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "8. 이기약(소)",
+    "nature": [
+      "溫"
+    ],
+    "flavor": [
+      "辛",
+      "苦"
+    ],
+    "channelTropism": [
+      "脾經",
+      "胃經",
+      "大腸經",
+      "三焦經",
+      "膽經"
+    ],
+    "efficacy": [
+      "행기지통",
+      "건비소식"
+    ],
+    "indications": [
+      "완복창통",
+      "설사후중",
+      "식적불소",
+      "불사음식"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "향부자",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "8. 이기약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "오약",
+    "hanja": "烏藥",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "8. 이기약(소)",
+    "nature": [
+      "溫"
+    ],
+    "flavor": [
+      "辛"
+    ],
+    "channelTropism": [
+      "肺經",
+      "脾經",
+      "腎經",
+      "膀胱經"
+    ],
+    "efficacy": [
+      "행기지통",
+      "온신산한"
+    ],
+    "indications": [
+      "한응기체",
+      "흉복창통",
+      "기역천급",
+      "방광허냉",
+      "유뇨빈뇨",
+      "산기동통",
+      "경한복통"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "침향",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "8. 이기약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "천련자",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "8. 이기약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "여지핵",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "8. 이기약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "청목향",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "8. 이기약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "해백",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "8. 이기약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "단향",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "8. 이기약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "시체",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "8. 이기약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "매괴화",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "8. 이기약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "대복피",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "8. 이기약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "토목향",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "8. 이기약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "감송향",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "8. 이기약(소)",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "주사",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "14-1. 진심안신약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "자석",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "14-1. 진심안신약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "용골",
+    "hanja": "龍骨",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "14-1. 진심안신약",
+    "nature": [
+      "平"
+    ],
+    "flavor": [
+      "甘",
+      "澁"
+    ],
+    "channelTropism": [
+      "心經",
+      "肝經",
+      "腎經"
+    ],
+    "efficacy": [
+      "진경안신",
+      "평간잠양",
+      "수렴고삽"
+    ],
+    "indications": [
+      "심계",
+      "불면",
+      "경간",
+      "유정",
+      "활정",
+      "붕루대하",
+      "자한도한"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "호박",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "14-1. 진심안신약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "산조인",
+    "hanja": "酸棗仁",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "14-2. 양심안신약",
+    "nature": [
+      "平"
+    ],
+    "flavor": [
+      "甘",
+      "酸"
+    ],
+    "channelTropism": [
+      "心經",
+      "脾經",
+      "肝經",
+      "膽經"
+    ],
+    "efficacy": [
+      "양심보간",
+      "안신",
+      "렴한생진"
+    ],
+    "indications": [
+      "허번불면",
+      "심계",
+      "다몽",
+      "체허자한",
+      "진상구갈"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "백자인",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "14-2. 양심안신약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "원지",
+    "hanja": "遠志",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "14-2. 양심안신약",
+    "nature": [
+      "溫"
+    ],
+    "flavor": [
+      "苦",
+      "辛"
+    ],
+    "channelTropism": [
+      "心經",
+      "腎經",
+      "肺經"
+    ],
+    "efficacy": [
+      "안신익지",
+      "거담개규",
+      "소옹"
+    ],
+    "indications": [
+      "심신불안",
+      "불면다몽",
+      "건망경계",
+      "신지황홀",
+      "기해다담",
+      "옹종정독",
+      "유방종통"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "합환피",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "14-2. 양심안신약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "영지",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "14-2. 양심안신약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "야교등",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "14-2. 양심안신약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "영양각",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "15-1. 평간소풍약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "조구등",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "15-1. 평간소풍약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "천마",
+    "hanja": "天麻",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "15-1. 평간소풍약",
+    "nature": [
+      "平"
+    ],
+    "flavor": [
+      "甘"
+    ],
+    "channelTropism": [
+      "肝經"
+    ],
+    "efficacy": [
+      "식풍지경",
+      "평간잠양",
+      "거풍통락"
+    ],
+    "indications": [
+      "소아경풍",
+      "간풍내동",
+      "경간추축",
+      "파상풍",
+      "현훈",
+      "두통",
+      "지체마목",
+      "반신불수",
+      "풍습비통"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "백강잠",
+    "hanja": "白殭蠶",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "15-1. 평간소풍약",
+    "nature": [
+      "平"
+    ],
+    "flavor": [
+      "辛",
+      "鹹"
+    ],
+    "channelTropism": [
+      "肝經",
+      "肺經",
+      "胃經"
+    ],
+    "efficacy": [
+      "식풍지경",
+      "거풍지통",
+      "화담산결"
+    ],
+    "indications": [
+      "간풍경간",
+      "두풍두통",
+      "인후종통",
+      "구안와사",
+      "풍진소양",
+      "나력담핵"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "전갈",
+    "hanja": "全蠍",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "15-1. 평간소풍약",
+    "nature": [
+      "平"
+    ],
+    "flavor": [
+      "辛"
+    ],
+    "channelTropism": [
+      "肝經"
+    ],
+    "efficacy": [
+      "식풍진경",
+      "통락지통",
+      "공독산결"
+    ],
+    "indications": [
+      "간풍내동",
+      "경간추축",
+      "소아경풍",
+      "중풍반신불수",
+      "구안와사",
+      "편정두통",
+      "풍습비통",
+      "창양종독"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "오공",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "15-1. 평간소풍약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "구인",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "15-1. 평간소풍약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "결명자",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "15-1. 평간소풍약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "석결명",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "15-2. 평간잠양약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "모려",
+    "hanja": "牡蠣",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "15-2. 평간잠양약",
+    "nature": [
+      "微寒"
+    ],
+    "flavor": [
+      "鹹",
+      "澁"
+    ],
+    "channelTropism": [
+      "肝經",
+      "膽經",
+      "腎經"
+    ],
+    "efficacy": [
+      "평간잠양",
+      "연견산결",
+      "수렴고삽",
+      "제산지통"
+    ],
+    "indications": [
+      "간양상항",
+      "두훈목현",
+      "경간",
+      "나력담핵",
+      "징가",
+      "자한도한",
+      "유정붕대",
+      "위통반산"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "진주",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "15-2. 평간잠양약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "대자석",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "15-2. 평간잠양약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "백질려",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "15-2. 평간잠양약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "인삼",
+    "hanja": "人蔘",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "17-1. 보기약",
+    "nature": [
+      "平"
+    ],
+    "flavor": [
+      "甘",
+      "微苦"
+    ],
+    "channelTropism": [
+      "脾經",
+      "肺經",
+      "心經"
+    ],
+    "efficacy": [
+      "대보원기",
+      "복맥고탈",
+      "보비익폐",
+      "생진양혈",
+      "안신익지"
+    ],
+    "indications": [
+      "체허욕탈",
+      "지냉맥미",
+      "비허식소",
+      "폐허천해",
+      "진상구갈",
+      "내열소갈",
+      "심계불면",
+      "양위궁냉"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "당삼",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-1. 보기약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "황기",
+    "hanja": "黃芪",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "17-1. 보기약",
+    "nature": [
+      "微溫"
+    ],
+    "flavor": [
+      "甘"
+    ],
+    "channelTropism": [
+      "肺經",
+      "脾經"
+    ],
+    "efficacy": [
+      "보기고표",
+      "이수소종",
+      "탁창생기",
+      "생진양혈",
+      "행체통비",
+      "탁독배농",
+      "렴창생기"
+    ],
+    "indications": [
+      "기허핍력",
+      "식소변당",
+      "중기하함",
+      "구사탈항",
+      "자한",
+      "혈비",
+      "수종",
+      "옹종불궤",
+      "기혈부족",
+      "소갈"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "백출",
+    "hanja": "白朮",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "17-1. 보기약",
+    "nature": [
+      "溫"
+    ],
+    "flavor": [
+      "苦",
+      "甘"
+    ],
+    "channelTropism": [
+      "脾經",
+      "胃經"
+    ],
+    "efficacy": [
+      "건비익기",
+      "조습이수",
+      "지한",
+      "안태"
+    ],
+    "indications": [
+      "비허식소",
+      "복창설사",
+      "담음수종",
+      "자한",
+      "태동불안"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "산약",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-1. 보기약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "백편두",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-1. 보기약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "감초",
+    "hanja": "甘草",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "17-1. 보기약",
+    "nature": [
+      "平"
+    ],
+    "flavor": [
+      "甘"
+    ],
+    "channelTropism": [
+      "心經",
+      "肺經",
+      "脾經",
+      "胃經"
+    ],
+    "efficacy": [
+      "보비익기",
+      "청열해독",
+      "거담지해",
+      "완급지통",
+      "조화제약"
+    ],
+    "indications": [
+      "비위허약",
+      "핍력",
+      "심계",
+      "기단",
+      "옹종정독",
+      "약물중독",
+      "완복근맥작통"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "대조",
+    "hanja": "大棗",
+    "starred": true,
+    "categoryMajor": null,
+    "categoryMinor": "17-1. 보기약",
+    "nature": [
+      "溫"
+    ],
+    "flavor": [
+      "甘"
+    ],
+    "channelTropism": [
+      "脾經",
+      "胃經",
+      "心經"
+    ],
+    "efficacy": [
+      "보중익기",
+      "양혈안신"
+    ],
+    "indications": [
+      "비허식소",
+      "핍력변당",
+      "부인장조",
+      "장비불안"
+    ],
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "봉밀",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-1. 보기약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "녹용",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-2. 보양약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "녹각",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-2. 보양약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "녹각교",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-2. 보양약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "녹각상",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-2. 보양약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "파극천",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-2. 보양약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "육종용",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-2. 보양약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "선모",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-2. 보양약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "음양곽",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-2. 보양약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "호로파",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-2. 보양약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "두충",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-2. 보양약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "속단",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-2. 보양약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "보골지",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-2. 보양약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "구척",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-2. 보양약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "익지인",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-2. 보양약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "골쇄보",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-2. 보양약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "동충하초",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-2. 보양약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "합개",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-2. 보양약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "호도인",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-2. 보양약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "자하거",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-2. 보양약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "토사자",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-2. 보양약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "사원질려",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-2. 보양약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "쇄양",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-2. 보양약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "구자",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-2. 보양약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "양기석",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-2. 보양약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "해구신",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-2. 보양약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "해마",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-2. 보양약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "사상자",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-2. 보양약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "당귀",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-3. 보혈약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "숙지황",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-3. 보혈약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "백작약",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-3. 보혈약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "하수오",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-3. 보혈약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "아교",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-3. 보혈약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "용안육",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-3. 보혈약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "사삼",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-4. 보음약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "맥문동",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-4. 보음약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "천문동",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-4. 보음약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "석곡",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-4. 보음약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "옥죽",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-4. 보음약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "황정",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-4. 보음약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "백합",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-4. 보음약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "구기자",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-4. 보음약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "상심자",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-4. 보음약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "한련초",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-4. 보음약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "여정자",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-4. 보음약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "귀판",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-4. 보음약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "별갑",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-4. 보음약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "흑지마",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-4. 보음약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "저실자",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": "17-4. 보음약",
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "은교",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "과체",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "상산",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "담반",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "여로",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "유황",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "비석",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "웅황",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "경분",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "연단",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "노감석",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "붕사",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "반모",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "노봉방",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "대풍자",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "목근피",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "방풍",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "창출",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "작약",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "계지",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "대조",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "마황",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "강활",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "감초",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "건강",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "세신",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "형개",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "황금",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "죽엽",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "금은화",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "생지황",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "박하",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "연교",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "석고",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "국화",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "독활",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "지실",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "시호",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "부자",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "지각",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "후박",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "백출",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "복령",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "대황",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "망초",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "인삼",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "산조인",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "원지",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "자감초",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "육계",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "의이인",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "황기",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "목향",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "진피",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "사인",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "복신",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "소엽",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "계심",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "마인",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "목단피",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "택사",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "빈랑",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "치자",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "오약",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "청피",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "귤핵",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "적작약",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "과루근",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "하엽",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "형개수",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "자소자",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "생황기",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "지룡",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "모근",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "천근",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "당귀미",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "백강잠",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "다엽",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "조심황토",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "호마인",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "천마",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "지모",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "지황",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "포황",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "선퇴",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "전갈",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "인진",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "천오",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "구판",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "복신목",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "계자황",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "창포",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "모려",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "용골",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "상패모",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "동변",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "이피",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "치피",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "노수",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "파백",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "옥죽",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "백미",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "총백",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "두시",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "위유",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "향부자",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "소엽",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "백지",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "승마",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "맥문동",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "갈근",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "자소엽",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "사간",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "자완",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "서각",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "적복령",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "고본",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "백주",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "침향",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "황련",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "정향",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "초두구",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "단향",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "오수유",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "곽향",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "시체",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "강향",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "금령자",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "귤피",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "당귀신",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "회향",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "산치자",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "천태오약",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "백밀",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  },
+  {
+    "id": "",
+    "name": "오약",
+    "hanja": null,
+    "starred": false,
+    "categoryMajor": null,
+    "categoryMinor": null,
+    "nature": null,
+    "flavor": null,
+    "channelTropism": null,
+    "efficacy": null,
+    "indications": null,
+    "lesson": null,
+    "sasang": null
+  }
+]

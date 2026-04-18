@@ -1,0 +1,245 @@
+/* ===== Widget Grid ===== */
+.gridWrapper {
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ===== Normal mode — all widgets transparent ===== */
+.cardNormal {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-radius: var(--ou-radius-card);
+  border: 0.5px solid transparent;
+  background: transparent;
+  overflow: hidden;
+  cursor: default;
+}
+
+/* ===== Edit mode — white rounded card visible ===== */
+.cardEdit {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-radius: var(--ou-radius-card);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.03);
+  overflow: hidden;
+  cursor: grab;
+  transition: box-shadow var(--ou-transition);
+}
+
+.cardEdit:active {
+  cursor: grabbing;
+}
+
+.cardEdit:hover {
+  box-shadow: var(--ou-glow-sm);
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+/* Legacy compat */
+.card { composes: cardNormal; }
+.cardless { composes: cardNormal; }
+
+/* ===== Floating remove button ===== */
+.removeBtn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 10;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 80, 80, 0.5);
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 80, 80, 0.8);
+  background: rgba(255, 80, 80, 0.08);
+  opacity: 0;
+  transition: opacity var(--ou-transition), background var(--ou-transition);
+}
+
+.card:hover .removeBtn,
+.cardless:hover .removeBtn {
+  opacity: 1;
+}
+
+.removeBtn:hover {
+  background: rgba(255, 80, 80, 0.15);
+  border-color: rgba(255, 80, 80, 0.7);
+  color: rgba(255, 80, 80, 1);
+}
+
+/* ===== Body ===== */
+.body {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+}
+
+/* Scrollbar in widget body */
+.body::-webkit-scrollbar {
+  width: 4px;
+}
+
+.body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.body::-webkit-scrollbar-thumb {
+  background: var(--ou-border-subtle);
+  border-radius: 2px;
+}
+
+/* ===== RGL overrides ===== */
+
+/* GPU-accelerated transforms for all grid items */
+.gridWrapper :global(.react-grid-item) {
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transition:
+    transform 350ms cubic-bezier(0.25, 1, 0.5, 1),
+    width 350ms cubic-bezier(0.25, 1, 0.5, 1),
+    height 350ms cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* The item being dragged — follows cursor instantly, lifted up */
+.gridWrapper :global(.react-grid-item.react-draggable-dragging) {
+  transition: box-shadow 150ms ease !important;
+  z-index: 10;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* The item being resized — instant follow */
+.gridWrapper :global(.react-grid-item.resizing) {
+  transition: none !important;
+  z-index: 10;
+}
+
+/* Placeholder — where the widget will snap to */
+.gridWrapper :global(.react-grid-item.react-grid-placeholder) {
+  background: var(--ou-surface-muted) !important;
+  border: 1px dashed var(--ou-border-muted) !important;
+  border-radius: var(--ou-radius-card);
+  opacity: 0.3;
+  transition: transform 250ms cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* ===== Resize handles — all 8 directions ===== */
+.gridWrapper :global(.react-grid-item > .react-resizable-handle) {
+  position: absolute;
+  opacity: 0;
+  transition: opacity var(--ou-transition);
+  z-index: 5;
+}
+
+.gridWrapper :global(.react-grid-item:hover > .react-resizable-handle) {
+  opacity: 1;
+}
+
+/* Remove default ::after indicator */
+.gridWrapper :global(.react-grid-item > .react-resizable-handle::after) {
+  display: none;
+}
+
+/* Corner handles */
+.gridWrapper :global(.react-grid-item > .react-resizable-handle-se) {
+  bottom: 0; right: 0; width: 14px; height: 14px; cursor: se-resize;
+}
+.gridWrapper :global(.react-grid-item > .react-resizable-handle-sw) {
+  bottom: 0; left: 0; width: 14px; height: 14px; cursor: sw-resize;
+}
+.gridWrapper :global(.react-grid-item > .react-resizable-handle-ne) {
+  top: 0; right: 0; width: 14px; height: 14px; cursor: ne-resize;
+}
+.gridWrapper :global(.react-grid-item > .react-resizable-handle-nw) {
+  top: 0; left: 0; width: 14px; height: 14px; cursor: nw-resize;
+}
+
+/* Edge handles */
+.gridWrapper :global(.react-grid-item > .react-resizable-handle-s) {
+  bottom: 0; left: 14px; right: 14px; height: 6px; cursor: s-resize;
+}
+.gridWrapper :global(.react-grid-item > .react-resizable-handle-n) {
+  top: 0; left: 14px; right: 14px; height: 6px; cursor: n-resize;
+}
+.gridWrapper :global(.react-grid-item > .react-resizable-handle-e) {
+  right: 0; top: 14px; bottom: 14px; width: 6px; cursor: e-resize;
+}
+.gridWrapper :global(.react-grid-item > .react-resizable-handle-w) {
+  left: 0; top: 14px; bottom: 14px; width: 6px; cursor: w-resize;
+}
+
+/* Hover visual indicator for edge handles */
+.gridWrapper :global(.react-grid-item:hover > .react-resizable-handle-s),
+.gridWrapper :global(.react-grid-item:hover > .react-resizable-handle-n) {
+  background: linear-gradient(to bottom, transparent, var(--ou-border-subtle), transparent);
+}
+.gridWrapper :global(.react-grid-item:hover > .react-resizable-handle-e),
+.gridWrapper :global(.react-grid-item:hover > .react-resizable-handle-w) {
+  background: linear-gradient(to right, transparent, var(--ou-border-subtle), transparent);
+}
+
+/* ===== Widget choreography — exit/enter animations ===== */
+
+/* Exit left */
+.exit_left {
+  animation: exitLeft 400ms cubic-bezier(0.6, 0, 1, 0.6) both;
+}
+@keyframes exitLeft {
+  to { transform: translateX(-120%) scale(0.8); opacity: 0; }
+}
+
+/* Exit right */
+.exit_right {
+  animation: exitRight 400ms cubic-bezier(0.6, 0, 1, 0.6) both;
+}
+@keyframes exitRight {
+  to { transform: translateX(120%) scale(0.8); opacity: 0; }
+}
+
+/* Exit up */
+.exit_up {
+  animation: exitUp 400ms cubic-bezier(0.6, 0, 1, 0.6) both;
+}
+@keyframes exitUp {
+  to { transform: translateY(-120%) scale(0.8); opacity: 0; }
+}
+
+/* Enter from left */
+.enter_left {
+  animation: enterLeft 450ms cubic-bezier(0, 0.4, 0.2, 1) both;
+}
+@keyframes enterLeft {
+  from { transform: translateX(-120%) scale(0.8); opacity: 0; }
+  to { transform: translateX(0) scale(1); opacity: 1; }
+}
+
+/* Enter from right */
+.enter_right {
+  animation: enterRight 450ms cubic-bezier(0, 0.4, 0.2, 1) both;
+}
+@keyframes enterRight {
+  from { transform: translateX(120%) scale(0.8); opacity: 0; }
+  to { transform: translateX(0) scale(1); opacity: 1; }
+}
+
+/* Enter from top */
+.enter_up {
+  animation: enterUp 450ms cubic-bezier(0, 0.4, 0.2, 1) both;
+}
+@keyframes enterUp {
+  from { transform: translateY(-120%) scale(0.8); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}

@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OU — OWN UNIVERSE</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #060810;
+  --border: rgba(255,255,255,0.10);
+  --glow-subtle: rgba(255,255,255,0.06);
+  --glow-mid: rgba(255,255,255,0.10);
+  --glow-strong: rgba(255,255,255,0.15);
+  --glass-bg: rgba(255,255,255,0.015);
+  --text-95: rgba(255,255,255,0.95);
+  --text-80: rgba(255,255,255,0.80);
+  --text-60: rgba(255,255,255,0.60);
+  --text-40: rgba(255,255,255,0.40);
+  --text-25: rgba(255,255,255,0.25);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text-95);
+  font-family: 'Pretendard Variable', Pretendard, -apple-system, sans-serif;
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+/* Stars */
+.stars-container { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+.star {
+  position: absolute;
+  width: 2px; height: 2px;
+  background: white;
+  border-radius: 50%;
+  animation: twinkle var(--dur) ease-in-out infinite;
+  opacity: 0;
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0.05; }
+  50% { opacity: var(--peak, 0.6); }
+}
+
+/* Nav */
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 32px;
+  backdrop-filter: blur(16px);
+  background: rgba(6,8,16,0.6);
+  border-bottom: 0.5px solid var(--border);
+}
+.nav-left { display: flex; align-items: center; gap: 10px; }
+.nav-logo {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700; font-size: 22px;
+  color: var(--text-95);
+  letter-spacing: 2px;
+}
+.badge-beta {
+  font-size: 10px; padding: 2px 8px;
+  border: 0.5px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-40);
+  font-weight: 500;
+}
+.nav-right { display: flex; gap: 10px; }
+.btn-login {
+  padding: 8px 20px; border-radius: 999px;
+  border: 0.5px solid var(--border);
+  background: transparent; color: var(--text-80);
+  font-size: 14px; cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+.btn-login:hover { border-color: rgba(255,255,255,0.3); }
+.btn-signup {
+  padding: 8px 20px; border-radius: 999px;
+  border: none; background: white; color: #060810;
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  font-family: inherit;
+  transition: opacity 0.2s;
+}
+.btn-signup:hover { opacity: 0.9; }
+
+/* Hero */
+#hero {
+  position: relative;
+  width: 100%; height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+#hero canvas {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+}
+.hero-overlay {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: none;
+}
+.hero-content {
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; height: 100%;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+.hero-content.visible { opacity: 1; }
+.hero-right {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 12px;
+}
+.hero-logo {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 900; font-size: 72px;
+  color: var(--text-95);
+  letter-spacing: 6px;
+}
+.hero-subtitle {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 14px; letter-spacing: 8px;
+  color: var(--text-40);
+  font-weight: 400;
+}
+.hero-tagline {
+  position: absolute;
+  bottom: 120px;
+  text-align: center;
+  font-size: 22px;
+  color: var(--text-60);
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+.hero-tagline.visible { opacity: 1; }
+.hero-arrow {
+  position: absolute;
+  bottom: 40px;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+  cursor: pointer;
+  pointer-events: auto;
+}
+.hero-arrow.visible { opacity: 1; }
+.hero-arrow i {
+  font-size: 32px;
+  color: var(--text-40);
+  animation: bounce 2s ease-in-out infinite;
+}
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+
+/* Sections */
+.section {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  padding: 80px 40px;
+}
+.section-inner {
+  max-width: 1100px; width: 100%;
+  display: flex; gap: 60px; align-items: flex-start;
+}
+.section-half { flex: 1; min-width: 0; }
+
+.section-title {
+  font-size: 32px; font-weight: 700;
+  margin-bottom: 40px;
+  color: var(--text-95);
+  text-align: center;
+  width: 100%;
+}
+.section-title-left {
+  text-align: left;
+}
+
+/* Glass card */
+.glass-card {
+  backdrop-filter: blur(16px);
+  background: var(--glass-bg);
+  border: 0.5px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px var(--glow-subtle);
+}
+
+/* Scattered apps */
+.scattered-apps {
+  position: relative;
+  height: 400px;
+  opacity: 0.4;
+}
+.app-card {
+  position: absolute;
+  width: 180px;
+  padding: 16px;
+  backdrop-filter: blur(16px);
+  background: var(--glass-bg);
+  border: 0.5px solid var(--border);
+  border-radius: 16px;
+}
+.app-card-header {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 12px;
+  font-size: 13px; color: var(--text-60);
+  font-weight: 500;
+}
+.app-card-header i { font-size: 18px; color: var(--text-40); }
+.skeleton-line {
+  height: 8px; border-radius: 4px;
+  background: rgba(255,255,255,0.06);
+  margin-bottom: 6px;
+}
+.skeleton-line:last-child { width: 60%; }
+.app-card:nth-child(1) { top: 20px; left: 10px; transform: rotate(-4deg); }
+.app-card:nth-child(2) { top: 60px; left: 140px; transform: rotate(3deg); }
+.app-card:nth-child(3) { top: 160px; left: 30px; transform: rotate(-2deg); }
+.app-card:nth-child(4) { top: 200px; left: 180px; transform: rotate(5deg); }
+.app-card:nth-child(5) { top: 300px; left: 80px; transform: rotate(-3deg); }
+
+/* Chat demo */
+.chat-demo {
+  display: flex; flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+  max-height: 500px;
+  overflow: hidden;
+}
+.chat-msg {
+  display: flex;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.chat-msg.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.chat-msg.user { justify-content: flex-end; }
+.chat-msg.assistant { justify-content: flex-start; }
+
+.chat-bubble-user {
+  background: rgba(255,255,255,0.04);
+  border: 0.5px solid var(--border);
+  border-radius: 20px 20px 4px 20px;
+  padding: 12px 18px;
+  font-size: 14px;
+  color: var(--text-80);
+  max-width: 280px;
+  box-shadow: 0 2px 12px var(--glow-subtle);
+}
+.chat-bubble-assistant {
+  border-left: 1.5px solid rgba(255,255,255,0.15);
+  padding: 8px 16px;
+  font-size: 14px;
+  color: var(--text-60);
+  max-width: 320px;
+}
+.chat-bubble-assistant .typing-cursor {
+  display: inline-block;
+  width: 2px; height: 14px;
+  background: var(--text-40);
+  margin-left: 2px;
+  animation: blink-cursor 0.6s step-end infinite;
+  vertical-align: text-bottom;
+}
+@keyframes blink-cursor {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Inline views */
+.inline-view {
+  margin-top: 8px;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.inline-view.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Mini calendar */
+.mini-calendar {
+  backdrop-filter: blur(16px);
+  background: var(--glass-bg);
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  width: 240px;
+}
+.mini-calendar-header {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-40);
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+.mini-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  text-align: center;
+  font-size: 11px;
+}
+.mini-calendar-grid .day-label {
+  color: var(--text-25);
+  padding: 4px 0;
+  font-size: 10px;
+}
+.mini-calendar-grid .day {
+  padding: 4px 0;
+  color: var(--text-40);
+  border-radius: 6px;
+}
+.mini-calendar-grid .day.highlight {
+  border: 0.5px solid rgba(255,255,255,0.3);
+  color: var(--text-95);
+  box-shadow: 0 0 8px var(--glow-mid);
+}
+.mini-calendar-grid .day.has-event {
+  color: var(--text-60);
+}
+.mini-calendar-grid .day.empty { visibility: hidden; }
+
+/* Bar chart */
+.mini-chart {
+  backdrop-filter: blur(16px);
+  background: var(--glass-bg);
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  width: 280px;
+}
+.mini-chart-title {
+  font-size: 11px; color: var(--text-25);
+  margin-bottom: 12px;
+}
+.chart-bars { display: flex; align-items: flex-end; gap: 12px; height: 100px; }
+.chart-bar-wrap {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 6px; flex: 1;
+}
+.chart-bar {
+  width: 100%;
+  background: rgba(255,255,255,0.12);
+  border-radius: 4px 4px 0 0;
+  min-height: 8px;
+}
+.chart-bar-label {
+  font-size: 10px;
+  color: var(--text-25);
+}
+.chart-bar-value {
+  font-size: 10px;
+  color: var(--text-40);
+}
+
+/* Section 2 tabs */
+.tab-container {
+  backdrop-filter: blur(16px);
+  background: var(--glass-bg);
+  border: 0.5px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.tab-header {
+  display: flex; border-bottom: 0.5px solid var(--border);
+}
+.tab-btn {
+  flex: 1;
+  padding: 12px 16px;
+  background: none; border: none;
+  color: var(--text-40);
+  font-size: 13px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: color 0.2s, box-shadow 0.2s;
+  border-bottom: 1.5px solid transparent;
+}
+.tab-btn.active {
+  color: var(--text-95);
+  border-bottom-color: rgba(255,255,255,0.3);
+  box-shadow: 0 2px 8px var(--glow-subtle);
+}
+.tab-content {
+  padding: 20px;
+  min-height: 200px;
+}
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* Expense table */
+.expense-table {
+  width: 100%;
+  font-size: 12px;
+  border-collapse: collapse;
+}
+.expense-table th {
+  text-align: left;
+  color: var(--text-25);
+  padding: 6px 8px;
+  border-bottom: 0.5px solid var(--border);
+  font-weight: 500;
+}
+.expense-table td {
+  padding: 8px;
+  color: var(--text-60);
+  border-bottom: 0.5px solid rgba(255,255,255,0.03);
+}
+.expense-table td:last-child { text-align: right; }
+
+/* Mini relationship graph (SVG) */
+.relationship-graph { width: 100%; height: 200px; }
+
+/* Section 3 full width */
+.section-full {
+  max-width: 600px;
+  width: 100%;
+  margin: 0 auto;
+}
+.chat-demo-full {
+  padding: 24px;
+}
+
+/* Sleep heatmap */
+.sleep-heatmap {
+  display: grid;
+  grid-template-columns: repeat(24, 1fr);
+  gap: 2px;
+  margin-top: 8px;
+}
+.sleep-cell {
+  aspect-ratio: 1;
+  border-radius: 3px;
+  background: rgba(255,255,255,0.03);
+}
+.sleep-cell.active {
+  background: rgba(255,255,255,0.15);
+  box-shadow: 0 0 4px var(--glow-subtle);
+}
+.sleep-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  color: var(--text-25);
+  margin-top: 4px;
+}
+
+/* Mic hint */
+.mic-hint {
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px;
+  margin-top: 32px;
+  color: var(--text-25);
+  font-size: 13px;
+}
+.mic-hint i { font-size: 18px; }
+
+/* CTA */
+.cta-section {
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 120px 40px;
+  gap: 32px;
+}
+.cta-logo {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 900; font-size: 56px;
+  color: var(--text-95);
+  letter-spacing: 4px;
+}
+.btn-cta {
+  padding: 14px 40px;
+  border-radius: 999px;
+  border: none;
+  background: white;
+  color: #060810;
+  font-size: 16px; font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow: 0 0 30px var(--glow-mid);
+  transition: box-shadow 0.3s, transform 0.2s;
+}
+.btn-cta:hover {
+  box-shadow: 0 0 50px var(--glow-strong);
+  transform: scale(1.02);
+}
+
+/* Footer */
+footer {
+  position: relative; z-index: 1;
+  text-align: center;
+  padding: 40px 20px 60px;
+  font-size: 12px;
+  color: var(--text-25);
+  letter-spacing: 2px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  nav { padding: 12px 16px; }
+  .nav-logo { font-size: 18px; }
+  .section { padding: 60px 20px; }
+  .section-inner { flex-direction: column; gap: 40px; }
+  .hero-logo { font-size: 48px; }
+  .hero-subtitle { font-size: 11px; letter-spacing: 5px; }
+  .hero-tagline { font-size: 18px; bottom: 100px; padding: 0 20px; }
+  .section-title { font-size: 24px; }
+  .scattered-apps { height: 340px; }
+  .app-card { width: 150px; padding: 12px; }
+  .app-card:nth-child(2) { left: 100px; }
+  .app-card:nth-child(4) { left: 120px; }
+  .mini-chart { width: 100%; }
+  .mini-calendar { width: 100%; }
+  .cta-logo { font-size: 40px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Stars -->
+<div class="stars-container" id="stars"></div>
+
+<!-- Nav -->
+<nav>
+  <div class="nav-left">
+    <span class="nav-logo">OU</span>
+    <span class="badge-beta">Beta</span>
+  </div>
+  <div class="nav-right">
+    <button class="btn-login">Log in</button>
+    <button class="btn-signup">Sign up</button>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section id="hero">
+  <canvas id="heroCanvas"></canvas>
+  <div class="hero-overlay">
+    <div class="hero-content" id="heroContent">
+      <div class="hero-right">
+        <div class="hero-logo">OU</div>
+        <div class="hero-subtitle">OWN UNIVERSE</div>
+      </div>
+    </div>
+    <div class="hero-tagline" id="heroTagline1">나만의 우주를 만드세요</div>
+    <div class="hero-tagline" id="heroTagline2" style="display:none;">이 우주는 이런 것들을 가능하게 해요</div>
+    <div class="hero-arrow" id="heroArrow">
+      <a href="#section1" style="text-decoration:none;">
+        <i class="ph ph-caret-down"></i>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Section 1 -->
+<section class="section" id="section1">
+  <div>
+    <h2 class="section-title">"<i class="ph ph-magnifying-glass" style="vertical-align:middle;margin-right:4px;"></i> 또 어디에 적었더라?"</h2>
+    <div class="section-inner">
+      <div class="section-half">
+        <div class="scattered-apps">
+          <div class="app-card">
+            <div class="app-card-header"><i class="ph ph-calendar-blank"></i> 캘린더</div>
+            <div class="skeleton-line" style="width:90%"></div>
+            <div class="skeleton-line" style="width:60%"></div>
+          </div>
+          <div class="app-card">
+            <div class="app-card-header"><i class="ph ph-note-pencil"></i> 메모</div>
+            <div class="skeleton-line" style="width:80%"></div>
+            <div class="skeleton-line" style="width:50%"></div>
+          </div>
+          <div class="app-card">
+            <div class="app-card-header"><i class="ph ph-wallet"></i> 가계부</div>
+            <div class="skeleton-line" style="width:85%"></div>
+            <div class="skeleton-line" style="width:45%"></div>
+          </div>
+          <div class="app-card">
+            <div class="app-card-header"><i class="ph ph-chat-circle"></i> 카톡</div>
+            <div class="skeleton-line" style="width:75%"></div>
+            <div class="skeleton-line" style="width:55%"></div>
+          </div>
+          <div class="app-card">
+            <div class="app-card-header"><i class="ph ph-check-square"></i> 할 일</div>
+            <div class="skeleton-line" style="width:70%"></div>
+            <div class="skeleton-line" style="width:40%"></div>
+          </div>
+        </div>
+      </div>
+      <div class="section-half">
+        <div class="glass-card chat-demo" id="chat1">
+          <!-- Messages injected by JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 2 -->
+<section class="section" id="section2">
+  <div>
+    <h2 class="section-title">"<i class="ph ph-sparkle" style="vertical-align:middle;margin-right:4px;"></i> 정리는 이제 OU가 할게요"</h2>
+    <div class="section-inner">
+      <div class="section-half">
+        <div class="glass-card chat-demo" id="chat2">
+          <!-- Messages injected by JS -->
+        </div>
+      </div>
+      <div class="section-half">
+        <div class="tab-container" id="viewTabs">
+          <div class="tab-header">
+            <button class="tab-btn active" data-tab="cal"><i class="ph ph-calendar-blank"></i> 캘린더</button>
+            <button class="tab-btn" data-tab="expense"><i class="ph ph-receipt"></i> 지출</button>
+            <button class="tab-btn" data-tab="people"><i class="ph ph-users"></i> 인물</button>
+          </div>
+          <div class="tab-content">
+            <div class="tab-panel active" id="tab-cal">
+              <div class="mini-calendar">
+                <div class="mini-calendar-header">2026년 4월</div>
+                <div class="mini-calendar-grid" id="calGrid2"></div>
+              </div>
+            </div>
+            <div class="tab-panel" id="tab-expense">
+              <table class="expense-table">
+                <thead><tr><th>날짜</th><th>항목</th><th>금액</th></tr></thead>
+                <tbody>
+                  <tr><td>4/17</td><td>커피</td><td>4,500원</td></tr>
+                  <tr><td>4/16</td><td>점심</td><td>9,800원</td></tr>
+                  <tr><td>4/16</td><td>택시</td><td>7,200원</td></tr>
+                  <tr><td>4/15</td><td>마트</td><td>23,400원</td></tr>
+                  <tr><td>4/15</td><td>커피</td><td>5,000원</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="tab-panel" id="tab-people">
+              <svg class="relationship-graph" viewBox="0 0 300 200">
+                <line x1="150" y1="100" x2="70" y2="50" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+                <line x1="150" y1="100" x2="230" y2="60" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+                <line x1="150" y1="100" x2="100" y2="160" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+                <line x1="150" y1="100" x2="230" y2="150" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+                <line x1="70" y1="50" x2="230" y2="60" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+                <circle cx="150" cy="100" r="18" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/>
+                <text x="150" y="104" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="10" font-family="Pretendard Variable">나</text>
+                <circle cx="70" cy="50" r="14" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+                <text x="70" y="54" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="9" font-family="Pretendard Variable">민준</text>
+                <circle cx="230" cy="60" r="14" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+                <text x="230" y="64" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="9" font-family="Pretendard Variable">수진</text>
+                <circle cx="100" cy="160" r="14" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+                <text x="100" y="164" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="9" font-family="Pretendard Variable">희민</text>
+                <circle cx="230" cy="150" r="14" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+                <text x="230" y="154" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="9" font-family="Pretendard Variable">네이버</text>
+                <!-- edge labels -->
+                <text x="102" y="68" text-anchor="middle" fill="rgba(255,255,255,0.2)" font-size="8" font-family="Pretendard Variable">친구</text>
+                <text x="195" y="74" text-anchor="middle" fill="rgba(255,255,255,0.2)" font-size="8" font-family="Pretendard Variable">동료</text>
+                <text x="118" y="138" text-anchor="middle" fill="rgba(255,255,255,0.2)" font-size="8" font-family="Pretendard Variable">친구</text>
+                <text x="198" y="132" text-anchor="middle" fill="rgba(255,255,255,0.2)" font-size="8" font-family="Pretendard Variable">이직처</text>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 3 -->
+<section class="section" id="section3">
+  <div>
+    <h2 class="section-title">"<i class="ph ph-chat-teardrop-text" style="vertical-align:middle;margin-right:4px;"></i> 말만 하면 돼요. 진짜로."</h2>
+    <div class="section-full">
+      <div class="glass-card chat-demo-full chat-demo" id="chat3">
+        <!-- Messages injected by JS -->
+      </div>
+      <div class="mic-hint">
+        <i class="ph ph-microphone"></i>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-logo">OU</div>
+  <button class="btn-cta">시작하기</button>
+</section>
+
+<!-- Footer -->
+<footer>OU &mdash; OWN UNIVERSE</footer>
+
+<script>
+// ============ STARS ============
+(function() {
+  const container = document.getElementById('stars');
+  for (let i = 0; i < 120; i++) {
+    const star = document.createElement('span');
+    star.className = 'star';
+    star.style.left = Math.random() * 100 + '%';
+    star.style.top = Math.random() * 100 + '%';
+    star.style.setProperty('--dur', (3 + Math.random() * 5) + 's');
+    star.style.setProperty('--peak', (0.2 + Math.random() * 0.6).toFixed(2));
+    star.style.animationDelay = (Math.random() * 5) + 's';
+    star.style.width = star.style.height = (1 + Math.random() * 1.5) + 'px';
+    container.appendChild(star);
+  }
+})();
+
+// ============ HERO GRAPH ANIMATION ============
+(function() {
+  const canvas = document.getElementById('heroCanvas');
+  const ctx = canvas.getContext('2d');
+  let W, H;
+  function resize() {
+    W = canvas.width = canvas.offsetWidth * devicePixelRatio;
+    H = canvas.height = canvas.offsetHeight * devicePixelRatio;
+    ctx.scale(devicePixelRatio, devicePixelRatio);
+  }
+  resize();
+  window.addEventListener('resize', () => {
+    ctx.setTransform(1,0,0,1,0,0);
+    resize();
+  });
+
+  const cW = () => canvas.offsetWidth;
+  const cH = () => canvas.offsetHeight;
+
+  // Generate sphere nodes (golden angle)
+  const TOTAL = 2000;
+  const allNodes = [];
+  const phi_g = Math.PI * (3 - Math.sqrt(5));
+  for (let i = 0; i < TOTAL; i++) {
+    const y = 1 - (i / (TOTAL - 1)) * 2;
+    const radius = Math.sqrt(1 - y * y);
+    const theta = phi_g * i;
+    const x = Math.cos(theta) * radius;
+    const z = Math.sin(theta) * radius;
+    allNodes.push({
+      sx: x, sy: y, sz: z,
+      opacity: 0.1 + Math.random() * 0.6,
+      size: 0.5 + Math.random() * 1.5
+    });
+  }
+
+  // Generate edges between nearby nodes
+  const edges = [];
+  const MAX_EDGES = 3000;
+  for (let i = 0; i < TOTAL && edges.length < MAX_EDGES; i++) {
+    for (let j = i + 1; j < TOTAL && edges.length < MAX_EDGES; j++) {
+      const dx = allNodes[i].sx - allNodes[j].sx;
+      const dy = allNodes[i].sy - allNodes[j].sy;
+      const dz = allNodes[i].sz - allNodes[j].sz;
+      const dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
+      if (dist < 0.15) {
+        edges.push([i, j, 0.02 + Math.random() * 0.03]);
+      }
+    }
+  }
+
+  let spawnedCount = 0;
+  let phase = 'spawning'; // spawning, zoomout, slidelogo, tagline1, tagline2, arrow
+  let startTime = null;
+  let zoomLevel = 1;
+  let graphOffsetX = 0;
+  let rotAngle = 0;
+
+  function projectNode(n, cx, cy, scale) {
+    const cosA = Math.cos(rotAngle), sinA = Math.sin(rotAngle);
+    const rx = n.sx * cosA - n.sz * sinA;
+    const rz = n.sx * sinA + n.sz * cosA;
+    const perspective = 2.5 / (2.5 + rz);
+    return {
+      x: cx + rx * scale * perspective,
+      y: cy + n.sy * scale * perspective,
+      p: perspective,
+    };
+  }
+
+  function animate(ts) {
+    if (!startTime) startTime = ts;
+    const elapsed = (ts - startTime) / 1000;
+    ctx.setTransform(1,0,0,1,0,0);
+    ctx.clearRect(0, 0, cW(), cH());
+
+    rotAngle = elapsed * 0.05;
+
+    // Spawning phases
+    if (phase === 'spawning') {
+      if (elapsed < 3) {
+        spawnedCount = Math.min(20, Math.floor(elapsed / 3 * 20));
+      } else if (elapsed < 5) {
+        spawnedCount = 20 + Math.min(200, Math.floor((elapsed - 3) / 2 * 200));
+      } else if (elapsed < 6) {
+        spawnedCount = 220 + Math.min(TOTAL - 220, Math.floor((elapsed - 5) / 1 * (TOTAL - 220)));
+      } else {
+        spawnedCount = TOTAL;
+        phase = 'zoomout';
+      }
+    }
+
+    // Zoom out
+    let targetScale;
+    if (phase === 'spawning') {
+      const visRatio = spawnedCount / TOTAL;
+      zoomLevel = 1 + visRatio * 2;
+      targetScale = Math.min(cW(), cH()) * 0.12 * zoomLevel;
+    } else {
+      if (elapsed < 8) {
+        const t = (elapsed - 6) / 2;
+        zoomLevel = 3 - t * 1.5;
+        targetScale = Math.min(cW(), cH()) * 0.12 * zoomLevel;
+      } else {
+        zoomLevel = 1.5;
+        targetScale = Math.min(cW(), cH()) * 0.12 * zoomLevel;
+        if (phase === 'zoomout') phase = 'slidelogo';
+      }
+    }
+
+    // Slide graph left + show logo
+    let cx = cW() / 2;
+    if (phase === 'slidelogo' || phase === 'tagline1' || phase === 'tagline2' || phase === 'arrow') {
+      const slideT = Math.min(1, (elapsed - 8) / 1.5);
+      const ease = slideT * (2 - slideT);
+      graphOffsetX = -cW() * 0.18 * ease;
+      cx += graphOffsetX;
+
+      if (slideT >= 1 && phase === 'slidelogo') {
+        document.getElementById('heroContent').classList.add('visible');
+        // Shift logo right
+        document.querySelector('.hero-right').style.transform = 'translateX(' + (cW() * 0.22) + 'px)';
+        setTimeout(() => { phase = 'tagline1'; }, 800);
+      }
+    }
+
+    if (phase === 'tagline1') {
+      document.getElementById('heroTagline1').classList.add('visible');
+      setTimeout(() => {
+        document.getElementById('heroTagline1').style.display = 'none';
+        document.getElementById('heroTagline2').style.display = '';
+        setTimeout(() => {
+          document.getElementById('heroTagline2').classList.add('visible');
+          phase = 'tagline2';
+        }, 100);
+      }, 2500);
+      phase = 'waitTagline';
+    }
+
+    if (phase === 'tagline2') {
+      setTimeout(() => {
+        document.getElementById('heroTagline2').style.display = 'none';
+        document.getElementById('heroArrow').classList.add('visible');
+        phase = 'arrow';
+      }, 2500);
+      phase = 'waitArrow';
+    }
+
+    const cy = cH() / 2;
+    const scale = targetScale;
+
+    // Draw edges
+    const count = Math.min(spawnedCount, TOTAL);
+    for (let e = 0; e < edges.length; e++) {
+      if (edges[e][0] >= count || edges[e][1] >= count) continue;
+      const a = projectNode(allNodes[edges[e][0]], cx, cy, scale);
+      const b = projectNode(allNodes[edges[e][1]], cx, cy, scale);
+      ctx.beginPath();
+      ctx.moveTo(a.x, a.y);
+      ctx.lineTo(b.x, b.y);
+      ctx.strokeStyle = 'rgba(255,255,255,' + (edges[e][2] * Math.min(a.p, b.p)) + ')';
+      ctx.lineWidth = 0.5;
+      ctx.stroke();
+    }
+
+    // Draw nodes
+    for (let i = 0; i < count; i++) {
+      const p = projectNode(allNodes[i], cx, cy, scale);
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, allNodes[i].size * p.p, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255,255,255,' + (allNodes[i].opacity * p.p * 0.8) + ')';
+      ctx.fill();
+    }
+
+    requestAnimationFrame(animate);
+  }
+  requestAnimationFrame(animate);
+})();
+
+// ============ MINI CALENDARS ============
+function buildCalendar(gridId, highlightDays, eventDays) {
+  const grid = document.getElementById(gridId);
+  const labels = ['일','월','화','수','목','금','토'];
+  labels.forEach(l => {
+    const d = document.createElement('div');
+    d.className = 'day-label';
+    d.textContent = l;
+    grid.appendChild(d);
+  });
+  // April 2026 starts on Wednesday (day index 3)
+  const startDay = 3;
+  for (let i = 0; i < startDay; i++) {
+    const d = document.createElement('div');
+    d.className = 'day empty';
+    grid.appendChild(d);
+  }
+  for (let day = 1; day <= 30; day++) {
+    const d = document.createElement('div');
+    d.className = 'day';
+    d.textContent = day;
+    if (highlightDays.includes(day)) d.classList.add('highlight');
+    if (eventDays.includes(day)) d.classList.add('has-event');
+    grid.appendChild(d);
+  }
+}
+buildCalendar('calGrid2', [17], [3, 10, 15, 17, 22, 26]);
+
+// ============ TABS ============
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const parent = btn.closest('.tab-container');
+    parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    parent.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+// ============ CHAT DEMOS ============
+const chatScripts = {
+  chat1: [
+    { role: 'user', text: '희민이 결혼식 언제였지?' },
+    { role: 'assistant', text: '4월 26일 일요일이에요.', afterView: 'calendar1' },
+    { role: 'user', text: '이번 달 지출 보여줘' },
+    { role: 'assistant', text: '이번 달 지출 정리해드릴게요.', afterView: 'chart1' },
+  ],
+  chat2: [
+    { role: 'user', text: '커피 4,500원' },
+    { role: 'assistant', text: '오늘 커피 지출 기록했어요.' },
+    { role: 'user', text: '오늘 팀 미팅 3시' },
+    { role: 'assistant', text: '오후 3시 팀 미팅, 일정에 넣었어요.' },
+    { role: 'user', text: '민준이가 이직한다고 했어. 네이버로 간대' },
+    { role: 'assistant', text: '민준님 이직 소식 기억할게요.' },
+  ],
+  chat3: [
+    { role: 'user', text: '7시에 분유 180ml' },
+    { role: 'assistant', text: '수유 기록했어요. 오늘 총 540ml이에요.', afterView: 'feedChart' },
+    { role: 'user', text: '낮잠 1시~3시' },
+    { role: 'assistant', text: '낮잠 2시간, 기록했어요.', afterView: 'sleepMap' },
+  ]
+};
+
+function createInlineView(type) {
+  const wrap = document.createElement('div');
+  wrap.className = 'inline-view';
+
+  if (type === 'calendar1') {
+    const cal = document.createElement('div');
+    cal.className = 'mini-calendar';
+    cal.innerHTML = '<div class="mini-calendar-header">2026년 4월</div><div class="mini-calendar-grid" id="calGrid1"></div>';
+    wrap.appendChild(cal);
+    // Build after appending
+    setTimeout(() => buildCalendar('calGrid1', [26], [3, 10, 17, 26]), 10);
+  }
+
+  if (type === 'chart1') {
+    const chart = document.createElement('div');
+    chart.className = 'mini-chart';
+    chart.innerHTML = `
+      <div class="mini-chart-title">4월 지출</div>
+      <div class="chart-bars">
+        <div class="chart-bar-wrap"><div class="chart-bar-value">12만</div><div class="chart-bar" style="height:70%"></div><div class="chart-bar-label">식비</div></div>
+        <div class="chart-bar-wrap"><div class="chart-bar-value">5만</div><div class="chart-bar" style="height:35%"></div><div class="chart-bar-label">교통</div></div>
+        <div class="chart-bar-wrap"><div class="chart-bar-value">3만</div><div class="chart-bar" style="height:22%"></div><div class="chart-bar-label">커피</div></div>
+        <div class="chart-bar-wrap"><div class="chart-bar-value">8만</div><div class="chart-bar" style="height:50%"></div><div class="chart-bar-label">기타</div></div>
+      </div>`;
+    wrap.appendChild(chart);
+  }
+
+  if (type === 'feedChart') {
+    const chart = document.createElement('div');
+    chart.className = 'mini-chart';
+    chart.innerHTML = `
+      <div class="mini-chart-title">오늘 수유 기록</div>
+      <div class="chart-bars">
+        <div class="chart-bar-wrap"><div class="chart-bar-value">180</div><div class="chart-bar" style="height:90%"></div><div class="chart-bar-label">7시</div></div>
+        <div class="chart-bar-wrap"><div class="chart-bar-value">200</div><div class="chart-bar" style="height:100%"></div><div class="chart-bar-label">11시</div></div>
+        <div class="chart-bar-wrap"><div class="chart-bar-value">160</div><div class="chart-bar" style="height:80%"></div><div class="chart-bar-label">15시</div></div>
+      </div>`;
+    wrap.appendChild(chart);
+  }
+
+  if (type === 'sleepMap') {
+    const mapDiv = document.createElement('div');
+    mapDiv.style.cssText = 'padding:8px;';
+    let html = '<div style="font-size:11px;color:rgba(255,255,255,0.25);margin-bottom:6px;">수면 기록</div><div class="sleep-heatmap">';
+    for (let h = 0; h < 24; h++) {
+      const active = (h >= 13 && h < 15) || (h >= 21 || h < 7);
+      html += '<div class="sleep-cell' + (active ? ' active' : '') + '"></div>';
+    }
+    html += '</div><div class="sleep-labels"><span>0시</span><span>6시</span><span>12시</span><span>18시</span><span>24시</span></div>';
+    mapDiv.innerHTML = html;
+    wrap.appendChild(mapDiv);
+  }
+
+  return wrap;
+}
+
+function createChatBubble(msg) {
+  const div = document.createElement('div');
+  div.className = 'chat-msg ' + msg.role;
+  const bubble = document.createElement('div');
+  bubble.className = msg.role === 'user' ? 'chat-bubble-user' : 'chat-bubble-assistant';
+  div.appendChild(bubble);
+  return { div, bubble };
+}
+
+function typeText(bubble, text, speed) {
+  return new Promise(resolve => {
+    let i = 0;
+    const cursor = document.createElement('span');
+    cursor.className = 'typing-cursor';
+    bubble.appendChild(cursor);
+    const interval = setInterval(() => {
+      if (i < text.length) {
+        bubble.insertBefore(document.createTextNode(text[i]), cursor);
+        i++;
+      } else {
+        clearInterval(interval);
+        cursor.remove();
+        resolve();
+      }
+    }, speed);
+  });
+}
+
+async function playChat(containerId) {
+  const container = document.getElementById(containerId);
+  if (container.dataset.played) return;
+  container.dataset.played = 'true';
+  const script = chatScripts[containerId];
+
+  for (const msg of script) {
+    const { div, bubble } = createChatBubble(msg);
+    container.appendChild(div);
+
+    // Trigger visibility
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => { div.classList.add('visible'); });
+    });
+
+    if (msg.role === 'user') {
+      bubble.textContent = msg.text;
+      await new Promise(r => setTimeout(r, 800));
+    } else {
+      await new Promise(r => setTimeout(r, 400));
+      await typeText(bubble, msg.text, 30);
+
+      if (msg.afterView) {
+        const view = createInlineView(msg.afterView);
+        const viewMsg = document.createElement('div');
+        viewMsg.className = 'chat-msg assistant';
+        viewMsg.appendChild(view);
+        container.appendChild(viewMsg);
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            viewMsg.classList.add('visible');
+            view.classList.add('visible');
+          });
+        });
+        await new Promise(r => setTimeout(r, 600));
+      }
+
+      await new Promise(r => setTimeout(r, 500));
+    }
+  }
+}
+
+// ============ INTERSECTION OBSERVER ============
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      if (id === 'chat1' || id === 'chat2' || id === 'chat3') {
+        playChat(id);
+      }
+    }
+  });
+}, { threshold: 0.3 });
+
+document.querySelectorAll('.chat-demo').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

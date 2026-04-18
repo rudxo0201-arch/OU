@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OU — Just talk.</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://unpkg.com/@phosphor-icons/web@2.0.3/src/regular/style.css" rel="stylesheet">
+<style>
+:root {
+  --ou-space: #060810;
+  --ou-glow-xs: 0 0 8px 0 rgba(255,255,255,0.04);
+  --ou-glow-sm: 0 0 12px 1px rgba(255,255,255,0.06);
+  --ou-glow-md: 0 0 20px 2px rgba(255,255,255,0.08);
+  --ou-glow-lg: 0 0 32px 4px rgba(255,255,255,0.10);
+  --ou-glow-hover: 0 0 24px 3px rgba(255,255,255,0.12);
+  --ou-glow-bright: 0 0 40px 6px rgba(255,255,255,0.15);
+  --ou-border-faint: rgba(255,255,255,0.06);
+  --ou-border-subtle: rgba(255,255,255,0.10);
+  --ou-border-muted: rgba(255,255,255,0.14);
+  --ou-border-medium: rgba(255,255,255,0.18);
+  --ou-border-hover: rgba(255,255,255,0.25);
+  --ou-border-strong: rgba(255,255,255,0.30);
+  --ou-surface-faint: rgba(255,255,255,0.015);
+  --ou-surface-subtle: rgba(255,255,255,0.03);
+  --ou-surface-muted: rgba(255,255,255,0.05);
+  --ou-text-faint: rgba(255,255,255,0.15);
+  --ou-text-muted: rgba(255,255,255,0.25);
+  --ou-text-dimmed: rgba(255,255,255,0.40);
+  --ou-text-secondary: rgba(255,255,255,0.55);
+  --ou-text-body: rgba(255,255,255,0.70);
+  --ou-text-strong: rgba(255,255,255,0.85);
+  --ou-text-bright: rgba(255,255,255,0.95);
+  --ou-font-logo: 'Orbitron', sans-serif;
+  --ou-radius-pill: 999px;
+  --ou-radius-card: 16px;
+  --ou-radius-md: 10px;
+  --ou-radius-sm: 6px;
+  --ou-transition: 180ms ease;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Pretendard Variable', -apple-system, sans-serif;
+  background: var(--ou-space);
+  color: var(--ou-text-body);
+  overflow-x: hidden;
+}
+
+/* Stars */
+.stars {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none; z-index: 0;
+}
+.stars span {
+  position: absolute; border-radius: 50%;
+  background: rgba(255,255,255,0.5);
+  animation: twinkle 3s ease-in-out infinite alternate;
+}
+@keyframes twinkle {
+  0% { opacity: 0.15; } 100% { opacity: 0.7; }
+}
+
+/* Nav */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 20px 40px;
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-bottom: 0.5px solid var(--ou-border-faint);
+}
+.nav-left { display: flex; align-items: center; gap: 10px; }
+.nav-logo {
+  font-family: var(--ou-font-logo); font-size: 18px; font-weight: 700;
+  color: var(--ou-text-bright); letter-spacing: 2px;
+}
+.nav-badge {
+  padding: 2px 8px; border-radius: var(--ou-radius-pill);
+  border: 0.5px solid var(--ou-border-subtle);
+  font-size: 9px; color: var(--ou-text-dimmed);
+  letter-spacing: 1.5px; text-transform: uppercase;
+}
+.nav-actions { display: flex; gap: 12px; align-items: center; }
+.nav-btn {
+  padding: 8px 20px; border-radius: var(--ou-radius-pill);
+  border: 0.5px solid var(--ou-border-subtle); background: transparent;
+  color: var(--ou-text-body); font-size: 13px; font-family: inherit;
+  cursor: pointer; transition: var(--ou-transition);
+}
+.nav-btn:hover { border-color: var(--ou-border-hover); color: var(--ou-text-bright); }
+.nav-btn.primary {
+  background: rgba(255,255,255,0.9); color: #111;
+  border: none; font-weight: 600;
+}
+.nav-btn.primary:hover { background: #fff; }
+
+/* Sections */
+section {
+  min-height: 100vh; display: flex; flex-direction: column;
+  justify-content: center; align-items: center;
+  position: relative; z-index: 1; padding: 100px 40px;
+}
+
+/* Hero */
+.hero { text-align: center; gap: 32px; position: relative; }
+.hero-canvas {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 0;
+}
+.hero-content {
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column; align-items: center; gap: 24px;
+  opacity: 0; transition: opacity 0.8s ease;
+}
+.hero-content.visible { opacity: 1; }
+.hero-logo {
+  font-family: var(--ou-font-logo); font-size: 72px; font-weight: 800;
+  color: var(--ou-text-bright); letter-spacing: 8px;
+  text-shadow: 0 0 60px rgba(255,255,255,0.12);
+}
+.hero-sub {
+  font-family: var(--ou-font-logo); font-size: 10px;
+  color: rgba(255,255,255,0.35); letter-spacing: 8px; text-transform: uppercase;
+}
+.hero-tagline {
+  font-size: 42px; font-weight: 300;
+  color: var(--ou-text-strong); letter-spacing: -0.5px;
+}
+.hero-desc {
+  font-size: 16px; color: var(--ou-text-secondary);
+  margin-top: 8px; opacity: 0; transition: opacity 0.8s ease 0.3s;
+}
+.hero-desc.visible { opacity: 1; }
+.hero-scroll {
+  margin-top: 60px; display: flex; flex-direction: column;
+  align-items: center; gap: 8px; color: var(--ou-text-dimmed);
+  font-size: 11px; animation: bounce-down 2s ease-in-out infinite;
+  opacity: 0; transition: opacity 0.8s ease 0.6s;
+}
+.hero-scroll.visible { opacity: 1; }
+@keyframes bounce-down {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+
+/* Before/After Section */
+.ba-section { padding: 80px 40px; }
+.ba-section-label {
+  font-size: 11px; color: var(--ou-text-dimmed);
+  letter-spacing: 3px; text-transform: uppercase;
+  text-align: center; margin-bottom: 60px;
+}
+.ba-section-num {
+  font-family: var(--ou-font-logo); font-size: 10px;
+  color: var(--ou-text-muted); letter-spacing: 2px; margin-right: 12px;
+}
+.ba-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 60px; max-width: 1100px; width: 100%;
+  align-items: start;
+}
+.ba-side { display: flex; flex-direction: column; gap: 24px; }
+.ba-title {
+  font-size: 22px; font-weight: 400; line-height: 1.5;
+  letter-spacing: -0.3px;
+}
+.before-side .ba-title { color: var(--ou-text-dimmed); }
+.after-side .ba-title { color: var(--ou-text-strong); }
+
+/* Before side dimmed */
+.before-side { opacity: 0.5; }
+
+/* After side bright */
+.after-side { position: relative; }
+.after-glow {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Skeleton App Cards */
+.app-cards {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 12px; max-width: 360px;
+}
+.app-card {
+  border: 0.5px solid var(--ou-border-subtle);
+  border-radius: var(--ou-radius-md);
+  padding: 14px 12px;
+  display: flex; flex-direction: column; gap: 8px;
+  transition: var(--ou-transition);
+}
+.app-card:nth-child(1) { transform: rotate(-2deg); }
+.app-card:nth-child(2) { transform: rotate(1deg); }
+.app-card:nth-child(3) { transform: rotate(-1deg); }
+.app-card:nth-child(4) { transform: rotate(1.5deg); grid-column: span 1; }
+.app-card:nth-child(5) { transform: rotate(-0.5deg); grid-column: span 2; }
+.app-card-icon {
+  font-size: 20px; color: var(--ou-text-dimmed);
+}
+.app-card-name {
+  font-size: 11px; color: var(--ou-text-dimmed); font-weight: 500;
+}
+.skeleton-line {
+  height: 6px; border-radius: 3px;
+  background: rgba(255,255,255,0.06);
+}
+.skeleton-line.short { width: 60%; }
+.skeleton-line.long { width: 85%; }
+
+/* Chat Demo */
+.chat-demo {
+  border: 0.5px solid var(--ou-border-subtle);
+  border-radius: var(--ou-radius-card);
+  padding: 20px; display: flex; flex-direction: column; gap: 14px;
+  box-shadow: var(--ou-glow-sm);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  background: var(--ou-surface-faint);
+  min-height: 300px;
+}
+.chat-msg {
+  opacity: 0; transform: translateY(8px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.chat-msg.visible { opacity: 1; transform: translateY(0); }
+.chat-msg.user {
+  background: var(--ou-surface-subtle);
+  border: 1px solid var(--ou-border-medium);
+  border-radius: 20px 20px 4px 20px;
+  padding: 10px 16px; margin-left: auto;
+  max-width: 80%; color: var(--ou-text-bright); font-size: 14px;
+  box-shadow: var(--ou-glow-md);
+}
+.chat-msg.assistant {
+  max-width: 90%; padding: 10px 14px;
+  border-left: 1.5px solid var(--ou-border-muted);
+  color: var(--ou-text-body); font-size: 14px; line-height: 1.6;
+}
+.typing-cursor {
+  display: inline-block; width: 2px; height: 14px;
+  background: var(--ou-text-body); margin-left: 2px;
+  animation: blink 0.8s step-end infinite; vertical-align: text-bottom;
+}
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+/* Inline Knowledge Card */
+.inline-knowledge {
+  border: 0.5px solid var(--ou-border-subtle);
+  border-radius: var(--ou-radius-md); padding: 16px;
+  margin-top: 4px;
+  opacity: 0; transform: translateY(8px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.inline-knowledge.visible { opacity: 1; transform: translateY(0); }
+.inline-knowledge-title {
+  font-size: 13px; font-weight: 600; color: var(--ou-text-strong);
+  margin-bottom: 12px; display: flex; align-items: center; gap: 6px;
+}
+.inline-knowledge-item {
+  padding: 6px 0 6px 14px;
+  border-left: 1px solid var(--ou-border-faint);
+  margin-bottom: 8px;
+}
+.inline-knowledge-item-title {
+  font-size: 12px; font-weight: 500; color: var(--ou-text-body);
+  margin-bottom: 2px;
+}
+.inline-knowledge-item-text {
+  font-size: 11px; color: var(--ou-text-secondary); line-height: 1.6;
+}
+
+/* Inline Badge */
+.inline-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 14px; border-radius: var(--ou-radius-pill);
+  border: 0.5px solid var(--ou-border-subtle);
+  font-size: 12px; color: var(--ou-text-secondary);
+  box-shadow: var(--ou-glow-xs); margin-top: 4px;
+  opacity: 0; transform: translateY(4px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.inline-badge.visible { opacity: 1; transform: translateY(0); }
+
+/* Section 2 — Clock */
+.clock-display {
+  display: flex; align-items: center; gap: 16px;
+  margin-bottom: 16px;
+}
+.clock-icon { font-size: 36px; }
+.clock-time {
+  font-size: 56px; font-weight: 200; letter-spacing: -2px;
+  font-family: var(--ou-font-logo);
+}
+.before-side .clock-icon { color: var(--ou-text-dimmed); }
+.before-side .clock-time { color: var(--ou-text-dimmed); }
+.after-side .clock-icon { color: var(--ou-text-bright); }
+.after-side .clock-time {
+  color: var(--ou-text-bright);
+  text-shadow: 0 0 40px rgba(255,255,255,0.15);
+}
+.clock-desc {
+  font-size: 14px; line-height: 1.8;
+}
+.before-side .clock-desc { color: var(--ou-text-dimmed); }
+.after-side .clock-desc { color: var(--ou-text-secondary); }
+
+/* Inline Outline */
+.inline-outline {
+  border: 0.5px solid var(--ou-border-subtle);
+  border-radius: var(--ou-radius-md); padding: 16px;
+  margin-top: 4px;
+  opacity: 0; transform: translateY(8px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.inline-outline.visible { opacity: 1; transform: translateY(0); }
+.inline-outline-title {
+  font-size: 13px; font-weight: 600; color: var(--ou-text-strong);
+  margin-bottom: 12px; display: flex; align-items: center; gap: 6px;
+}
+.outline-topic {
+  margin-bottom: 10px;
+}
+.outline-topic-title {
+  font-size: 12px; font-weight: 500; color: var(--ou-text-body);
+  margin-bottom: 4px; padding-left: 4px;
+}
+.outline-sub {
+  font-size: 11px; color: var(--ou-text-secondary); line-height: 1.7;
+  padding-left: 18px;
+}
+
+/* Section 3 — Search scatter */
+.search-scatter {
+  position: relative; min-height: 200px; display: flex;
+  flex-direction: column; align-items: center; justify-content: center;
+}
+.search-icon-big {
+  font-size: 48px; color: var(--ou-text-dimmed);
+  position: relative; z-index: 2; margin-bottom: 20px;
+}
+.scatter-bubbles {
+  position: relative; width: 300px; height: 120px;
+}
+.scatter-bubble {
+  position: absolute; padding: 8px 14px;
+  border-radius: 12px; font-size: 11px;
+  border: 0.5px solid var(--ou-border-faint);
+  color: var(--ou-text-dimmed); white-space: nowrap;
+}
+.scatter-desc {
+  font-size: 14px; color: var(--ou-text-dimmed);
+  line-height: 1.8; margin-top: 16px; text-align: center;
+}
+
+/* Inline SWOT Grid */
+.inline-swot {
+  border: 0.5px solid var(--ou-border-subtle);
+  border-radius: var(--ou-radius-md); padding: 16px;
+  margin-top: 4px;
+  opacity: 0; transform: translateY(8px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.inline-swot.visible { opacity: 1; transform: translateY(0); }
+.inline-swot-title {
+  font-size: 13px; font-weight: 600; color: var(--ou-text-strong);
+  margin-bottom: 12px; display: flex; align-items: center; gap: 6px;
+}
+.swot-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+}
+.swot-cell {
+  border: 0.5px solid var(--ou-border-faint);
+  border-radius: var(--ou-radius-sm);
+  padding: 10px;
+}
+.swot-cell-label {
+  font-size: 10px; font-weight: 600; color: var(--ou-text-secondary);
+  letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px;
+}
+.swot-cell-text {
+  font-size: 11px; color: var(--ou-text-body); line-height: 1.5;
+}
+
+/* Mass Graph */
+.mass-graph-section {
+  padding: 80px 0; text-align: center; min-height: 80vh;
+}
+.mass-graph-title {
+  font-size: 28px; font-weight: 300;
+  color: var(--ou-text-strong); margin-bottom: 40px;
+  letter-spacing: -0.3px;
+}
+.mass-graph-canvas {
+  width: 100%; max-width: 1000px; height: 500px;
+  margin: 0 auto; cursor: grab;
+}
+.mass-graph-canvas:active { cursor: grabbing; }
+
+/* Divider */
+.ba-divider {
+  width: 1px; background: linear-gradient(to bottom,
+    transparent, var(--ou-border-muted), transparent);
+  align-self: stretch;
+}
+
+/* CTA */
+.cta-section {
+  text-align: center; gap: 32px; min-height: 60vh;
+}
+.cta-logo {
+  font-family: var(--ou-font-logo); font-size: 48px; font-weight: 800;
+  color: var(--ou-text-bright); letter-spacing: 6px;
+  text-shadow: 0 0 60px rgba(255,255,255,0.12);
+}
+.cta-btn {
+  padding: 14px 48px; border-radius: var(--ou-radius-pill);
+  background: rgba(255,255,255,0.9); color: #111;
+  border: none; font-size: 16px; font-weight: 600;
+  font-family: inherit; cursor: pointer;
+  transition: var(--ou-transition);
+  box-shadow: var(--ou-glow-lg);
+}
+.cta-btn:hover { background: #fff; box-shadow: var(--ou-glow-bright); }
+
+/* Footer */
+footer {
+  text-align: center; padding: 60px 40px;
+  border-top: 0.5px solid var(--ou-border-faint);
+  position: relative; z-index: 1;
+}
+.footer-text {
+  font-family: var(--ou-font-logo); font-size: 11px;
+  color: var(--ou-text-muted); letter-spacing: 4px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  nav { padding: 16px 20px; }
+  section { padding: 60px 20px; }
+  .ba-section { padding: 60px 20px; }
+  .ba-grid { grid-template-columns: 1fr; gap: 40px; }
+  .ba-divider { display: none; }
+  .hero-logo { font-size: 48px; letter-spacing: 4px; }
+  .hero-tagline { font-size: 28px; }
+  .mass-graph-canvas { height: 350px; }
+  .app-cards { max-width: 100%; }
+  .clock-time { font-size: 40px; }
+  .ba-title { font-size: 18px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Stars -->
+<div class="stars" id="stars"></div>
+
+<!-- Nav -->
+<nav>
+  <div class="nav-left">
+    <span class="nav-logo">OU</span>
+    <span class="nav-badge">Beta</span>
+  </div>
+  <div class="nav-actions">
+    <button class="nav-btn">Log in</button>
+    <button class="nav-btn primary">Sign up</button>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero" id="hero">
+  <canvas class="hero-canvas" id="heroCanvas"></canvas>
+  <div class="hero-content" id="heroContent">
+    <div class="hero-sub">OWN UNIVERSE</div>
+    <h1 class="hero-logo">OU</h1>
+    <p class="hero-tagline">나만의 우주를 만드세요</p>
+    <p class="hero-desc" id="heroDesc">이 우주는 이런 것들을 가능하게 해요</p>
+    <div class="hero-scroll" id="heroScroll">
+      <i class="ph ph-caret-down" style="font-size:20px;"></i>
+    </div>
+  </div>
+</section>
+
+<!-- Section 1: Recording -->
+<section class="ba-section" id="section1">
+  <div class="ba-section-label">
+    <span class="ba-section-num">01</span> 기록
+  </div>
+  <div class="ba-grid">
+    <div class="ba-side before-side">
+      <div class="ba-title">노트 5권에 흩어진 공부</div>
+      <div class="app-cards">
+        <div class="app-card">
+          <i class="ph ph-notebook app-card-icon"></i>
+          <span class="app-card-name">필기노트</span>
+          <div class="skeleton-line long"></div>
+          <div class="skeleton-line short"></div>
+        </div>
+        <div class="app-card">
+          <i class="ph ph-x-circle app-card-icon"></i>
+          <span class="app-card-name">오답노트</span>
+          <div class="skeleton-line long"></div>
+        </div>
+        <div class="app-card">
+          <i class="ph ph-calendar app-card-icon"></i>
+          <span class="app-card-name">시간표앱</span>
+          <div class="skeleton-line short"></div>
+          <div class="skeleton-line long"></div>
+        </div>
+        <div class="app-card">
+          <i class="ph ph-clipboard-text app-card-icon"></i>
+          <span class="app-card-name">과제관리</span>
+          <div class="skeleton-line long"></div>
+        </div>
+        <div class="app-card">
+          <i class="ph ph-translate app-card-icon"></i>
+          <span class="app-card-name">단어장</span>
+          <div class="skeleton-line short"></div>
+          <div class="skeleton-line long"></div>
+        </div>
+      </div>
+    </div>
+    <div class="ba-side after-side">
+      <div class="after-glow"></div>
+      <div class="ba-title">OU에서는 이렇게 돼요</div>
+      <div class="chat-demo" id="chatDemo1">
+        <!-- Filled by JS -->
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 2: Organizing -->
+<section class="ba-section" id="section2">
+  <div class="ba-section-label">
+    <span class="ba-section-num">02</span> 정리
+  </div>
+  <div class="ba-grid">
+    <div class="ba-side before-side">
+      <div class="ba-title">시험 전 밤새 정리</div>
+      <div class="clock-display">
+        <i class="ph ph-clock clock-icon"></i>
+        <span class="clock-time">6시간</span>
+      </div>
+      <div class="clock-desc">
+        시험 범위 정리하느라 밤새...
+      </div>
+    </div>
+    <div class="ba-side after-side">
+      <div class="after-glow"></div>
+      <div class="ba-title">이미 정리되어 있어요</div>
+      <div class="clock-display">
+        <i class="ph ph-clock clock-icon"></i>
+        <span class="clock-time">0시간</span>
+      </div>
+      <div class="chat-demo" id="chatDemo2">
+        <!-- Filled by JS -->
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 3: Remembering -->
+<section class="ba-section" id="section3">
+  <div class="ba-section-label">
+    <span class="ba-section-num">03</span> 기억
+  </div>
+  <div class="ba-grid">
+    <div class="ba-side before-side">
+      <div class="ba-title">작년에 배운 거 기억 안 나</div>
+      <div class="search-scatter">
+        <i class="ph ph-magnifying-glass search-icon-big"></i>
+        <div class="scatter-bubbles">
+          <div class="scatter-bubble" style="top:0;left:10px;transform:rotate(-3deg);">노트 어디뒀지...</div>
+          <div class="scatter-bubble" style="top:30px;left:140px;transform:rotate(2deg);">PPT 다시 찾기...</div>
+          <div class="scatter-bubble" style="top:70px;left:30px;transform:rotate(-1deg);">교수님 뭐라셨지...</div>
+          <div class="scatter-bubble" style="top:60px;left:180px;transform:rotate(1.5deg);">교재 몇 페이지...</div>
+        </div>
+      </div>
+    </div>
+    <div class="ba-side after-side">
+      <div class="after-glow"></div>
+      <div class="ba-title">물어보면 바로</div>
+      <div class="chat-demo" id="chatDemo3">
+        <!-- Filled by JS -->
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Mass Graph -->
+<section class="mass-graph-section" id="massGraphSection">
+  <h2 class="mass-graph-title">그리고 이게 당신의 공부 우주가 돼요</h2>
+  <canvas class="mass-graph-canvas" id="massGraphCanvas"></canvas>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-logo">OU</div>
+  <button class="cta-btn">시작하기</button>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-text">OU &mdash; OWN UNIVERSE</div>
+</footer>
+
+<script>
+// === Stars ===
+(function() {
+  const container = document.getElementById('stars');
+  for (let i = 0; i < 120; i++) {
+    const s = document.createElement('span');
+    const size = Math.random() * 2 + 0.5;
+    s.style.cssText = `
+      width:${size}px;height:${size}px;
+      top:${Math.random()*100}%;left:${Math.random()*100}%;
+      animation-delay:${Math.random()*3}s;animation-duration:${2+Math.random()*3}s;
+    `;
+    container.appendChild(s);
+  }
+})();
+
+// === Hero Canvas Animation ===
+(function() {
+  const canvas = document.getElementById('heroCanvas');
+  const ctx = canvas.getContext('2d');
+  let W, H;
+  const dots = [];
+  const DOT_COUNT = 2000;
+  let phase = 0;
+  let phaseTime = 0;
+  let sphereCenterX, sphereCenterY;
+  let slideOffsetX = 0;
+  let cameraZoom = 1;
+
+  function resize() {
+    W = canvas.width = canvas.offsetWidth * devicePixelRatio;
+    H = canvas.height = canvas.offsetHeight * devicePixelRatio;
+    ctx.scale(devicePixelRatio, devicePixelRatio);
+    sphereCenterX = canvas.offsetWidth / 2;
+    sphereCenterY = canvas.offsetHeight / 2;
+  }
+
+  resize();
+  window.addEventListener('resize', resize);
+
+  for (let i = 0; i < DOT_COUNT; i++) {
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos(2 * Math.random() - 1);
+    const r = 120 + Math.random() * 20;
+    dots.push({
+      x: (Math.random() - 0.5) * canvas.offsetWidth * 2,
+      y: (Math.random() - 0.5) * canvas.offsetHeight * 2,
+      tx: r * Math.sin(phi) * Math.cos(theta),
+      ty: r * Math.sin(phi) * Math.sin(theta),
+      tz: r * Math.cos(phi),
+      vx: (Math.random() - 0.5) * 2,
+      vy: (Math.random() - 0.5) * 2,
+      size: Math.random() * 1.2 + 0.3,
+      alpha: Math.random() * 0.4 + 0.1,
+      spawnDelay: Math.random() * 1500,
+    });
+  }
+
+  const startTime = performance.now();
+
+  function draw(now) {
+    const elapsed = now - startTime;
+    const cw = canvas.offsetWidth;
+    const ch = canvas.offsetHeight;
+    ctx.clearRect(0, 0, cw, ch);
+
+    if (elapsed < 1500) phase = 0;
+    else if (elapsed < 3000) phase = 1;
+    else if (elapsed < 5500) phase = 2;
+    else if (elapsed < 7000) phase = 3;
+    else phase = 4;
+
+    const targetSlide = phase >= 3 ? -cw * 0.2 : 0;
+    slideOffsetX += (targetSlide - slideOffsetX) * 0.03;
+
+    if (phase >= 3) {
+      document.getElementById('heroContent').classList.add('visible');
+    }
+    if (phase >= 4) {
+      document.getElementById('heroDesc').classList.add('visible');
+      document.getElementById('heroScroll').classList.add('visible');
+    }
+
+    for (const dot of dots) {
+      if (elapsed < dot.spawnDelay) continue;
+
+      if (phase < 2) {
+        dot.x += dot.vx * (phase === 1 ? 2.5 : 1);
+        dot.y += dot.vy * (phase === 1 ? 2.5 : 1);
+      } else {
+        const scale = Math.min(1, (elapsed - 3000) / 2500);
+        const projX = dot.tx / (1 + dot.tz / 400);
+        const projY = dot.ty / (1 + dot.tz / 400);
+        const destX = sphereCenterX + slideOffsetX + projX;
+        const destY = sphereCenterY + projY;
+        dot.x += (destX - dot.x) * 0.04;
+        dot.y += (destY - dot.y) * 0.04;
+        const angle = elapsed * 0.0001;
+        const cos = Math.cos(angle), sin = Math.sin(angle);
+        const nx = dot.tx * cos - dot.tz * sin;
+        const nz = dot.tx * sin + dot.tz * cos;
+        dot.tx = nx; dot.tz = nz;
+      }
+
+      const depth = phase >= 2 ? (dot.tz + 140) / 280 : 0.5;
+      const alpha = dot.alpha * (0.3 + depth * 0.7);
+      ctx.beginPath();
+      ctx.arc(dot.x, dot.y, dot.size * (0.5 + depth * 0.5), 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+      ctx.fill();
+    }
+
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+})();
+
+// === Typing animation helper ===
+function typeText(el, text, speed = 30) {
+  return new Promise(resolve => {
+    el.textContent = '';
+    const cursor = document.createElement('span');
+    cursor.className = 'typing-cursor';
+    el.appendChild(cursor);
+    let i = 0;
+    function tick() {
+      if (i < text.length) {
+        el.insertBefore(document.createTextNode(text[i]), cursor);
+        i++;
+        setTimeout(tick, speed);
+      } else {
+        cursor.remove();
+        resolve();
+      }
+    }
+    tick();
+  });
+}
+
+function addMsg(container, type, text) {
+  return new Promise(resolve => {
+    const div = document.createElement('div');
+    div.className = `chat-msg ${type}`;
+    container.appendChild(div);
+    setTimeout(() => div.classList.add('visible'), 50);
+    if (type === 'user') {
+      div.textContent = text;
+      setTimeout(resolve, 400);
+    } else {
+      typeText(div, text).then(() => setTimeout(resolve, 300));
+    }
+  });
+}
+
+function addInlineElement(container, el) {
+  container.appendChild(el);
+  setTimeout(() => el.classList.add('visible'), 100);
+}
+
+// === Build Inline Knowledge Card (STP) ===
+function buildSTPCard() {
+  const card = document.createElement('div');
+  card.className = 'inline-knowledge';
+  card.innerHTML = `
+    <div class="inline-knowledge-title"><i class="ph ph-lightbulb"></i> STP 전략</div>
+    <div class="inline-knowledge-item">
+      <div class="inline-knowledge-item-title">Segmentation (시장세분화)</div>
+      <div class="inline-knowledge-item-text">시장을 유사한 욕구를 가진 소비자 집단으로 분류</div>
+    </div>
+    <div class="inline-knowledge-item">
+      <div class="inline-knowledge-item-title">Targeting (타겟팅)</div>
+      <div class="inline-knowledge-item-text">세분화된 시장 중 진입할 목표 시장 선정</div>
+    </div>
+    <div class="inline-knowledge-item">
+      <div class="inline-knowledge-item-title">Positioning (포지셔닝)</div>
+      <div class="inline-knowledge-item-text">목표 시장 내 경쟁 우위를 확보할 위치 설정</div>
+    </div>
+  `;
+  return card;
+}
+
+// === Build Inline Outline (Exam) ===
+function buildExamOutline() {
+  const outline = document.createElement('div');
+  outline.className = 'inline-outline';
+  outline.innerHTML = `
+    <div class="inline-outline-title"><i class="ph ph-list-bullets"></i> 마케팅원론 시험 범위 정리</div>
+    <div class="outline-topic">
+      <div class="outline-topic-title">1. STP 전략</div>
+      <div class="outline-sub">- 시장세분화 기준 (인구통계, 심리, 행동)<br>- 타겟팅 전략 3가지 (비차별, 차별, 집중)<br>- 포지셔닝 맵 작성법</div>
+    </div>
+    <div class="outline-topic">
+      <div class="outline-topic-title">2. 4P (마케팅 믹스)</div>
+      <div class="outline-sub">- Product: 제품 수명 주기(PLC)<br>- Price: 가격 전략 (침투, 스키밍)<br>- Place: 유통 채널 구조<br>- Promotion: IMC 통합 마케팅 커뮤니케이션</div>
+    </div>
+    <div class="outline-topic">
+      <div class="outline-topic-title">3. SWOT 분석</div>
+      <div class="outline-sub">- 내부 환경: 강점(S), 약점(W)<br>- 외부 환경: 기회(O), 위협(T)<br>- SO/ST/WO/WT 전략 도출</div>
+    </div>
+  `;
+  return outline;
+}
+
+// === Build Inline SWOT Grid ===
+function buildSWOTGrid() {
+  const swot = document.createElement('div');
+  swot.className = 'inline-swot';
+  swot.innerHTML = `
+    <div class="inline-swot-title"><i class="ph ph-squares-four"></i> SWOT 분석 프레임워크</div>
+    <div class="swot-grid">
+      <div class="swot-cell">
+        <div class="swot-cell-label">S 강점</div>
+        <div class="swot-cell-text">내부의 긍정적 요인</div>
+      </div>
+      <div class="swot-cell">
+        <div class="swot-cell-label">W 약점</div>
+        <div class="swot-cell-text">내부의 부정적 요인</div>
+      </div>
+      <div class="swot-cell">
+        <div class="swot-cell-label">O 기회</div>
+        <div class="swot-cell-text">외부의 긍정적 요인</div>
+      </div>
+      <div class="swot-cell">
+        <div class="swot-cell-label">T 위협</div>
+        <div class="swot-cell-text">외부의 부정적 요인</div>
+      </div>
+    </div>
+  `;
+  return swot;
+}
+
+// === Build Inline Badge ===
+function buildBadge(icon, text) {
+  const badge = document.createElement('div');
+  badge.className = 'inline-badge';
+  badge.innerHTML = `<i class="ph ph-${icon}"></i> ${text}`;
+  return badge;
+}
+
+// === Chat Demo Sequences ===
+const demos = {
+  chatDemo1: {
+    played: false,
+    async play() {
+      if (this.played) return;
+      this.played = true;
+      const c = document.getElementById('chatDemo1');
+      await addMsg(c, 'user', '오늘 마케팅 수업 핵심: STP 전략이란 시장세분화, 타겟팅, 포지셔닝');
+      await new Promise(r => setTimeout(r, 400));
+      await addMsg(c, 'assistant', '마케팅 수업 핵심 기록했어요.');
+      await new Promise(r => setTimeout(r, 300));
+      const card = buildSTPCard();
+      addInlineElement(c, card);
+      await new Promise(r => setTimeout(r, 800));
+      await addMsg(c, 'user', '편의점 3,200원');
+      await new Promise(r => setTimeout(r, 400));
+      await addMsg(c, 'assistant', '지출 기록했어요.');
+      await new Promise(r => setTimeout(r, 200));
+      const badge = buildBadge('receipt', '지출 기록 완료');
+      addInlineElement(c, badge);
+    }
+  },
+  chatDemo2: {
+    played: false,
+    async play() {
+      if (this.played) return;
+      this.played = true;
+      const c = document.getElementById('chatDemo2');
+      await addMsg(c, 'user', '마케팅 시험 범위 정리해줘');
+      await new Promise(r => setTimeout(r, 400));
+      await addMsg(c, 'assistant', '시험 범위를 정리해드릴게요.');
+      await new Promise(r => setTimeout(r, 300));
+      const outline = buildExamOutline();
+      addInlineElement(c, outline);
+    }
+  },
+  chatDemo3: {
+    played: false,
+    async play() {
+      if (this.played) return;
+      this.played = true;
+      const c = document.getElementById('chatDemo3');
+      await addMsg(c, 'user', '작년 경영학에서 SWOT 분석 뭐였지?');
+      await new Promise(r => setTimeout(r, 400));
+      await addMsg(c, 'assistant', 'SWOT 분석은 강점, 약점, 기회, 위협을 분석하는 프레임워크예요. 작년 10월 수업에서 다뤘어요.');
+      await new Promise(r => setTimeout(r, 300));
+      const swot = buildSWOTGrid();
+      addInlineElement(c, swot);
+    }
+  }
+};
+
+// === IntersectionObserver ===
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const id = e.target.id;
+      if (id === 'section1') demos.chatDemo1.play();
+      else if (id === 'section2') demos.chatDemo2.play();
+      else if (id === 'section3') demos.chatDemo3.play();
+    }
+  });
+}, { threshold: 0.3 });
+
+observer.observe(document.getElementById('section1'));
+observer.observe(document.getElementById('section2'));
+observer.observe(document.getElementById('section3'));
+
+// === Mass Graph Canvas ===
+(function() {
+  const canvas = document.getElementById('massGraphCanvas');
+  const ctx = canvas.getContext('2d');
+  let W, H;
+  const DOT_COUNT = 2000;
+  const dots = [];
+  let dragX = 0, dragY = 0, isDragging = false, lastMX = 0, lastMY = 0;
+  let rotX = 0, rotY = 0, velX = 0.001, velY = 0.0005;
+
+  function resize() {
+    W = canvas.width = canvas.offsetWidth * devicePixelRatio;
+    H = canvas.height = canvas.offsetHeight * devicePixelRatio;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  for (let i = 0; i < DOT_COUNT; i++) {
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos(2 * Math.random() - 1);
+    const r = 140 + Math.random() * 30;
+    dots.push({
+      ox: r * Math.sin(phi) * Math.cos(theta),
+      oy: r * Math.sin(phi) * Math.sin(theta),
+      oz: r * Math.cos(phi),
+      size: Math.random() * 1.5 + 0.4,
+      alpha: Math.random() * 0.5 + 0.15,
+    });
+  }
+
+  canvas.addEventListener('mousedown', e => {
+    isDragging = true; lastMX = e.clientX; lastMY = e.clientY;
+  });
+  window.addEventListener('mousemove', e => {
+    if (!isDragging) return;
+    velY += (e.clientX - lastMX) * 0.00005;
+    velX += (e.clientY - lastMY) * 0.00005;
+    lastMX = e.clientX; lastMY = e.clientY;
+  });
+  window.addEventListener('mouseup', () => isDragging = false);
+
+  canvas.addEventListener('touchstart', e => {
+    isDragging = true;
+    lastMX = e.touches[0].clientX; lastMY = e.touches[0].clientY;
+  });
+  canvas.addEventListener('touchmove', e => {
+    if (!isDragging) return;
+    velY += (e.touches[0].clientX - lastMX) * 0.00005;
+    velX += (e.touches[0].clientY - lastMY) * 0.00005;
+    lastMX = e.touches[0].clientX; lastMY = e.touches[0].clientY;
+  });
+  canvas.addEventListener('touchend', () => isDragging = false);
+
+  let massObserved = false;
+  const massObs = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) massObserved = true;
+  }, { threshold: 0.2 });
+  massObs.observe(canvas);
+
+  function draw() {
+    if (!massObserved) { requestAnimationFrame(draw); return; }
+
+    const cw = canvas.offsetWidth;
+    const ch = canvas.offsetHeight;
+    const dpr = devicePixelRatio;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, cw, ch);
+
+    rotX += velX;
+    rotY += velY;
+    if (!isDragging) {
+      velX *= 0.995; velX += 0.0002;
+      velY *= 0.995; velY += 0.0001;
+    }
+
+    const cosX = Math.cos(rotX), sinX = Math.sin(rotX);
+    const cosY = Math.cos(rotY), sinY = Math.sin(rotY);
+    const cx = cw / 2, cy = ch / 2;
+
+    const projected = dots.map(d => {
+      let x = d.ox, y = d.oy, z = d.oz;
+      let ny = y * cosX - z * sinX;
+      let nz = y * sinX + z * cosX;
+      y = ny; z = nz;
+      let nx = x * cosY + z * sinY;
+      nz = -x * sinY + z * cosY;
+      x = nx; z = nz;
+
+      const scale = 300 / (300 + z);
+      return {
+        px: cx + x * scale,
+        py: cy + y * scale,
+        z,
+        size: d.size * scale,
+        alpha: d.alpha * (0.3 + (z + 170) / 340 * 0.7),
+      };
+    });
+
+    projected.sort((a, b) => a.z - b.z);
+
+    for (const p of projected) {
+      ctx.beginPath();
+      ctx.arc(p.px, p.py, p.size, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,255,255,${Math.max(0.05, p.alpha)})`;
+      ctx.fill();
+    }
+
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+})();
+</script>
+</body>
+</html>

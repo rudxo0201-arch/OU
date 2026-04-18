@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OU — OWN UNIVERSE</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #060810;
+  --border: rgba(255,255,255,0.10);
+  --glow-subtle: rgba(255,255,255,0.06);
+  --glow-mid: rgba(255,255,255,0.10);
+  --glow-strong: rgba(255,255,255,0.15);
+  --glass-bg: rgba(255,255,255,0.015);
+  --text-95: rgba(255,255,255,0.95);
+  --text-80: rgba(255,255,255,0.80);
+  --text-60: rgba(255,255,255,0.60);
+  --text-40: rgba(255,255,255,0.40);
+  --text-25: rgba(255,255,255,0.25);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text-95);
+  font-family: 'Pretendard Variable', Pretendard, -apple-system, sans-serif;
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+/* Stars */
+.stars-container { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+.star {
+  position: absolute;
+  width: 2px; height: 2px;
+  background: white;
+  border-radius: 50%;
+  animation: twinkle var(--dur) ease-in-out infinite;
+  opacity: 0;
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0.05; }
+  50% { opacity: var(--peak, 0.6); }
+}
+
+/* Nav */
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 32px;
+  backdrop-filter: blur(16px);
+  background: rgba(6,8,16,0.6);
+  border-bottom: 0.5px solid var(--border);
+}
+.nav-left { display: flex; align-items: center; gap: 10px; }
+.nav-logo {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700; font-size: 22px;
+  color: var(--text-95);
+  letter-spacing: 2px;
+}
+.badge-beta {
+  font-size: 10px; padding: 2px 8px;
+  border: 0.5px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-40);
+  font-weight: 500;
+}
+.nav-right { display: flex; gap: 10px; }
+.btn-login {
+  padding: 8px 20px; border-radius: 999px;
+  border: 0.5px solid var(--border);
+  background: transparent; color: var(--text-80);
+  font-size: 14px; cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+.btn-login:hover { border-color: rgba(255,255,255,0.3); }
+.btn-signup {
+  padding: 8px 20px; border-radius: 999px;
+  border: none; background: white; color: #060810;
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  font-family: inherit;
+  transition: opacity 0.2s;
+}
+.btn-signup:hover { opacity: 0.9; }
+
+/* Hero */
+#hero {
+  position: relative;
+  width: 100%; height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+#hero canvas {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+}
+.hero-overlay {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: none;
+}
+.hero-content {
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; height: 100%;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+.hero-content.visible { opacity: 1; }
+.hero-right {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 12px;
+}
+.hero-logo {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 900; font-size: 72px;
+  color: var(--text-95);
+  letter-spacing: 6px;
+}
+.hero-subtitle {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 14px; letter-spacing: 8px;
+  color: var(--text-40);
+  font-weight: 400;
+}
+.hero-tagline {
+  position: absolute;
+  bottom: 120px;
+  text-align: center;
+  font-size: 22px;
+  color: var(--text-60);
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+.hero-tagline.visible { opacity: 1; }
+.hero-arrow {
+  position: absolute;
+  bottom: 40px;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+  cursor: pointer;
+  pointer-events: auto;
+}
+.hero-arrow.visible { opacity: 1; }
+.hero-arrow i {
+  font-size: 32px;
+  color: var(--text-40);
+  animation: bounce 2s ease-in-out infinite;
+}
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+
+/* Sections */
+.section {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  padding: 80px 40px;
+}
+.section-inner {
+  max-width: 1100px; width: 100%;
+  display: flex; gap: 60px; align-items: flex-start;
+}
+.section-half { flex: 1; min-width: 0; }
+
+.section-title {
+  font-size: 32px; font-weight: 700;
+  margin-bottom: 40px;
+  color: var(--text-95);
+  text-align: center;
+  width: 100%;
+}
+.section-title-left {
+  text-align: left;
+}
+
+/* Glass card */
+.glass-card {
+  backdrop-filter: blur(16px);
+  background: var(--glass-bg);
+  border: 0.5px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px var(--glow-subtle);
+}
+
+/* Scattered apps */
+.scattered-apps {
+  position: relative;
+  height: 400px;
+  opacity: 0.4;
+}
+.app-card {
+  position: absolute;
+  width: 180px;
+  padding: 16px;
+  backdrop-filter: blur(16px);
+  background: var(--glass-bg);
+  border: 0.5px solid var(--border);
+  border-radius: 16px;
+}
+.app-card-header {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 12px;
+  font-size: 13px; color: var(--text-60);
+  font-weight: 500;
+}
+.app-card-header i { font-size: 18px; color: var(--text-40); }
+.skeleton-line {
+  height: 8px; border-radius: 4px;
+  background: rgba(255,255,255,0.06);
+  margin-bottom: 6px;
+}
+.skeleton-line:last-child { width: 60%; }
+.app-card:nth-child(1) { top: 20px; left: 10px; transform: rotate(-4deg); }
+.app-card:nth-child(2) { top: 60px; left: 140px; transform: rotate(3deg); }
+.app-card:nth-child(3) { top: 160px; left: 30px; transform: rotate(-2deg); }
+.app-card:nth-child(4) { top: 200px; left: 180px; transform: rotate(5deg); }
+.app-card:nth-child(5) { top: 300px; left: 80px; transform: rotate(-3deg); }
+
+/* Chat demo */
+.chat-demo {
+  display: flex; flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+  max-height: 500px;
+  overflow: hidden;
+}
+.chat-msg {
+  display: flex;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.chat-msg.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.chat-msg.user { justify-content: flex-end; }
+.chat-msg.assistant { justify-content: flex-start; }
+
+.chat-bubble-user {
+  background: rgba(255,255,255,0.04);
+  border: 0.5px solid var(--border);
+  border-radius: 20px 20px 4px 20px;
+  padding: 12px 18px;
+  font-size: 14px;
+  color: var(--text-80);
+  max-width: 280px;
+  box-shadow: 0 2px 12px var(--glow-subtle);
+}
+.chat-bubble-assistant {
+  border-left: 1.5px solid rgba(255,255,255,0.15);
+  padding: 8px 16px;
+  font-size: 14px;
+  color: var(--text-60);
+  max-width: 320px;
+}
+.chat-bubble-assistant .typing-cursor {
+  display: inline-block;
+  width: 2px; height: 14px;
+  background: var(--text-40);
+  margin-left: 2px;
+  animation: blink-cursor 0.6s step-end infinite;
+  vertical-align: text-bottom;
+}
+@keyframes blink-cursor {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Inline views */
+.inline-view {
+  margin-top: 8px;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.inline-view.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Summary card */
+.summary-card {
+  backdrop-filter: blur(16px);
+  background: var(--glass-bg);
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  width: 260px;
+}
+.summary-card-title {
+  font-size: 11px; color: var(--text-25);
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+.summary-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 0;
+  border-bottom: 0.5px solid rgba(255,255,255,0.04);
+}
+.summary-row:last-child { border-bottom: none; }
+.summary-label { font-size: 13px; color: var(--text-40); }
+.summary-value { font-size: 14px; color: var(--text-80); font-weight: 600; }
+.summary-value.income { color: rgba(255,255,255,0.7); }
+.summary-value.expense { color: rgba(255,255,255,0.5); }
+
+/* Expense table */
+.expense-table {
+  width: 100%;
+  font-size: 12px;
+  border-collapse: collapse;
+}
+.expense-table th {
+  text-align: left;
+  color: var(--text-25);
+  padding: 6px 8px;
+  border-bottom: 0.5px solid var(--border);
+  font-weight: 500;
+}
+.expense-table td {
+  padding: 8px;
+  color: var(--text-60);
+  border-bottom: 0.5px solid rgba(255,255,255,0.03);
+}
+.expense-table td:last-child { text-align: right; }
+.expense-table .category-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 0.5px solid var(--border);
+  font-size: 10px;
+  color: var(--text-40);
+}
+
+/* Section 2 tabs */
+.tab-container {
+  backdrop-filter: blur(16px);
+  background: var(--glass-bg);
+  border: 0.5px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.tab-header {
+  display: flex; border-bottom: 0.5px solid var(--border);
+}
+.tab-btn {
+  flex: 1;
+  padding: 12px 16px;
+  background: none; border: none;
+  color: var(--text-40);
+  font-size: 13px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: color 0.2s, box-shadow 0.2s;
+  border-bottom: 1.5px solid transparent;
+}
+.tab-btn.active {
+  color: var(--text-95);
+  border-bottom-color: rgba(255,255,255,0.3);
+  box-shadow: 0 2px 8px var(--glow-subtle);
+}
+.tab-content {
+  padding: 20px;
+  min-height: 200px;
+}
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* Section 3 comparison */
+.comparison-wrap {
+  max-width: 1100px; width: 100%;
+  display: flex; gap: 40px; align-items: stretch;
+}
+.comparison-side {
+  flex: 1; min-width: 0;
+}
+.comparison-label {
+  font-size: 11px;
+  color: var(--text-25);
+  text-align: center;
+  margin-bottom: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+/* Traditional app skeleton */
+.traditional-app {
+  backdrop-filter: blur(16px);
+  background: var(--glass-bg);
+  border: 0.5px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  opacity: 0.35;
+}
+.trad-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 0.5px solid var(--border);
+}
+.trad-header-title {
+  font-size: 14px; color: var(--text-40); font-weight: 600;
+}
+.trad-btn-group { display: flex; gap: 6px; }
+.trad-btn {
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 0.5px solid var(--border);
+  background: transparent;
+  font-size: 11px;
+  color: var(--text-25);
+}
+.trad-form-row {
+  display: flex; gap: 8px; margin-bottom: 10px;
+}
+.trad-input {
+  flex: 1;
+  height: 32px;
+  border-radius: 8px;
+  border: 0.5px solid var(--border);
+  background: rgba(255,255,255,0.02);
+  padding: 0 10px;
+  font-size: 12px;
+  color: var(--text-25);
+}
+.trad-select {
+  width: 100px;
+  height: 32px;
+  border-radius: 8px;
+  border: 0.5px solid var(--border);
+  background: rgba(255,255,255,0.02);
+  padding: 0 10px;
+  font-size: 12px;
+  color: var(--text-25);
+  appearance: none;
+}
+.trad-nav-tabs {
+  display: flex; gap: 0; margin-bottom: 16px;
+}
+.trad-nav-tab {
+  flex: 1;
+  padding: 8px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--text-25);
+  border-bottom: 1px solid var(--border);
+}
+.trad-nav-tab:first-child {
+  color: var(--text-40);
+  border-bottom-color: rgba(255,255,255,0.2);
+}
+.trad-skeleton {
+  height: 8px; border-radius: 4px;
+  background: rgba(255,255,255,0.04);
+  margin-bottom: 8px;
+}
+
+/* OU simple chat */
+.ou-simple-chat {
+  backdrop-filter: blur(16px);
+  background: var(--glass-bg);
+  border: 0.5px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 300px;
+  justify-content: center;
+}
+.ou-simple-msg {
+  display: flex;
+}
+.ou-simple-msg.user { justify-content: flex-end; }
+.ou-simple-msg.assistant { justify-content: flex-start; }
+.ou-simple-bubble-user {
+  background: rgba(255,255,255,0.04);
+  border: 0.5px solid var(--border);
+  border-radius: 20px 20px 4px 20px;
+  padding: 12px 18px;
+  font-size: 14px;
+  color: var(--text-80);
+}
+.ou-simple-bubble-assistant {
+  border-left: 1.5px solid rgba(255,255,255,0.15);
+  padding: 8px 16px;
+  font-size: 14px;
+  color: var(--text-60);
+}
+
+.bottom-text {
+  text-align: center;
+  font-size: 18px;
+  color: var(--text-40);
+  margin-top: 40px;
+}
+
+/* Mic hint */
+.mic-hint {
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px;
+  margin-top: 32px;
+  color: var(--text-25);
+  font-size: 13px;
+}
+.mic-hint i { font-size: 18px; }
+
+/* CTA */
+.cta-section {
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 120px 40px;
+  gap: 32px;
+}
+.cta-logo {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 900; font-size: 56px;
+  color: var(--text-95);
+  letter-spacing: 4px;
+}
+.btn-cta {
+  padding: 14px 40px;
+  border-radius: 999px;
+  border: none;
+  background: white;
+  color: #060810;
+  font-size: 16px; font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow: 0 0 30px var(--glow-mid);
+  transition: box-shadow 0.3s, transform 0.2s;
+}
+.btn-cta:hover {
+  box-shadow: 0 0 50px var(--glow-strong);
+  transform: scale(1.02);
+}
+
+/* Footer */
+footer {
+  position: relative; z-index: 1;
+  text-align: center;
+  padding: 40px 20px 60px;
+  font-size: 12px;
+  color: var(--text-25);
+  letter-spacing: 2px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  nav { padding: 12px 16px; }
+  .nav-logo { font-size: 18px; }
+  .section { padding: 60px 20px; }
+  .section-inner { flex-direction: column; gap: 40px; }
+  .hero-logo { font-size: 48px; }
+  .hero-subtitle { font-size: 11px; letter-spacing: 5px; }
+  .hero-tagline { font-size: 18px; bottom: 100px; padding: 0 20px; }
+  .section-title { font-size: 24px; }
+  .scattered-apps { height: 340px; }
+  .app-card { width: 150px; padding: 12px; }
+  .app-card:nth-child(2) { left: 100px; }
+  .app-card:nth-child(4) { left: 120px; }
+  .summary-card { width: 100%; }
+  .comparison-wrap { flex-direction: column; gap: 30px; }
+  .cta-logo { font-size: 40px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Stars -->
+<div class="stars-container" id="stars"></div>
+
+<!-- Nav -->
+<nav>
+  <div class="nav-left">
+    <span class="nav-logo">OU</span>
+    <span class="badge-beta">Beta</span>
+  </div>
+  <div class="nav-right">
+    <button class="btn-login">Log in</button>
+    <button class="btn-signup">Sign up</button>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section id="hero">
+  <canvas id="heroCanvas"></canvas>
+  <div class="hero-overlay">
+    <div class="hero-content" id="heroContent">
+      <div class="hero-right">
+        <div class="hero-logo">OU</div>
+        <div class="hero-subtitle">OWN UNIVERSE</div>
+      </div>
+    </div>
+    <div class="hero-tagline" id="heroTagline1">나만의 우주를 만드세요</div>
+    <div class="hero-tagline" id="heroTagline2" style="display:none;">이 우주는 이런 것들을 가능하게 해요</div>
+    <div class="hero-arrow" id="heroArrow">
+      <a href="#section1" style="text-decoration:none;">
+        <i class="ph ph-caret-down"></i>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Section 1: 가계부 앱, 또 까먹었어요 -->
+<section class="section" id="section1">
+  <div>
+    <h2 class="section-title">"<i class="ph ph-wallet" style="vertical-align:middle;margin-right:4px;"></i> 가계부 앱, 또 까먹었어요"</h2>
+    <div class="section-inner">
+      <div class="section-half">
+        <div class="scattered-apps">
+          <div class="app-card">
+            <div class="app-card-header"><i class="ph ph-wallet"></i> 가계부앱</div>
+            <div class="skeleton-line" style="width:90%"></div>
+            <div class="skeleton-line" style="width:60%"></div>
+          </div>
+          <div class="app-card">
+            <div class="app-card-header"><i class="ph ph-bank"></i> 은행앱</div>
+            <div class="skeleton-line" style="width:80%"></div>
+            <div class="skeleton-line" style="width:50%"></div>
+          </div>
+          <div class="app-card">
+            <div class="app-card-header"><i class="ph ph-credit-card"></i> 카드앱</div>
+            <div class="skeleton-line" style="width:85%"></div>
+            <div class="skeleton-line" style="width:45%"></div>
+          </div>
+          <div class="app-card">
+            <div class="app-card-header"><i class="ph ph-table"></i> 엑셀</div>
+            <div class="skeleton-line" style="width:75%"></div>
+            <div class="skeleton-line" style="width:55%"></div>
+          </div>
+          <div class="app-card">
+            <div class="app-card-header"><i class="ph ph-receipt"></i> 영수증</div>
+            <div class="skeleton-line" style="width:70%"></div>
+            <div class="skeleton-line" style="width:40%"></div>
+          </div>
+        </div>
+      </div>
+      <div class="section-half">
+        <div class="glass-card chat-demo" id="chat1">
+          <!-- Messages injected by JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 2: 말하면 가계부 -->
+<section class="section" id="section2">
+  <div>
+    <h2 class="section-title">"<i class="ph ph-sparkle" style="vertical-align:middle;margin-right:4px;"></i> 말하면 가계부"</h2>
+    <div class="section-inner">
+      <div class="section-half">
+        <div class="glass-card chat-demo" id="chat2">
+          <!-- Messages injected by JS -->
+        </div>
+      </div>
+      <div class="section-half">
+        <div class="tab-container" id="viewTabs">
+          <div class="tab-header">
+            <button class="tab-btn active" data-tab="month"><i class="ph ph-calendar-blank"></i> 이번 달</button>
+            <button class="tab-btn" data-tab="trend"><i class="ph ph-chart-line-up"></i> 추이</button>
+            <button class="tab-btn" data-tab="category"><i class="ph ph-chart-pie-slice"></i> 카테고리</button>
+          </div>
+          <div class="tab-content">
+            <!-- 이번 달 tab -->
+            <div class="tab-panel active" id="tab-month">
+              <table class="expense-table">
+                <thead><tr><th>날짜</th><th>내용</th><th>금액</th><th>분류</th></tr></thead>
+                <tbody>
+                  <tr><td>4/17</td><td>스타벅스</td><td>4,500원</td><td><span class="category-tag">커피</span></td></tr>
+                  <tr><td>4/17</td><td>택시</td><td>12,000원</td><td><span class="category-tag">교통</span></td></tr>
+                  <tr><td>4/16</td><td>점심 백반</td><td>9,000원</td><td><span class="category-tag">식비</span></td></tr>
+                  <tr><td>4/16</td><td>편의점</td><td>3,200원</td><td><span class="category-tag">식비</span></td></tr>
+                  <tr><td>4/15</td><td>마트 장보기</td><td>45,800원</td><td><span class="category-tag">식비</span></td></tr>
+                  <tr><td>4/14</td><td>택시</td><td>8,400원</td><td><span class="category-tag">교통</span></td></tr>
+                  <tr><td>4/14</td><td>커피빈</td><td>5,500원</td><td><span class="category-tag">커피</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- 추이 tab -->
+            <div class="tab-panel" id="tab-trend">
+              <svg viewBox="0 0 320 180" style="width:100%;height:auto;">
+                <!-- Grid lines -->
+                <line x1="40" y1="20" x2="40" y2="140" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+                <line x1="40" y1="140" x2="300" y2="140" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+                <line x1="40" y1="100" x2="300" y2="100" stroke="rgba(255,255,255,0.04)" stroke-width="0.5" stroke-dasharray="4"/>
+                <line x1="40" y1="60" x2="300" y2="60" stroke="rgba(255,255,255,0.04)" stroke-width="0.5" stroke-dasharray="4"/>
+                <!-- Y labels -->
+                <text x="36" y="143" text-anchor="end" fill="rgba(255,255,255,0.2)" font-size="9" font-family="Pretendard Variable">0</text>
+                <text x="36" y="103" text-anchor="end" fill="rgba(255,255,255,0.2)" font-size="9" font-family="Pretendard Variable">100만</text>
+                <text x="36" y="63" text-anchor="end" fill="rgba(255,255,255,0.2)" font-size="9" font-family="Pretendard Variable">200만</text>
+                <text x="36" y="23" text-anchor="end" fill="rgba(255,255,255,0.2)" font-size="9" font-family="Pretendard Variable">300만</text>
+                <!-- X labels -->
+                <text x="100" y="158" text-anchor="middle" fill="rgba(255,255,255,0.25)" font-size="10" font-family="Pretendard Variable">2월</text>
+                <text x="170" y="158" text-anchor="middle" fill="rgba(255,255,255,0.25)" font-size="10" font-family="Pretendard Variable">3월</text>
+                <text x="240" y="158" text-anchor="middle" fill="rgba(255,255,255,0.25)" font-size="10" font-family="Pretendard Variable">4월</text>
+                <!-- Line chart -->
+                <polyline points="100,52 170,68 240,75" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <!-- Data points -->
+                <circle cx="100" cy="52" r="3.5" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.4)" stroke-width="1"/>
+                <circle cx="170" cy="68" r="3.5" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.4)" stroke-width="1"/>
+                <circle cx="240" cy="75" r="3.5" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.4)" stroke-width="1"/>
+                <!-- Value labels -->
+                <text x="100" y="45" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9" font-family="Pretendard Variable">220만</text>
+                <text x="170" y="61" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9" font-family="Pretendard Variable">180만</text>
+                <text x="240" y="68" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9" font-family="Pretendard Variable">162만</text>
+              </svg>
+            </div>
+            <!-- 카테고리 tab -->
+            <div class="tab-panel" id="tab-category">
+              <svg viewBox="0 0 300 200" style="width:100%;height:auto;">
+                <!-- Pie chart using stroke-dasharray -->
+                <!-- Total: 100% → 식비 40%, 교통 20%, 커피 15%, 쇼핑 15%, 기타 10% -->
+                <!-- Using circle with circumference ~251.3 (r=40) -->
+                <g transform="translate(110,100)">
+                  <!-- 기타 10% (full circle background) -->
+                  <circle r="60" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="30" stroke-dasharray="376.99" stroke-dashoffset="0" transform="rotate(-90)"/>
+                  <!-- 식비 40% -->
+                  <circle r="60" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="30" stroke-dasharray="150.80 226.19" stroke-dashoffset="0" transform="rotate(-90)"/>
+                  <!-- 교통 20% -->
+                  <circle r="60" fill="none" stroke="rgba(255,255,255,0.16)" stroke-width="30" stroke-dasharray="75.40 301.59" stroke-dashoffset="-150.80" transform="rotate(-90)"/>
+                  <!-- 커피 15% -->
+                  <circle r="60" fill="none" stroke="rgba(255,255,255,0.11)" stroke-width="30" stroke-dasharray="56.55 320.44" stroke-dashoffset="-226.19" transform="rotate(-90)"/>
+                  <!-- 쇼핑 15% -->
+                  <circle r="60" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="30" stroke-dasharray="56.55 320.44" stroke-dashoffset="-282.74" transform="rotate(-90)"/>
+                </g>
+                <!-- Legend -->
+                <g transform="translate(210,40)">
+                  <rect x="0" y="0" width="8" height="8" rx="2" fill="rgba(255,255,255,0.25)"/>
+                  <text x="14" y="8" fill="rgba(255,255,255,0.5)" font-size="10" font-family="Pretendard Variable">식비 40%</text>
+                  <rect x="0" y="22" width="8" height="8" rx="2" fill="rgba(255,255,255,0.16)"/>
+                  <text x="14" y="30" fill="rgba(255,255,255,0.5)" font-size="10" font-family="Pretendard Variable">교통 20%</text>
+                  <rect x="0" y="44" width="8" height="8" rx="2" fill="rgba(255,255,255,0.11)"/>
+                  <text x="14" y="52" fill="rgba(255,255,255,0.5)" font-size="10" font-family="Pretendard Variable">커피 15%</text>
+                  <rect x="0" y="66" width="8" height="8" rx="2" fill="rgba(255,255,255,0.08)"/>
+                  <text x="14" y="74" fill="rgba(255,255,255,0.5)" font-size="10" font-family="Pretendard Variable">쇼핑 15%</text>
+                  <rect x="0" y="88" width="8" height="8" rx="2" fill="rgba(255,255,255,0.06)"/>
+                  <text x="14" y="96" fill="rgba(255,255,255,0.5)" font-size="10" font-family="Pretendard Variable">기타 10%</text>
+                </g>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 3: 가계부 앱이 필요 없어요 -->
+<section class="section" id="section3">
+  <div>
+    <h2 class="section-title">"<i class="ph ph-chat-teardrop-text" style="vertical-align:middle;margin-right:4px;"></i> 가계부 앱이 필요 없어요"</h2>
+    <div class="comparison-wrap">
+      <!-- Left: Traditional finance app -->
+      <div class="comparison-side">
+        <div class="comparison-label">기존 가계부 앱</div>
+        <div class="traditional-app">
+          <div class="trad-nav-tabs">
+            <div class="trad-nav-tab">수입/지출</div>
+            <div class="trad-nav-tab">예산</div>
+            <div class="trad-nav-tab">통계</div>
+            <div class="trad-nav-tab">설정</div>
+          </div>
+          <div class="trad-header">
+            <div class="trad-header-title">지출 등록</div>
+            <div class="trad-btn-group">
+              <div class="trad-btn">수입</div>
+              <div class="trad-btn">지출</div>
+              <div class="trad-btn">이체</div>
+            </div>
+          </div>
+          <div class="trad-form-row">
+            <input class="trad-input" placeholder="금액 입력" disabled>
+          </div>
+          <div class="trad-form-row">
+            <select class="trad-select" disabled><option>카테고리</option></select>
+            <select class="trad-select" disabled><option>결제수단</option></select>
+          </div>
+          <div class="trad-form-row">
+            <input class="trad-input" placeholder="메모" disabled>
+            <input class="trad-input" placeholder="날짜" disabled style="width:100px;flex:none;">
+          </div>
+          <div style="margin-top:12px;">
+            <div class="trad-skeleton" style="width:100%"></div>
+            <div class="trad-skeleton" style="width:80%"></div>
+            <div class="trad-skeleton" style="width:60%"></div>
+          </div>
+        </div>
+      </div>
+      <!-- Right: OU simple chat -->
+      <div class="comparison-side">
+        <div class="comparison-label">OU</div>
+        <div class="ou-simple-chat">
+          <div class="ou-simple-msg user">
+            <div class="ou-simple-bubble-user">커피 4,500원</div>
+          </div>
+          <div class="ou-simple-msg assistant">
+            <div class="ou-simple-bubble-assistant">커피 지출 기록했어요.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="bottom-text">말하면 끝이에요.</div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-logo">OU</div>
+  <button class="btn-cta">시작하기</button>
+</section>
+
+<!-- Footer -->
+<footer>OU &mdash; OWN UNIVERSE</footer>
+
+<script>
+// ============ STARS ============
+(function() {
+  const container = document.getElementById('stars');
+  for (let i = 0; i < 120; i++) {
+    const star = document.createElement('span');
+    star.className = 'star';
+    star.style.left = Math.random() * 100 + '%';
+    star.style.top = Math.random() * 100 + '%';
+    star.style.setProperty('--dur', (3 + Math.random() * 5) + 's');
+    star.style.setProperty('--peak', (0.2 + Math.random() * 0.6).toFixed(2));
+    star.style.animationDelay = (Math.random() * 5) + 's';
+    star.style.width = star.style.height = (1 + Math.random() * 1.5) + 'px';
+    container.appendChild(star);
+  }
+})();
+
+// ============ HERO GRAPH ANIMATION ============
+(function() {
+  const canvas = document.getElementById('heroCanvas');
+  const ctx = canvas.getContext('2d');
+  let W, H;
+  function resize() {
+    W = canvas.width = canvas.offsetWidth * devicePixelRatio;
+    H = canvas.height = canvas.offsetHeight * devicePixelRatio;
+    ctx.scale(devicePixelRatio, devicePixelRatio);
+  }
+  resize();
+  window.addEventListener('resize', () => {
+    ctx.setTransform(1,0,0,1,0,0);
+    resize();
+  });
+
+  const cW = () => canvas.offsetWidth;
+  const cH = () => canvas.offsetHeight;
+
+  // Generate sphere nodes (golden angle)
+  const TOTAL = 2000;
+  const allNodes = [];
+  const phi_g = Math.PI * (3 - Math.sqrt(5));
+  for (let i = 0; i < TOTAL; i++) {
+    const y = 1 - (i / (TOTAL - 1)) * 2;
+    const radius = Math.sqrt(1 - y * y);
+    const theta = phi_g * i;
+    const x = Math.cos(theta) * radius;
+    const z = Math.sin(theta) * radius;
+    allNodes.push({
+      sx: x, sy: y, sz: z,
+      opacity: 0.1 + Math.random() * 0.6,
+      size: 0.5 + Math.random() * 1.5
+    });
+  }
+
+  // Generate edges between nearby nodes
+  const edges = [];
+  const MAX_EDGES = 3000;
+  for (let i = 0; i < TOTAL && edges.length < MAX_EDGES; i++) {
+    for (let j = i + 1; j < TOTAL && edges.length < MAX_EDGES; j++) {
+      const dx = allNodes[i].sx - allNodes[j].sx;
+      const dy = allNodes[i].sy - allNodes[j].sy;
+      const dz = allNodes[i].sz - allNodes[j].sz;
+      const dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
+      if (dist < 0.15) {
+        edges.push([i, j, 0.02 + Math.random() * 0.03]);
+      }
+    }
+  }
+
+  let spawnedCount = 0;
+  let phase = 'spawning';
+  let startTime = null;
+  let zoomLevel = 1;
+  let graphOffsetX = 0;
+  let rotAngle = 0;
+
+  function projectNode(n, cx, cy, scale) {
+    const cosA = Math.cos(rotAngle), sinA = Math.sin(rotAngle);
+    const rx = n.sx * cosA - n.sz * sinA;
+    const rz = n.sx * sinA + n.sz * cosA;
+    const perspective = 2.5 / (2.5 + rz);
+    return {
+      x: cx + rx * scale * perspective,
+      y: cy + n.sy * scale * perspective,
+      p: perspective,
+    };
+  }
+
+  function animate(ts) {
+    if (!startTime) startTime = ts;
+    const elapsed = (ts - startTime) / 1000;
+    ctx.setTransform(1,0,0,1,0,0);
+    ctx.clearRect(0, 0, cW(), cH());
+
+    rotAngle = elapsed * 0.05;
+
+    if (phase === 'spawning') {
+      if (elapsed < 3) {
+        spawnedCount = Math.min(20, Math.floor(elapsed / 3 * 20));
+      } else if (elapsed < 5) {
+        spawnedCount = 20 + Math.min(200, Math.floor((elapsed - 3) / 2 * 200));
+      } else if (elapsed < 6) {
+        spawnedCount = 220 + Math.min(TOTAL - 220, Math.floor((elapsed - 5) / 1 * (TOTAL - 220)));
+      } else {
+        spawnedCount = TOTAL;
+        phase = 'zoomout';
+      }
+    }
+
+    let targetScale;
+    if (phase === 'spawning') {
+      const visRatio = spawnedCount / TOTAL;
+      zoomLevel = 1 + visRatio * 2;
+      targetScale = Math.min(cW(), cH()) * 0.12 * zoomLevel;
+    } else {
+      if (elapsed < 8) {
+        const t = (elapsed - 6) / 2;
+        zoomLevel = 3 - t * 1.5;
+        targetScale = Math.min(cW(), cH()) * 0.12 * zoomLevel;
+      } else {
+        zoomLevel = 1.5;
+        targetScale = Math.min(cW(), cH()) * 0.12 * zoomLevel;
+        if (phase === 'zoomout') phase = 'slidelogo';
+      }
+    }
+
+    let cx = cW() / 2;
+    if (phase === 'slidelogo' || phase === 'tagline1' || phase === 'tagline2' || phase === 'arrow') {
+      const slideT = Math.min(1, (elapsed - 8) / 1.5);
+      const ease = slideT * (2 - slideT);
+      graphOffsetX = -cW() * 0.18 * ease;
+      cx += graphOffsetX;
+
+      if (slideT >= 1 && phase === 'slidelogo') {
+        document.getElementById('heroContent').classList.add('visible');
+        document.querySelector('.hero-right').style.transform = 'translateX(' + (cW() * 0.22) + 'px)';
+        setTimeout(() => { phase = 'tagline1'; }, 800);
+      }
+    }
+
+    if (phase === 'tagline1') {
+      document.getElementById('heroTagline1').classList.add('visible');
+      setTimeout(() => {
+        document.getElementById('heroTagline1').style.display = 'none';
+        document.getElementById('heroTagline2').style.display = '';
+        setTimeout(() => {
+          document.getElementById('heroTagline2').classList.add('visible');
+          phase = 'tagline2';
+        }, 100);
+      }, 2500);
+      phase = 'waitTagline';
+    }
+
+    if (phase === 'tagline2') {
+      setTimeout(() => {
+        document.getElementById('heroTagline2').style.display = 'none';
+        document.getElementById('heroArrow').classList.add('visible');
+        phase = 'arrow';
+      }, 2500);
+      phase = 'waitArrow';
+    }
+
+    const cy = cH() / 2;
+    const scale = targetScale;
+
+    const count = Math.min(spawnedCount, TOTAL);
+    for (let e = 0; e < edges.length; e++) {
+      if (edges[e][0] >= count || edges[e][1] >= count) continue;
+      const a = projectNode(allNodes[edges[e][0]], cx, cy, scale);
+      const b = projectNode(allNodes[edges[e][1]], cx, cy, scale);
+      ctx.beginPath();
+      ctx.moveTo(a.x, a.y);
+      ctx.lineTo(b.x, b.y);
+      ctx.strokeStyle = 'rgba(255,255,255,' + (edges[e][2] * Math.min(a.p, b.p)) + ')';
+      ctx.lineWidth = 0.5;
+      ctx.stroke();
+    }
+
+    for (let i = 0; i < count; i++) {
+      const p = projectNode(allNodes[i], cx, cy, scale);
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, allNodes[i].size * p.p, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255,255,255,' + (allNodes[i].opacity * p.p * 0.8) + ')';
+      ctx.fill();
+    }
+
+    requestAnimationFrame(animate);
+  }
+  requestAnimationFrame(animate);
+})();
+
+// ============ TABS ============
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const parent = btn.closest('.tab-container');
+    parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    parent.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+// ============ CHAT DEMOS ============
+const chatScripts = {
+  chat1: [
+    { role: 'user', text: '커피 4,500원' },
+    { role: 'assistant', text: '커피 지출 기록했어요.' },
+    { role: 'user', text: '택시 12,000원' },
+    { role: 'assistant', text: '택시 지출 기록했어요.' },
+    { role: 'user', text: '월급 350만원 들어옴' },
+    { role: 'assistant', text: '이번 달 수입 기록했어요.', afterView: 'summaryCard' },
+  ],
+  chat2: [
+    { role: 'user', text: '이번 달 식비 얼마 썼어?' },
+    { role: 'assistant', text: '이번 달 식비 총 287,000원이에요.' },
+    { role: 'user', text: '지난 3개월 지출 추이 보여줘' },
+    { role: 'assistant', text: '3개월 지출 추이를 보여드릴게요.' },
+  ],
+};
+
+function createInlineView(type) {
+  const wrap = document.createElement('div');
+  wrap.className = 'inline-view';
+
+  if (type === 'summaryCard') {
+    const card = document.createElement('div');
+    card.className = 'summary-card';
+    card.innerHTML = `
+      <div class="summary-card-title">이번 달 요약</div>
+      <div class="summary-row">
+        <span class="summary-label">수입</span>
+        <span class="summary-value income">3,500,000원</span>
+      </div>
+      <div class="summary-row">
+        <span class="summary-label">지출</span>
+        <span class="summary-value expense">16,500원</span>
+      </div>
+      <div class="summary-row">
+        <span class="summary-label">잔액</span>
+        <span class="summary-value">3,483,500원</span>
+      </div>
+    `;
+    wrap.appendChild(card);
+  }
+
+  return wrap;
+}
+
+function createChatBubble(msg) {
+  const div = document.createElement('div');
+  div.className = 'chat-msg ' + msg.role;
+  const bubble = document.createElement('div');
+  bubble.className = msg.role === 'user' ? 'chat-bubble-user' : 'chat-bubble-assistant';
+  div.appendChild(bubble);
+  return { div, bubble };
+}
+
+function typeText(bubble, text, speed) {
+  return new Promise(resolve => {
+    let i = 0;
+    const cursor = document.createElement('span');
+    cursor.className = 'typing-cursor';
+    bubble.appendChild(cursor);
+    const interval = setInterval(() => {
+      if (i < text.length) {
+        bubble.insertBefore(document.createTextNode(text[i]), cursor);
+        i++;
+      } else {
+        clearInterval(interval);
+        cursor.remove();
+        resolve();
+      }
+    }, speed);
+  });
+}
+
+async function playChat(containerId) {
+  const container = document.getElementById(containerId);
+  if (container.dataset.played) return;
+  container.dataset.played = 'true';
+  const script = chatScripts[containerId];
+  if (!script) return;
+
+  for (const msg of script) {
+    const { div, bubble } = createChatBubble(msg);
+    container.appendChild(div);
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => { div.classList.add('visible'); });
+    });
+
+    if (msg.role === 'user') {
+      bubble.textContent = msg.text;
+      await new Promise(r => setTimeout(r, 800));
+    } else {
+      await new Promise(r => setTimeout(r, 400));
+      await typeText(bubble, msg.text, 30);
+
+      if (msg.afterView) {
+        const view = createInlineView(msg.afterView);
+        const viewMsg = document.createElement('div');
+        viewMsg.className = 'chat-msg assistant';
+        viewMsg.appendChild(view);
+        container.appendChild(viewMsg);
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            viewMsg.classList.add('visible');
+            view.classList.add('visible');
+          });
+        });
+        await new Promise(r => setTimeout(r, 600));
+      }
+
+      await new Promise(r => setTimeout(r, 500));
+    }
+  }
+}
+
+// ============ INTERSECTION OBSERVER ============
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      if (id === 'chat1' || id === 'chat2') {
+        playChat(id);
+      }
+    }
+  });
+}, { threshold: 0.3 });
+
+document.querySelectorAll('.chat-demo').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

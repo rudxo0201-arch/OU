@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OU — Just talk.</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ou-space: #060810;
+  --ou-space-alt: #0a0e18;
+  --ou-glow-xs: 0 0 8px 0 rgba(255,255,255,0.04);
+  --ou-glow-sm: 0 0 12px 1px rgba(255,255,255,0.06);
+  --ou-glow-md: 0 0 20px 2px rgba(255,255,255,0.08);
+  --ou-glow-lg: 0 0 32px 4px rgba(255,255,255,0.10);
+  --ou-glow-hover: 0 0 24px 3px rgba(255,255,255,0.12);
+  --ou-border-faint: rgba(255,255,255,0.06);
+  --ou-border-subtle: rgba(255,255,255,0.10);
+  --ou-border-muted: rgba(255,255,255,0.14);
+  --ou-border-medium: rgba(255,255,255,0.18);
+  --ou-border-hover: rgba(255,255,255,0.25);
+  --ou-border-strong: rgba(255,255,255,0.30);
+  --ou-surface-faint: rgba(255,255,255,0.015);
+  --ou-surface-subtle: rgba(255,255,255,0.03);
+  --ou-surface-muted: rgba(255,255,255,0.05);
+  --ou-text-faint: rgba(255,255,255,0.15);
+  --ou-text-muted: rgba(255,255,255,0.25);
+  --ou-text-dimmed: rgba(255,255,255,0.40);
+  --ou-text-secondary: rgba(255,255,255,0.55);
+  --ou-text-body: rgba(255,255,255,0.70);
+  --ou-text-strong: rgba(255,255,255,0.85);
+  --ou-text-bright: rgba(255,255,255,0.95);
+  --ou-text-heading: rgba(255,255,255,0.35);
+  --ou-font-logo: 'Orbitron', sans-serif;
+  --ou-radius-pill: 999px;
+  --ou-radius-chat: 24px;
+  --ou-radius-card: 16px;
+  --ou-radius-md: 10px;
+  --ou-radius-sm: 6px;
+  --ou-transition: 180ms ease;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  scroll-snap-type: y mandatory;
+}
+
+body {
+  font-family: 'Pretendard Variable', -apple-system, sans-serif;
+  background: var(--ou-space);
+  color: var(--ou-text-body);
+  overflow-x: hidden;
+}
+
+/* ===== STARS ===== */
+.stars {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.stars span {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.5);
+  animation: twinkle 3s ease-in-out infinite alternate;
+}
+@keyframes twinkle {
+  0% { opacity: 0.15; }
+  100% { opacity: 0.7; }
+}
+
+/* ===== NAV ===== */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 40px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 0.5px solid var(--ou-border-faint);
+}
+.nav-logo {
+  font-family: var(--ou-font-logo);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ou-text-bright);
+  letter-spacing: 2px;
+}
+.nav-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.nav-btn {
+  padding: 8px 20px;
+  border-radius: var(--ou-radius-pill);
+  border: 0.5px solid var(--ou-border-subtle);
+  background: transparent;
+  color: var(--ou-text-body);
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: var(--ou-transition);
+}
+.nav-btn:hover {
+  border-color: var(--ou-border-hover);
+  color: var(--ou-text-bright);
+}
+.nav-btn.primary {
+  background: rgba(255,255,255,0.9);
+  color: #111;
+  border: none;
+  font-weight: 600;
+}
+.nav-btn.primary:hover {
+  background: #fff;
+}
+
+/* ===== SECTIONS ===== */
+section {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+  padding: 80px 40px;
+  scroll-snap-align: start;
+}
+
+/* ===== HERO ===== */
+.hero {
+  text-align: center;
+  gap: 32px;
+}
+.hero-logo {
+  font-family: var(--ou-font-logo);
+  font-size: 72px;
+  font-weight: 800;
+  color: var(--ou-text-bright);
+  letter-spacing: 8px;
+  text-shadow: 0 0 60px rgba(255,255,255,0.12);
+}
+.hero-sub {
+  font-family: var(--ou-font-logo);
+  font-size: 10px;
+  color: var(--ou-text-heading);
+  letter-spacing: 8px;
+  text-transform: uppercase;
+}
+.hero-tagline {
+  font-size: 42px;
+  font-weight: 300;
+  color: var(--ou-text-strong);
+  letter-spacing: -0.5px;
+}
+.hero-scroll {
+  margin-top: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: var(--ou-text-dimmed);
+  font-size: 11px;
+  animation: float 2s ease-in-out infinite;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+.scroll-line {
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(to bottom, var(--ou-border-muted), transparent);
+}
+
+/* ===== SECTION: CHAT DEMO ===== */
+.demo-section {
+  gap: 60px;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+}
+.section-label {
+  font-size: 11px;
+  color: var(--ou-text-dimmed);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  text-align: center;
+}
+.section-headline {
+  font-size: 36px;
+  font-weight: 400;
+  color: var(--ou-text-strong);
+  text-align: center;
+  letter-spacing: -0.3px;
+  line-height: 1.4;
+}
+
+/* Chat + View side by side */
+.demo-split {
+  display: flex;
+  gap: 32px;
+  width: 100%;
+  max-width: 960px;
+  align-items: stretch;
+}
+.demo-chat-panel {
+  flex: 1;
+  background: var(--ou-surface-faint);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 0.5px solid var(--ou-border-subtle);
+  border-radius: var(--ou-radius-card);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 420px;
+  box-shadow: var(--ou-glow-sm);
+}
+.demo-view-panel {
+  flex: 1;
+  border: 0.5px solid var(--ou-border-subtle);
+  border-radius: var(--ou-radius-card);
+  padding: 24px;
+  box-shadow: var(--ou-glow-sm);
+  display: flex;
+  flex-direction: column;
+  min-height: 420px;
+}
+
+/* Bubble */
+.bubble {
+  padding: 12px 16px;
+  font-size: 14px;
+  line-height: 1.6;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.bubble.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.bubble.user {
+  background: var(--ou-surface-subtle);
+  border: 1px solid var(--ou-border-medium);
+  border-radius: 20px 20px 4px 20px;
+  margin-left: auto;
+  max-width: 80%;
+  color: var(--ou-text-bright);
+  box-shadow: var(--ou-glow-md);
+}
+.bubble.assistant {
+  max-width: 90%;
+  padding-left: 14px;
+  border-left: 1.5px solid var(--ou-border-muted);
+  color: var(--ou-text-body);
+}
+.bubble .typing-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 14px;
+  background: var(--ou-text-body);
+  margin-left: 2px;
+  animation: blink 0.8s step-end infinite;
+  vertical-align: text-bottom;
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Node badge */
+.node-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: var(--ou-radius-pill);
+  border: 0.5px solid var(--ou-border-subtle);
+  font-size: 12px;
+  color: var(--ou-text-secondary);
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  box-shadow: var(--ou-glow-xs);
+}
+.node-badge.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Calendar mini */
+.mini-calendar {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.cal-header {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ou-text-strong);
+  margin-bottom: 16px;
+  text-align: center;
+}
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  flex: 1;
+}
+.cal-day-label {
+  text-align: center;
+  font-size: 10px;
+  color: var(--ou-text-dimmed);
+  padding: 4px;
+}
+.cal-day {
+  text-align: center;
+  font-size: 12px;
+  color: var(--ou-text-secondary);
+  padding: 8px 4px;
+  border-radius: var(--ou-radius-sm);
+  transition: var(--ou-transition);
+}
+.cal-day.empty { visibility: hidden; }
+.cal-day.today {
+  color: var(--ou-text-bright);
+  border: 0.5px solid var(--ou-border-muted);
+}
+.cal-day.event {
+  background: transparent;
+  border: 0.5px solid var(--ou-border-subtle);
+  box-shadow: var(--ou-glow-xs);
+  color: var(--ou-text-bright);
+  transition: all 0.6s ease;
+}
+.cal-day.event.highlight {
+  border-color: var(--ou-border-strong);
+  box-shadow: var(--ou-glow-md);
+}
+.cal-event-dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--ou-text-body);
+  margin: 2px auto 0;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.cal-day.event .cal-event-dot { opacity: 1; }
+
+/* ===== SECTION 2: VIEW SWITCH ===== */
+.view-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+.view-tab {
+  padding: 8px 20px;
+  border-radius: var(--ou-radius-pill);
+  border: 0.5px solid var(--ou-border-subtle);
+  background: transparent;
+  color: var(--ou-text-secondary);
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: var(--ou-transition);
+  box-shadow: var(--ou-glow-xs);
+}
+.view-tab:hover {
+  border-color: var(--ou-border-hover);
+  color: var(--ou-text-bright);
+}
+.view-tab.active {
+  border-color: var(--ou-border-strong);
+  color: var(--ou-text-bright);
+  box-shadow: var(--ou-glow-md);
+}
+
+.view-container {
+  border: 0.5px solid var(--ou-border-subtle);
+  border-radius: var(--ou-radius-card);
+  padding: 32px;
+  min-height: 400px;
+  max-width: 800px;
+  width: 100%;
+  box-shadow: var(--ou-glow-sm);
+  position: relative;
+}
+.view-content {
+  display: none;
+  animation: ou-fade-in 0.3s ease;
+}
+.view-content.active { display: block; }
+@keyframes ou-fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Table view */
+.mini-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.mini-table th {
+  text-align: left;
+  font-size: 11px;
+  color: var(--ou-text-dimmed);
+  font-weight: 500;
+  padding: 8px 12px;
+  border-bottom: 0.5px solid var(--ou-border-faint);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.mini-table td {
+  font-size: 13px;
+  color: var(--ou-text-body);
+  padding: 12px;
+  border-bottom: 0.5px solid var(--ou-border-faint);
+}
+.mini-table tr:hover td {
+  color: var(--ou-text-bright);
+}
+
+/* Graph view mini */
+.mini-graph {
+  width: 100%;
+  height: 340px;
+  position: relative;
+}
+.graph-node {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.8s ease;
+}
+.graph-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.7);
+  box-shadow: 0 0 12px 2px rgba(255,255,255,0.1);
+  transition: all 0.6s ease;
+}
+.graph-dot.large {
+  width: 18px;
+  height: 18px;
+  background: rgba(255,255,255,0.85);
+  box-shadow: 0 0 20px 4px rgba(255,255,255,0.12);
+}
+.graph-label {
+  font-size: 10px;
+  color: var(--ou-text-dimmed);
+  white-space: nowrap;
+}
+.graph-edge {
+  position: absolute;
+  height: 1px;
+  background: rgba(255,255,255,0.08);
+  transform-origin: left center;
+  transition: all 0.8s ease;
+}
+
+/* ===== SECTION 3: UNIVERSE ===== */
+.universe-demo {
+  width: 600px;
+  height: 600px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.universe-core {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.9);
+  box-shadow: 0 0 30px 8px rgba(255,255,255,0.15);
+  z-index: 2;
+}
+.orbit-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 0.5px solid var(--ou-border-faint);
+  animation: spin linear infinite;
+}
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.orbit-node {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.5);
+  box-shadow: 0 0 8px 2px rgba(255,255,255,0.08);
+  top: -3px;
+  left: 50%;
+  margin-left: -3px;
+}
+.orbit-node.bright {
+  width: 8px;
+  height: 8px;
+  top: -4px;
+  margin-left: -4px;
+  background: rgba(255,255,255,0.8);
+  box-shadow: 0 0 12px 3px rgba(255,255,255,0.12);
+}
+
+/* ===== CTA ===== */
+.cta-section {
+  gap: 32px;
+}
+.cta-btn {
+  padding: 16px 48px;
+  border-radius: var(--ou-radius-pill);
+  background: rgba(255,255,255,0.9);
+  color: #111;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: inherit;
+  border: none;
+  cursor: pointer;
+  transition: var(--ou-transition);
+  box-shadow: var(--ou-glow-lg);
+}
+.cta-btn:hover {
+  background: #fff;
+  box-shadow: 0 0 40px 8px rgba(255,255,255,0.15);
+  transform: scale(1.02);
+}
+
+/* ===== FOOTER ===== */
+footer {
+  text-align: center;
+  padding: 40px;
+  border-top: 0.5px solid var(--ou-border-faint);
+  font-size: 11px;
+  color: var(--ou-text-dimmed);
+  position: relative;
+  z-index: 1;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  section { padding: 60px 20px; }
+  .hero-logo { font-size: 48px; letter-spacing: 4px; }
+  .hero-tagline { font-size: 28px; }
+  .section-headline { font-size: 24px; }
+  .demo-split { flex-direction: column; }
+  nav { padding: 16px 20px; }
+  .nav-logo { font-size: 14px; }
+  .universe-demo { width: 300px; height: 300px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Stars -->
+<div class="stars" id="stars"></div>
+
+<!-- Nav -->
+<nav>
+  <div class="nav-logo">OU</div>
+  <div class="nav-actions">
+    <button class="nav-btn" onclick="alert('→ /login')">Log in</button>
+    <button class="nav-btn primary" onclick="alert('→ /login?tab=signup')">Sign up</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-sub">OWN UNIVERSE</div>
+  <div class="hero-logo">OU</div>
+  <div class="hero-tagline">Just talk.</div>
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- SECTION 1: Chat Demo -->
+<section class="demo-section" id="section-chat">
+  <div style="text-align:center">
+    <div class="section-headline">말하면 데이터가 됩니다</div>
+  </div>
+
+  <div class="demo-split">
+    <!-- Chat Panel -->
+    <div class="demo-chat-panel" id="chatPanel">
+      <div style="flex:1; display:flex; flex-direction:column; gap:12px; justify-content:flex-end;" id="chatMessages">
+      </div>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <input class="input-block chat" style="border-radius:var(--ou-radius-pill);" placeholder="무엇이든 말해보세요" readonly id="chatInput">
+      </div>
+    </div>
+
+    <!-- Calendar Panel -->
+    <div class="demo-view-panel">
+      <div class="mini-calendar">
+        <div class="cal-header">2026년 4월</div>
+        <div class="cal-grid">
+          <div class="cal-day-label">일</div>
+          <div class="cal-day-label">월</div>
+          <div class="cal-day-label">화</div>
+          <div class="cal-day-label">수</div>
+          <div class="cal-day-label">목</div>
+          <div class="cal-day-label">금</div>
+          <div class="cal-day-label">토</div>
+          <!-- Week 1 -->
+          <div class="cal-day empty"></div>
+          <div class="cal-day empty"></div>
+          <div class="cal-day empty"></div>
+          <div class="cal-day">1</div>
+          <div class="cal-day">2</div>
+          <div class="cal-day">3</div>
+          <div class="cal-day">4</div>
+          <!-- Week 2 -->
+          <div class="cal-day">5</div>
+          <div class="cal-day">6</div>
+          <div class="cal-day">7</div>
+          <div class="cal-day">8</div>
+          <div class="cal-day">9</div>
+          <div class="cal-day">10</div>
+          <div class="cal-day">11</div>
+          <!-- Week 3 -->
+          <div class="cal-day">12</div>
+          <div class="cal-day">13</div>
+          <div class="cal-day">14</div>
+          <div class="cal-day">15</div>
+          <div class="cal-day">16</div>
+          <div class="cal-day today">17</div>
+          <div class="cal-day">18</div>
+          <!-- Week 4 -->
+          <div class="cal-day">19</div>
+          <div class="cal-day">20</div>
+          <div class="cal-day">21</div>
+          <div class="cal-day">22</div>
+          <div class="cal-day">23</div>
+          <div class="cal-day">24</div>
+          <div class="cal-day">25</div>
+          <!-- Week 5 -->
+          <div class="cal-day" id="day26">26</div>
+          <div class="cal-day">27</div>
+          <div class="cal-day">28</div>
+          <div class="cal-day">29</div>
+          <div class="cal-day">30</div>
+          <div class="cal-day empty"></div>
+          <div class="cal-day empty"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 2: View Switch -->
+<section class="demo-section" id="section-views">
+  <div style="text-align:center">
+    <div class="section-headline">같은 데이터, 다른 뷰</div>
+  </div>
+
+  <div class="view-tabs">
+    <button class="view-tab active" onclick="switchView('calendar')">캘린더</button>
+    <button class="view-tab" onclick="switchView('table')">표</button>
+    <button class="view-tab" onclick="switchView('graph')">그래프</button>
+  </div>
+
+  <div class="view-container">
+    <!-- Calendar View -->
+    <div class="view-content active" id="view-calendar">
+      <div class="mini-calendar">
+        <div class="cal-header">2026년 4월</div>
+        <div class="cal-grid">
+          <div class="cal-day-label">일</div><div class="cal-day-label">월</div><div class="cal-day-label">화</div><div class="cal-day-label">수</div><div class="cal-day-label">목</div><div class="cal-day-label">금</div><div class="cal-day-label">토</div>
+          <div class="cal-day empty"></div><div class="cal-day empty"></div><div class="cal-day empty"></div>
+          <div class="cal-day">1</div><div class="cal-day">2</div><div class="cal-day">3</div><div class="cal-day">4</div>
+          <div class="cal-day">5</div><div class="cal-day">6</div><div class="cal-day">7</div><div class="cal-day">8</div><div class="cal-day">9</div><div class="cal-day">10</div><div class="cal-day">11</div>
+          <div class="cal-day">12</div><div class="cal-day event">13<div class="cal-event-dot"></div></div><div class="cal-day">14</div><div class="cal-day">15</div><div class="cal-day">16</div><div class="cal-day today">17</div><div class="cal-day">18</div>
+          <div class="cal-day">19</div><div class="cal-day">20</div><div class="cal-day">21</div><div class="cal-day event highlight">22<div class="cal-event-dot"></div></div><div class="cal-day">23</div><div class="cal-day">24</div><div class="cal-day">25</div>
+          <div class="cal-day event">26<div class="cal-event-dot"></div></div><div class="cal-day">27</div><div class="cal-day">28</div><div class="cal-day">29</div><div class="cal-day">30</div><div class="cal-day empty"></div><div class="cal-day empty"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table View -->
+    <div class="view-content" id="view-table">
+      <table class="mini-table">
+        <thead>
+          <tr>
+            <th>날짜</th>
+            <th>내용</th>
+            <th>분류</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>4월 13일</td><td>엄마 생신 저녁</td><td style="color:var(--ou-text-dimmed)">일정</td></tr>
+          <tr><td>4월 22일</td><td>수진이 이사 도와주기</td><td style="color:var(--ou-text-dimmed)">일정</td></tr>
+          <tr><td>4월 26일</td><td>희민이 결혼식</td><td style="color:var(--ou-text-dimmed)">일정</td></tr>
+          <tr><td>4월 28일</td><td>프로젝트 마감</td><td style="color:var(--ou-text-dimmed)">할 일</td></tr>
+          <tr><td>매일</td><td>커피 4,500원</td><td style="color:var(--ou-text-dimmed)">지출</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Graph View -->
+    <div class="view-content" id="view-graph">
+      <div class="mini-graph">
+        <!-- Edges -->
+        <svg style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;">
+          <line x1="50%" y1="45%" x2="25%" y2="25%" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+          <line x1="50%" y1="45%" x2="75%" y2="30%" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+          <line x1="50%" y1="45%" x2="30%" y2="70%" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+          <line x1="50%" y1="45%" x2="70%" y2="65%" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+          <line x1="25%" y1="25%" x2="75%" y2="30%" stroke="rgba(255,255,255,0.03)" stroke-width="0.5"/>
+          <line x1="30%" y1="70%" x2="70%" y2="65%" stroke="rgba(255,255,255,0.03)" stroke-width="0.5"/>
+        </svg>
+        <!-- Nodes -->
+        <div class="graph-node" style="left:46%;top:40%">
+          <div class="graph-dot large"></div>
+          <span class="graph-label">나</span>
+        </div>
+        <div class="graph-node" style="left:21%;top:20%">
+          <div class="graph-dot"></div>
+          <span class="graph-label">희민</span>
+        </div>
+        <div class="graph-node" style="left:71%;top:25%">
+          <div class="graph-dot"></div>
+          <span class="graph-label">수진</span>
+        </div>
+        <div class="graph-node" style="left:26%;top:65%">
+          <div class="graph-dot"></div>
+          <span class="graph-label">결혼식</span>
+        </div>
+        <div class="graph-node" style="left:66%;top:60%">
+          <div class="graph-dot"></div>
+          <span class="graph-label">프로젝트</span>
+        </div>
+        <div class="graph-node" style="left:48%;top:80%">
+          <div class="graph-dot" style="width:8px;height:8px;"></div>
+          <span class="graph-label">엄마</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 3: Universe -->
+<section class="demo-section" id="section-universe">
+  <div style="text-align:center">
+    <div class="section-headline">쌓일수록 빛나는 우주</div>
+  </div>
+
+  <div class="universe-demo">
+    <div class="universe-core"></div>
+    <!-- Orbits -->
+    <div class="orbit-ring" style="width:120px;height:120px;animation-duration:20s;">
+      <div class="orbit-node"></div>
+    </div>
+    <div class="orbit-ring" style="width:200px;height:200px;animation-duration:30s;animation-direction:reverse;">
+      <div class="orbit-node bright"></div>
+      <div class="orbit-node" style="top:auto;bottom:-3px;"></div>
+    </div>
+    <div class="orbit-ring" style="width:300px;height:300px;animation-duration:45s;">
+      <div class="orbit-node"></div>
+      <div class="orbit-node" style="left:auto;right:-3px;top:50%;"></div>
+      <div class="orbit-node bright" style="top:auto;bottom:-4px;left:30%;"></div>
+    </div>
+    <div class="orbit-ring" style="width:420px;height:420px;animation-duration:60s;animation-direction:reverse;">
+      <div class="orbit-node"></div>
+      <div class="orbit-node" style="top:auto;bottom:-3px;left:70%;"></div>
+      <div class="orbit-node" style="left:auto;right:-3px;top:30%;"></div>
+      <div class="orbit-node bright" style="left:20%;top:-4px;"></div>
+    </div>
+    <div class="orbit-ring" style="width:540px;height:540px;animation-duration:80s;border-color:var(--ou-border-faint);">
+      <div class="orbit-node" style="opacity:0.4;"></div>
+      <div class="orbit-node" style="top:auto;bottom:-3px;opacity:0.4;"></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="hero-logo" style="font-size:48px;">OU</div>
+  <button class="cta-btn" onclick="alert('→ /login?tab=signup')">시작하기</button>
+</section>
+
+<!-- Footer -->
+<footer>
+  <span>OU &mdash; OWN UNIVERSE</span>
+</footer>
+
+<script>
+// Stars
+(function() {
+  const container = document.getElementById('stars');
+  for (let i = 0; i < 150; i++) {
+    const star = document.createElement('span');
+    star.style.left = Math.random() * 100 + '%';
+    star.style.top = Math.random() * 100 + '%';
+    const size = Math.random() * 1.5 + 0.5;
+    star.style.width = size + 'px';
+    star.style.height = size + 'px';
+    star.style.animationDelay = Math.random() * 3 + 's';
+    star.style.animationDuration = (2 + Math.random() * 3) + 's';
+    container.appendChild(star);
+  }
+})();
+
+// Chat demo auto-play
+const chatScript = [
+  { type: 'user', text: '다음주 일요일 희민이 결혼식', delay: 1500 },
+  { type: 'assistant', text: '희민이 결혼식, 4월 26일 일요일로 기억할게요.', delay: 2000 },
+  { type: 'badge', text: '일정이 생성됐어요', delay: 800 },
+  { type: 'calendar', day: 26, delay: 400 },
+  { type: 'user', text: '커피 4,500원', delay: 2500 },
+  { type: 'assistant', text: '오늘 커피 지출 4,500원 기록했어요.', delay: 1500 },
+  { type: 'badge', text: '지출이 기록됐어요', delay: 800 },
+  { type: 'user', text: '수진이 다음주 수요일에 이사한대. 도와줘야지', delay: 3000 },
+  { type: 'assistant', text: '4월 22일 수요일, 수진이 이사 도와주기. 일정에 넣었어요.', delay: 2000 },
+  { type: 'badge', text: '일정 + 인물이 연결됐어요', delay: 800 },
+  { type: 'calendar', day: 22, delay: 400 },
+];
+
+let chatIndex = 0;
+let chatStarted = false;
+
+function runChatScript() {
+  if (chatIndex >= chatScript.length) {
+    // Loop after pause
+    setTimeout(() => {
+      document.getElementById('chatMessages').innerHTML = '';
+      chatIndex = 0;
+      runChatScript();
+    }, 5000);
+    return;
+  }
+
+  const item = chatScript[chatIndex];
+  chatIndex++;
+
+  setTimeout(() => {
+    const container = document.getElementById('chatMessages');
+
+    if (item.type === 'user') {
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble user';
+      bubble.textContent = item.text;
+      container.appendChild(bubble);
+      requestAnimationFrame(() => bubble.classList.add('visible'));
+    } else if (item.type === 'assistant') {
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble assistant';
+      container.appendChild(bubble);
+      requestAnimationFrame(() => bubble.classList.add('visible'));
+      // Typing effect
+      let charIdx = 0;
+      const typeInterval = setInterval(() => {
+        bubble.textContent = item.text.substring(0, charIdx + 1);
+        charIdx++;
+        if (charIdx >= item.text.length) {
+          clearInterval(typeInterval);
+        }
+      }, 30);
+    } else if (item.type === 'badge') {
+      const badge = document.createElement('div');
+      badge.className = 'node-badge';
+      badge.textContent = item.text;
+      container.appendChild(badge);
+      requestAnimationFrame(() => badge.classList.add('visible'));
+    } else if (item.type === 'calendar') {
+      const dayEl = document.getElementById('day' + item.day);
+      if (dayEl) {
+        dayEl.classList.add('event');
+        const dot = document.createElement('div');
+        dot.className = 'cal-event-dot';
+        dayEl.appendChild(dot);
+        setTimeout(() => { dot.style.opacity = '1'; }, 100);
+      }
+    }
+
+    // Auto-scroll chat
+    container.scrollTop = container.scrollHeight;
+
+    runChatScript();
+  }, item.delay);
+}
+
+// Intersection observer to trigger chat demo
+const chatObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting && !chatStarted) {
+      chatStarted = true;
+      setTimeout(runChatScript, 800);
+    }
+  });
+}, { threshold: 0.3 });
+chatObserver.observe(document.getElementById('section-chat'));
+
+// View switcher
+function switchView(view) {
+  document.querySelectorAll('.view-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.view-tab').forEach(el => el.classList.remove('active'));
+  document.getElementById('view-' + view).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// Fade-in on scroll
+const fadeObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.opacity = '1';
+      entry.target.style.transform = 'translateY(0)';
+    }
+  });
+}, { threshold: 0.2 });
+
+document.querySelectorAll('.section-headline, .demo-split, .view-container, .universe-demo').forEach(el => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(20px)';
+  el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+  fadeObserver.observe(el);
+});
+</script>
+</body>
+</html>

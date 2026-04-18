@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <title>NEURAL COSMOS - Obsidian Hover Effect</title>
+    <style>
+        body { margin: 0; background: #141414; overflow: hidden; color: #fff; font-family: 'Segoe UI', -apple-system, sans-serif; }
+        #canvas-container { width: 100vw; height: 100vh; display: block; cursor: grab; }
+        #canvas-container:active { cursor: grabbing; }
+        
+        #controls { 
+            position: absolute; top: 20px; left: 20px; 
+            background: rgba(20, 20, 20, 0.65); 
+            padding: 20px; border-radius: 8px; 
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            width: 280px; z-index: 100;
+            max-height: 85vh; overflow-y: auto;
+        }
+        #controls::-webkit-scrollbar { width: 4px; }
+        #controls::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+
+        h3 { margin: 0 0 15px 0; font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 10px; font-weight: 600; letter-spacing: 1px;}
+        .group { margin-bottom: 16px; }
+        .label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        label { font-size: 11px; color: #bbb; letter-spacing: 0.5px; }
+        
+        .mode-btn-container { display: flex; gap: 8px; margin-bottom: 25px; }
+        .mode-btn {
+            flex: 1; padding: 10px 0; background: rgba(0,0,0,0.5); color: #888;
+            border: 1px solid rgba(255,255,255,0.2); border-radius: 4px;
+            font-size: 11px; font-weight: bold; cursor: pointer; transition: all 0.2s;
+        }
+        .mode-btn.active { background: #fff; color: #000; border-color: #fff; box-shadow: 0 0 10px rgba(255,255,255,0.3); }
+
+        .num-input {
+            background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.3); color: #fff;
+            padding: 4px; border-radius: 4px; width: 55px; text-align: right; font-family: monospace; font-size: 11px;
+        }
+        .num-input:focus { outline: none; border-color: #00f2ff; }
+        input[type=range] { width: 100%; cursor: pointer; accent-color: #fff; height: 4px; }
+        
+        .btn-refresh {
+            width: 100%; padding: 12px; background: rgba(255,255,255,0.1); color: #fff;
+            border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 5px; font-size: 12px;
+            transition: all 0.2s;
+        }
+        .btn-refresh:hover { background: #fff; color: #000; }
+        .btn-refresh:active { transform: translateY(1px); }
+        
+        #zoom-indicator {
+            position: absolute; top: 30px; left: 50%; transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 16px; border-radius: 20px; font-size: 11px; font-weight: 600;
+            backdrop-filter: blur(4px); z-index: 100; color: #888; transition: all 0.3s;
+            pointer-events: none; letter-spacing: 0.5px;
+        }
+        
+        #info-card {
+            position: absolute; top: 20px; right: -400px; 
+            width: 320px; background: rgba(25, 25, 30, 0.85);
+            backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px; padding: 25px; box-shadow: -5px 10px 30px rgba(0,0,0,0.5);
+            transition: right 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); z-index: 200;
+        }
+        #info-card.show { right: 20px; } 
+        
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+        #card-title { margin: 0; font-size: 18px; font-weight: 600; line-height: 1.3; color: #fff; }
+        #close-card { background: none; border: none; color: #888; font-size: 24px; cursor: pointer; line-height: 1; padding: 0; margin-left: 15px; transition: color 0.2s; }
+        #close-card:hover { color: #fff; }
+        .tag-pill { display: inline-block; background: rgba(0, 242, 255, 0.15); color: #00f2ff; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; margin-bottom: 15px; border: 1px solid rgba(0,242,255,0.3); }
+        #card-content { font-size: 13px; color: #ccc; line-height: 1.6; margin-bottom: 25px; min-height: 60px; }
+        .card-footer { border-top: 1px dashed rgba(255,255,255,0.15); padding-top: 15px; font-size: 11px; color: #666; display: flex; justify-content: space-between;}
+    </style>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="controls">
+        <h3>NAVIGATION & FORCES</h3>
+        <div class="mode-btn-container">
+            <button class="mode-btn active" id="btn-orbit">중심 고정</button>
+            <button class="mode-btn" id="btn-pan">무한 탐색</button>
+        </div>
+        <div class="group"><div class="label-row"><label>노드 수</label><input type="number" id="num-nodes" class="num-input" value="25000"></div><input type="range" id="range-nodes" min="1000" max="50000" step="1000" value="25000"></div>
+        <div class="group"><div class="label-row"><label>엣지 강도</label><input type="number" id="num-edges" class="num-input" value="2.0" step="0.1"></div><input type="range" id="range-edges" min="1.0" max="5.0" step="0.1" value="2.0"></div>
+        <div class="group" style="margin-top: 25px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 15px;"><div class="label-row"><label>노드 크기</label><input type="number" id="num-size" class="num-input" value="0.8" step="0.1"></div><input type="range" id="range-size" min="0.1" max="3.0" step="0.1" value="0.8"></div>
+        <div class="group"><div class="label-row"><label>중심 인력</label><input type="number" id="num-gravity" class="num-input" value="1.0" step="0.1"></div><input type="range" id="range-gravity" min="0.2" max="3.0" step="0.1" value="1.0"></div>
+        <div class="group"><div class="label-row"><label>반발력 / 거리</label><input type="number" id="num-repel" class="num-input" value="1.0" step="0.1"></div><input type="range" id="range-repel" min="0.1" max="3.0" step="0.1" value="1.0"></div>
+        <div class="group"><div class="label-row"><label>선 투명도</label><input type="number" id="num-opacity" class="num-input" value="0.05" step="0.01"></div><input type="range" id="range-opacity" min="0.01" max="0.2" step="0.01" value="0.05"></div>
+        <button class="btn-refresh" id="btn-generate">네트워크 랜덤 셔플</button>
+    </div>
+
+    <div id="zoom-indicator">🌌 거시적 뷰 (클릭/호버 비활성화)</div>
+
+    <div id="info-card">
+        <div class="card-header"><h2 id="card-title">데이터 타이틀</h2><button id="close-card">×</button></div>
+        <div class="tag-pill" id="card-tag">#Concept</div>
+        <div id="card-content">데이터 표시 영역.</div>
+        <div class="card-footer"><span id="card-id">ID: 0</span><span id="card-date">Updated: Today</span></div>
+    </div>
+    
+    <div id="canvas-container"></div>
+
+<script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+    import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+    import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+
+    const container = document.getElementById('canvas-container');
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x141414, 0.00035);
+
+    const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 15000);
+    camera.position.z = 2500;
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setClearColor(0x1a1a1a, 1); 
+    container.appendChild(renderer.domElement);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true; controls.dampingFactor = 0.08; controls.zoomSpeed = 1.8;
+
+    // 💡 글로우(눈부심) 효과 살짝 감소 (1.2 -> 0.7)
+    const composer = new EffectComposer(renderer);
+    composer.addPass(new RenderPass(scene, camera));
+    const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.7, 0.4, 0.85);
+    composer.addPass(bloomPass);
+
+    // 모드 전환
+    document.getElementById('btn-orbit').addEventListener('click', function() {
+        this.classList.add('active'); document.getElementById('btn-pan').classList.remove('active');
+        controls.mouseButtons.LEFT = THREE.MOUSE.ROTATE; controls.mouseButtons.RIGHT = THREE.MOUSE.PAN;
+        controls.target.set(0, 0, 0); 
+    });
+    document.getElementById('btn-pan').addEventListener('click', function() {
+        this.classList.add('active'); document.getElementById('btn-orbit').classList.remove('active');
+        controls.mouseButtons.LEFT = THREE.MOUSE.PAN; controls.mouseButtons.RIGHT = THREE.MOUSE.ROTATE;
+    });
+
+    let pointsMesh, linesMesh;
+    // 💡 연결 정보를 빠르게 찾기 위한 인접 리스트(Adjacency List)
+    let baseTopology = { hDir: null, hRad: null, lDir: null, lDist: null, nNodes: 0, nodeAdjacency: [], nodeEdges: [] };
+
+    const gpuPhysicsUniforms = {
+        uGravity: { value: parseFloat(document.getElementById('num-gravity').value) },
+        uRepel: { value: parseFloat(document.getElementById('num-repel').value) },
+        uSizeMult: { value: parseFloat(document.getElementById('num-size').value) },
+        uOpacity: { value: parseFloat(document.getElementById('num-opacity').value) },
+        uSelectedNode: { value: -1.0 }
+    };
+    const targetUniforms = { gravity: gpuPhysicsUniforms.uGravity.value, repel: gpuPhysicsUniforms.uRepel.value, size: gpuPhysicsUniforms.uSizeMult.value, opacity: gpuPhysicsUniforms.uOpacity.value };
+
+    // 💡 셰이더 업데이트 (aHighlight 값에 따른 투명도/색상 처리)
+    // aHighlight: 0.0 (기본), 1.0 (암전됨), 2.0 (연결되어 하이라이트됨)
+    const nodeVertexShader = `
+        uniform float uGravity; uniform float uRepel; uniform float uSizeMult; uniform float uSelectedNode;
+        attribute vec3 hubDir; attribute float hubBaseR;
+        attribute vec3 leafDir; attribute float leafBaseDist; attribute float baseSize; attribute float aNodeId;
+        attribute float aHighlight; 
+        varying float vIsSelected; varying float vHighlight;
+        void main() {
+            vec3 finalPos = hubDir * (hubBaseR / uGravity) + leafDir * (leafBaseDist * uRepel);
+            vec4 mvPosition = modelViewMatrix * vec4(finalPos, 1.0);
+            
+            vIsSelected = abs(aNodeId - uSelectedNode) < 0.5 ? 1.0 : 0.0;
+            vHighlight = aHighlight;
+            
+            float highlightSizeBoost = vHighlight == 2.0 ? 1.5 : 1.0;
+            float finalSize = baseSize * uSizeMult * (1.0 + vIsSelected * 1.5) * highlightSizeBoost;
+            
+            gl_PointSize = finalSize * (1000.0 / -mvPosition.z);
+            gl_Position = projectionMatrix * mvPosition;
+        }
+    `;
+    const nodeFragmentShader = `
+        varying float vIsSelected; varying float vHighlight;
+        void main() {
+            float d = length(gl_PointCoord - vec2(0.5));
+            if(d > 0.5) discard;
+            float alpha = smoothstep(0.5, 0.1, d);
+            vec3 color = mix(vec3(0.9, 0.95, 1.0), vec3(0.0, 0.95, 1.0), vIsSelected);
+            
+            // 호버 시 시각적 효과 분리
+            if(vHighlight == 1.0) {
+                alpha *= 0.15; // 암전 (투명도 감소)
+            } else if(vHighlight == 2.0) {
+                color = mix(color, vec3(1.0, 1.0, 1.0), 0.5); // 하이라이트 시 더 하얗게
+                alpha = min(1.0, alpha * 2.0);
+            }
+            
+            gl_FragColor = vec4(color, alpha + vIsSelected * 0.5);
+        }
+    `;
+    const edgeVertexShader = `
+        uniform float uGravity; uniform float uRepel;
+        attribute vec3 hubDir; attribute float hubBaseR; attribute vec3 leafDir; attribute float leafBaseDist;
+        attribute float aHighlight; varying float vHighlight;
+        void main() {
+            vec3 finalPos = hubDir * (hubBaseR / uGravity) + leafDir * (leafBaseDist * uRepel);
+            vHighlight = aHighlight;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(finalPos, 1.0);
+        }
+    `;
+    const edgeFragmentShader = `
+        uniform float uOpacity; varying float vHighlight;
+        void main() { 
+            float alpha = uOpacity;
+            vec3 color = vec3(0.533, 0.533, 0.6);
+            
+            if(vHighlight == 1.0) {
+                alpha *= 0.1; // 암전
+            } else if(vHighlight == 2.0) {
+                alpha = min(1.0, uOpacity * 6.0 + 0.3); // 밝게 빛남
+                color = vec3(0.8, 0.9, 1.0); // 하얀 빛
+            }
+            gl_FragColor = vec4(color, alpha); 
+        }
+    `;
+
+    function buildBaseTopology() {
+        if(pointsMesh) { pointsMesh.geometry.dispose(); pointsMesh.material.dispose(); scene.remove(pointsMesh); }
+        if(linesMesh) { linesMesh.geometry.dispose(); linesMesh.material.dispose(); scene.remove(linesMesh); }
+
+        const nNodes = parseInt(document.getElementById('num-nodes').value);
+        const edgeDensity = parseFloat(document.getElementById('num-edges').value);
+        baseTopology.nNodes = nNodes;
+        baseTopology.nodeAdjacency = Array.from({length: nNodes}, () => []);
+        baseTopology.nodeEdges = Array.from({length: nNodes}, () => []);
+
+        const hDir = new Float32Array(nNodes * 3), hRad = new Float32Array(nNodes);
+        const lDir = new Float32Array(nNodes * 3), lDist = new Float32Array(nNodes);
+        const sizes = new Float32Array(nNodes), ids = new Float32Array(nNodes), nHighlights = new Float32Array(nNodes);
+        const edges = [];
+        const numCoreHubs = Math.max(10, Math.floor(nNodes * 0.005)), numSubHubs = Math.max(50, Math.floor(nNodes * 0.05));  
+        const hubsData = [];
+
+        for(let i=0; i<nNodes; i++) {
+            ids[i] = i; nHighlights[i] = 0.0;
+            if(i < numCoreHubs) {
+                const r = Math.random() * 800, theta = Math.random() * 2 * Math.PI, phi = Math.acos(2 * Math.random() - 1);
+                const dx = Math.sin(phi) * Math.cos(theta), dy = Math.sin(phi) * Math.sin(theta), dz = Math.cos(phi);
+                hDir[i*3]=dx; hDir[i*3+1]=dy; hDir[i*3+2]=dz; hRad[i] = r;
+                lDir[i*3]=0; lDir[i*3+1]=0; lDir[i*3+2]=0; lDist[i] = 0;
+                sizes[i] = 12.0 + Math.random() * 8.0;
+                hubsData.push({ id: i, dx, dy, dz, r });
+            } else {
+                const target = hubsData[Math.floor(Math.random() * hubsData.length)];
+                const dist = (Math.random() * 150) + (Math.random() * 150), theta = Math.random() * 2 * Math.PI, phi = Math.acos(2 * Math.random() - 1);
+                const dx = Math.sin(phi) * Math.cos(theta), dy = Math.sin(phi) * Math.sin(theta), dz = Math.cos(phi);
+                hDir[i*3]=target.dx; hDir[i*3+1]=target.dy; hDir[i*3+2]=target.dz; hRad[i] = target.r;
+                lDir[i*3]=dx; lDir[i*3+1]=dy; lDir[i*3+2]=dz; lDist[i] = dist;
+                sizes[i] = (i < numCoreHubs + numSubHubs) ? (4.0 + Math.random() * 3.0) : (1.0 + Math.random() * 1.5);
+                
+                if(i < numCoreHubs + numSubHubs) hubsData.push({ id: i, dx: target.dx, dy: target.dy, dz: target.dz, r: target.r }); 
+                edges.push(i, target.id);
+                if(Math.random() < (0.02 * edgeDensity)) edges.push(i, hubsData[Math.floor(Math.random() * hubsData.length)].id);
+            }
+        }
+        for(let i=0; i<numCoreHubs; i++) {
+            for(let j=i+1; j<numCoreHubs; j++) { if(Math.random() < 0.1 * edgeDensity) edges.push(i, j); }
+        }
+
+        const nEdges = edges.length / 2;
+        const e_hDir = new Float32Array(nEdges * 2 * 3), e_hRad = new Float32Array(nEdges * 2);
+        const e_lDir = new Float32Array(nEdges * 2 * 3), e_lDist = new Float32Array(nEdges * 2);
+        const eHighlights = new Float32Array(nEdges * 2);
+
+        for(let i=0; i<nEdges; i++) {
+            const n1 = edges[i*2], n2 = edges[i*2+1];
+            eHighlights[i*2] = 0.0; eHighlights[i*2+1] = 0.0;
+            
+            e_hDir[i*6] = hDir[n1*3]; e_hDir[i*6+1] = hDir[n1*3+1]; e_hDir[i*6+2] = hDir[n1*3+2]; e_hRad[i*2] = hRad[n1];
+            e_lDir[i*6] = lDir[n1*3]; e_lDir[i*6+1] = lDir[n1*3+1]; e_lDir[i*6+2] = lDir[n1*3+2]; e_lDist[i*2] = lDist[n1];
+            
+            e_hDir[i*6+3] = hDir[n2*3]; e_hDir[i*6+4] = hDir[n2*3+1]; e_hDir[i*6+5] = hDir[n2*3+2]; e_hRad[i*2+1] = hRad[n2];
+            e_lDir[i*6+3] = lDir[n2*3]; e_lDir[i*6+4] = lDir[n2*3+1]; e_lDir[i*6+5] = lDir[n2*3+2]; e_lDist[i*2+1] = lDist[n2];
+
+            // 관계망(Adjacency List) 구축
+            baseTopology.nodeAdjacency[n1].push(n2);
+            baseTopology.nodeAdjacency[n2].push(n1);
+            baseTopology.nodeEdges[n1].push(i);
+            baseTopology.nodeEdges[n2].push(i);
+        }
+
+        baseTopology.hDir = hDir; baseTopology.hRad = hRad; baseTopology.lDir = lDir; baseTopology.lDist = lDist;
+
+        const nodeGeo = new THREE.BufferGeometry();
+        nodeGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(nNodes*3), 3)); 
+        nodeGeo.setAttribute('hubDir', new THREE.BufferAttribute(hDir, 3)); nodeGeo.setAttribute('hubBaseR', new THREE.BufferAttribute(hRad, 1));
+        nodeGeo.setAttribute('leafDir', new THREE.BufferAttribute(lDir, 3)); nodeGeo.setAttribute('leafBaseDist', new THREE.BufferAttribute(lDist, 1));
+        nodeGeo.setAttribute('baseSize', new THREE.BufferAttribute(sizes, 1)); nodeGeo.setAttribute('aNodeId', new THREE.BufferAttribute(ids, 1)); 
+        nodeGeo.setAttribute('aHighlight', new THREE.BufferAttribute(nHighlights, 1)); 
+        
+        const nodeMat = new THREE.ShaderMaterial({ uniforms: gpuPhysicsUniforms, vertexShader: nodeVertexShader, fragmentShader: nodeFragmentShader, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending });
+        pointsMesh = new THREE.Points(nodeGeo, nodeMat); pointsMesh.frustumCulled = false; scene.add(pointsMesh);
+
+        const edgeGeo = new THREE.BufferGeometry();
+        edgeGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(nEdges*2*3), 3));
+        edgeGeo.setAttribute('hubDir', new THREE.BufferAttribute(e_hDir, 3)); edgeGeo.setAttribute('hubBaseR', new THREE.BufferAttribute(e_hRad, 1));
+        edgeGeo.setAttribute('leafDir', new THREE.BufferAttribute(e_lDir, 3)); edgeGeo.setAttribute('leafBaseDist', new THREE.BufferAttribute(e_lDist, 1));
+        edgeGeo.setAttribute('aHighlight', new THREE.BufferAttribute(eHighlights, 1));
+
+        const edgeMat = new THREE.ShaderMaterial({ uniforms: gpuPhysicsUniforms, vertexShader: edgeVertexShader, fragmentShader: edgeFragmentShader, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending });
+        linesMesh = new THREE.LineSegments(edgeGeo, edgeMat); linesMesh.frustumCulled = false; scene.add(linesMesh);
+    }
+
+    const fakeTitles = ["Quantum Encryption", "Neural Pathway", "Obsidian API", "Three.js 최적화", "React 상태 관리", "제텔카스텐 방법론", "웹팩 빌드 에러", "마케팅 기획안"];
+    const fakeTags = ["#concept", "#idea", "#dev", "#research", "#meeting", "#draft"];
+    const fakeContents = ["이 노드는 매우 중요한 개념을 담고 있습니다.", "기존 아키텍처의 한계를 극복하기 위한 새로운 접근 방식.", "다음 주 팀 미팅에서 반드시 논의해야 할 주요 안건 리스트.", "레퍼런스 자료: GPU를 활용한 초고속 데이터 렌더링."];
+
+    function showCard(nodeId) {
+        gpuPhysicsUniforms.uSelectedNode.value = nodeId;
+        document.getElementById('card-title').innerText = fakeTitles[nodeId % fakeTitles.length];
+        document.getElementById('card-tag').innerText = fakeTags[nodeId % fakeTags.length];
+        document.getElementById('card-content').innerText = fakeContents[nodeId % fakeContents.length];
+        document.getElementById('card-id').innerText = `ID: ${nodeId}`;
+        document.getElementById('info-card').classList.add('show');
+    }
+
+    document.getElementById('close-card').addEventListener('click', () => { document.getElementById('info-card').classList.remove('show'); gpuPhysicsUniforms.uSelectedNode.value = -1.0; });
+
+    // 💡 호버(Hover) 및 클릭 처리 로직
+    let hoveredNodeId = -1;
+    let clickStartX, clickStartY;
+    const ZOOM_THRESHOLD = 1600; 
+
+    // 호버 상태 그래픽 업데이트 (매우 빠름)
+    function updateHoverState(id) {
+        hoveredNodeId = id;
+        container.style.cursor = (id !== -1) ? 'pointer' : (document.getElementById('btn-pan').classList.contains('active') ? 'grab' : 'default');
+
+        const nArr = pointsMesh.geometry.attributes.aHighlight.array;
+        const eArr = linesMesh.geometry.attributes.aHighlight.array;
+
+        if (id === -1) {
+            nArr.fill(0.0); eArr.fill(0.0); // 초기화
+        } else {
+            nArr.fill(1.0); eArr.fill(1.0); // 전부 암전
+            
+            nArr[id] = 2.0; // 대상 노드 빛남
+            const connectedNodes = baseTopology.nodeAdjacency[id];
+            for(let i=0; i<connectedNodes.length; i++) nArr[connectedNodes[i]] = 2.0; // 이웃 노드 빛남
+
+            const connectedEdges = baseTopology.nodeEdges[id];
+            for(let i=0; i<connectedEdges.length; i++) {
+                eArr[connectedEdges[i]*2] = 2.0; eArr[connectedEdges[i]*2+1] = 2.0; // 연결된 선 빛남
+            }
+        }
+        pointsMesh.geometry.attributes.aHighlight.needsUpdate = true;
+        linesMesh.geometry.attributes.aHighlight.needsUpdate = true;
+    }
+
+    container.addEventListener('pointermove', e => {
+        const currentZoom = camera.position.distanceTo(controls.target);
+        if (currentZoom > ZOOM_THRESHOLD) {
+            if (hoveredNodeId !== -1) updateHoverState(-1);
+            return;
+        }
+
+        const mouse = new THREE.Vector2((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1);
+        let closestId = -1; let minDist = Infinity; const threshold = 0.02; 
+        const grav = gpuPhysicsUniforms.uGravity.value, rep = gpuPhysicsUniforms.uRepel.value; const pos = new THREE.Vector3();
+
+        for(let i=0; i<baseTopology.nNodes; i++) {
+            pos.x = baseTopology.hDir[i*3] * (baseTopology.hRad[i] / grav) + baseTopology.lDir[i*3] * (baseTopology.lDist[i] / rep); 
+            pos.y = baseTopology.hDir[i*3+1] * (baseTopology.hRad[i] / grav) + baseTopology.lDir[i*3+1] * (baseTopology.lDist[i] / rep); 
+            pos.z = baseTopology.hDir[i*3+2] * (baseTopology.hRad[i] / grav) + baseTopology.lDir[i*3+2] * (baseTopology.lDist[i] / rep);
+            pos.project(camera); 
+            if(pos.z > 1.0 || pos.z < -1.0) continue; 
+            const dist = mouse.distanceTo(pos);
+            if(dist < threshold && dist < minDist) { minDist = dist; closestId = i; }
+        }
+
+        if (closestId !== hoveredNodeId) updateHoverState(closestId);
+    });
+
+    container.addEventListener('pointerdown', e => { clickStartX = e.clientX; clickStartY = e.clientY; });
+    container.addEventListener('pointerup', e => {
+        if(Math.hypot(e.clientX - clickStartX, e.clientY - clickStartY) > 5 || camera.position.distanceTo(controls.target) > ZOOM_THRESHOLD) return;
+        if(hoveredNodeId !== -1) showCard(hoveredNodeId);
+        else { document.getElementById('info-card').classList.remove('show'); gpuPhysicsUniforms.uSelectedNode.value = -1.0; }
+    });
+
+    function syncTopology(id) { const r = document.getElementById('range-'+id), n = document.getElementById('num-'+id); r.addEventListener('input', () => n.value = r.value); r.addEventListener('change', buildBaseTopology); n.addEventListener('change', () => { r.value = n.value; buildBaseTopology(); }); }
+    function syncPhysics(id, targetKey) { const r = document.getElementById('range-'+id), n = document.getElementById('num-'+id); const update = () => { n.value = r.value; targetUniforms[targetKey] = parseFloat(r.value); }; r.addEventListener('input', update); n.addEventListener('input', () => { r.value = n.value; update(); }); }
+
+    syncTopology('nodes'); syncTopology('edges');
+    syncPhysics('size', 'size'); syncPhysics('gravity', 'gravity'); syncPhysics('repel', 'repel'); syncPhysics('opacity', 'opacity');
+
+    document.getElementById('btn-generate').addEventListener('click', buildBaseTopology);
+    buildBaseTopology();
+
+    window.addEventListener('resize', () => { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); composer.setSize(window.innerWidth, window.innerHeight); });
+
+    const zoomIndicator = document.getElementById('zoom-indicator');
+    
+    function animate() {
+        requestAnimationFrame(animate); controls.update();
+        gpuPhysicsUniforms.uGravity.value += (targetUniforms.gravity - gpuPhysicsUniforms.uGravity.value) * 0.1;
+        gpuPhysicsUniforms.uRepel.value += (targetUniforms.repel - gpuPhysicsUniforms.uRepel.value) * 0.1;
+        gpuPhysicsUniforms.uSizeMult.value += (targetUniforms.size - gpuPhysicsUniforms.uSizeMult.value) * 0.15;
+        gpuPhysicsUniforms.uOpacity.value += (targetUniforms.opacity - gpuPhysicsUniforms.uOpacity.value) * 0.15;
+        
+        const currentZoom = camera.position.distanceTo(controls.target);
+        if (currentZoom > ZOOM_THRESHOLD) {
+            zoomIndicator.innerText = "🌌 거시적 뷰 (더 확대하여 노드 선택)"; zoomIndicator.style.color = "#888"; zoomIndicator.style.border = "1px solid rgba(255, 255, 255, 0.1)";
+        } else {
+            zoomIndicator.innerText = "🔍 미시적 뷰 (호버 및 클릭 활성화)"; zoomIndicator.style.color = "#00f2ff"; zoomIndicator.style.border = "1px solid rgba(0, 242, 255, 0.4)";
+        }
+
+        composer.render(); // Bloom 유지
+    }
+    animate();
+</script>
+</body>
+</html>

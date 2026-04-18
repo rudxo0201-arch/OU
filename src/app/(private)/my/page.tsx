@@ -1,0 +1,244 @@
+'use client';
+
+import { useState, useCallback, useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/hooks/useAuth';
+import { WidgetGrid, type GridTransition } from '@/components/widgets/WidgetGrid';
+import { DockBar } from '@/components/widgets/DockBar';
+import { UniverseView } from '@/components/widgets/UniverseView';
+import { OUChatWindow } from '@/components/chat/OUChatWindow';
+import { useChatStore } from '@/stores/chatStore';
+import { useWidgetStore } from '@/stores/widgetStore';
+
+type Mode = 'dashboard' | 'to-universe' | 'universe' | 'to-dashboard';
+
+const WIDGET_EXIT_DURATION = 600;  // stagger + animation
+const SPHERE_DURATION = 600;
+const WIDGET_ENTER_DURATION = 600;
+
+export default function MyPage() {
+  const { user, isLoading, signOut } = useAuth();
+  const router = useRouter();
+  const [mode, setMode] = useState<Mode>('dashboard');
+  const [chatOpen, setChatOpen] = useState(false);
+  const hasOuWidget = useWidgetStore(s => (s.pages[s.currentPageIndex]?.widgets ?? []).some(w => w.type === 'ou-view'));
+  const { currentPageIndex, pages, setCurrentPage } = useWidgetStore();
+  const timerRef = useRef<NodeJS.Timeout>();
+
+  // ⌘+K shortcut
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setChatOpen(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
+
+  const toggleUniverse = useCallback(() => {
+    if (mode === 'to-universe' || mode === 'to-dashboard') return; // debounce
+
+    clearTimeout(timerRef.current);
+
+    if (mode === 'dashboard') {
+      // Dashboard → Universe
+      setMode('to-universe');
+      timerRef.current = setTimeout(() => {
+        setMode('universe');
+      }, WIDGET_EXIT_DURATION + SPHERE_DURATION);
+    } else {
+      // Universe → Dashboard
+      setMode('to-dashboard');
+      timerRef.current = setTimeout(() => {
+        setMode('dashboard');
+      }, SPHERE_DURATION + WIDGET_ENTER_DURATION);
+    }
+  }, [mode]);
+
+  if (isLoading) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'rgba(255,255,255,0.6)', animation: 'blink 1s ease-in-out infinite' }} />
+      </div>
+    );
+  }
+
+  const showWidgets = mode === 'dashboard' || mode === 'to-universe' || mode === 'to-dashboard';
+  const showUniverse = mode === 'universe' || mode === 'to-universe' || mode === 'to-dashboard';
+  const universeActive = mode === 'universe' || mode === 'to-universe';
+
+  let gridTransition: GridTransition = 'idle';
+  if (mode === 'to-universe') gridTransition = 'exiting';
+  if (mode === 'to-dashboard') gridTransition = 'entering';
+
+  return (
+    <div style={{
+      position: 'relative',
+      height: '100vh',
+      overflow: 'hidden',
+    }}>
+      {/* Full-bleed content area (universe + widgets) */}
+      <div style={{ position: 'absolute', inset: 0 }}>
+        {/* Widget grid — hidden via visibility when in universe mode (preserves state) */}
+        <div style={{
+          position: 'absolute',
+          top: 44, bottom: 96, left: 32, right: 32,
+          visibility: showWidgets ? 'visible' : 'hidden',
+          pointerEvents: mode === 'dashboard' ? 'auto' : 'none',
+        }}>
+          <WidgetGrid transition={gridTransition} />
+        </div>
+
+        {/* Universe view */}
+        {showUniverse && (
+          <UniverseView visible={mode === 'universe' || mode === 'to-universe'} />
+        )}
+
+        {/* Expanding sphere transition */}
+        {(mode === 'to-universe' || mode === 'to-dashboard') && (
+          <ExpandingSphere expanding={mode === 'to-universe'} />
+        )}
+      </div>
+
+      {/* macOS-style Menu Bar */}
+      <MenuBar showLogo={!hasOuWidget} email={user?.email} onSettings={() => router.push('/settings')} onLogout={signOut} />
+
+      {/* OU Chat floating window */}
+      <OUChatWindow open={chatOpen} onClose={() => setChatOpen(false)} />
+
+      {/* Page indicator dots (iPad style) */}
+      {mode === 'dashboard' && pages.length > 1 && (
+        <div style={{
+          position: 'absolute',
+          bottom: 100, left: 0, right: 0,
+          display: 'flex', justifyContent: 'center', gap: 8,
+          zIndex: 10, pointerEvents: 'auto',
+        }}>
+          {pages.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrentPage(i)}
+              className="ou-pressable"
+              style={{
+                width: currentPageIndex === i ? 20 : 8,
+                height: 8,
+                borderRadius: 999,
+                background: currentPageIndex === i ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.15)',
+                transition: 'all 300ms cubic-bezier(0.34, 1.56, 0.64, 1)',
+              }}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Dock bar — floating at bottom */}
+      <div style={{
+        position: 'absolute',
+        bottom: 0, left: 0, right: 0,
+        height: 96,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 10,
+        pointerEvents: 'none',
+      }}>
+        <div style={{ pointerEvents: 'auto' }}>
+          <DockBar onUniverse={toggleUniverse} universeActive={universeActive} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ---- Spotlight Widget (sits on desktop, activates chat on Enter) ----
+// ---- macOS-style Menu Bar ----
+function MenuBar({ showLogo, email, onSettings, onLogout }: {
+  showLogo: boolean; email?: string; onSettings: () => void; onLogout: () => void;
+}) {
+  const [time, setTime] = useState('');
+
+  useEffect(() => {
+    const update = () => {
+      const now = new Date();
+      const h = now.getHours();
+      const m = now.getMinutes().toString().padStart(2, '0');
+      const period = h >= 12 ? '오후' : '오전';
+      const h12 = h > 12 ? h - 12 : h === 0 ? 12 : h;
+      setTime(`${period} ${h12}:${m}`);
+    };
+    update();
+    const iv = setInterval(update, 30000);
+    return () => clearInterval(iv);
+  }, []);
+
+  return (
+    <div style={{
+      position: 'absolute',
+      top: 0, left: 0, right: 0,
+      height: 36,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      padding: '0 16px',
+      zIndex: 10,
+      backdropFilter: 'blur(20px) saturate(180%)',
+      WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+      background: 'rgba(255,255,255,0.02)',
+      borderBottom: '0.5px solid rgba(255,255,255,0.04)',
+    }}>
+      {/* Left: Logo */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        {showLogo ? (
+          <img src="/logo-ou-white.svg" alt="OU" style={{ height: 14, opacity: 0.7, filter: 'drop-shadow(0 0 4px rgba(255,255,255,0.1))' }} />
+        ) : (
+          <div style={{ width: 28 }} />
+        )}
+      </div>
+
+      {/* Right: Time + Settings + Profile */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', fontVariantNumeric: 'tabular-nums' }}>
+          {time}
+        </span>
+        <button
+          onClick={onSettings}
+          className="ou-pressable"
+          style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', padding: '2px 8px', borderRadius: 4 }}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+            <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" strokeWidth="1.5" />
+            <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z" stroke="currentColor" strokeWidth="1.5" />
+          </svg>
+        </button>
+        <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>{email?.split('@')[0]}</span>
+      </div>
+    </div>
+  );
+}
+
+function ExpandingSphere({ expanding }: { expanding: boolean }) {
+  return (
+    <div style={{
+      position: 'absolute',
+      inset: 0,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      pointerEvents: 'none',
+      zIndex: 5,
+    }}>
+      <div style={{
+        width: 48,
+        height: 48,
+        borderRadius: '50%',
+        background: 'radial-gradient(circle at 35% 35%, rgba(255,255,255,0.2), rgba(255,255,255,0.03) 70%)',
+        boxShadow: '0 0 40px 10px rgba(255,255,255,0.08)',
+        animation: expanding
+          ? 'sphere-expand 600ms cubic-bezier(0, 0, 0.2, 1) forwards'
+          : 'sphere-collapse 600ms cubic-bezier(0.4, 0, 1, 1) forwards',
+      }} />
+    </div>
+  );
+}

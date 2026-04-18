@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OU — OWN UNIVERSE</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+<style>
+:root {
+  --ou-space: #060810;
+  --ou-glow-sm: 0 0 12px 1px rgba(255,255,255,0.06);
+  --ou-glow-md: 0 0 20px 2px rgba(255,255,255,0.08);
+  --ou-glow-lg: 0 0 32px 4px rgba(255,255,255,0.10);
+  --ou-border-subtle: rgba(255,255,255,0.10);
+  --ou-border-hover: rgba(255,255,255,0.25);
+  --ou-surface-faint: rgba(255,255,255,0.015);
+  --ou-surface-hover: rgba(255,255,255,0.08);
+  --ou-text-muted: rgba(255,255,255,0.25);
+  --ou-text-dimmed: rgba(255,255,255,0.40);
+  --ou-text-secondary: rgba(255,255,255,0.55);
+  --ou-text-body: rgba(255,255,255,0.70);
+  --ou-text-strong: rgba(255,255,255,0.85);
+  --ou-text-bright: rgba(255,255,255,0.95);
+  --ou-font-logo: 'Orbitron', sans-serif;
+  --ou-radius-pill: 999px;
+  --ou-radius-card: 16px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Pretendard Variable', -apple-system, sans-serif;
+  background: var(--ou-space);
+  color: var(--ou-text-body);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== STARS BG ===== */
+.stars-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ===== NAV ===== */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 32px;
+  backdrop-filter: blur(16px);
+  background: rgba(6,8,16,0.6);
+  border-bottom: 0.5px solid var(--ou-border-subtle);
+}
+
+.nav-logo {
+  font-family: var(--ou-font-logo);
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--ou-text-bright);
+  letter-spacing: 2px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.badge-beta {
+  font-family: 'Pretendard Variable', sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--ou-text-dimmed);
+  border: 0.5px solid var(--ou-border-subtle);
+  border-radius: var(--ou-radius-pill);
+  padding: 2px 8px;
+  letter-spacing: 1px;
+}
+
+.nav-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.btn-login {
+  font-size: 14px;
+  color: var(--ou-text-secondary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: var(--ou-radius-pill);
+  transition: color 180ms ease;
+}
+.btn-login:hover { color: var(--ou-text-bright); }
+
+.btn-signup {
+  font-size: 14px;
+  color: var(--ou-text-bright);
+  background: var(--ou-surface-faint);
+  border: 0.5px solid var(--ou-border-subtle);
+  border-radius: var(--ou-radius-pill);
+  padding: 8px 20px;
+  cursor: pointer;
+  box-shadow: var(--ou-glow-sm);
+  transition: all 180ms ease;
+}
+.btn-signup:hover {
+  border-color: var(--ou-border-hover);
+  box-shadow: var(--ou-glow-md);
+  background: var(--ou-surface-hover);
+}
+
+/* ===== HERO ===== */
+.hero {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+#heroCanvas {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+}
+
+.hero-text {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 1s ease;
+  pointer-events: none;
+}
+
+.hero-text.visible { opacity: 1; }
+
+.hero-ou {
+  font-family: var(--ou-font-logo);
+  font-size: 64px;
+  font-weight: 800;
+  color: var(--ou-text-bright);
+  letter-spacing: 8px;
+  margin-bottom: 8px;
+}
+
+.hero-sub {
+  font-family: var(--ou-font-logo);
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--ou-text-dimmed);
+  letter-spacing: 4px;
+  margin-bottom: 40px;
+}
+
+.hero-copy {
+  font-size: 22px;
+  color: var(--ou-text-strong);
+  margin-bottom: 12px;
+  opacity: 0;
+  transition: opacity 0.8s ease 0.5s;
+}
+.hero-copy.visible { opacity: 1; }
+
+.hero-copy2 {
+  font-size: 16px;
+  color: var(--ou-text-secondary);
+  opacity: 0;
+  transition: opacity 0.8s ease 1.2s;
+}
+.hero-copy2.visible { opacity: 1; }
+
+.hero-arrow {
+  position: absolute;
+  bottom: 48px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.8s ease 2s;
+  animation: bounce 2s ease-in-out infinite;
+}
+.hero-arrow.visible { opacity: 1; }
+.hero-arrow i {
+  font-size: 28px;
+  color: var(--ou-text-dimmed);
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(10px); }
+}
+
+/* ===== TIMELINE ===== */
+.timeline-wrapper {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 80px 24px 40px;
+}
+
+.timeline-line {
+  position: absolute;
+  left: 48px;
+  top: 0;
+  bottom: 0;
+  width: 0.5px;
+  background: rgba(255,255,255,0.06);
+}
+
+.timeline-section {
+  position: relative;
+  margin-bottom: 80px;
+  padding-left: 80px;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.timeline-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.time-indicator {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 56px;
+}
+
+.time-indicator .time-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 0.5px solid var(--ou-border-subtle);
+  background: var(--ou-surface-faint);
+  backdrop-filter: blur(16px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--ou-glow-sm);
+}
+
+.time-indicator .time-icon i {
+  font-size: 16px;
+  color: var(--ou-text-secondary);
+}
+
+.time-indicator .time-label {
+  font-size: 11px;
+  color: var(--ou-text-muted);
+  letter-spacing: 0.5px;
+  font-weight: 500;
+}
+
+/* ===== CHAT BUBBLES ===== */
+.chat-demo {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.chat-bubble {
+  max-width: 85%;
+  padding: 14px 18px;
+  font-size: 14px;
+  line-height: 1.6;
+  border-radius: var(--ou-radius-card);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.chat-bubble.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.chat-bubble.user {
+  align-self: flex-end;
+  background: var(--ou-surface-faint);
+  border: 0.5px solid var(--ou-border-subtle);
+  box-shadow: var(--ou-glow-sm);
+  color: var(--ou-text-strong);
+}
+
+.chat-bubble.assistant {
+  align-self: flex-start;
+  background: transparent;
+  border: none;
+  border-left: 1.5px solid rgba(255,255,255,0.08);
+  border-radius: 0 var(--ou-radius-card) var(--ou-radius-card) 0;
+  color: var(--ou-text-body);
+  padding-left: 16px;
+}
+
+.inline-view {
+  align-self: flex-start;
+  max-width: 90%;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.inline-view.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===== INLINE CARDS ===== */
+.knowledge-card {
+  background: var(--ou-surface-faint);
+  border: 0.5px solid var(--ou-border-subtle);
+  border-radius: var(--ou-radius-card);
+  padding: 18px 20px;
+  backdrop-filter: blur(16px);
+  box-shadow: var(--ou-glow-sm);
+}
+
+.knowledge-card-header {
+  font-size: 11px;
+  color: var(--ou-text-muted);
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.knowledge-card-header i {
+  font-size: 14px;
+  color: var(--ou-text-dimmed);
+}
+
+.knowledge-card-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ou-text-strong);
+  margin-bottom: 10px;
+}
+
+.knowledge-card-body {
+  font-size: 13px;
+  color: var(--ou-text-secondary);
+  line-height: 1.7;
+}
+
+.knowledge-card-tags {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.knowledge-card-tag {
+  font-size: 11px;
+  color: var(--ou-text-dimmed);
+  border: 0.5px solid var(--ou-border-subtle);
+  border-radius: var(--ou-radius-pill);
+  padding: 3px 10px;
+}
+
+.problem-card {
+  background: var(--ou-surface-faint);
+  border: 0.5px solid var(--ou-border-subtle);
+  border-radius: var(--ou-radius-card);
+  padding: 18px 20px;
+  backdrop-filter: blur(16px);
+  box-shadow: var(--ou-glow-sm);
+}
+
+.problem-card-header {
+  font-size: 11px;
+  color: var(--ou-text-muted);
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.problem-card-header i {
+  font-size: 14px;
+  color: var(--ou-text-dimmed);
+}
+
+.problem-card-question {
+  font-size: 13px;
+  color: var(--ou-text-body);
+  line-height: 1.7;
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 0.5px solid rgba(255,255,255,0.06);
+}
+
+.problem-card-solution {
+  font-size: 13px;
+  color: var(--ou-text-secondary);
+  line-height: 1.7;
+  margin-bottom: 12px;
+}
+
+.problem-card-answer {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ou-text-strong);
+  border: 0.5px solid var(--ou-border-hover);
+  border-radius: var(--ou-radius-pill);
+  padding: 4px 14px;
+  box-shadow: var(--ou-glow-sm);
+}
+
+.problem-card-answer i {
+  font-size: 14px;
+  color: var(--ou-text-secondary);
+}
+
+.wrong-table {
+  background: var(--ou-surface-faint);
+  border: 0.5px solid var(--ou-border-subtle);
+  border-radius: var(--ou-radius-card);
+  padding: 18px 20px;
+  backdrop-filter: blur(16px);
+  box-shadow: var(--ou-glow-sm);
+  width: 100%;
+}
+
+.wrong-table-header {
+  font-size: 11px;
+  color: var(--ou-text-muted);
+  letter-spacing: 0.5px;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.wrong-table-header i {
+  font-size: 14px;
+  color: var(--ou-text-dimmed);
+}
+
+.wrong-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.wrong-table th {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ou-text-muted);
+  text-align: left;
+  padding: 6px 8px 10px;
+  border-bottom: 0.5px solid rgba(255,255,255,0.06);
+}
+
+.wrong-table td {
+  font-size: 12px;
+  color: var(--ou-text-secondary);
+  padding: 10px 8px;
+  border-bottom: 0.5px solid rgba(255,255,255,0.03);
+}
+
+.wrong-table tr:last-child td {
+  border-bottom: none;
+}
+
+.doc-preview {
+  background: var(--ou-surface-faint);
+  border: 0.5px solid var(--ou-border-subtle);
+  border-radius: var(--ou-radius-card);
+  padding: 20px;
+  backdrop-filter: blur(16px);
+  box-shadow: var(--ou-glow-sm);
+}
+
+.doc-preview-cover {
+  text-align: center;
+  padding: 20px 0 16px;
+  border-bottom: 0.5px solid rgba(255,255,255,0.06);
+  margin-bottom: 16px;
+}
+
+.doc-preview-cover i {
+  font-size: 28px;
+  color: var(--ou-text-dimmed);
+  margin-bottom: 8px;
+  display: block;
+}
+
+.doc-preview-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ou-text-strong);
+  margin-bottom: 4px;
+}
+
+.doc-preview-subtitle {
+  font-size: 12px;
+  color: var(--ou-text-muted);
+}
+
+.doc-preview-toc {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.doc-preview-toc-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--ou-text-secondary);
+}
+
+.doc-preview-toc-num {
+  font-size: 11px;
+  color: var(--ou-text-muted);
+  font-weight: 500;
+  min-width: 20px;
+}
+
+.doc-summary-text {
+  font-size: 14px;
+  color: var(--ou-text-secondary);
+  text-align: center;
+  margin-top: 16px;
+  line-height: 1.6;
+}
+
+/* ===== SUMMARY TEXT ===== */
+.timeline-summary {
+  text-align: center;
+  font-size: 17px;
+  color: var(--ou-text-secondary);
+  margin: 60px 0 80px;
+  line-height: 1.7;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.timeline-summary.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===== PERSONA TABS ===== */
+.persona-section {
+  text-align: center;
+  padding: 0 24px 80px;
+  max-width: 720px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.persona-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.persona-title {
+  font-size: 20px;
+  color: var(--ou-text-strong);
+  margin-bottom: 32px;
+}
+
+.persona-tabs {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+.persona-card {
+  background: var(--ou-surface-faint);
+  border: 0.5px solid var(--ou-border-subtle);
+  border-radius: var(--ou-radius-card);
+  padding: 24px;
+  flex: 1;
+  max-width: 280px;
+  backdrop-filter: blur(16px);
+  box-shadow: var(--ou-glow-sm);
+  cursor: default;
+  transition: all 180ms ease;
+  text-align: left;
+}
+.persona-card:hover {
+  border-color: var(--ou-border-hover);
+  box-shadow: var(--ou-glow-md);
+}
+
+.persona-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ou-text-strong);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.persona-label i {
+  font-size: 16px;
+  color: var(--ou-text-dimmed);
+}
+
+.persona-flow {
+  font-size: 13px;
+  color: var(--ou-text-secondary);
+  line-height: 1.6;
+}
+
+/* ===== CTA ===== */
+.cta-section {
+  text-align: center;
+  padding: 60px 24px 80px;
+  position: relative;
+  z-index: 1;
+}
+
+.cta-logo {
+  font-family: var(--ou-font-logo);
+  font-size: 36px;
+  font-weight: 800;
+  color: var(--ou-text-bright);
+  letter-spacing: 6px;
+  margin-bottom: 28px;
+}
+
+.btn-cta {
+  font-family: 'Pretendard Variable', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--ou-text-bright);
+  background: var(--ou-surface-faint);
+  border: 0.5px solid var(--ou-border-subtle);
+  border-radius: var(--ou-radius-pill);
+  padding: 14px 40px;
+  cursor: pointer;
+  box-shadow: var(--ou-glow-md);
+  transition: all 180ms ease;
+}
+.btn-cta:hover {
+  border-color: var(--ou-border-hover);
+  box-shadow: var(--ou-glow-lg);
+  background: var(--ou-surface-hover);
+}
+
+/* ===== FOOTER ===== */
+footer {
+  text-align: center;
+  padding: 40px 24px 48px;
+  position: relative;
+  z-index: 1;
+  border-top: 0.5px solid rgba(255,255,255,0.04);
+}
+
+footer p {
+  font-family: var(--ou-font-logo);
+  font-size: 11px;
+  color: var(--ou-text-muted);
+  letter-spacing: 3px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 640px) {
+  nav { padding: 12px 16px; }
+  .nav-logo { font-size: 17px; }
+  .hero-ou { font-size: 42px; }
+  .hero-sub { font-size: 11px; }
+  .hero-copy { font-size: 18px; }
+  .hero-copy2 { font-size: 14px; }
+  .timeline-wrapper { padding: 60px 16px 20px; }
+  .timeline-line { left: 36px; }
+  .timeline-section { padding-left: 64px; margin-bottom: 60px; }
+  .time-indicator { width: 44px; }
+  .time-indicator .time-icon { width: 30px; height: 30px; }
+  .time-indicator .time-icon i { font-size: 14px; }
+  .chat-bubble { max-width: 95%; font-size: 13px; }
+  .persona-tabs { flex-direction: column; align-items: center; }
+  .persona-card { max-width: 100%; }
+  .wrong-table { overflow-x: auto; }
+  .doc-preview { padding: 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Stars BG -->
+<canvas class="stars-canvas" id="starsCanvas"></canvas>
+
+<!-- Nav -->
+<nav>
+  <div class="nav-logo">OU <span class="badge-beta">Beta</span></div>
+  <div class="nav-actions">
+    <button class="btn-login">Log in</button>
+    <button class="btn-signup">Sign up</button>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <canvas id="heroCanvas"></canvas>
+  <div class="hero-text" id="heroText">
+    <div class="hero-ou">OU</div>
+    <div class="hero-sub">OWN UNIVERSE</div>
+    <div class="hero-copy" id="heroCopy">나만의 우주를 만드세요</div>
+    <div class="hero-copy2" id="heroCopy2">이 우주는 이런 것들을 가능하게 해요</div>
+  </div>
+  <div class="hero-arrow" id="heroArrow">
+    <i class="ph ph-caret-down"></i>
+  </div>
+</section>
+
+<!-- Timeline -->
+<div class="timeline-wrapper">
+  <div class="timeline-line"></div>
+
+  <!-- 수업 09:00 -->
+  <div class="timeline-section" data-section="class">
+    <div class="time-indicator">
+      <div class="time-icon"><i class="ph ph-chalkboard-teacher"></i></div>
+      <span class="time-label">09:00</span>
+    </div>
+    <div class="chat-demo">
+      <div class="chat-bubble user" data-delay="0">오늘 마케팅 수업 핵심: STP 전략이란 시장세분화, 타겟팅, 포지셔닝</div>
+      <div class="chat-bubble assistant" data-delay="600" data-type-text="마케팅 수업 핵심 기록했어요."></div>
+      <div class="inline-view" data-delay="1800">
+        <div class="knowledge-card">
+          <div class="knowledge-card-header"><i class="ph ph-book-open-text"></i> 수업 기록</div>
+          <div class="knowledge-card-title">STP 전략</div>
+          <div class="knowledge-card-body">시장세분화(Segmentation), 타겟팅(Targeting), 포지셔닝(Positioning)으로 구성된 마케팅 핵심 프레임워크</div>
+          <div class="knowledge-card-tags">
+            <span class="knowledge-card-tag">마케팅</span>
+            <span class="knowledge-card-tag">STP</span>
+            <span class="knowledge-card-tag">전략</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 문제풀이 14:00 -->
+  <div class="timeline-section" data-section="problem">
+    <div class="time-indicator">
+      <div class="time-icon"><i class="ph ph-exam"></i></div>
+      <span class="time-label">14:00</span>
+    </div>
+    <div class="chat-demo">
+      <div class="chat-bubble user" data-delay="0">이 문제 틀렸어. 답이 3번인 이유 설명해줘</div>
+      <div class="chat-bubble assistant" data-delay="600" data-type-text="이 문제는 수요의 가격탄력성 개념이에요. 가격 변화율 대비 수요 변화율로 계산하면 3번이 맞아요."></div>
+      <div class="inline-view" data-delay="2400">
+        <div class="problem-card">
+          <div class="problem-card-header"><i class="ph ph-pencil-line"></i> 오답 분석</div>
+          <div class="problem-card-question">수요의 가격탄력성이 1.5일 때, 가격이 10% 상승하면 수요량의 변화는?</div>
+          <div class="problem-card-solution">가격탄력성 = 수요 변화율 / 가격 변화율이므로,<br>수요 변화율 = 1.5 x 10% = 15% 감소</div>
+          <div class="problem-card-answer"><i class="ph ph-check-circle"></i> 정답: 3번 (15% 감소)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 복습 19:00 -->
+  <div class="timeline-section" data-section="review">
+    <div class="time-indicator">
+      <div class="time-icon"><i class="ph ph-arrow-counter-clockwise"></i></div>
+      <span class="time-label">19:00</span>
+    </div>
+    <div class="chat-demo">
+      <div class="chat-bubble user" data-delay="0">최근 틀린 문제 보여줘</div>
+      <div class="chat-bubble assistant" data-delay="600" data-type-text="최근 오답을 정리해드릴게요."></div>
+      <div class="inline-view" data-delay="1600">
+        <div class="wrong-table">
+          <div class="wrong-table-header"><i class="ph ph-table"></i> 오답 목록</div>
+          <table>
+            <thead>
+              <tr>
+                <th>과목</th>
+                <th>문제 요약</th>
+                <th>틀린 날짜</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>경제학</td>
+                <td>수요의 가격탄력성 계산</td>
+                <td>4월 17일</td>
+              </tr>
+              <tr>
+                <td>마케팅</td>
+                <td>SWOT 분석 적용 사례</td>
+                <td>4월 15일</td>
+              </tr>
+              <tr>
+                <td>회계원리</td>
+                <td>감가상각 정률법 계산</td>
+                <td>4월 13일</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 시험준비 -->
+  <div class="timeline-section" data-section="exam-prep">
+    <div class="time-indicator">
+      <div class="time-icon"><i class="ph ph-file-pdf"></i></div>
+      <span class="time-label">시험 전</span>
+    </div>
+    <div class="chat-demo">
+      <div class="chat-bubble user" data-delay="0">경영학 오답노트 PDF로 뽑아줘</div>
+      <div class="chat-bubble assistant" data-delay="600" data-type-text="경영학 오답노트를 만들어드릴게요."></div>
+      <div class="inline-view" data-delay="1800">
+        <div class="doc-preview">
+          <div class="doc-preview-cover">
+            <i class="ph ph-file-pdf"></i>
+            <div class="doc-preview-title">경영학 오답노트</div>
+            <div class="doc-preview-subtitle">2026년 4월 누적 오답 정리</div>
+          </div>
+          <div class="doc-preview-toc">
+            <div class="doc-preview-toc-item"><span class="doc-preview-toc-num">01</span> 경제학 -- 수요와 공급</div>
+            <div class="doc-preview-toc-item"><span class="doc-preview-toc-num">02</span> 마케팅 -- STP와 SWOT</div>
+            <div class="doc-preview-toc-item"><span class="doc-preview-toc-num">03</span> 회계원리 -- 감가상각</div>
+            <div class="doc-preview-toc-item"><span class="doc-preview-toc-num">04</span> 재무관리 -- 현재가치</div>
+          </div>
+        </div>
+      </div>
+      <div class="doc-summary-text" style="opacity:0; transform:translateY(10px); transition: opacity 0.5s ease, transform 0.5s ease;" data-delay="2600">공부한 게 자동으로 정리돼요.</div>
+    </div>
+  </div>
+
+  <div class="timeline-summary" id="timelineSummary">
+    노트 앱, 오답 노트, 문제집에 흩어져 있던 공부가,<br>채팅 하나로 정리됐어요.
+  </div>
+</div>
+
+<!-- Persona Section -->
+<div class="persona-section" id="personaSection">
+  <div class="persona-title">다른 하루도 가능해요</div>
+  <div class="persona-tabs">
+    <div class="persona-card">
+      <div class="persona-label"><i class="ph ph-briefcase"></i> 직장인</div>
+      <div class="persona-flow">일정 &rarr; 지출 &rarr; 인간관계 &rarr; 정리</div>
+    </div>
+    <div class="persona-card">
+      <div class="persona-label"><i class="ph ph-lightbulb"></i> 기획자</div>
+      <div class="persona-flow">아이디어 &rarr; 리서치 &rarr; 기획서</div>
+    </div>
+  </div>
+</div>
+
+<!-- CTA -->
+<div class="cta-section">
+  <div class="cta-logo">OU</div>
+  <button class="btn-cta">시작하기</button>
+</div>
+
+<!-- Footer -->
+<footer>
+  <p>OU &mdash; OWN UNIVERSE</p>
+</footer>
+
+<script>
+// ===== STARS BACKGROUND =====
+(function() {
+  const canvas = document.getElementById('starsCanvas');
+  const ctx = canvas.getContext('2d');
+  let stars = [];
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+
+  function initStars() {
+    stars = [];
+    const count = Math.floor((canvas.width * canvas.height) / 4000);
+    for (let i = 0; i < count; i++) {
+      stars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 1.2 + 0.3,
+        a: Math.random() * 0.4 + 0.05,
+        twinkle: Math.random() * Math.PI * 2,
+        speed: Math.random() * 0.005 + 0.002
+      });
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (const s of stars) {
+      s.twinkle += s.speed;
+      const alpha = s.a * (0.6 + 0.4 * Math.sin(s.twinkle));
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+      ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+
+  resize();
+  initStars();
+  draw();
+  window.addEventListener('resize', () => { resize(); initStars(); });
+})();
+
+// ===== HERO GRAPH ANIMATION =====
+(function() {
+  const canvas = document.getElementById('heroCanvas');
+  const ctx = canvas.getContext('2d');
+  let W, H;
+  let dots = [];
+  let edges = [];
+  let phase = 0; // 0=spawn, 1=accelerate, 2=zoomout, 3=slide+text
+  let phaseTime = 0;
+  let graphOffsetX = 0;
+  let graphScale = 1;
+  let sphereRadius = 180;
+  const DOT_COUNT = 2000;
+  const EDGE_COUNT = 3000;
+
+  function resize() {
+    W = canvas.width = canvas.clientWidth;
+    H = canvas.height = canvas.clientHeight;
+    sphereRadius = Math.min(W, H) * 0.22;
+  }
+
+  // Golden angle sphere distribution
+  function generateSphere() {
+    dots = [];
+    const golden = Math.PI * (3 - Math.sqrt(5));
+    for (let i = 0; i < DOT_COUNT; i++) {
+      const y = 1 - (i / (DOT_COUNT - 1)) * 2;
+      const radiusAtY = Math.sqrt(1 - y * y);
+      const theta = golden * i;
+      const x3d = radiusAtY * Math.cos(theta);
+      const z3d = radiusAtY * Math.sin(theta);
+      dots.push({
+        x3d, y3d: y, z3d,
+        sx: 0, sy: 0,
+        size: Math.random() * 1.5 + 0.5,
+        alpha: Math.random() * 0.6 + 0.1,
+        spawned: false,
+        spawnTime: 0
+      });
+    }
+    // edges: connect nearby dots
+    edges = [];
+    for (let i = 0; i < EDGE_COUNT; i++) {
+      const a = Math.floor(Math.random() * DOT_COUNT);
+      let b = (a + Math.floor(Math.random() * 8) + 1) % DOT_COUNT;
+      edges.push({ a, b, alpha: Math.random() * 0.03 + 0.02 });
+    }
+  }
+
+  let rotAngle = 0;
+  let spawnIndex = 0;
+  let startTime = 0;
+
+  function project(x3d, y3d, z3d) {
+    // rotate Y axis
+    const cos = Math.cos(rotAngle), sin = Math.sin(rotAngle);
+    const rx = x3d * cos - z3d * sin;
+    const rz = x3d * sin + z3d * cos;
+    const perspective = 3 / (3 + rz);
+    return {
+      x: rx * perspective * sphereRadius * graphScale + W / 2 + graphOffsetX,
+      y: y3d * perspective * sphereRadius * graphScale + H / 2,
+      z: rz,
+      p: perspective
+    };
+  }
+
+  function animate(ts) {
+    if (!startTime) startTime = ts;
+    const elapsed = (ts - startTime) / 1000;
+    ctx.clearRect(0, 0, W, H);
+
+    rotAngle += 0.002;
+
+    // Phase management
+    if (phase === 0 && elapsed < 2.5) {
+      // Slow spawn
+      const rate = Math.floor(elapsed * 300);
+      while (spawnIndex < rate && spawnIndex < DOT_COUNT) {
+        dots[spawnIndex].spawned = true;
+        dots[spawnIndex].spawnTime = elapsed;
+        spawnIndex++;
+      }
+    } else if (phase === 0) {
+      phase = 1;
+      phaseTime = elapsed;
+    }
+
+    if (phase === 1) {
+      // Accelerate spawn
+      const dt = elapsed - phaseTime;
+      const rate = Math.min(DOT_COUNT, spawnIndex + Math.floor(dt * 2000));
+      while (spawnIndex < rate) {
+        dots[spawnIndex].spawned = true;
+        dots[spawnIndex].spawnTime = elapsed;
+        spawnIndex++;
+      }
+      if (spawnIndex >= DOT_COUNT) {
+        phase = 2;
+        phaseTime = elapsed;
+      }
+    }
+
+    if (phase === 2) {
+      // Zoom out slightly for 1s
+      const dt = elapsed - phaseTime;
+      if (dt < 1) {
+        graphScale = 1 + dt * 0.1;
+      } else {
+        phase = 3;
+        phaseTime = elapsed;
+      }
+    }
+
+    if (phase === 3) {
+      // Slide left + show text
+      const dt = Math.min(elapsed - phaseTime, 1.2);
+      const targetX = -W * 0.18;
+      graphOffsetX = targetX * (dt / 1.2);
+
+      if (dt >= 0.4) {
+        document.getElementById('heroText').classList.add('visible');
+      }
+      if (dt >= 0.8) {
+        document.getElementById('heroCopy').classList.add('visible');
+        document.getElementById('heroCopy2').classList.add('visible');
+      }
+      if (dt >= 1.0) {
+        document.getElementById('heroArrow').classList.add('visible');
+      }
+    }
+
+    // Draw edges
+    for (const e of edges) {
+      if (!dots[e.a].spawned || !dots[e.b].spawned) continue;
+      const pa = project(dots[e.a].x3d, dots[e.a].y3d, dots[e.a].z3d);
+      const pb = project(dots[e.b].x3d, dots[e.b].y3d, dots[e.b].z3d);
+      ctx.beginPath();
+      ctx.moveTo(pa.x, pa.y);
+      ctx.lineTo(pb.x, pb.y);
+      ctx.strokeStyle = `rgba(255,255,255,${e.alpha * Math.min(pa.p, pb.p) * 0.6})`;
+      ctx.lineWidth = 0.3;
+      ctx.stroke();
+    }
+
+    // Draw dots
+    for (const d of dots) {
+      if (!d.spawned) continue;
+      const p = project(d.x3d, d.y3d, d.z3d);
+      const fadeIn = Math.min(1, (elapsed - d.spawnTime) * 3);
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, d.size * p.p, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,255,255,${d.alpha * p.p * fadeIn})`;
+      ctx.fill();
+    }
+
+    requestAnimationFrame(animate);
+  }
+
+  resize();
+  generateSphere();
+  requestAnimationFrame(animate);
+  window.addEventListener('resize', () => {
+    resize();
+    sphereRadius = Math.min(W, H) * 0.22;
+  });
+})();
+
+// ===== TIMELINE INTERSECTION + CHAT ANIMATIONS =====
+(function() {
+  const playedSections = new Set();
+
+  function typeText(el, text, speed) {
+    return new Promise(resolve => {
+      el.textContent = '';
+      let i = 0;
+      function tick() {
+        if (i < text.length) {
+          el.textContent += text[i];
+          i++;
+          setTimeout(tick, speed);
+        } else {
+          resolve();
+        }
+      }
+      tick();
+    });
+  }
+
+  function animateSection(section) {
+    const key = section.dataset.section;
+    if (playedSections.has(key)) return;
+    playedSections.add(key);
+
+    const bubbles = section.querySelectorAll('.chat-bubble');
+    const inlineViews = section.querySelectorAll('.inline-view');
+    const extraEls = section.querySelectorAll('[data-delay]:not(.chat-bubble):not(.inline-view)');
+
+    let cumDelay = 0;
+
+    bubbles.forEach((b, i) => {
+      const delay = parseInt(b.dataset.delay || '0');
+      const typeTextContent = b.dataset.typeText;
+
+      setTimeout(() => {
+        b.classList.add('visible');
+        if (typeTextContent) {
+          typeText(b, typeTextContent, 30);
+        }
+      }, delay);
+
+      cumDelay = Math.max(cumDelay, delay);
+    });
+
+    inlineViews.forEach(v => {
+      const delay = parseInt(v.dataset.delay || '0');
+      setTimeout(() => v.classList.add('visible'), delay);
+    });
+
+    extraEls.forEach(el => {
+      const delay = parseInt(el.dataset.delay || '0');
+      setTimeout(() => {
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0)';
+      }, delay);
+    });
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const el = entry.target;
+        if (el.classList.contains('timeline-section')) {
+          el.classList.add('visible');
+          animateSection(el);
+        } else {
+          el.classList.add('visible');
+        }
+      }
+    });
+  }, { threshold: 0.3 });
+
+  document.querySelectorAll('.timeline-section').forEach(s => observer.observe(s));
+  observer.observe(document.getElementById('timelineSummary'));
+  observer.observe(document.getElementById('personaSection'));
+})();
+</script>
+</body>
+</html>

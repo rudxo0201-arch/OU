@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OU — Just talk.</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://unpkg.com/@phosphor-icons/web@2.0.3/src/regular/style.css" rel="stylesheet">
+<style>
+:root {
+  --ou-space: #060810;
+  --ou-glow-xs: 0 0 8px 0 rgba(255,255,255,0.04);
+  --ou-glow-sm: 0 0 12px 1px rgba(255,255,255,0.06);
+  --ou-glow-md: 0 0 20px 2px rgba(255,255,255,0.08);
+  --ou-glow-lg: 0 0 32px 4px rgba(255,255,255,0.10);
+  --ou-glow-hover: 0 0 24px 3px rgba(255,255,255,0.12);
+  --ou-glow-bright: 0 0 40px 6px rgba(255,255,255,0.15);
+  --ou-border-faint: rgba(255,255,255,0.06);
+  --ou-border-subtle: rgba(255,255,255,0.10);
+  --ou-border-muted: rgba(255,255,255,0.14);
+  --ou-border-medium: rgba(255,255,255,0.18);
+  --ou-border-hover: rgba(255,255,255,0.25);
+  --ou-border-strong: rgba(255,255,255,0.30);
+  --ou-surface-faint: rgba(255,255,255,0.015);
+  --ou-surface-subtle: rgba(255,255,255,0.03);
+  --ou-surface-muted: rgba(255,255,255,0.05);
+  --ou-text-faint: rgba(255,255,255,0.15);
+  --ou-text-muted: rgba(255,255,255,0.25);
+  --ou-text-dimmed: rgba(255,255,255,0.40);
+  --ou-text-secondary: rgba(255,255,255,0.55);
+  --ou-text-body: rgba(255,255,255,0.70);
+  --ou-text-strong: rgba(255,255,255,0.85);
+  --ou-text-bright: rgba(255,255,255,0.95);
+  --ou-font-logo: 'Orbitron', sans-serif;
+  --ou-radius-pill: 999px;
+  --ou-radius-card: 16px;
+  --ou-radius-md: 10px;
+  --ou-radius-sm: 6px;
+  --ou-transition: 180ms ease;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Pretendard Variable', -apple-system, sans-serif;
+  background: var(--ou-space);
+  color: var(--ou-text-body);
+  overflow-x: hidden;
+}
+
+/* Stars */
+.stars {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none; z-index: 0;
+}
+.stars span {
+  position: absolute; border-radius: 50%;
+  background: rgba(255,255,255,0.5);
+  animation: twinkle 3s ease-in-out infinite alternate;
+}
+@keyframes twinkle {
+  0% { opacity: 0.15; } 100% { opacity: 0.7; }
+}
+
+/* Nav */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 20px 40px;
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-bottom: 0.5px solid var(--ou-border-faint);
+}
+.nav-left { display: flex; align-items: center; gap: 10px; }
+.nav-logo {
+  font-family: var(--ou-font-logo); font-size: 18px; font-weight: 700;
+  color: var(--ou-text-bright); letter-spacing: 2px;
+}
+.nav-badge {
+  padding: 2px 8px; border-radius: var(--ou-radius-pill);
+  border: 0.5px solid var(--ou-border-subtle);
+  font-size: 9px; color: var(--ou-text-dimmed);
+  letter-spacing: 1.5px; text-transform: uppercase;
+}
+.nav-actions { display: flex; gap: 12px; align-items: center; }
+.nav-btn {
+  padding: 8px 20px; border-radius: var(--ou-radius-pill);
+  border: 0.5px solid var(--ou-border-subtle); background: transparent;
+  color: var(--ou-text-body); font-size: 13px; font-family: inherit;
+  cursor: pointer; transition: var(--ou-transition);
+}
+.nav-btn:hover { border-color: var(--ou-border-hover); color: var(--ou-text-bright); }
+.nav-btn.primary {
+  background: rgba(255,255,255,0.9); color: #111;
+  border: none; font-weight: 600;
+}
+.nav-btn.primary:hover { background: #fff; }
+
+/* Sections */
+section {
+  min-height: 100vh; display: flex; flex-direction: column;
+  justify-content: center; align-items: center;
+  position: relative; z-index: 1; padding: 100px 40px;
+}
+
+/* Hero */
+.hero { text-align: center; gap: 32px; position: relative; }
+.hero-canvas {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 0;
+}
+.hero-content {
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column; align-items: center; gap: 24px;
+  opacity: 0; transition: opacity 0.8s ease;
+}
+.hero-content.visible { opacity: 1; }
+.hero-logo {
+  font-family: var(--ou-font-logo); font-size: 72px; font-weight: 800;
+  color: var(--ou-text-bright); letter-spacing: 8px;
+  text-shadow: 0 0 60px rgba(255,255,255,0.12);
+}
+.hero-sub {
+  font-family: var(--ou-font-logo); font-size: 10px;
+  color: rgba(255,255,255,0.35); letter-spacing: 8px; text-transform: uppercase;
+}
+.hero-tagline {
+  font-size: 42px; font-weight: 300;
+  color: var(--ou-text-strong); letter-spacing: -0.5px;
+}
+.hero-desc {
+  font-size: 16px; color: var(--ou-text-secondary);
+  margin-top: 8px; opacity: 0; transition: opacity 0.8s ease 0.3s;
+}
+.hero-desc.visible { opacity: 1; }
+.hero-scroll {
+  margin-top: 60px; display: flex; flex-direction: column;
+  align-items: center; gap: 8px; color: var(--ou-text-dimmed);
+  font-size: 11px; animation: bounce-down 2s ease-in-out infinite;
+  opacity: 0; transition: opacity 0.8s ease 0.6s;
+}
+.hero-scroll.visible { opacity: 1; }
+@keyframes bounce-down {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+
+/* Before/After Section */
+.ba-section { padding: 80px 40px; }
+.ba-section-label {
+  font-size: 11px; color: var(--ou-text-dimmed);
+  letter-spacing: 3px; text-transform: uppercase;
+  text-align: center; margin-bottom: 60px;
+}
+.ba-section-num {
+  font-family: var(--ou-font-logo); font-size: 10px;
+  color: var(--ou-text-muted); letter-spacing: 2px; margin-right: 12px;
+}
+.ba-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 60px; max-width: 1100px; width: 100%;
+  align-items: start;
+}
+.ba-side { display: flex; flex-direction: column; gap: 24px; }
+.ba-title {
+  font-size: 22px; font-weight: 400; line-height: 1.5;
+  letter-spacing: -0.3px;
+}
+.before-side .ba-title { color: var(--ou-text-dimmed); }
+.after-side .ba-title { color: var(--ou-text-strong); }
+
+/* Before side dimmed */
+.before-side { opacity: 0.5; }
+
+/* After side bright */
+.after-side { position: relative; }
+.after-glow {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Skeleton App Cards */
+.app-cards {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 12px; max-width: 360px;
+}
+.app-card {
+  border: 0.5px solid var(--ou-border-subtle);
+  border-radius: var(--ou-radius-md);
+  padding: 14px 12px;
+  display: flex; flex-direction: column; gap: 8px;
+  transition: var(--ou-transition);
+}
+.app-card:nth-child(1) { transform: rotate(-2deg); }
+.app-card:nth-child(2) { transform: rotate(1deg); }
+.app-card:nth-child(3) { transform: rotate(-1deg); }
+.app-card:nth-child(4) { transform: rotate(1.5deg); grid-column: span 1; }
+.app-card:nth-child(5) { transform: rotate(-0.5deg); grid-column: span 2; }
+.app-card-icon {
+  font-size: 20px; color: var(--ou-text-dimmed);
+}
+.app-card-name {
+  font-size: 11px; color: var(--ou-text-dimmed); font-weight: 500;
+}
+.skeleton-line {
+  height: 6px; border-radius: 3px;
+  background: rgba(255,255,255,0.06);
+}
+.skeleton-line.short { width: 60%; }
+.skeleton-line.long { width: 85%; }
+
+/* Chat Demo */
+.chat-demo {
+  border: 0.5px solid var(--ou-border-subtle);
+  border-radius: var(--ou-radius-card);
+  padding: 20px; display: flex; flex-direction: column; gap: 14px;
+  box-shadow: var(--ou-glow-sm);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  background: var(--ou-surface-faint);
+  min-height: 300px;
+}
+.chat-msg {
+  opacity: 0; transform: translateY(8px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.chat-msg.visible { opacity: 1; transform: translateY(0); }
+.chat-msg.user {
+  background: var(--ou-surface-subtle);
+  border: 1px solid var(--ou-border-medium);
+  border-radius: 20px 20px 4px 20px;
+  padding: 10px 16px; margin-left: auto;
+  max-width: 80%; color: var(--ou-text-bright); font-size: 14px;
+  box-shadow: var(--ou-glow-md);
+}
+.chat-msg.assistant {
+  max-width: 90%; padding: 10px 14px;
+  border-left: 1.5px solid var(--ou-border-muted);
+  color: var(--ou-text-body); font-size: 14px; line-height: 1.6;
+}
+.typing-cursor {
+  display: inline-block; width: 2px; height: 14px;
+  background: var(--ou-text-body); margin-left: 2px;
+  animation: blink 0.8s step-end infinite; vertical-align: text-bottom;
+}
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+/* Inline Feeding Summary Card */
+.inline-feeding {
+  border: 0.5px solid var(--ou-border-subtle);
+  border-radius: var(--ou-radius-md); padding: 16px;
+  margin-top: 4px; max-width: 280px;
+  opacity: 0; transform: translateY(8px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  background: var(--ou-surface-faint);
+}
+.inline-feeding.visible { opacity: 1; transform: translateY(0); }
+.inline-feeding-title {
+  font-size: 12px; font-weight: 500; color: var(--ou-text-strong);
+  margin-bottom: 12px; display: flex; align-items: center; gap: 6px;
+}
+.inline-feeding-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 6px 0;
+  border-bottom: 0.5px solid var(--ou-border-faint);
+}
+.inline-feeding-row:last-child { border-bottom: none; }
+.inline-feeding-label {
+  font-size: 11px; color: var(--ou-text-secondary);
+}
+.inline-feeding-value {
+  font-size: 12px; color: var(--ou-text-strong); font-weight: 500;
+}
+
+/* Section 2 — Brain / Memory */
+.brain-display {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 16px; min-height: 200px;
+}
+.brain-icon-big {
+  font-size: 56px; color: var(--ou-text-dimmed);
+  opacity: 0.5;
+}
+.brain-text {
+  font-size: 18px; color: var(--ou-text-dimmed);
+  font-weight: 300; letter-spacing: -0.3px;
+}
+.brain-desc {
+  font-size: 14px; color: var(--ou-text-dimmed);
+  line-height: 1.8; text-align: center; margin-top: 8px;
+}
+
+/* Sleep Heatmap */
+.inline-heatmap {
+  border: 0.5px solid var(--ou-border-subtle);
+  border-radius: var(--ou-radius-md); padding: 16px;
+  margin-top: 4px;
+  opacity: 0; transform: translateY(8px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.inline-heatmap.visible { opacity: 1; transform: translateY(0); }
+.inline-heatmap-title {
+  font-size: 12px; font-weight: 500; color: var(--ou-text-strong);
+  margin-bottom: 12px; display: flex; align-items: center; gap: 6px;
+}
+.heatmap-grid {
+  display: grid;
+  grid-template-columns: 40px repeat(14, 1fr);
+  gap: 2px;
+}
+.heatmap-label {
+  font-size: 8px; color: var(--ou-text-dimmed);
+  display: flex; align-items: center; justify-content: flex-end;
+  padding-right: 4px;
+}
+.heatmap-col-label {
+  font-size: 7px; color: var(--ou-text-dimmed);
+  text-align: center;
+}
+.heatmap-cell {
+  width: 100%; aspect-ratio: 1;
+  border-radius: 2px;
+  background: rgba(255,255,255,0.03);
+}
+
+/* Section 2 hint text */
+.section-hint {
+  font-size: 13px; color: var(--ou-text-secondary);
+  margin-top: 16px; text-align: center;
+  opacity: 0; transform: translateY(4px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.section-hint.visible { opacity: 1; transform: translateY(0); }
+
+/* Section 3 — Photo scatter */
+.photo-scatter {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 16px; min-height: 200px;
+}
+.photo-icon-big {
+  font-size: 48px; color: var(--ou-text-dimmed);
+}
+.photo-placeholders {
+  display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;
+  max-width: 280px;
+}
+.photo-placeholder {
+  width: 56px; height: 56px;
+  border: 0.5px solid var(--ou-border-faint);
+  border-radius: var(--ou-radius-sm);
+  background: rgba(255,255,255,0.02);
+  display: flex; align-items: center; justify-content: center;
+}
+.photo-placeholder i {
+  font-size: 18px; color: var(--ou-text-faint);
+}
+.photo-desc {
+  font-size: 14px; color: var(--ou-text-dimmed);
+  line-height: 1.8; text-align: center;
+}
+
+/* Inline Timeline */
+.inline-timeline {
+  border: 0.5px solid var(--ou-border-subtle);
+  border-radius: var(--ou-radius-md); padding: 16px;
+  margin-top: 4px;
+  opacity: 0; transform: translateY(8px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.inline-timeline.visible { opacity: 1; transform: translateY(0); }
+.inline-timeline-title {
+  font-size: 12px; font-weight: 500; color: var(--ou-text-strong);
+  margin-bottom: 14px; display: flex; align-items: center; gap: 6px;
+}
+.tl-item {
+  display: flex; gap: 12px; padding: 8px 0;
+  position: relative;
+}
+.tl-item:not(:last-child)::after {
+  content: ''; position: absolute;
+  left: 4px; top: 24px; bottom: -8px;
+  width: 1px; background: var(--ou-border-faint);
+}
+.tl-dot {
+  width: 9px; height: 9px; border-radius: 50%;
+  border: 1px solid var(--ou-border-muted);
+  margin-top: 4px; flex-shrink: 0;
+}
+.tl-content {}
+.tl-date {
+  font-size: 10px; color: var(--ou-text-dimmed);
+  margin-bottom: 2px;
+}
+.tl-text {
+  font-size: 12px; color: var(--ou-text-body);
+}
+
+/* Inline Badge */
+.inline-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 14px; border-radius: var(--ou-radius-pill);
+  border: 0.5px solid var(--ou-border-subtle);
+  font-size: 12px; color: var(--ou-text-secondary);
+  box-shadow: var(--ou-glow-xs); margin-top: 4px;
+  opacity: 0; transform: translateY(4px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.inline-badge.visible { opacity: 1; transform: translateY(0); }
+
+/* Mass Graph */
+.mass-graph-section {
+  padding: 80px 0; text-align: center; min-height: 80vh;
+}
+.mass-graph-title {
+  font-size: 28px; font-weight: 300;
+  color: var(--ou-text-strong); margin-bottom: 40px;
+  letter-spacing: -0.3px;
+}
+.mass-graph-canvas {
+  width: 100%; max-width: 1000px; height: 500px;
+  margin: 0 auto; cursor: grab;
+}
+.mass-graph-canvas:active { cursor: grabbing; }
+
+/* Divider */
+.ba-divider {
+  width: 1px; background: linear-gradient(to bottom,
+    transparent, var(--ou-border-muted), transparent);
+  align-self: stretch;
+}
+
+/* CTA */
+.cta-section {
+  text-align: center; gap: 32px; min-height: 60vh;
+}
+.cta-logo {
+  font-family: var(--ou-font-logo); font-size: 48px; font-weight: 800;
+  color: var(--ou-text-bright); letter-spacing: 6px;
+  text-shadow: 0 0 60px rgba(255,255,255,0.12);
+}
+.cta-btn {
+  padding: 14px 48px; border-radius: var(--ou-radius-pill);
+  background: rgba(255,255,255,0.9); color: #111;
+  border: none; font-size: 16px; font-weight: 600;
+  font-family: inherit; cursor: pointer;
+  transition: var(--ou-transition);
+  box-shadow: var(--ou-glow-lg);
+}
+.cta-btn:hover { background: #fff; box-shadow: var(--ou-glow-bright); }
+
+/* Footer */
+footer {
+  text-align: center; padding: 60px 40px;
+  border-top: 0.5px solid var(--ou-border-faint);
+  position: relative; z-index: 1;
+}
+.footer-text {
+  font-family: var(--ou-font-logo); font-size: 11px;
+  color: var(--ou-text-muted); letter-spacing: 4px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  nav { padding: 16px 20px; }
+  section { padding: 60px 20px; }
+  .ba-section { padding: 60px 20px; }
+  .ba-grid { grid-template-columns: 1fr; gap: 40px; }
+  .ba-divider { display: none; }
+  .hero-logo { font-size: 48px; letter-spacing: 4px; }
+  .hero-tagline { font-size: 28px; }
+  .mass-graph-canvas { height: 350px; }
+  .app-cards { max-width: 100%; }
+  .ba-title { font-size: 18px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Stars -->
+<div class="stars" id="stars"></div>
+
+<!-- Nav -->
+<nav>
+  <div class="nav-left">
+    <span class="nav-logo">OU</span>
+    <span class="nav-badge">Beta</span>
+  </div>
+  <div class="nav-actions">
+    <button class="nav-btn">Log in</button>
+    <button class="nav-btn primary">Sign up</button>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero" id="hero">
+  <canvas class="hero-canvas" id="heroCanvas"></canvas>
+  <div class="hero-content" id="heroContent">
+    <div class="hero-sub">OWN UNIVERSE</div>
+    <h1 class="hero-logo">OU</h1>
+    <p class="hero-tagline">나만의 우주를 만드세요</p>
+    <p class="hero-desc" id="heroDesc">이 우주는 이런 것들을 가능하게 해요</p>
+    <div class="hero-scroll" id="heroScroll">
+      <i class="ph ph-caret-down" style="font-size:20px;"></i>
+    </div>
+  </div>
+</section>
+
+<!-- Section 1: 기록 -->
+<section class="ba-section" id="section1">
+  <div class="ba-section-label">
+    <span class="ba-section-num">01</span> 기록
+  </div>
+  <div class="ba-grid">
+    <div class="ba-side before-side">
+      <div class="ba-title">수유 시간, 기저귀, 수면...<br>다 따로 기록</div>
+      <div class="app-cards">
+        <div class="app-card">
+          <i class="ph ph-baby app-card-icon"></i>
+          <span class="app-card-name">수유앱</span>
+          <div class="skeleton-line long"></div>
+          <div class="skeleton-line short"></div>
+        </div>
+        <div class="app-card">
+          <i class="ph ph-moon app-card-icon"></i>
+          <span class="app-card-name">수면앱</span>
+          <div class="skeleton-line long"></div>
+        </div>
+        <div class="app-card">
+          <i class="ph ph-chart-line-up app-card-icon"></i>
+          <span class="app-card-name">성장앱</span>
+          <div class="skeleton-line short"></div>
+          <div class="skeleton-line long"></div>
+        </div>
+        <div class="app-card">
+          <i class="ph ph-syringe app-card-icon"></i>
+          <span class="app-card-name">접종앱</span>
+          <div class="skeleton-line long"></div>
+        </div>
+        <div class="app-card">
+          <i class="ph ph-notebook app-card-icon"></i>
+          <span class="app-card-name">육아일기</span>
+          <div class="skeleton-line short"></div>
+          <div class="skeleton-line long"></div>
+        </div>
+      </div>
+    </div>
+    <div class="ba-side after-side">
+      <div class="after-glow"></div>
+      <div class="ba-title">말만 하면 돼요</div>
+      <div class="chat-demo" id="chatDemo1">
+        <!-- Filled by JS -->
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 2: 기억 -->
+<section class="ba-section" id="section2">
+  <div class="ba-section-label">
+    <span class="ba-section-num">02</span> 기억
+  </div>
+  <div class="ba-grid">
+    <div class="ba-side before-side">
+      <div class="ba-title">수면 부족이라 기억이 안 나요</div>
+      <div class="brain-display">
+        <i class="ph ph-brain brain-icon-big"></i>
+        <div class="brain-text">기억력...</div>
+        <div class="brain-desc">
+          몇 시에 먹였더라...<br>
+          어제 기저귀 몇 번이었지...
+        </div>
+      </div>
+    </div>
+    <div class="ba-side after-side">
+      <div class="after-glow"></div>
+      <div class="ba-title">OU가 다 기억해요</div>
+      <div class="chat-demo" id="chatDemo2">
+        <!-- Filled by JS -->
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 3: 성장 -->
+<section class="ba-section" id="section3">
+  <div class="ba-section-label">
+    <span class="ba-section-num">03</span> 성장
+  </div>
+  <div class="ba-grid">
+    <div class="ba-side before-side">
+      <div class="ba-title">사진은 있는데<br>언제 뭘 했는지 모르겠어요</div>
+      <div class="photo-scatter">
+        <i class="ph ph-image photo-icon-big"></i>
+        <div class="photo-placeholders">
+          <div class="photo-placeholder"><i class="ph ph-image"></i></div>
+          <div class="photo-placeholder"><i class="ph ph-image"></i></div>
+          <div class="photo-placeholder"><i class="ph ph-image"></i></div>
+          <div class="photo-placeholder"><i class="ph ph-image"></i></div>
+          <div class="photo-placeholder"><i class="ph ph-image"></i></div>
+          <div class="photo-placeholder"><i class="ph ph-image"></i></div>
+        </div>
+        <div class="photo-desc">
+          뒤집기가 언제였지...<br>
+          첫 이유식은 몇 개월이었더라...
+        </div>
+      </div>
+    </div>
+    <div class="ba-side after-side">
+      <div class="after-glow"></div>
+      <div class="ba-title">성장 기록이 자동으로 쌓여요</div>
+      <div class="chat-demo" id="chatDemo3">
+        <!-- Filled by JS -->
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Mass Graph -->
+<section class="mass-graph-section" id="massGraphSection">
+  <h2 class="mass-graph-title">그리고 이게 아이의 우주가 돼요</h2>
+  <canvas class="mass-graph-canvas" id="massGraphCanvas"></canvas>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-logo">OU</div>
+  <button class="cta-btn">시작하기</button>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-text">OU &mdash; OWN UNIVERSE</div>
+</footer>
+
+<script>
+// === Stars ===
+(function() {
+  const container = document.getElementById('stars');
+  for (let i = 0; i < 120; i++) {
+    const s = document.createElement('span');
+    const size = Math.random() * 2 + 0.5;
+    s.style.cssText = `
+      width:${size}px;height:${size}px;
+      top:${Math.random()*100}%;left:${Math.random()*100}%;
+      animation-delay:${Math.random()*3}s;animation-duration:${2+Math.random()*3}s;
+    `;
+    container.appendChild(s);
+  }
+})();
+
+// === Hero Canvas Animation ===
+(function() {
+  const canvas = document.getElementById('heroCanvas');
+  const ctx = canvas.getContext('2d');
+  let W, H;
+  const dots = [];
+  const DOT_COUNT = 2000;
+  let phase = 0;
+  let phaseTime = 0;
+  let sphereCenterX, sphereCenterY;
+  let slideOffsetX = 0;
+  let cameraZoom = 1;
+
+  function resize() {
+    W = canvas.width = canvas.offsetWidth * devicePixelRatio;
+    H = canvas.height = canvas.offsetHeight * devicePixelRatio;
+    ctx.scale(devicePixelRatio, devicePixelRatio);
+    sphereCenterX = canvas.offsetWidth / 2;
+    sphereCenterY = canvas.offsetHeight / 2;
+  }
+
+  resize();
+  window.addEventListener('resize', resize);
+
+  for (let i = 0; i < DOT_COUNT; i++) {
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos(2 * Math.random() - 1);
+    const r = 120 + Math.random() * 20;
+    dots.push({
+      x: (Math.random() - 0.5) * canvas.offsetWidth * 2,
+      y: (Math.random() - 0.5) * canvas.offsetHeight * 2,
+      tx: r * Math.sin(phi) * Math.cos(theta),
+      ty: r * Math.sin(phi) * Math.sin(theta),
+      tz: r * Math.cos(phi),
+      vx: (Math.random() - 0.5) * 2,
+      vy: (Math.random() - 0.5) * 2,
+      size: Math.random() * 1.2 + 0.3,
+      alpha: Math.random() * 0.4 + 0.1,
+      spawnDelay: Math.random() * 1500,
+    });
+  }
+
+  const startTime = performance.now();
+
+  function draw(now) {
+    const elapsed = now - startTime;
+    const cw = canvas.offsetWidth;
+    const ch = canvas.offsetHeight;
+    ctx.clearRect(0, 0, cw, ch);
+
+    if (elapsed < 1500) phase = 0;
+    else if (elapsed < 3000) phase = 1;
+    else if (elapsed < 5500) phase = 2;
+    else if (elapsed < 7000) phase = 3;
+    else phase = 4;
+
+    const targetSlide = phase >= 3 ? -cw * 0.2 : 0;
+    slideOffsetX += (targetSlide - slideOffsetX) * 0.03;
+
+    if (phase >= 3) {
+      document.getElementById('heroContent').classList.add('visible');
+    }
+    if (phase >= 4) {
+      document.getElementById('heroDesc').classList.add('visible');
+      document.getElementById('heroScroll').classList.add('visible');
+    }
+
+    for (const dot of dots) {
+      if (elapsed < dot.spawnDelay) continue;
+
+      if (phase < 2) {
+        dot.x += dot.vx * (phase === 1 ? 2.5 : 1);
+        dot.y += dot.vy * (phase === 1 ? 2.5 : 1);
+      } else {
+        const scale = Math.min(1, (elapsed - 3000) / 2500);
+        const projX = dot.tx / (1 + dot.tz / 400);
+        const projY = dot.ty / (1 + dot.tz / 400);
+        const destX = sphereCenterX + slideOffsetX + projX;
+        const destY = sphereCenterY + projY;
+        dot.x += (destX - dot.x) * 0.04;
+        dot.y += (destY - dot.y) * 0.04;
+        const angle = elapsed * 0.0001;
+        const cos = Math.cos(angle), sin = Math.sin(angle);
+        const nx = dot.tx * cos - dot.tz * sin;
+        const nz = dot.tx * sin + dot.tz * cos;
+        dot.tx = nx; dot.tz = nz;
+      }
+
+      const depth = phase >= 2 ? (dot.tz + 140) / 280 : 0.5;
+      const alpha = dot.alpha * (0.3 + depth * 0.7);
+      ctx.beginPath();
+      ctx.arc(dot.x, dot.y, dot.size * (0.5 + depth * 0.5), 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+      ctx.fill();
+    }
+
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+})();
+
+// === Typing animation helper ===
+function typeText(el, text, speed = 30) {
+  return new Promise(resolve => {
+    el.textContent = '';
+    const cursor = document.createElement('span');
+    cursor.className = 'typing-cursor';
+    el.appendChild(cursor);
+    let i = 0;
+    function tick() {
+      if (i < text.length) {
+        el.insertBefore(document.createTextNode(text[i]), cursor);
+        i++;
+        setTimeout(tick, speed);
+      } else {
+        cursor.remove();
+        resolve();
+      }
+    }
+    tick();
+  });
+}
+
+function addMsg(container, type, text) {
+  return new Promise(resolve => {
+    const div = document.createElement('div');
+    div.className = `chat-msg ${type}`;
+    container.appendChild(div);
+    setTimeout(() => div.classList.add('visible'), 50);
+    if (type === 'user') {
+      div.textContent = text;
+      setTimeout(resolve, 400);
+    } else {
+      typeText(div, text).then(() => setTimeout(resolve, 300));
+    }
+  });
+}
+
+function addInlineElement(container, el) {
+  container.appendChild(el);
+  setTimeout(() => el.classList.add('visible'), 100);
+}
+
+// === Build Inline Feeding Summary Card ===
+function buildFeedingSummary() {
+  const card = document.createElement('div');
+  card.className = 'inline-feeding';
+  card.innerHTML = `
+    <div class="inline-feeding-title"><i class="ph ph-baby"></i> 오늘 수유 기록</div>
+    <div class="inline-feeding-row">
+      <span class="inline-feeding-label">오늘 수유</span>
+      <span class="inline-feeding-value">3회</span>
+    </div>
+    <div class="inline-feeding-row">
+      <span class="inline-feeding-label">총 수유량</span>
+      <span class="inline-feeding-value">540ml</span>
+    </div>
+    <div class="inline-feeding-row">
+      <span class="inline-feeding-label">마지막 수유</span>
+      <span class="inline-feeding-value">오후 7시</span>
+    </div>
+  `;
+  return card;
+}
+
+// === Build Sleep Heatmap ===
+function buildSleepHeatmap() {
+  const heatmap = document.createElement('div');
+  heatmap.className = 'inline-heatmap';
+
+  // Generate 14 days of sleep data (time blocks: 밤, 새벽, 오전, 낮, 오후, 저녁)
+  const timeLabels = ['밤', '새벽', '오전', '낮', '오후', '저녁'];
+  // Opacity values for each cell (simulating sleep patterns)
+  const sleepData = [
+    [0.6, 0.5, 0.1, 0.3, 0.1, 0.5],  // Day 1
+    [0.7, 0.4, 0.0, 0.4, 0.0, 0.6],  // Day 2
+    [0.5, 0.6, 0.1, 0.3, 0.1, 0.5],  // Day 3
+    [0.6, 0.5, 0.0, 0.5, 0.0, 0.6],  // Day 4
+    [0.7, 0.4, 0.1, 0.3, 0.1, 0.5],  // Day 5
+    [0.5, 0.6, 0.0, 0.4, 0.0, 0.6],  // Day 6
+    [0.6, 0.5, 0.1, 0.5, 0.1, 0.5],  // Day 7
+    [0.7, 0.4, 0.0, 0.3, 0.0, 0.6],  // Day 8
+    [0.6, 0.5, 0.1, 0.4, 0.1, 0.5],  // Day 9
+    [0.5, 0.6, 0.0, 0.5, 0.0, 0.6],  // Day 10
+    [0.7, 0.4, 0.1, 0.3, 0.1, 0.5],  // Day 11
+    [0.6, 0.5, 0.0, 0.4, 0.0, 0.6],  // Day 12
+    [0.5, 0.6, 0.1, 0.5, 0.1, 0.5],  // Day 13
+    [0.7, 0.5, 0.0, 0.3, 0.0, 0.6],  // Day 14
+  ];
+
+  let gridHTML = '<div class="inline-heatmap-title"><i class="ph ph-moon"></i> 최근 2주 수면 기록</div>';
+  gridHTML += '<div class="heatmap-grid">';
+
+  // Header row: empty corner + day labels
+  gridHTML += '<div class="heatmap-label"></div>';
+  for (let d = 1; d <= 14; d++) {
+    gridHTML += `<div class="heatmap-col-label">${d}일</div>`;
+  }
+
+  // Data rows
+  for (let t = 0; t < timeLabels.length; t++) {
+    gridHTML += `<div class="heatmap-label">${timeLabels[t]}</div>`;
+    for (let d = 0; d < 14; d++) {
+      const opacity = sleepData[d][t];
+      const bg = opacity > 0 ? `rgba(255,255,255,${opacity * 0.3})` : 'rgba(255,255,255,0.03)';
+      gridHTML += `<div class="heatmap-cell" style="background:${bg};"></div>`;
+    }
+  }
+
+  gridHTML += '</div>';
+  heatmap.innerHTML = gridHTML;
+  return heatmap;
+}
+
+// === Build Growth Timeline ===
+function buildGrowthTimeline() {
+  const tl = document.createElement('div');
+  tl.className = 'inline-timeline';
+  tl.innerHTML = `
+    <div class="inline-timeline-title"><i class="ph ph-chart-line-up"></i> 성장 타임라인</div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-date">3개월</div>
+        <div class="tl-text">첫 뒤집기</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-date">5개월</div>
+        <div class="tl-text">첫 이유식</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-date">10개월</div>
+        <div class="tl-text">첫 걸음마</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-date">12개월</div>
+        <div class="tl-text">첫 단어</div>
+      </div>
+    </div>
+  `;
+  return tl;
+}
+
+// === Build Inline Badge ===
+function buildBadge(icon, text) {
+  const badge = document.createElement('div');
+  badge.className = 'inline-badge';
+  badge.innerHTML = `<i class="ph ph-${icon}"></i> ${text}`;
+  return badge;
+}
+
+// === Build Section Hint ===
+function buildHint(text) {
+  const hint = document.createElement('div');
+  hint.className = 'section-hint';
+  hint.textContent = text;
+  return hint;
+}
+
+// === Chat Demo Sequences ===
+const demos = {
+  chatDemo1: {
+    played: false,
+    async play() {
+      if (this.played) return;
+      this.played = true;
+      const c = document.getElementById('chatDemo1');
+      await addMsg(c, 'user', '7시에 분유 180ml');
+      await new Promise(r => setTimeout(r, 400));
+      await addMsg(c, 'assistant', '수유 기록했어요. 오늘 총 540ml이에요.');
+      await new Promise(r => setTimeout(r, 300));
+      const feeding = buildFeedingSummary();
+      addInlineElement(c, feeding);
+      await new Promise(r => setTimeout(r, 800));
+      await addMsg(c, 'user', '낮잠 1시~3시');
+      await new Promise(r => setTimeout(r, 400));
+      await addMsg(c, 'assistant', '낮잠 2시간 기록했어요.');
+      await new Promise(r => setTimeout(r, 200));
+      const badge = buildBadge('moon', '수면 기록 완료');
+      addInlineElement(c, badge);
+    }
+  },
+  chatDemo2: {
+    played: false,
+    async play() {
+      if (this.played) return;
+      this.played = true;
+      const c = document.getElementById('chatDemo2');
+      await addMsg(c, 'user', '오늘 분유 총 얼마나 먹었어?');
+      await new Promise(r => setTimeout(r, 400));
+      await addMsg(c, 'assistant', '오늘 총 540ml 먹었어요.');
+      await new Promise(r => setTimeout(r, 600));
+      await addMsg(c, 'user', '최근 2주 수면 기록 보여줘');
+      await new Promise(r => setTimeout(r, 400));
+      await addMsg(c, 'assistant', '수면 기록을 보여드릴게요.');
+      await new Promise(r => setTimeout(r, 300));
+      const heatmap = buildSleepHeatmap();
+      addInlineElement(c, heatmap);
+      await new Promise(r => setTimeout(r, 400));
+      const hint = buildHint('소아과 갈 때 보여주면 돼요.');
+      addInlineElement(c, hint);
+      setTimeout(() => hint.classList.add('visible'), 100);
+    }
+  },
+  chatDemo3: {
+    played: false,
+    async play() {
+      if (this.played) return;
+      this.played = true;
+      const c = document.getElementById('chatDemo3');
+      const tl = buildGrowthTimeline();
+      addInlineElement(c, tl);
+      await new Promise(r => setTimeout(r, 600));
+      const hint = buildHint('몇 년 후, 이 기록이 성장 앨범이 돼요.');
+      addInlineElement(c, hint);
+      setTimeout(() => hint.classList.add('visible'), 100);
+    }
+  }
+};
+
+// === IntersectionObserver ===
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const id = e.target.id;
+      if (id === 'section1') demos.chatDemo1.play();
+      else if (id === 'section2') demos.chatDemo2.play();
+      else if (id === 'section3') demos.chatDemo3.play();
+    }
+  });
+}, { threshold: 0.3 });
+
+observer.observe(document.getElementById('section1'));
+observer.observe(document.getElementById('section2'));
+observer.observe(document.getElementById('section3'));
+
+// === Mass Graph Canvas ===
+(function() {
+  const canvas = document.getElementById('massGraphCanvas');
+  const ctx = canvas.getContext('2d');
+  let W, H;
+  const DOT_COUNT = 2000;
+  const dots = [];
+  let dragX = 0, dragY = 0, isDragging = false, lastMX = 0, lastMY = 0;
+  let rotX = 0, rotY = 0, velX = 0.001, velY = 0.0005;
+
+  function resize() {
+    W = canvas.width = canvas.offsetWidth * devicePixelRatio;
+    H = canvas.height = canvas.offsetHeight * devicePixelRatio;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  for (let i = 0; i < DOT_COUNT; i++) {
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos(2 * Math.random() - 1);
+    const r = 140 + Math.random() * 30;
+    dots.push({
+      ox: r * Math.sin(phi) * Math.cos(theta),
+      oy: r * Math.sin(phi) * Math.sin(theta),
+      oz: r * Math.cos(phi),
+      size: Math.random() * 1.5 + 0.4,
+      alpha: Math.random() * 0.5 + 0.15,
+    });
+  }
+
+  canvas.addEventListener('mousedown', e => {
+    isDragging = true; lastMX = e.clientX; lastMY = e.clientY;
+  });
+  window.addEventListener('mousemove', e => {
+    if (!isDragging) return;
+    velY += (e.clientX - lastMX) * 0.00005;
+    velX += (e.clientY - lastMY) * 0.00005;
+    lastMX = e.clientX; lastMY = e.clientY;
+  });
+  window.addEventListener('mouseup', () => isDragging = false);
+
+  canvas.addEventListener('touchstart', e => {
+    isDragging = true;
+    lastMX = e.touches[0].clientX; lastMY = e.touches[0].clientY;
+  });
+  canvas.addEventListener('touchmove', e => {
+    if (!isDragging) return;
+    velY += (e.touches[0].clientX - lastMX) * 0.00005;
+    velX += (e.touches[0].clientY - lastMY) * 0.00005;
+    lastMX = e.touches[0].clientX; lastMY = e.touches[0].clientY;
+  });
+  canvas.addEventListener('touchend', () => isDragging = false);
+
+  let massObserved = false;
+  const massObs = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) massObserved = true;
+  }, { threshold: 0.2 });
+  massObs.observe(canvas);
+
+  function draw() {
+    if (!massObserved) { requestAnimationFrame(draw); return; }
+
+    const cw = canvas.offsetWidth;
+    const ch = canvas.offsetHeight;
+    const dpr = devicePixelRatio;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, cw, ch);
+
+    rotX += velX;
+    rotY += velY;
+    if (!isDragging) {
+      velX *= 0.995; velX += 0.0002;
+      velY *= 0.995; velY += 0.0001;
+    }
+
+    const cosX = Math.cos(rotX), sinX = Math.sin(rotX);
+    const cosY = Math.cos(rotY), sinY = Math.sin(rotY);
+    const cx = cw / 2, cy = ch / 2;
+
+    const projected = dots.map(d => {
+      let x = d.ox, y = d.oy, z = d.oz;
+      let ny = y * cosX - z * sinX;
+      let nz = y * sinX + z * cosX;
+      y = ny; z = nz;
+      let nx = x * cosY + z * sinY;
+      nz = -x * sinY + z * cosY;
+      x = nx; z = nz;
+
+      const scale = 300 / (300 + z);
+      return {
+        px: cx + x * scale,
+        py: cy + y * scale,
+        z,
+        size: d.size * scale,
+        alpha: d.alpha * (0.3 + (z + 170) / 340 * 0.7),
+      };
+    });
+
+    projected.sort((a, b) => a.z - b.z);
+
+    for (const p of projected) {
+      ctx.beginPath();
+      ctx.arc(p.px, p.py, p.size, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,255,255,${Math.max(0.05, p.alpha)})`;
+      ctx.fill();
+    }
+
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+})();
+</script>
+</body>
+</html>

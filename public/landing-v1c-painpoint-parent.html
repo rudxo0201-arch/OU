@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OU — OWN UNIVERSE</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #060810;
+  --border: rgba(255,255,255,0.10);
+  --glow-subtle: rgba(255,255,255,0.06);
+  --glow-mid: rgba(255,255,255,0.10);
+  --glow-strong: rgba(255,255,255,0.15);
+  --glass-bg: rgba(255,255,255,0.015);
+  --text-95: rgba(255,255,255,0.95);
+  --text-80: rgba(255,255,255,0.80);
+  --text-60: rgba(255,255,255,0.60);
+  --text-40: rgba(255,255,255,0.40);
+  --text-25: rgba(255,255,255,0.25);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text-95);
+  font-family: 'Pretendard Variable', Pretendard, -apple-system, sans-serif;
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+/* Stars */
+.stars-container { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+.star {
+  position: absolute;
+  width: 2px; height: 2px;
+  background: white;
+  border-radius: 50%;
+  animation: twinkle var(--dur) ease-in-out infinite;
+  opacity: 0;
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0.05; }
+  50% { opacity: var(--peak, 0.6); }
+}
+
+/* Nav */
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 32px;
+  backdrop-filter: blur(16px);
+  background: rgba(6,8,16,0.6);
+  border-bottom: 0.5px solid var(--border);
+}
+.nav-left { display: flex; align-items: center; gap: 10px; }
+.nav-logo {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700; font-size: 22px;
+  color: var(--text-95);
+  letter-spacing: 2px;
+}
+.badge-beta {
+  font-size: 10px; padding: 2px 8px;
+  border: 0.5px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-40);
+  font-weight: 500;
+}
+.nav-right { display: flex; gap: 10px; }
+.btn-login {
+  padding: 8px 20px; border-radius: 999px;
+  border: 0.5px solid var(--border);
+  background: transparent; color: var(--text-80);
+  font-size: 14px; cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+.btn-login:hover { border-color: rgba(255,255,255,0.3); }
+.btn-signup {
+  padding: 8px 20px; border-radius: 999px;
+  border: none; background: white; color: #060810;
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  font-family: inherit;
+  transition: opacity 0.2s;
+}
+.btn-signup:hover { opacity: 0.9; }
+
+/* Hero */
+#hero {
+  position: relative;
+  width: 100%; height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+#hero canvas {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+}
+.hero-overlay {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: none;
+}
+.hero-content {
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; height: 100%;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+.hero-content.visible { opacity: 1; }
+.hero-right {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 12px;
+}
+.hero-logo {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 900; font-size: 72px;
+  color: var(--text-95);
+  letter-spacing: 6px;
+}
+.hero-subtitle {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 14px; letter-spacing: 8px;
+  color: var(--text-40);
+  font-weight: 400;
+}
+.hero-tagline {
+  position: absolute;
+  bottom: 120px;
+  text-align: center;
+  font-size: 22px;
+  color: var(--text-60);
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+.hero-tagline.visible { opacity: 1; }
+.hero-arrow {
+  position: absolute;
+  bottom: 40px;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+  cursor: pointer;
+  pointer-events: auto;
+}
+.hero-arrow.visible { opacity: 1; }
+.hero-arrow i {
+  font-size: 32px;
+  color: var(--text-40);
+  animation: bounce 2s ease-in-out infinite;
+}
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+
+/* Sections */
+.section {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  padding: 80px 40px;
+}
+.section-inner {
+  max-width: 1100px; width: 100%;
+  display: flex; gap: 60px; align-items: flex-start;
+}
+.section-half { flex: 1; min-width: 0; }
+
+.section-title {
+  font-size: 32px; font-weight: 700;
+  margin-bottom: 40px;
+  color: var(--text-95);
+  text-align: center;
+  width: 100%;
+}
+.section-title-left {
+  text-align: left;
+}
+
+/* Glass card */
+.glass-card {
+  backdrop-filter: blur(16px);
+  background: var(--glass-bg);
+  border: 0.5px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px var(--glow-subtle);
+}
+
+/* Scattered apps */
+.scattered-apps {
+  position: relative;
+  height: 400px;
+  opacity: 0.4;
+}
+.app-card {
+  position: absolute;
+  width: 180px;
+  padding: 16px;
+  backdrop-filter: blur(16px);
+  background: var(--glass-bg);
+  border: 0.5px solid var(--border);
+  border-radius: 16px;
+}
+.app-card-header {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 12px;
+  font-size: 13px; color: var(--text-60);
+  font-weight: 500;
+}
+.app-card-header i { font-size: 18px; color: var(--text-40); }
+.skeleton-line {
+  height: 8px; border-radius: 4px;
+  background: rgba(255,255,255,0.06);
+  margin-bottom: 6px;
+}
+.skeleton-line:last-child { width: 60%; }
+.app-card:nth-child(1) { top: 20px; left: 10px; transform: rotate(-4deg); }
+.app-card:nth-child(2) { top: 60px; left: 140px; transform: rotate(3deg); }
+.app-card:nth-child(3) { top: 160px; left: 30px; transform: rotate(-2deg); }
+.app-card:nth-child(4) { top: 200px; left: 180px; transform: rotate(5deg); }
+.app-card:nth-child(5) { top: 300px; left: 80px; transform: rotate(-3deg); }
+
+/* Chat demo */
+.chat-demo {
+  display: flex; flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+  max-height: 500px;
+  overflow: hidden;
+}
+.chat-msg {
+  display: flex;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.chat-msg.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.chat-msg.user { justify-content: flex-end; }
+.chat-msg.assistant { justify-content: flex-start; }
+
+.chat-bubble-user {
+  background: rgba(255,255,255,0.04);
+  border: 0.5px solid var(--border);
+  border-radius: 20px 20px 4px 20px;
+  padding: 12px 18px;
+  font-size: 14px;
+  color: var(--text-80);
+  max-width: 280px;
+  box-shadow: 0 2px 12px var(--glow-subtle);
+}
+.chat-bubble-assistant {
+  border-left: 1.5px solid rgba(255,255,255,0.15);
+  padding: 8px 16px;
+  font-size: 14px;
+  color: var(--text-60);
+  max-width: 320px;
+}
+.chat-bubble-assistant .typing-cursor {
+  display: inline-block;
+  width: 2px; height: 14px;
+  background: var(--text-40);
+  margin-left: 2px;
+  animation: blink-cursor 0.6s step-end infinite;
+  vertical-align: text-bottom;
+}
+@keyframes blink-cursor {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Inline views */
+.inline-view {
+  margin-top: 8px;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.inline-view.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Bar chart */
+.mini-chart {
+  backdrop-filter: blur(16px);
+  background: var(--glass-bg);
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  width: 280px;
+}
+.mini-chart-title {
+  font-size: 11px; color: var(--text-25);
+  margin-bottom: 12px;
+}
+.chart-bars { display: flex; align-items: flex-end; gap: 12px; height: 100px; }
+.chart-bar-wrap {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 6px; flex: 1;
+}
+.chart-bar {
+  width: 100%;
+  background: rgba(255,255,255,0.12);
+  border-radius: 4px 4px 0 0;
+  min-height: 8px;
+}
+.chart-bar-label {
+  font-size: 10px;
+  color: var(--text-25);
+}
+.chart-bar-value {
+  font-size: 10px;
+  color: var(--text-40);
+}
+
+/* Section 2 tabs */
+.tab-container {
+  backdrop-filter: blur(16px);
+  background: var(--glass-bg);
+  border: 0.5px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.tab-header {
+  display: flex; border-bottom: 0.5px solid var(--border);
+}
+.tab-btn {
+  flex: 1;
+  padding: 12px 16px;
+  background: none; border: none;
+  color: var(--text-40);
+  font-size: 13px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: color 0.2s, box-shadow 0.2s;
+  border-bottom: 1.5px solid transparent;
+}
+.tab-btn.active {
+  color: var(--text-95);
+  border-bottom-color: rgba(255,255,255,0.3);
+  box-shadow: 0 2px 8px var(--glow-subtle);
+}
+.tab-content {
+  padding: 20px;
+  min-height: 200px;
+}
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* Sleep heatmap */
+.sleep-heatmap {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+  margin-top: 8px;
+}
+.sleep-heatmap-row-label {
+  font-size: 9px;
+  color: var(--text-25);
+  margin-bottom: 4px;
+}
+.sleep-cell {
+  aspect-ratio: 1;
+  border-radius: 3px;
+  background: rgba(255,255,255,0.03);
+}
+.sleep-cell.light {
+  background: rgba(255,255,255,0.08);
+}
+.sleep-cell.active {
+  background: rgba(255,255,255,0.18);
+  box-shadow: 0 0 4px var(--glow-subtle);
+}
+.sleep-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  color: var(--text-25);
+  margin-top: 4px;
+}
+.heatmap-hour-labels {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+  margin-bottom: 4px;
+  text-align: center;
+  font-size: 9px;
+  color: var(--text-25);
+}
+
+/* Growth chart */
+.growth-chart-container {
+  padding: 8px 0;
+}
+.growth-chart-title {
+  font-size: 11px;
+  color: var(--text-25);
+  margin-bottom: 8px;
+}
+
+/* Vaccination table */
+.vacc-table {
+  width: 100%;
+  font-size: 12px;
+  border-collapse: collapse;
+}
+.vacc-table th {
+  text-align: left;
+  color: var(--text-25);
+  padding: 6px 8px;
+  border-bottom: 0.5px solid var(--border);
+  font-weight: 500;
+}
+.vacc-table td {
+  padding: 8px;
+  color: var(--text-60);
+  border-bottom: 0.5px solid rgba(255,255,255,0.03);
+}
+.vacc-check {
+  color: var(--text-40);
+  font-size: 14px;
+}
+.vacc-check.done {
+  color: var(--text-80);
+}
+
+/* Timeline */
+.timeline-container {
+  position: relative;
+  padding: 20px 0 20px 40px;
+}
+.timeline-line {
+  position: absolute;
+  left: 18px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--border);
+}
+.timeline-item {
+  position: relative;
+  margin-bottom: 32px;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.timeline-item.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.timeline-item:last-child { margin-bottom: 0; }
+.timeline-dot {
+  position: absolute;
+  left: -28px;
+  top: 14px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  border: 0.5px solid rgba(255,255,255,0.3);
+  box-shadow: 0 0 8px var(--glow-subtle);
+}
+.timeline-card {
+  backdrop-filter: blur(16px);
+  background: var(--glass-bg);
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  box-shadow: 0 4px 20px var(--glow-subtle);
+}
+.timeline-date {
+  font-size: 11px;
+  color: var(--text-25);
+  margin-bottom: 6px;
+}
+.timeline-title {
+  font-size: 15px;
+  color: var(--text-80);
+  font-weight: 600;
+}
+.timeline-desc {
+  font-size: 12px;
+  color: var(--text-40);
+  margin-top: 4px;
+}
+.timeline-footer {
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px;
+  margin-top: 40px;
+  color: var(--text-25);
+  font-size: 13px;
+}
+.timeline-footer i { font-size: 18px; }
+
+/* Section 3 full width */
+.section-full {
+  max-width: 700px;
+  width: 100%;
+  margin: 0 auto;
+}
+.chat-demo-full {
+  padding: 24px;
+}
+
+/* Mic hint */
+.mic-hint {
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px;
+  margin-top: 32px;
+  color: var(--text-25);
+  font-size: 13px;
+}
+.mic-hint i { font-size: 18px; }
+
+/* CTA */
+.cta-section {
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 120px 40px;
+  gap: 32px;
+}
+.cta-logo {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 900; font-size: 56px;
+  color: var(--text-95);
+  letter-spacing: 4px;
+}
+.btn-cta {
+  padding: 14px 40px;
+  border-radius: 999px;
+  border: none;
+  background: white;
+  color: #060810;
+  font-size: 16px; font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow: 0 0 30px var(--glow-mid);
+  transition: box-shadow 0.3s, transform 0.2s;
+}
+.btn-cta:hover {
+  box-shadow: 0 0 50px var(--glow-strong);
+  transform: scale(1.02);
+}
+
+/* Footer */
+footer {
+  position: relative; z-index: 1;
+  text-align: center;
+  padding: 40px 20px 60px;
+  font-size: 12px;
+  color: var(--text-25);
+  letter-spacing: 2px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  nav { padding: 12px 16px; }
+  .nav-logo { font-size: 18px; }
+  .section { padding: 60px 20px; }
+  .section-inner { flex-direction: column; gap: 40px; }
+  .hero-logo { font-size: 48px; }
+  .hero-subtitle { font-size: 11px; letter-spacing: 5px; }
+  .hero-tagline { font-size: 18px; bottom: 100px; padding: 0 20px; }
+  .section-title { font-size: 24px; }
+  .scattered-apps { height: 340px; }
+  .app-card { width: 150px; padding: 12px; }
+  .app-card:nth-child(2) { left: 100px; }
+  .app-card:nth-child(4) { left: 120px; }
+  .mini-chart { width: 100%; }
+  .cta-logo { font-size: 40px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Stars -->
+<div class="stars-container" id="stars"></div>
+
+<!-- Nav -->
+<nav>
+  <div class="nav-left">
+    <span class="nav-logo">OU</span>
+    <span class="badge-beta">Beta</span>
+  </div>
+  <div class="nav-right">
+    <button class="btn-login">Log in</button>
+    <button class="btn-signup">Sign up</button>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section id="hero">
+  <canvas id="heroCanvas"></canvas>
+  <div class="hero-overlay">
+    <div class="hero-content" id="heroContent">
+      <div class="hero-right">
+        <div class="hero-logo">OU</div>
+        <div class="hero-subtitle">OWN UNIVERSE</div>
+      </div>
+    </div>
+    <div class="hero-tagline" id="heroTagline1">나만의 우주를 만드세요</div>
+    <div class="hero-tagline" id="heroTagline2" style="display:none;">이 우주는 이런 것들을 가능하게 해요</div>
+    <div class="hero-arrow" id="heroArrow">
+      <a href="#section1" style="text-decoration:none;">
+        <i class="ph ph-caret-down"></i>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Section 1: 손이 자유롭지 않아도 -->
+<section class="section" id="section1">
+  <div>
+    <h2 class="section-title">"<i class="ph ph-hand" style="vertical-align:middle;margin-right:4px;"></i> 손이 자유롭지 않아도"</h2>
+    <div class="section-inner">
+      <div class="section-half">
+        <div class="scattered-apps">
+          <div class="app-card">
+            <div class="app-card-header"><i class="ph ph-baby"></i> 수유기록</div>
+            <div class="skeleton-line" style="width:90%"></div>
+            <div class="skeleton-line" style="width:60%"></div>
+          </div>
+          <div class="app-card">
+            <div class="app-card-header"><i class="ph ph-moon"></i> 수면일지</div>
+            <div class="skeleton-line" style="width:80%"></div>
+            <div class="skeleton-line" style="width:50%"></div>
+          </div>
+          <div class="app-card">
+            <div class="app-card-header"><i class="ph ph-chart-line-up"></i> 성장기록</div>
+            <div class="skeleton-line" style="width:85%"></div>
+            <div class="skeleton-line" style="width:45%"></div>
+          </div>
+          <div class="app-card">
+            <div class="app-card-header"><i class="ph ph-syringe"></i> 접종일정</div>
+            <div class="skeleton-line" style="width:75%"></div>
+            <div class="skeleton-line" style="width:55%"></div>
+          </div>
+          <div class="app-card">
+            <div class="app-card-header"><i class="ph ph-shopping-cart"></i> 장보기메모</div>
+            <div class="skeleton-line" style="width:70%"></div>
+            <div class="skeleton-line" style="width:40%"></div>
+          </div>
+        </div>
+      </div>
+      <div class="section-half">
+        <div class="glass-card chat-demo" id="chat1">
+          <!-- Messages injected by JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 2: 기억이 안 나도 괜찮아요 -->
+<section class="section" id="section2">
+  <div>
+    <h2 class="section-title">"<i class="ph ph-sparkle" style="vertical-align:middle;margin-right:4px;"></i> 기억이 안 나도 괜찮아요"</h2>
+    <div class="section-inner">
+      <div class="section-half">
+        <div class="glass-card chat-demo" id="chat2">
+          <!-- Messages injected by JS -->
+        </div>
+      </div>
+      <div class="section-half">
+        <div class="tab-container" id="viewTabs">
+          <div class="tab-header">
+            <button class="tab-btn active" data-tab="sleep"><i class="ph ph-moon"></i> 수면</button>
+            <button class="tab-btn" data-tab="growth"><i class="ph ph-chart-line-up"></i> 성장</button>
+            <button class="tab-btn" data-tab="vacc"><i class="ph ph-syringe"></i> 접종</button>
+          </div>
+          <div class="tab-content">
+            <!-- Sleep heatmap -->
+            <div class="tab-panel active" id="tab-sleep">
+              <div style="font-size:11px;color:rgba(255,255,255,0.25);margin-bottom:10px;">이번 주 수면 패턴</div>
+              <div class="heatmap-hour-labels">
+                <span>0시</span><span>4시</span><span>8시</span><span>12시</span><span>16시</span><span>20시</span><span>24시</span>
+              </div>
+              <div id="sleepHeatmap"></div>
+              <div style="display:flex;justify-content:space-between;margin-top:8px;">
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <div style="display:flex;align-items:center;gap:4px;font-size:9px;color:rgba(255,255,255,0.25);">
+                    <div style="width:10px;height:10px;border-radius:2px;background:rgba(255,255,255,0.03);"></div>깨어있음
+                  </div>
+                  <div style="display:flex;align-items:center;gap:4px;font-size:9px;color:rgba(255,255,255,0.25);">
+                    <div style="width:10px;height:10px;border-radius:2px;background:rgba(255,255,255,0.08);"></div>선잠
+                  </div>
+                  <div style="display:flex;align-items:center;gap:4px;font-size:9px;color:rgba(255,255,255,0.25);">
+                    <div style="width:10px;height:10px;border-radius:2px;background:rgba(255,255,255,0.18);box-shadow:0 0 4px rgba(255,255,255,0.06);"></div>숙면
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Growth chart -->
+            <div class="tab-panel" id="tab-growth">
+              <div class="growth-chart-container">
+                <div class="growth-chart-title">체중 변화 (kg)</div>
+                <svg viewBox="0 0 280 160" width="100%" style="max-width:280px;">
+                  <!-- Grid lines -->
+                  <line x1="40" y1="20" x2="260" y2="20" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+                  <line x1="40" y1="50" x2="260" y2="50" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+                  <line x1="40" y1="80" x2="260" y2="80" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+                  <line x1="40" y1="110" x2="260" y2="110" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+                  <line x1="40" y1="140" x2="260" y2="140" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+                  <!-- Y axis labels -->
+                  <text x="32" y="24" text-anchor="end" fill="rgba(255,255,255,0.2)" font-size="9" font-family="Pretendard Variable">9</text>
+                  <text x="32" y="54" text-anchor="end" fill="rgba(255,255,255,0.2)" font-size="9" font-family="Pretendard Variable">8</text>
+                  <text x="32" y="84" text-anchor="end" fill="rgba(255,255,255,0.2)" font-size="9" font-family="Pretendard Variable">7</text>
+                  <text x="32" y="114" text-anchor="end" fill="rgba(255,255,255,0.2)" font-size="9" font-family="Pretendard Variable">6</text>
+                  <text x="32" y="144" text-anchor="end" fill="rgba(255,255,255,0.2)" font-size="9" font-family="Pretendard Variable">5</text>
+                  <!-- Line chart: 3.3kg(birth) -> 5.0 -> 6.0 -> 6.8 -> 7.2 -> 7.5 -> 7.8 -->
+                  <polyline
+                    points="55,140 88,110 121,80 154,56 187,44 220,35 253,26"
+                    fill="none"
+                    stroke="rgba(255,255,255,0.25)"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <!-- Data points -->
+                  <circle cx="55" cy="140" r="3" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.3)" stroke-width="0.5"/>
+                  <circle cx="88" cy="110" r="3" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.3)" stroke-width="0.5"/>
+                  <circle cx="121" cy="80" r="3" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.3)" stroke-width="0.5"/>
+                  <circle cx="154" cy="56" r="3" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.3)" stroke-width="0.5"/>
+                  <circle cx="187" cy="44" r="3" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.3)" stroke-width="0.5"/>
+                  <circle cx="220" cy="35" r="3" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.3)" stroke-width="0.5"/>
+                  <circle cx="253" cy="26" r="3.5" fill="rgba(255,255,255,0.25)" stroke="rgba(255,255,255,0.5)" stroke-width="0.5"/>
+                  <!-- Latest point highlight -->
+                  <text x="253" y="18" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="9" font-weight="600" font-family="Pretendard Variable">7.8</text>
+                  <!-- X axis labels -->
+                  <text x="55" y="155" text-anchor="middle" fill="rgba(255,255,255,0.2)" font-size="8" font-family="Pretendard Variable">출생</text>
+                  <text x="88" y="155" text-anchor="middle" fill="rgba(255,255,255,0.2)" font-size="8" font-family="Pretendard Variable">1개월</text>
+                  <text x="121" y="155" text-anchor="middle" fill="rgba(255,255,255,0.2)" font-size="8" font-family="Pretendard Variable">2개월</text>
+                  <text x="154" y="155" text-anchor="middle" fill="rgba(255,255,255,0.2)" font-size="8" font-family="Pretendard Variable">3개월</text>
+                  <text x="187" y="155" text-anchor="middle" fill="rgba(255,255,255,0.2)" font-size="8" font-family="Pretendard Variable">4개월</text>
+                  <text x="220" y="155" text-anchor="middle" fill="rgba(255,255,255,0.2)" font-size="8" font-family="Pretendard Variable">5개월</text>
+                  <text x="253" y="155" text-anchor="middle" fill="rgba(255,255,255,0.2)" font-size="8" font-family="Pretendard Variable">6개월</text>
+                </svg>
+              </div>
+            </div>
+            <!-- Vaccination checklist -->
+            <div class="tab-panel" id="tab-vacc">
+              <table class="vacc-table">
+                <thead><tr><th>접종명</th><th>날짜</th><th>완료</th></tr></thead>
+                <tbody>
+                  <tr>
+                    <td>BCG (결핵)</td>
+                    <td>2025.10.20</td>
+                    <td><i class="ph ph-check-circle vacc-check done"></i></td>
+                  </tr>
+                  <tr>
+                    <td>B형간염 1차</td>
+                    <td>2025.10.20</td>
+                    <td><i class="ph ph-check-circle vacc-check done"></i></td>
+                  </tr>
+                  <tr>
+                    <td>B형간염 2차</td>
+                    <td>2025.11.18</td>
+                    <td><i class="ph ph-check-circle vacc-check done"></i></td>
+                  </tr>
+                  <tr>
+                    <td>DTaP 1차</td>
+                    <td>2025.12.18</td>
+                    <td><i class="ph ph-check-circle vacc-check done"></i></td>
+                  </tr>
+                  <tr>
+                    <td>DTaP 2차</td>
+                    <td>2026.02.18</td>
+                    <td><i class="ph ph-check-circle vacc-check done"></i></td>
+                  </tr>
+                  <tr>
+                    <td>DTaP 3차</td>
+                    <td>2026.06 예정</td>
+                    <td><i class="ph ph-circle-dashed vacc-check"></i></td>
+                  </tr>
+                  <tr>
+                    <td>폐렴구균 3차</td>
+                    <td>2026.06 예정</td>
+                    <td><i class="ph ph-circle-dashed vacc-check"></i></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 3: 성장 기록이 그대로 남아요 -->
+<section class="section" id="section3">
+  <div>
+    <h2 class="section-title">"<i class="ph ph-heart" style="vertical-align:middle;margin-right:4px;"></i> 성장 기록이 그대로 남아요"</h2>
+    <div class="section-full">
+      <div class="timeline-container" id="timeline">
+        <div class="timeline-line"></div>
+
+        <div class="timeline-item" data-delay="0">
+          <div class="timeline-dot"></div>
+          <div class="timeline-card">
+            <div class="timeline-date">2025년 12월 8일</div>
+            <div class="timeline-title">첫 뒤집기</div>
+            <div class="timeline-desc">엎드려 있다가 혼자 뒤집었어요</div>
+          </div>
+        </div>
+
+        <div class="timeline-item" data-delay="400">
+          <div class="timeline-dot"></div>
+          <div class="timeline-card">
+            <div class="timeline-date">2026년 1월 15일</div>
+            <div class="timeline-title">첫 이유식</div>
+            <div class="timeline-desc">쌀미음 한 숟가락, 잘 먹었어요</div>
+          </div>
+        </div>
+
+        <div class="timeline-item" data-delay="800">
+          <div class="timeline-dot"></div>
+          <div class="timeline-card">
+            <div class="timeline-date">2026년 3월 22일</div>
+            <div class="timeline-title">첫 걸음마</div>
+            <div class="timeline-desc">거실에서 세 걸음 걸었어요</div>
+          </div>
+        </div>
+
+        <div class="timeline-item" data-delay="1200">
+          <div class="timeline-dot"></div>
+          <div class="timeline-card">
+            <div class="timeline-date">2026년 4월 10일</div>
+            <div class="timeline-title">첫 단어</div>
+            <div class="timeline-desc">"맘마"라고 말했어요</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-footer">
+        <i class="ph ph-book"></i>
+        <span>전자책으로도 만들 수 있어요</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-logo">OU</div>
+  <button class="btn-cta">시작하기</button>
+</section>
+
+<!-- Footer -->
+<footer>OU &mdash; OWN UNIVERSE</footer>
+
+<script>
+// ============ STARS ============
+(function() {
+  const container = document.getElementById('stars');
+  for (let i = 0; i < 120; i++) {
+    const star = document.createElement('span');
+    star.className = 'star';
+    star.style.left = Math.random() * 100 + '%';
+    star.style.top = Math.random() * 100 + '%';
+    star.style.setProperty('--dur', (3 + Math.random() * 5) + 's');
+    star.style.setProperty('--peak', (0.2 + Math.random() * 0.6).toFixed(2));
+    star.style.animationDelay = (Math.random() * 5) + 's';
+    star.style.width = star.style.height = (1 + Math.random() * 1.5) + 'px';
+    container.appendChild(star);
+  }
+})();
+
+// ============ HERO GRAPH ANIMATION ============
+(function() {
+  const canvas = document.getElementById('heroCanvas');
+  const ctx = canvas.getContext('2d');
+  let W, H;
+  function resize() {
+    W = canvas.width = canvas.offsetWidth * devicePixelRatio;
+    H = canvas.height = canvas.offsetHeight * devicePixelRatio;
+    ctx.scale(devicePixelRatio, devicePixelRatio);
+  }
+  resize();
+  window.addEventListener('resize', () => {
+    ctx.setTransform(1,0,0,1,0,0);
+    resize();
+  });
+
+  const cW = () => canvas.offsetWidth;
+  const cH = () => canvas.offsetHeight;
+
+  // Generate sphere nodes (golden angle)
+  const TOTAL = 2000;
+  const allNodes = [];
+  const phi_g = Math.PI * (3 - Math.sqrt(5));
+  for (let i = 0; i < TOTAL; i++) {
+    const y = 1 - (i / (TOTAL - 1)) * 2;
+    const radius = Math.sqrt(1 - y * y);
+    const theta = phi_g * i;
+    const x = Math.cos(theta) * radius;
+    const z = Math.sin(theta) * radius;
+    allNodes.push({
+      sx: x, sy: y, sz: z,
+      opacity: 0.1 + Math.random() * 0.6,
+      size: 0.5 + Math.random() * 1.5
+    });
+  }
+
+  // Generate edges between nearby nodes
+  const edges = [];
+  const MAX_EDGES = 3000;
+  for (let i = 0; i < TOTAL && edges.length < MAX_EDGES; i++) {
+    for (let j = i + 1; j < TOTAL && edges.length < MAX_EDGES; j++) {
+      const dx = allNodes[i].sx - allNodes[j].sx;
+      const dy = allNodes[i].sy - allNodes[j].sy;
+      const dz = allNodes[i].sz - allNodes[j].sz;
+      const dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
+      if (dist < 0.15) {
+        edges.push([i, j, 0.02 + Math.random() * 0.03]);
+      }
+    }
+  }
+
+  let spawnedCount = 0;
+  let phase = 'spawning';
+  let startTime = null;
+  let zoomLevel = 1;
+  let graphOffsetX = 0;
+  let rotAngle = 0;
+
+  function projectNode(n, cx, cy, scale) {
+    const cosA = Math.cos(rotAngle), sinA = Math.sin(rotAngle);
+    const rx = n.sx * cosA - n.sz * sinA;
+    const rz = n.sx * sinA + n.sz * cosA;
+    const perspective = 2.5 / (2.5 + rz);
+    return {
+      x: cx + rx * scale * perspective,
+      y: cy + n.sy * scale * perspective,
+      p: perspective,
+    };
+  }
+
+  function animate(ts) {
+    if (!startTime) startTime = ts;
+    const elapsed = (ts - startTime) / 1000;
+    ctx.setTransform(1,0,0,1,0,0);
+    ctx.clearRect(0, 0, cW(), cH());
+
+    rotAngle = elapsed * 0.05;
+
+    if (phase === 'spawning') {
+      if (elapsed < 3) {
+        spawnedCount = Math.min(20, Math.floor(elapsed / 3 * 20));
+      } else if (elapsed < 5) {
+        spawnedCount = 20 + Math.min(200, Math.floor((elapsed - 3) / 2 * 200));
+      } else if (elapsed < 6) {
+        spawnedCount = 220 + Math.min(TOTAL - 220, Math.floor((elapsed - 5) / 1 * (TOTAL - 220)));
+      } else {
+        spawnedCount = TOTAL;
+        phase = 'zoomout';
+      }
+    }
+
+    let targetScale;
+    if (phase === 'spawning') {
+      const visRatio = spawnedCount / TOTAL;
+      zoomLevel = 1 + visRatio * 2;
+      targetScale = Math.min(cW(), cH()) * 0.12 * zoomLevel;
+    } else {
+      if (elapsed < 8) {
+        const t = (elapsed - 6) / 2;
+        zoomLevel = 3 - t * 1.5;
+        targetScale = Math.min(cW(), cH()) * 0.12 * zoomLevel;
+      } else {
+        zoomLevel = 1.5;
+        targetScale = Math.min(cW(), cH()) * 0.12 * zoomLevel;
+        if (phase === 'zoomout') phase = 'slidelogo';
+      }
+    }
+
+    let cx = cW() / 2;
+    if (phase === 'slidelogo' || phase === 'tagline1' || phase === 'tagline2' || phase === 'arrow') {
+      const slideT = Math.min(1, (elapsed - 8) / 1.5);
+      const ease = slideT * (2 - slideT);
+      graphOffsetX = -cW() * 0.18 * ease;
+      cx += graphOffsetX;
+
+      if (slideT >= 1 && phase === 'slidelogo') {
+        document.getElementById('heroContent').classList.add('visible');
+        document.querySelector('.hero-right').style.transform = 'translateX(' + (cW() * 0.22) + 'px)';
+        setTimeout(() => { phase = 'tagline1'; }, 800);
+      }
+    }
+
+    if (phase === 'tagline1') {
+      document.getElementById('heroTagline1').classList.add('visible');
+      setTimeout(() => {
+        document.getElementById('heroTagline1').style.display = 'none';
+        document.getElementById('heroTagline2').style.display = '';
+        setTimeout(() => {
+          document.getElementById('heroTagline2').classList.add('visible');
+          phase = 'tagline2';
+        }, 100);
+      }, 2500);
+      phase = 'waitTagline';
+    }
+
+    if (phase === 'tagline2') {
+      setTimeout(() => {
+        document.getElementById('heroTagline2').style.display = 'none';
+        document.getElementById('heroArrow').classList.add('visible');
+        phase = 'arrow';
+      }, 2500);
+      phase = 'waitArrow';
+    }
+
+    const cy = cH() / 2;
+    const scale = targetScale;
+
+    const count = Math.min(spawnedCount, TOTAL);
+    for (let e = 0; e < edges.length; e++) {
+      if (edges[e][0] >= count || edges[e][1] >= count) continue;
+      const a = projectNode(allNodes[edges[e][0]], cx, cy, scale);
+      const b = projectNode(allNodes[edges[e][1]], cx, cy, scale);
+      ctx.beginPath();
+      ctx.moveTo(a.x, a.y);
+      ctx.lineTo(b.x, b.y);
+      ctx.strokeStyle = 'rgba(255,255,255,' + (edges[e][2] * Math.min(a.p, b.p)) + ')';
+      ctx.lineWidth = 0.5;
+      ctx.stroke();
+    }
+
+    for (let i = 0; i < count; i++) {
+      const p = projectNode(allNodes[i], cx, cy, scale);
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, allNodes[i].size * p.p, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255,255,255,' + (allNodes[i].opacity * p.p * 0.8) + ')';
+      ctx.fill();
+    }
+
+    requestAnimationFrame(animate);
+  }
+  requestAnimationFrame(animate);
+})();
+
+// ============ SLEEP HEATMAP ============
+(function() {
+  const container = document.getElementById('sleepHeatmap');
+  if (!container) return;
+
+  // 7 days x 7 columns (time blocks: 0-3, 4-7, 8-11, 12-15, 16-19, 20-21, 22-24)
+  // Rows = days (Mon-Sun), Cols = time blocks
+  const dayLabels = ['월', '화', '수', '목', '금', '토', '일'];
+  const sleepData = [
+    // Each row: 7 time blocks. 0=awake, 1=light, 2=deep
+    [2, 2, 0, 0, 1, 0, 2], // Mon
+    [2, 2, 0, 0, 2, 0, 2], // Tue
+    [2, 1, 0, 0, 1, 0, 2], // Wed
+    [2, 2, 0, 0, 2, 0, 2], // Thu
+    [2, 2, 0, 0, 0, 0, 2], // Fri
+    [2, 2, 0, 1, 2, 0, 2], // Sat
+    [2, 2, 0, 0, 1, 0, 2], // Sun
+  ];
+
+  for (let row = 0; row < 7; row++) {
+    const rowWrap = document.createElement('div');
+    rowWrap.style.cssText = 'display:flex;align-items:center;gap:6px;margin-bottom:3px;';
+    const label = document.createElement('span');
+    label.style.cssText = 'font-size:9px;color:rgba(255,255,255,0.25);width:14px;text-align:right;flex-shrink:0;';
+    label.textContent = dayLabels[row];
+    rowWrap.appendChild(label);
+
+    const grid = document.createElement('div');
+    grid.style.cssText = 'display:grid;grid-template-columns:repeat(7,1fr);gap:3px;flex:1;';
+
+    for (let col = 0; col < 7; col++) {
+      const cell = document.createElement('div');
+      cell.className = 'sleep-cell';
+      cell.style.aspectRatio = '2/1';
+      cell.style.borderRadius = '3px';
+      if (sleepData[row][col] === 1) cell.classList.add('light');
+      if (sleepData[row][col] === 2) cell.classList.add('active');
+      grid.appendChild(cell);
+    }
+    rowWrap.appendChild(grid);
+    container.appendChild(rowWrap);
+  }
+})();
+
+// ============ TABS ============
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const parent = btn.closest('.tab-container');
+    parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    parent.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+// ============ CHAT DEMOS ============
+const chatScripts = {
+  chat1: [
+    { role: 'user', text: '7시에 분유 180ml' },
+    { role: 'assistant', text: '수유 기록했어요. 오늘 총 540ml이에요.', afterView: 'feedChart' },
+    { role: 'user', text: '오늘 분유 총 얼마나 먹었어?' },
+    { role: 'assistant', text: '오늘 총 540ml 먹었어요.' },
+  ],
+  chat2: [
+    { role: 'user', text: '낮잠 1시~3시' },
+    { role: 'assistant', text: '낮잠 2시간 기록했어요.' },
+    { role: 'user', text: '6개월 검진 7.8kg' },
+    { role: 'assistant', text: '성장 기록 업데이트했어요.' },
+    { role: 'user', text: '접종 뭐 남았어?' },
+    { role: 'assistant', text: '남은 접종을 확인해드릴게요.' },
+  ],
+};
+
+function createInlineView(type) {
+  const wrap = document.createElement('div');
+  wrap.className = 'inline-view';
+
+  if (type === 'feedChart') {
+    const chart = document.createElement('div');
+    chart.className = 'mini-chart';
+    chart.innerHTML = `
+      <div class="mini-chart-title">오늘 수유 기록 (ml)</div>
+      <div class="chart-bars">
+        <div class="chart-bar-wrap"><div class="chart-bar-value">180</div><div class="chart-bar" style="height:90%"></div><div class="chart-bar-label">7시</div></div>
+        <div class="chart-bar-wrap"><div class="chart-bar-value">200</div><div class="chart-bar" style="height:100%"></div><div class="chart-bar-label">11시</div></div>
+        <div class="chart-bar-wrap"><div class="chart-bar-value">160</div><div class="chart-bar" style="height:80%"></div><div class="chart-bar-label">15시</div></div>
+      </div>`;
+    wrap.appendChild(chart);
+  }
+
+  return wrap;
+}
+
+function createChatBubble(msg) {
+  const div = document.createElement('div');
+  div.className = 'chat-msg ' + msg.role;
+  const bubble = document.createElement('div');
+  bubble.className = msg.role === 'user' ? 'chat-bubble-user' : 'chat-bubble-assistant';
+  div.appendChild(bubble);
+  return { div, bubble };
+}
+
+function typeText(bubble, text, speed) {
+  return new Promise(resolve => {
+    let i = 0;
+    const cursor = document.createElement('span');
+    cursor.className = 'typing-cursor';
+    bubble.appendChild(cursor);
+    const interval = setInterval(() => {
+      if (i < text.length) {
+        bubble.insertBefore(document.createTextNode(text[i]), cursor);
+        i++;
+      } else {
+        clearInterval(interval);
+        cursor.remove();
+        resolve();
+      }
+    }, speed);
+  });
+}
+
+async function playChat(containerId) {
+  const container = document.getElementById(containerId);
+  if (container.dataset.played) return;
+  container.dataset.played = 'true';
+  const script = chatScripts[containerId];
+
+  for (const msg of script) {
+    const { div, bubble } = createChatBubble(msg);
+    container.appendChild(div);
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => { div.classList.add('visible'); });
+    });
+
+    if (msg.role === 'user') {
+      bubble.textContent = msg.text;
+      await new Promise(r => setTimeout(r, 800));
+    } else {
+      await new Promise(r => setTimeout(r, 400));
+      await typeText(bubble, msg.text, 30);
+
+      if (msg.afterView) {
+        const view = createInlineView(msg.afterView);
+        const viewMsg = document.createElement('div');
+        viewMsg.className = 'chat-msg assistant';
+        viewMsg.appendChild(view);
+        container.appendChild(viewMsg);
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            viewMsg.classList.add('visible');
+            view.classList.add('visible');
+          });
+        });
+        await new Promise(r => setTimeout(r, 600));
+      }
+
+      await new Promise(r => setTimeout(r, 500));
+    }
+  }
+}
+
+// ============ TIMELINE ANIMATION ============
+function playTimeline() {
+  const items = document.querySelectorAll('.timeline-item');
+  items.forEach((item, i) => {
+    const delay = parseInt(item.dataset.delay) || 0;
+    setTimeout(() => {
+      item.classList.add('visible');
+    }, delay);
+  });
+}
+
+// ============ INTERSECTION OBSERVER ============
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      if (id === 'chat1' || id === 'chat2') {
+        playChat(id);
+      }
+      if (id === 'timeline') {
+        if (!entry.target.dataset.played) {
+          entry.target.dataset.played = 'true';
+          playTimeline();
+        }
+      }
+    }
+  });
+}, { threshold: 0.3 });
+
+document.querySelectorAll('.chat-demo').forEach(el => observer.observe(el));
+const timeline = document.getElementById('timeline');
+if (timeline) observer.observe(timeline);
+</script>
+</body>
+</html>
