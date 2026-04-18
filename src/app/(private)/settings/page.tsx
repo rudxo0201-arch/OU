@@ -12,13 +12,33 @@ export default function SettingsPage() {
   const { user, isLoading, isAdmin } = useAuth();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<Tab>('general');
+  const [timedOut, setTimedOut] = useState(false);
+
+  // 로딩 타임아웃: 3초 후에도 로딩이면 로그인 페이지로
+  useEffect(() => {
+    if (!isLoading) return;
+    const t = setTimeout(() => setTimedOut(true), 3000);
+    return () => clearTimeout(t);
+  }, [isLoading]);
+
+  useEffect(() => {
+    if (timedOut && isLoading) {
+      router.push('/login');
+    }
+  }, [timedOut, isLoading, router]);
 
   if (isLoading) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
         <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'rgba(255,255,255,0.6)', animation: 'blink 1s ease-in-out infinite' }} />
+        {timedOut && <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>로그인 페이지로 이동 중...</span>}
       </div>
     );
+  }
+
+  if (!user) {
+    router.push('/login');
+    return null;
   }
 
   const tabs: { key: Tab; label: string; adminOnly?: boolean }[] = [
