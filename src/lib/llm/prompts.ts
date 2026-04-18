@@ -105,6 +105,8 @@ export function buildSystemPrompt(opts: {
   dataCounts?: Record<string, number>;
   ragResults?: string[];
   totalNodes?: number;
+  adminDbResults?: string[];
+  adminDbSources?: string[];
 }) {
   const parts: string[] = [OU_SYSTEM_PROMPT_BASE];
 
@@ -132,6 +134,22 @@ export function buildSystemPrompt(opts: {
   // RAG 검색 결과
   if (opts.ragResults && opts.ragResults.length > 0) {
     parts.push(`\n## 사용자 데이터에서 찾은 관련 내용\n아래는 사용자의 기존 데이터에서 검색된 관련 내용이야. 질문에 답할 때 이 내용을 활용해:\n${opts.ragResults.map((r, i) => `${i + 1}. ${r}`).join('\n')}`);
+  }
+
+  // 관리자 DB 검색 결과 (본초/방제/한자/상한론 등)
+  if (opts.adminDbResults && opts.adminDbResults.length > 0) {
+    const sourceLabel = opts.adminDbSources?.join(', ') || 'OU DB';
+    parts.push(`\n## OU 데이터베이스 검색 결과 [${sourceLabel}]
+아래는 OU가 구축한 전문 데이터베이스에서 검색된 내용이야.
+
+교차검증 규칙:
+1. DB 데이터와 네 지식이 일치하면: DB 데이터를 기반으로 확신 있게 답변해.
+2. DB 데이터와 네 지식이 다르면: "OU DB에는 ~로 기록돼 있으며, 일부 문헌에서는 ~라는 견해도 있습니다" 식으로 투명하게 답변해.
+3. DB에 데이터가 있지만 confidence가 low/medium이면: "~로 기록돼 있으나 추가 검증이 필요합니다" 라고 답변해.
+4. DB 데이터를 활용할 때는 자연스럽게 녹여서 답변해. "DB에 의하면" 같은 딱딱한 표현은 피해.
+
+검색 결과:
+${opts.adminDbResults.map((r, i) => `${i + 1}. ${r}`).join('\n')}`);
   }
 
   return parts.join('\n');

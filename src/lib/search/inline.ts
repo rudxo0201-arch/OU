@@ -98,6 +98,53 @@ function extractKeywords(text: string): string[] {
 }
 
 /**
+ * 관리자 DB 검색 — 본초/방제/한자/상한론 등 관리자 구축 데이터에서 검색
+ * 비용 0원 (DB 쿼리만)
+ */
+export async function searchAdminData(
+  supabase: SupabaseClient,
+  query: string,
+  limit = 5,
+): Promise<{ results: string[]; sources: string[] }> {
+  const keywords = extractKeywords(query);
+  if (keywords.length === 0) return { results: [], sources: [] };
+
+  const results: string[] = [];
+  const sources: string[] = [];
+  const seenIds = new Set<string>();
+
+  for (const keyword of keywords.slice(0, 3)) {
+    const { data } = await supabase
+      .from('data_nodes')
+      .select('id, raw, domain_data, confidence')
+      .eq('is_admin_node', true)
+      .eq('visibility', 'public')
+      .ilike('raw', `%${keyword}%`)
+      .order('created_at', { ascending: false })
+      .limit(limit);
+
+    if (data) {
+      for (const row of data) {
+        if (seenIds.has(row.id)) continue;
+        seenIds.add(row.id);
+
+        const type = row.domain_data?.type || row.domain_data?.herb_id ? 'boncho' : 'unknown';
+        const confidence = row.confidence || 'medium';
+        const raw = (row.raw || '').slice(0, 300);
+
+        results.push(`[${type}/${confidence}] ${raw}`);
+        sources.push(type);
+      }
+    }
+  }
+
+  return {
+    results: results.slice(0, limit),
+    sources: Array.from(new Set(sources)),
+  };
+}
+
+/**
  * 사용자의 도메인별 데이터 개수 조회
  */
 export async function getUserDataCounts(

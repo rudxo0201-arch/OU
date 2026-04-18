@@ -4,7 +4,7 @@ import { chatWithFallback } from '@/lib/llm/router';
 import type { LLMMessage } from '@/lib/llm/types';
 import { buildSystemPrompt } from '@/lib/llm/prompts';
 import { saveMessageAsync } from '@/lib/pipeline/layer2';
-import { searchUserData, isQuestion, getUserDataCounts } from '@/lib/search/inline';
+import { searchUserData, searchAdminData, isQuestion, getUserDataCounts } from '@/lib/search/inline';
 import { checkTokenLimit } from '@/lib/utils/token-limit';
 import crypto from 'crypto';
 import { generateCacheKey, getCachedResponse, setCachedResponse } from '@/lib/cache/redis';
@@ -146,6 +146,13 @@ export async function POST(req: NextRequest) {
     let dataCounts: Record<string, number> = {};
     let totalNodes = 0;
     let ragResults: string[] = [];
+    let adminDbResults: string[] = [];
+    let adminDbSources: string[] = [];
+
+    // 관리자 DB 검색 (본초/방제/한자/상한론 — 모든 유저 대상, 비용 0)
+    const adminDbPromise = isQuestion(lastUserMessage)
+      ? searchAdminData(supabase, lastUserMessage, 5).catch(() => ({ results: [], sources: [] }))
+      : Promise.resolve({ results: [], sources: [] });
 
     if (user) {
       // 관리자 여부 확인 — 관리자는 자신의 운영 데이터도 RAG에 포함
@@ -171,10 +178,17 @@ export async function POST(req: NextRequest) {
           .catch(() => []);
       }
 
-      const [countResult, ragResult] = await Promise.all([dataCountsPromise, ragPromise]);
+      const [countResult, ragResult, adminResult] = await Promise.all([dataCountsPromise, ragPromise, adminDbPromise]);
       dataCounts = countResult.counts;
       totalNodes = countResult.total;
       ragResults = ragResult;
+      adminDbResults = adminResult.results;
+      adminDbSources = adminResult.sources;
+    } else {
+      // 게스트도 관리자 DB 검색 가능
+      const adminResult = await adminDbPromise;
+      adminDbResults = adminResult.results;
+      adminDbSources = adminResult.sources;
     }
 
     // --- Redis 캐시 체크 (확장: RAG 포함 질문도 캐시) ---
@@ -246,6 +260,8 @@ export async function POST(req: NextRequest) {
       dataCounts,
       totalNodes,
       ragResults: ragResults.length > 0 ? ragResults : undefined,
+      adminDbResults: adminDbResults.length > 0 ? adminDbResults : undefined,
+      adminDbSources: adminDbSources.length > 0 ? adminDbSources : undefined,
     });
 
     const encoder = new TextEncoder();
