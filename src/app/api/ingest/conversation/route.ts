@@ -1,19 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
+import { resolveApiKeyUser } from '@/lib/auth/api-key';
 import { ingestConversation } from '@/lib/pipeline/ingest-conversation';
 
 /**
  * POST /api/ingest/conversation
  *
  * Claude Code 등 외부 개발 도구의 대화 로그를 OU에 수집한다.
- * 공통 파이프라인 함수를 호출.
+ * 인증: cookie 세션 우선, 실패 시 API Key 폴백 (ou_sk_* Bearer token).
  */
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
 
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  let userId: string;
+  let dbClient = supabase;
+
+  if (user) {
+    userId = user.id;
+  } else {
+    // API Key 폴백 (Claude Code 등 외부 도구용)
+    const apiKeyAuth = await resolveApiKeyUser(req);
+    if (!apiKeyAuth) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    userId = apiKeyAuth.userId;
+    dbClient = createAdminClient();
   }
 
   const body = await req.json();
@@ -34,12 +47,12 @@ export async function POST(req: NextRequest) {
 
   try {
     const result = await ingestConversation({
-      userId: user.id,
+      userId,
       messages,
       metadata,
       sourceType: 'dev_tool',
       messageType: 'dev_session',
-      supabase,
+      supabase: dbClient,
     });
 
     return NextResponse.json({ success: true, ...result });

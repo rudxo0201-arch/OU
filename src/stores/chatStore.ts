@@ -47,12 +47,15 @@ interface ChatStore {
   showUpgradeModal: boolean;
   /** 랜딩에서 입력 후 /chat으로 전달할 메시지 */
   pendingMessage: string | null;
+  /** Orb가 호출한 뷰 (우측 패널) */
+  requestedView: { viewType: string; filter?: Record<string, any> } | null;
   addMessage: (msg: ChatMessage) => void;
   updateMessage: (id: string, updates: Partial<ChatMessage>) => void;
   setStreaming: (v: boolean) => void;
   setShowUpgradeModal: (show: boolean) => void;
   setPendingMessage: (msg: string | null) => void;
   removeMessage: (id: string) => void;
+  setRequestedView: (view: { viewType: string; filter?: Record<string, any> } | null) => void;
   reset: () => void;
   /** 게스트 메시지를 localStorage에 백업 */
   persistGuest: () => void;
@@ -68,6 +71,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   isStreaming: false,
   showUpgradeModal: false,
   pendingMessage: null,
+  requestedView: null,
   setStreaming: (v) => set({ isStreaming: v }),
   addMessage: msg => set(s => ({
     messages: [...s.messages, msg],
@@ -81,7 +85,8 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   removeMessage: id => set(s => ({
     messages: s.messages.filter(m => m.id !== id),
   })),
-  reset: () => set({ messages: [], turnCount: 0, pendingMessage: null }),
+  setRequestedView: view => set({ requestedView: view }),
+  reset: () => set({ messages: [], turnCount: 0, pendingMessage: null, requestedView: null }),
 
   persistGuest: () => {
     try {

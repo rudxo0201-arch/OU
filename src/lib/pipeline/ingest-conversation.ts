@@ -20,6 +20,8 @@ export interface IngestMetadata {
   working_directory?: string;
   files_changed?: string[];
   git_diff_summary?: string;
+  commit_hash?: string;
+  branch?: string;
 }
 
 export interface IngestParams {
@@ -71,6 +73,8 @@ export async function ingestConversation({
     ...(metadata?.files_changed ? { files_changed: metadata.files_changed } : {}),
     ...(metadata?.git_diff_summary ? { git_diff_summary: metadata.git_diff_summary } : {}),
     ...(metadata?.session_id ? { session_id: metadata.session_id } : {}),
+    ...(metadata?.commit_hash ? { commit_hash: metadata.commit_hash } : {}),
+    ...(metadata?.branch ? { branch: metadata.branch } : {}),
   };
 
   // messages 테이블 삽입

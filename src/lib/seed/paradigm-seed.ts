@@ -225,7 +225,6 @@ export async function seedParadigmData(supabaseAdmin: SupabaseClient) {
     source_type: 'manual',
     resolution: 'resolved',
     view_hint: 'mindmap',
-    importance: node.domain_data.order <= 3 ? 5 : 3,
   }));
 
   const { data: inserted, error: insertError } = await supabaseAdmin

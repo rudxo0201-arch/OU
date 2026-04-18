@@ -190,6 +190,17 @@ export function ChatInput({ initialMessage, onSent }: ChatInputProps = {}) {
         }
       }
 
+      // 뷰 호출 태그 파싱: ```json:view {"viewType":"..."}```
+      const viewMatch = accumulated.match(/```json:view\s*(\{[^}]+\})```/);
+      if (viewMatch) {
+        try {
+          const viewData = JSON.parse(viewMatch[1]);
+          if (viewData.viewType) {
+            useChatStore.getState().setRequestedView(viewData);
+          }
+        } catch { /* skip */ }
+      }
+
       updateMessage(assistantId, {
         streaming: false,
         ...(nodeInfo?.domain ? { nodeCreated: nodeInfo } : {}),

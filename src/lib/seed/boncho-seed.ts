@@ -110,18 +110,16 @@ export async function seedBonchoData(
 
   // 4. DataNode 일괄 삽입 (배치 50개씩)
   const BATCH_SIZE = 50;
-  const allInserted: { id: string; title: string }[] = [];
+  const allInserted: { id: string; raw: string }[] = [];
 
   for (let i = 0; i < newHerbs.length; i += BATCH_SIZE) {
     const batch = newHerbs.slice(i, i + BATCH_SIZE);
 
     const insertPayload = batch.map(herb => {
       const hasData = !!(herb.nature || herb.flavor || herb.channelTropism || herb.efficacy || herb.indications);
-      const displayName = herb.hanja ? `${herb.name}(${herb.hanja})` : herb.name;
 
       return {
         user_id: adminUserId,
-        title: displayName,
         domain: 'knowledge',
         raw: buildRawText(herb),
         domain_data: makeAdminInternalDomainData({
@@ -145,7 +143,6 @@ export async function seedBonchoData(
         source_type: 'manual',
         resolution: 'resolved',
         view_hint: 'knowledge_graph',
-        importance: herb.starred ? 5 : 3,
         is_admin_node: true,
       };
     });
@@ -153,7 +150,7 @@ export async function seedBonchoData(
     const { data: inserted, error: insertError } = await supabaseAdmin
       .from('data_nodes')
       .insert(insertPayload)
-      .select('id, title');
+      .select('id, raw');
 
     if (insertError) {
       throw new Error(`Failed to insert boncho batch ${i}: ${insertError.message}`);
@@ -166,7 +163,7 @@ export async function seedBonchoData(
   for (const node of allInserted) {
     const matchingHerb = newHerbs.find(h => {
       const displayName = h.hanja ? `${h.name}(${h.hanja})` : h.name;
-      return displayName === node.title;
+      return node.raw?.startsWith(displayName);
     });
     if (!matchingHerb) continue;
 
@@ -206,10 +203,10 @@ export async function seedBonchoData(
   import('../pipeline/layer3').then(({ embedPendingSentences, extractTriples }) => {
     for (const node of allInserted) {
       embedPendingSentences(node.id).catch(e =>
-        console.error(`[BonchoSeed] embed failed for ${node.title}:`, e),
+        console.error(`[BonchoSeed] embed failed for ${node.raw?.slice(0, 30)}:`, e),
       );
       extractTriples(node.id).catch(e =>
-        console.error(`[BonchoSeed] triple failed for ${node.title}:`, e),
+        console.error(`[BonchoSeed] triple failed for ${node.raw?.slice(0, 30)}:`, e),
       );
     }
   }).catch(() => {});

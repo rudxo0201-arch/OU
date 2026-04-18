@@ -341,7 +341,6 @@ export async function seedAdminData(supabaseAdmin: SupabaseClient) {
     confidence: 1.0,
     source_type: 'manual',
     resolution: 'resolved',
-    importance: node.domain_data.order <= 3 ? 5 : 3,
   }));
 
   const { data: inserted, error: insertError } = await supabaseAdmin

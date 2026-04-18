@@ -72,10 +72,10 @@ const NODE_FRAGMENT = /* glsl */ `
     float d = length(gl_PointCoord - vec2(0.5));
     if (d > 0.5) discard;
     float alpha = smoothstep(0.5, 0.1, d);
-    vec3 color = mix(vec3(0.9, 0.95, 1.0), vec3(0.0, 0.95, 1.0), vIsSelected);
-    if (vHighlight == 1.0) { alpha *= 0.15; }
-    else if (vHighlight == 2.0) { color = mix(color, vec3(1.0), 0.5); alpha = min(1.0, alpha * 2.0); }
-    gl_FragColor = vec4(color, alpha + vIsSelected * 0.5);
+    vec3 color = mix(vec3(0.85, 0.85, 0.85), vec3(1.0, 1.0, 1.0), vIsSelected);
+    if (vHighlight == 1.0) { alpha *= 0.12; }
+    else if (vHighlight == 2.0) { color = vec3(1.0); alpha = min(1.0, alpha * 2.0); }
+    gl_FragColor = vec4(color, alpha + vIsSelected * 0.4);
   }
 `;
 
@@ -98,9 +98,9 @@ const EDGE_FRAGMENT = /* glsl */ `
   varying float vHighlight;
   void main() {
     float alpha = uOpacity;
-    vec3 color = vec3(0.533, 0.533, 0.6);
-    if (vHighlight == 1.0) { alpha *= 0.1; }
-    else if (vHighlight == 2.0) { alpha = min(1.0, uOpacity * 6.0 + 0.3); color = vec3(0.8, 0.9, 1.0); }
+    vec3 color = vec3(0.5, 0.5, 0.5);
+    if (vHighlight == 1.0) { alpha *= 0.08; }
+    else if (vHighlight == 2.0) { alpha = min(1.0, uOpacity * 6.0 + 0.3); color = vec3(0.9, 0.9, 0.9); }
     gl_FragColor = vec4(color, alpha);
   }
 `;
@@ -108,12 +108,14 @@ const EDGE_FRAGMENT = /* glsl */ `
 // ─── Topology ────────────────────────────────────────────────────────
 interface Topology {
   nNodes: number;
-  positions: Float32Array;   // [x,y,z] per node
+  positions: Float32Array;   // [x,y,z] per node — current (mutated by physics/drag)
+  positions3D: Float32Array; // [x,y,z] per node — 3D backup for restoration
   nodeAdjacency: number[][];
   nodeEdges: number[][];
   nodeLabels: string[];
   nodeDomains: string[];
   nodeIds: string[];         // real DB ids
+  nodeConfidences: string[];
   nodeVelocities: Float32Array;
   activeNodes: Set<number>;
   edgeNodeMap: Int32Array;
@@ -149,13 +151,15 @@ function buildFromRealData(
   // Compute degree for each node
   const degrees = adjacency.map(a => a.length);
 
-  // Find hubs: top 5% by degree (min 5 hubs)
+  // Find hubs: top 5% by degree, but only nodes with degree >= 2
   const sorted = degrees.map((d, i) => ({ d, i })).sort((a, b) => b.d - a.d);
   const numHubs = Math.max(5, Math.floor(nNodes * 0.05));
   const hubSet = new Set<number>();
   for (let i = 0; i < Math.min(numHubs, sorted.length); i++) {
-    if (sorted[i].d > 0) hubSet.add(sorted[i].i);
+    if (sorted[i].d >= 2) hubSet.add(sorted[i].i);
   }
+  // Ensure at least 1 hub exists
+  if (hubSet.size === 0 && sorted.length > 0) hubSet.add(sorted[0].i);
 
   // Position hubs spherically
   const positions = new Float32Array(nNodes * 3);
@@ -202,11 +206,13 @@ function buildFromRealData(
     topology: {
       nNodes,
       positions,
+      positions3D: new Float32Array(positions), // backup copy
       nodeAdjacency: adjacency,
       nodeEdges: nodeEdgesList,
       nodeLabels: nodes.map(n => n.label),
       nodeDomains: nodes.map(n => n.domain),
       nodeIds: nodes.map(n => n.id),
+      nodeConfidences: nodes.map(n => n.confidence),
       nodeVelocities: new Float32Array(nNodes * 3),
       activeNodes: new Set(),
       edgeNodeMap: new Int32Array(edgeIndices),
@@ -234,7 +240,8 @@ export function UniverseView({ visible }: Props) {
     dragNodeId: number;
     dragPlane: THREE.Plane;
     dragOffset: THREE.Vector3;
-    worker: unknown; // Worker | null — use `as Worker` when calling methods
+    worker: unknown;
+    restoring3D: boolean;
     graphNodes: GraphNode[];
     graphEdges: GraphEdge[];
     raf: number;
@@ -258,6 +265,8 @@ export function UniverseView({ visible }: Props) {
     domain: string;
     tag: string;
     realId: string;
+    degree: number;
+    confidence: string;
   } | null>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'empty' | 'error'>('loading');
 
@@ -307,8 +316,8 @@ export function UniverseView({ visible }: Props) {
     };
 
     const emptyTopo: Topology = {
-      nNodes: 0, positions: new Float32Array(0),
-      nodeAdjacency: [], nodeEdges: [], nodeLabels: [], nodeDomains: [], nodeIds: [],
+      nNodes: 0, positions: new Float32Array(0), positions3D: new Float32Array(0),
+      nodeAdjacency: [], nodeEdges: [], nodeLabels: [], nodeDomains: [], nodeIds: [], nodeConfidences: [],
       nodeVelocities: new Float32Array(0), activeNodes: new Set(), edgeNodeMap: new Int32Array(0),
     };
 
@@ -320,7 +329,8 @@ export function UniverseView({ visible }: Props) {
       selectedNodeId: -1, hoveredNodeId: -1, dragNodeId: -1,
       dragPlane: new THREE.Plane(new THREE.Vector3(0, 0, 1), 0),
       dragOffset: new THREE.Vector3(),
-      worker: null, graphNodes: [], graphEdges: [],
+      worker: null, restoring3D: false,
+      graphNodes: [], graphEdges: [],
       raf: 0,
     };
     sceneRef.current = state;
@@ -331,11 +341,35 @@ export function UniverseView({ visible }: Props) {
       .then(data => {
         if (!data.nodes || data.nodes.length === 0) { setStatus('empty'); return; }
         state.graphNodes = data.nodes;
-        state.graphEdges = data.edges;
-        buildMeshes(state, data.nodes, data.edges);
+        state.graphEdges = data.edges ?? [];
+        buildMeshes(state, data.nodes, data.edges ?? []);
         setStatus('ready');
+        // Build initial projection cache
+        rebuildProjCache(state);
       })
       .catch(() => setStatus('error'));
+
+    // Refetch on window focus (user may have added data in another tab/chat)
+    const onFocus = () => {
+      fetch('/api/graph')
+        .then(res => { if (!res.ok) throw new Error(); return res.json(); })
+        .then(data => {
+          if (!data.nodes || data.nodes.length === 0) return;
+          // Only rebuild if node count changed
+          if (data.nodes.length !== state.graphNodes.length) {
+            state.graphNodes = data.nodes;
+            state.graphEdges = data.edges ?? [];
+            // Remove old meshes
+            if (state.pointsMesh) { state.pointsMesh.geometry.dispose(); (state.pointsMesh.material as THREE.Material).dispose(); state.scene.remove(state.pointsMesh); }
+            if (state.linesMesh) { state.linesMesh.geometry.dispose(); (state.linesMesh.material as THREE.Material).dispose(); state.scene.remove(state.linesMesh); }
+            buildMeshes(state, data.nodes, data.edges ?? []);
+            rebuildProjCache(state);
+            setStatus('ready');
+          }
+        })
+        .catch(() => {});
+    };
+    window.addEventListener('focus', onFocus);
 
     // Resize
     const onResize = () => {
@@ -386,7 +420,6 @@ export function UniverseView({ visible }: Props) {
 
     const onPointerDown = (e: PointerEvent) => {
       clickStartX = e.clientX; clickStartY = e.clientY; didDrag = false;
-      if (camera.position.distanceTo(controls.target) > ZOOM_THRESHOLD) return;
       const hitId = getRaycastedNodeId(e.clientX, e.clientY, state, container);
       if (hitId !== -1) {
         e.stopPropagation();
@@ -450,9 +483,12 @@ export function UniverseView({ visible }: Props) {
     container.addEventListener('pointermove', onPointerMove, { capture: true });
 
     // Animation loop
+    let frameCount = 0;
     const animate = () => {
       state.raf = requestAnimationFrame(animate);
       controls.update();
+      // Rebuild projection cache every 5 frames for fast raycasting
+      if (++frameCount % 5 === 0 && state.topology.nNodes > 0) rebuildProjCache(state);
       state.uniforms.uSizeMult.value += (state.targetUniforms.size - state.uniforms.uSizeMult.value) * 0.15;
       state.uniforms.uOpacity.value += (state.targetUniforms.opacity - state.uniforms.uOpacity.value) * 0.15;
       state.uniforms.uSpread.value += (state.targetUniforms.spread - state.uniforms.uSpread.value) * 0.08;
@@ -467,6 +503,31 @@ export function UniverseView({ visible }: Props) {
 
       stepPhysics(state);
 
+      // 3D position restoration morph
+      if (state.restoring3D && state.pointsMesh && state.linesMesh) {
+        const pos = state.topology.positions;
+        const target = state.topology.positions3D;
+        let maxDiff = 0;
+        for (let i = 0; i < pos.length; i++) {
+          pos[i] += (target[i] - pos[i]) * 0.05;
+          maxDiff = Math.max(maxDiff, Math.abs(target[i] - pos[i]));
+        }
+        // Update GPU buffers
+        const nodeAttr = state.pointsMesh.geometry.attributes.aPos as THREE.BufferAttribute;
+        for (let i = 0; i < state.topology.nNodes; i++) nodeAttr.setXYZ(i, pos[i * 3], pos[i * 3 + 1], pos[i * 3 + 2]);
+        nodeAttr.needsUpdate = true;
+        const edgeAttr = state.linesMesh.geometry.attributes.aPos as THREE.BufferAttribute;
+        const map = state.topology.edgeNodeMap;
+        const nEdges = map.length / 2;
+        for (let i = 0; i < nEdges; i++) {
+          const n1 = map[i * 2], n2 = map[i * 2 + 1];
+          edgeAttr.setXYZ(i * 2, pos[n1 * 3], pos[n1 * 3 + 1], pos[n1 * 3 + 2]);
+          edgeAttr.setXYZ(i * 2 + 1, pos[n2 * 3], pos[n2 * 3 + 1], pos[n2 * 3 + 2]);
+        }
+        edgeAttr.needsUpdate = true;
+        if (maxDiff < 0.1) state.restoring3D = false;
+      }
+
       const currentZoom = camera.position.distanceTo(controls.target);
       if (currentZoom > ZOOM_THRESHOLD) setZoomLevel('macro');
       else if (state.selectedNodeId !== -1) setZoomLevel('local');
@@ -479,6 +540,7 @@ export function UniverseView({ visible }: Props) {
     return () => {
       cancelAnimationFrame(state.raf);
       window.removeEventListener('resize', onResize);
+      window.removeEventListener('focus', onFocus);
       container.removeEventListener('pointerdown', onPointerDown, { capture: true });
       container.removeEventListener('pointerup', onPointerUp, { capture: true });
       container.removeEventListener('pointermove', onPointerMove, { capture: true });
@@ -520,11 +582,18 @@ export function UniverseView({ visible }: Props) {
       s.controls.enableRotate = false;
       s.targetUniforms.flatten = 1.0;
 
+      // Backup 3D positions before 2D takes over
+      s.restoring3D = false;
+      if (s.topology.nNodes > 0) {
+        s.topology.positions3D.set(s.topology.positions);
+      }
+
       // Start d3-force worker for live physics (Obsidian-style)
       if (!s.worker && s.graphNodes.length > 0) {
         const worker = new Worker(
           new URL('@/lib/workers/graph-physics.worker.ts', import.meta.url)
         );
+        worker.onerror = () => { s.worker = null; }; // recover from crash
         s.worker = worker;
 
         const topo = s.topology;
@@ -585,12 +654,13 @@ export function UniverseView({ visible }: Props) {
         };
       }
     } else {
-      // 3D mode: stop worker
+      // 3D mode: stop worker + restore 3D positions via morph
       if (s.worker) {
         (s.worker as Worker).postMessage({ type: 'STOP' });
         (s.worker as any).terminate();
         s.worker = null;
       }
+      s.restoring3D = true; // animate loop will lerp positions back
       s.controls.enableRotate = true;
       s.targetUniforms.flatten = 0.0;
       if (mode === 'orbit') { s.controls.mouseButtons.LEFT = THREE.MOUSE.ROTATE; s.controls.mouseButtons.RIGHT = THREE.MOUSE.PAN; s.controls.target.set(0, 0, 0); }
@@ -610,17 +680,17 @@ export function UniverseView({ visible }: Props) {
     state.topology = topology;
     const nNodes = topology.nNodes;
 
-    // Node sizes based on degree
+    // Node sizes — normalized by degree distribution
     const sizes = new Float32Array(nNodes);
     const ids = new Float32Array(nNodes);
     const highlights = new Float32Array(nNodes);
+    const degs = topology.nodeAdjacency.map(a => a.length);
+    const maxDeg = Math.max(1, ...degs);
     for (let i = 0; i < nNodes; i++) {
       ids[i] = i;
       highlights[i] = 0.0;
-      const deg = topology.nodeAdjacency[i].length;
-      if (deg > 50) sizes[i] = 12.0 + Math.min(deg * 0.1, 8);
-      else if (deg > 10) sizes[i] = 4.0 + deg * 0.15;
-      else sizes[i] = 1.5 + Math.random() * 1.0;
+      const t = Math.sqrt(degs[i] / maxDeg); // sqrt for smoother scaling
+      sizes[i] = 1.5 + t * 16; // range: 1.5 (isolated) to 17.5 (max hub)
     }
 
     // Node geometry
@@ -747,12 +817,15 @@ export function UniverseView({ visible }: Props) {
 
   function showCard(state: NonNullable<typeof sceneRef.current>, nodeId: number) {
     state.uniforms.uSelectedNode.value = nodeId;
+    const topo = state.topology;
     setSelectedCard({
       id: nodeId,
-      title: state.topology.nodeLabels[nodeId] || `Node ${nodeId}`,
-      domain: state.topology.nodeDomains[nodeId] || 'knowledge',
-      tag: `#${state.topology.nodeDomains[nodeId] || 'concept'}`,
-      realId: state.topology.nodeIds[nodeId],
+      title: topo.nodeLabels[nodeId] || `Node ${nodeId}`,
+      domain: topo.nodeDomains[nodeId] || 'knowledge',
+      tag: `#${topo.nodeDomains[nodeId] || 'concept'}`,
+      realId: topo.nodeIds[nodeId],
+      degree: topo.nodeAdjacency[nodeId]?.length ?? 0,
+      confidence: topo.nodeConfidences[nodeId] || 'medium',
     });
   }
 
@@ -761,18 +834,46 @@ export function UniverseView({ visible }: Props) {
     applyHL(state, -1); state.uniforms.uSelectedNode.value = -1.0; setSelectedCard(null);
   }
 
+  // Projected node cache for fast raycasting — rebuilt periodically
+  const projCacheRef = useRef<{ ndc: Float32Array; frame: number }>({ ndc: new Float32Array(0), frame: 0 });
+
+  function rebuildProjCache(state: NonNullable<typeof sceneRef.current>) {
+    const topo = state.topology;
+    const flat = state.uniforms.uFlatten.value;
+    const spread = state.uniforms.uSpread?.value ?? 1;
+    const n = topo.nNodes;
+    if (projCacheRef.current.ndc.length !== n * 2) {
+      projCacheRef.current.ndc = new Float32Array(n * 2);
+    }
+    const ndc = projCacheRef.current.ndc;
+    const pos3 = new THREE.Vector3();
+    for (let i = 0; i < n; i++) {
+      pos3.set(
+        topo.positions[i * 3] * spread,
+        topo.positions[i * 3 + 1] * spread,
+        topo.positions[i * 3 + 2] * spread * (1.0 - flat),
+      );
+      pos3.project(state.camera);
+      ndc[i * 2] = pos3.x;
+      ndc[i * 2 + 1] = pos3.y;
+    }
+    projCacheRef.current.frame++;
+  }
+
   function getRaycastedNodeId(clientX: number, clientY: number, state: NonNullable<typeof sceneRef.current>, container: HTMLDivElement): number {
     const rect = container.getBoundingClientRect();
-    const mouse = new THREE.Vector2(((clientX - rect.left) / rect.width) * 2 - 1, -((clientY - rect.top) / rect.height) * 2 + 1);
-    let closestId = -1, minDist = Infinity;
+    const mx = ((clientX - rect.left) / rect.width) * 2 - 1;
+    const my = -((clientY - rect.top) / rect.height) * 2 + 1;
     const threshold = 0.03;
-    const topo = state.topology, flat = state.uniforms.uFlatten.value;
-    const pos3 = new THREE.Vector3();
+
+    // First pass: check large nodes (degree > 10) only — fast
+    const topo = state.topology;
+    const ndc = projCacheRef.current.ndc;
+    let closestId = -1, minDist = Infinity;
+
     for (let i = 0; i < topo.nNodes; i++) {
-      pos3.set(topo.positions[i * 3], topo.positions[i * 3 + 1], topo.positions[i * 3 + 2] * (1.0 - flat));
-      pos3.project(state.camera);
-      if (pos3.z > 1.0 || pos3.z < -1.0) continue;
-      const dist = mouse.distanceTo(new THREE.Vector2(pos3.x, pos3.y));
+      const dx = ndc[i * 2] - mx, dy = ndc[i * 2 + 1] - my;
+      const dist = Math.sqrt(dx * dx + dy * dy);
       if (dist < threshold && dist < minDist) { minDist = dist; closestId = i; }
     }
     return closestId;
@@ -808,7 +909,7 @@ export function UniverseView({ visible }: Props) {
       {status === 'ready' && (
         <div style={{
           position: 'absolute', top: 20, left: 20,
-          background: 'rgba(20, 20, 20, 0.65)', padding: 20, borderRadius: 8,
+          background: 'rgba(0, 0, 0, 0.6)', padding: 20, borderRadius: 8,
           border: '1px solid rgba(255, 255, 255, 0.15)', backdropFilter: 'blur(12px)',
           width: 240, zIndex: 100, maxHeight: '80vh', overflowY: 'auto',
         }}>
@@ -833,12 +934,8 @@ export function UniverseView({ visible }: Props) {
           <ControlSlider label="노드 크기" value={controlValues.size} min={0.1} max={3.0} step={0.1} onChange={v => updateControl('size', v)} />
           <ControlSlider label="중심 인력" value={controlValues.gravity} min={0.2} max={3.0} step={0.1} onChange={v => updateControl('gravity', v)} />
           <ControlSlider label="반발력" value={controlValues.repel} min={0.2} max={3.0} step={0.1} onChange={v => updateControl('repel', v)} />
-          {dimension === '2D' && (
-            <>
-              <ControlSlider label="링크 장력" value={controlValues.linkForce} min={0.01} max={1.0} step={0.01} onChange={v => updateControl('linkForce', v)} />
-              <ControlSlider label="링크 거리" value={controlValues.linkDistance} min={20} max={300} step={10} onChange={v => updateControl('linkDistance', v)} />
-            </>
-          )}
+          <ControlSlider label="링크 장력" value={controlValues.linkForce} min={0.01} max={1.0} step={0.01} onChange={v => updateControl('linkForce', v)} />
+          <ControlSlider label="링크 거리" value={controlValues.linkDistance} min={20} max={300} step={10} onChange={v => updateControl('linkDistance', v)} />
           <ControlSlider label="선 투명도" value={controlValues.opacity} min={0.01} max={0.2} step={0.01} onChange={v => updateControl('opacity', v)} />
         </div>
       )}
@@ -861,7 +958,7 @@ export function UniverseView({ visible }: Props) {
       {/* Info Card */}
       <div style={{
         position: 'absolute', top: 20, right: selectedCard ? 20 : -400, width: 320,
-        background: 'rgba(25, 25, 30, 0.85)', backdropFilter: 'blur(20px)',
+        background: 'rgba(0, 0, 0, 0.8)', backdropFilter: 'blur(20px)',
         border: '1px solid rgba(255, 255, 255, 0.2)', borderRadius: 12, padding: 25,
         boxShadow: '-5px 10px 30px rgba(0,0,0,0.5)', transition: 'right 0.4s cubic-bezier(0.2, 0.8, 0.2, 1)', zIndex: 200,
       }}>
@@ -876,14 +973,19 @@ export function UniverseView({ visible }: Props) {
         }}>
           {selectedCard?.tag}
         </span>
-        <div style={{ fontSize: 13, color: '#ccc', lineHeight: 1.6, marginBottom: 25, minHeight: 60 }}>
-          {selectedCard?.domain === 'knowledge' ? '한자/본초 데이터 노드' : '데이터 노드'}
+        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.8, marginBottom: 20 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span>연결</span><span style={{ color: '#fff' }}>{selectedCard?.degree}개</span>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span>신뢰도</span><span style={{ color: '#fff' }}>{selectedCard?.confidence}</span>
+          </div>
         </div>
         <div style={{
           borderTop: '1px dashed rgba(255,255,255,0.15)', paddingTop: 15, fontSize: 11, color: '#666',
           display: 'flex', justifyContent: 'space-between',
         }}>
-          <span>Domain: {selectedCard?.domain}</span>
+          <span>{selectedCard?.domain}</span>
           <span style={{ fontFamily: 'monospace', fontSize: 10 }}>{selectedCard?.realId?.slice(0, 8)}</span>
         </div>
       </div>

@@ -175,7 +175,7 @@ export async function seedBangjeData(
 
   // 5. DataNode 일괄 삽입 (배치 50개씩)
   const BATCH_SIZE = 50;
-  const allInserted: { id: string; title: string }[] = [];
+  const allInserted: { id: string; raw: string }[] = [];
 
   for (let i = 0; i < newFormulas.length; i += BATCH_SIZE) {
     const batch = newFormulas.slice(i, i + BATCH_SIZE);
@@ -192,7 +192,7 @@ export async function seedBangjeData(
 
       return {
         user_id: adminUserId,
-        title: displayName,
+        
         domain: 'knowledge',
         raw: buildRawText(formula),
         domain_data: makeAdminInternalDomainData({
@@ -218,7 +218,6 @@ export async function seedBangjeData(
         source_type: 'manual',
         resolution: 'resolved',
         view_hint: 'knowledge_graph',
-        importance: formula.starred ? 5 : 3,
         is_admin_node: true,
       };
     });
@@ -226,7 +225,7 @@ export async function seedBangjeData(
     const { data: inserted, error: insertError } = await supabaseAdmin
       .from('data_nodes')
       .insert(insertPayload)
-      .select('id, title');
+      .select('id, raw');
 
     if (insertError) {
       throw new Error(`Failed to insert bangje batch ${i}: ${insertError.message}`);
@@ -239,7 +238,7 @@ export async function seedBangjeData(
   for (const node of allInserted) {
     const matchingFormula = newFormulas.find(f => {
       const displayName = f.hanja ? `${f.name}(${f.hanja})` : f.name;
-      return displayName === node.title;
+      return displayName && node.raw?.startsWith(displayName);
     });
     if (!matchingFormula) continue;
 
@@ -279,7 +278,7 @@ export async function seedBangjeData(
   for (const node of allInserted) {
     const matchingFormula = newFormulas.find(f => {
       const displayName = f.hanja ? `${f.name}(${f.hanja})` : f.name;
-      return displayName === node.title;
+      return displayName && node.raw?.startsWith(displayName);
     });
     if (!matchingFormula) continue;
 
@@ -306,10 +305,10 @@ export async function seedBangjeData(
   import('../pipeline/layer3').then(({ embedPendingSentences, extractTriples }) => {
     for (const node of allInserted) {
       embedPendingSentences(node.id).catch(e =>
-        console.error(`[BangjeSeed] embed failed for ${node.title}:`, e),
+        console.error(`[BangjeSeed] embed failed for ${node.raw?.slice(0, 30)}:`, e),
       );
       extractTriples(node.id).catch(e =>
-        console.error(`[BangjeSeed] triple failed for ${node.title}:`, e),
+        console.error(`[BangjeSeed] triple failed for ${node.raw?.slice(0, 30)}:`, e),
       );
     }
   }).catch(() => {});

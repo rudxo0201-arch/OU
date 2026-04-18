@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useChatStore, type ChatMessage } from '@/stores/chatStore';
 import { ChatPanel } from './ChatPanel';
+import { VIEW_REGISTRY, VIEW_LABELS } from '@/components/views/registry';
 
 /**
  * Orb 전체화면 — 3패널 레이아웃
@@ -136,26 +137,8 @@ export function OrbFullscreen({ open, onClose }: Props) {
           <ChatPanel autoSendOnOpen={true} />
         </div>
 
-        {/* 우: 호출 뷰 (OUTPUT) — 추후 구현, 지금은 placeholder */}
-        <div style={{
-          width: 260, flexShrink: 0,
-          borderRadius: 14,
-          border: '1px solid rgba(255,255,255,0.06)',
-          background: 'rgba(255,255,255,0.02)',
-          overflow: 'auto',
-          padding: 14,
-          display: 'flex', flexDirection: 'column', gap: 8,
-        }}>
-          <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', letterSpacing: 1, marginBottom: 4 }}>
-            호출된 뷰
-          </span>
-
-          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.15)', textAlign: 'center', lineHeight: 1.8 }}>
-              "다음주 일정 보여줘"<br />같이 요청하면 여기에 표시돼요
-            </span>
-          </div>
-        </div>
+        {/* 우: 호출 뷰 (OUTPUT) */}
+        <RequestedViewPanel />
       </div>
     </div>
   );
@@ -246,4 +229,53 @@ function AutoViewCard({ message }: { message: ChatMessage }) {
   }
 
   return null;
+}
+
+// ── 호출된 뷰 패널 (우측) ──
+function RequestedViewPanel() {
+  const { requestedView, setRequestedView } = useChatStore();
+
+  const ViewComponent = requestedView ? VIEW_REGISTRY[requestedView.viewType] : null;
+  const viewLabel = requestedView ? (VIEW_LABELS[requestedView.viewType] || requestedView.viewType) : '';
+
+  return (
+    <div style={{
+      width: 300, flexShrink: 0,
+      borderRadius: 14,
+      border: '1px solid rgba(255,255,255,0.06)',
+      background: 'rgba(255,255,255,0.02)',
+      overflow: 'auto',
+      display: 'flex', flexDirection: 'column',
+    }}>
+      {/* Header */}
+      <div style={{
+        padding: '10px 14px',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        borderBottom: requestedView ? '1px solid rgba(255,255,255,0.06)' : 'none',
+      }}>
+        <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', letterSpacing: 1 }}>
+          {requestedView ? viewLabel : '호출된 뷰'}
+        </span>
+        {requestedView && (
+          <button
+            onClick={() => setRequestedView(null)}
+            style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)', cursor: 'pointer' }}
+          >✕</button>
+        )}
+      </div>
+
+      {/* Content */}
+      {ViewComponent ? (
+        <div style={{ flex: 1, overflow: 'auto' }}>
+          <ViewComponent nodes={[]} filters={requestedView?.filter} />
+        </div>
+      ) : (
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 14 }}>
+          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.15)', textAlign: 'center', lineHeight: 1.8 }}>
+            "다음주 일정 보여줘"<br />같이 요청하면 여기에 표시돼요
+          </span>
+        </div>
+      )}
+    </div>
+  );
 }
