@@ -8,6 +8,8 @@ export interface ChatMessage {
   content: string;
   createdAt: Date;
   streaming?: boolean;
+  suggestions?: string[];
+  viewHints?: string[];
   nodeCreated?: { domain: string; nodeId?: string; confidence?: string; domain_data?: Record<string, any> };
   /** 이미지 업로드 시 미리보기 URL */
   imagePreview?: string;
@@ -48,14 +50,14 @@ interface ChatStore {
   /** 랜딩에서 입력 후 /chat으로 전달할 메시지 */
   pendingMessage: string | null;
   /** Orb가 호출한 뷰 (우측 패널) */
-  requestedView: { viewType: string; filter?: Record<string, any> } | null;
+  requestedView: { viewType: string; filter?: Record<string, any>; cards?: Array<{ front: string; back: string }> } | null;
   addMessage: (msg: ChatMessage) => void;
   updateMessage: (id: string, updates: Partial<ChatMessage>) => void;
   setStreaming: (v: boolean) => void;
   setShowUpgradeModal: (show: boolean) => void;
   setPendingMessage: (msg: string | null) => void;
   removeMessage: (id: string) => void;
-  setRequestedView: (view: { viewType: string; filter?: Record<string, any> } | null) => void;
+  setRequestedView: (view: { viewType: string; filter?: Record<string, any>; cards?: Array<{ front: string; back: string }> } | null) => void;
   reset: () => void;
   /** 게스트 메시지를 localStorage에 백업 */
   persistGuest: () => void;

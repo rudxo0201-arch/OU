@@ -6,11 +6,11 @@ import { ChatPanel } from './ChatPanel';
 import { VIEW_REGISTRY, VIEW_LABELS } from '@/components/views/registry';
 
 /**
- * Orb 전체화면 — 3패널 레이아웃
+ * Orb 전체화면 — 3패널 뉴모피즘 레이아웃
  *
- * 좌: 자동 생성된 인라인 뷰 모음 (INPUT — 새 데이터 확인)
- * 중: Orb 대화 (입력창 가운데)
- * 우: 유저 호출 뷰 (OUTPUT — 기존 데이터 탐색)
+ * 좌: 자동 생성된 인라인 뷰 모음 (pressed 컨테이너)
+ * 중: Orb 대화
+ * 우: 유저 호출 뷰 (pressed 컨테이너)
  */
 
 interface Props {
@@ -23,7 +23,6 @@ export function OrbFullscreen({ open, onClose }: Props) {
   const [animating, setAnimating] = useState(false);
   const { messages } = useChatStore();
 
-  // 오픈/클로즈 애니메이션
   useEffect(() => {
     if (open) {
       setVisible(true);
@@ -35,7 +34,6 @@ export function OrbFullscreen({ open, onClose }: Props) {
     }
   }, [open]);
 
-  // ESC 닫기
   useEffect(() => {
     if (!open) return;
     const handler = (e: KeyboardEvent) => {
@@ -45,7 +43,6 @@ export function OrbFullscreen({ open, onClose }: Props) {
     return () => window.removeEventListener('keydown', handler);
   }, [open, onClose]);
 
-  // 자동 뷰 수집 (대화에서 nodeCreated/hanjaResults/youtubeEmbed가 있는 메시지)
   const autoViews = messages.filter(m =>
     m.nodeCreated || (m.hanjaResults && m.hanjaResults.length > 0) || m.youtubeEmbed
   );
@@ -55,22 +52,21 @@ export function OrbFullscreen({ open, onClose }: Props) {
   return (
     <div style={{
       position: 'fixed', inset: 0, zIndex: 100,
-      background: 'rgba(6,8,16,0.97)',
-      backdropFilter: 'blur(20px)',
+      background: 'var(--ou-bg)',
       opacity: animating ? 1 : 0,
       transition: 'opacity 300ms ease',
       display: 'flex', flexDirection: 'column',
     }}>
       {/* Top bar */}
       <div style={{
-        height: 44, flexShrink: 0,
+        height: 48, flexShrink: 0,
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '0 20px',
+        padding: '0 24px',
       }}>
         <span style={{
           fontFamily: 'var(--ou-font-logo)',
-          fontSize: 14, fontWeight: 600,
-          color: 'rgba(255,255,255,0.5)',
+          fontSize: 13, fontWeight: 600,
+          color: 'var(--ou-text-muted)',
           letterSpacing: 3,
         }}>
           ORB
@@ -78,11 +74,13 @@ export function OrbFullscreen({ open, onClose }: Props) {
         <button
           onClick={onClose}
           style={{
-            width: 28, height: 28, borderRadius: '50%',
-            border: '0.5px solid rgba(255,255,255,0.1)',
+            width: 32, height: 32, borderRadius: '50%',
+            background: 'var(--ou-bg)',
+            boxShadow: 'var(--ou-neu-raised-sm)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            cursor: 'pointer', fontSize: 14, color: 'rgba(255,255,255,0.3)',
-            background: 'rgba(255,255,255,0.03)',
+            cursor: 'pointer', fontSize: 13, color: 'var(--ou-text-muted)',
+            border: 'none',
+            transition: 'all var(--ou-transition)',
           }}
         >
           ✕
@@ -93,30 +91,34 @@ export function OrbFullscreen({ open, onClose }: Props) {
       <div style={{
         flex: 1, minHeight: 0,
         display: 'flex',
-        padding: '0 16px 16px',
-        gap: 12,
+        padding: '0 20px 20px',
+        gap: 16,
         opacity: animating ? 1 : 0,
         transform: animating ? 'translateY(0)' : 'translateY(10px)',
         transition: 'opacity 300ms ease 150ms, transform 300ms ease 150ms',
       }}>
-        {/* 좌: 자동 뷰 모음 (INPUT) */}
+        {/* 좌: 자동 뷰 모음 — raised 컨테이너 */}
         <div style={{
-          width: 260, flexShrink: 0,
-          borderRadius: 14,
-          border: '1px solid rgba(255,255,255,0.06)',
-          background: 'rgba(255,255,255,0.02)',
+          flex: 1, minWidth: 280,
+          borderRadius: 'var(--ou-radius-md)',
+          background: 'var(--ou-bg)',
+          boxShadow: 'var(--ou-neu-raised-sm)',
           overflow: 'auto',
-          padding: 14,
-          display: 'flex', flexDirection: 'column', gap: 8,
+          padding: 16,
+          display: 'flex', flexDirection: 'column', gap: 10,
         }}>
-          <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', letterSpacing: 1, marginBottom: 4 }}>
+          <span style={{
+            fontSize: 11, fontWeight: 700, letterSpacing: 2,
+            color: 'var(--ou-text-muted)',
+            textTransform: 'uppercase',
+          }}>
             생성된 데이터
           </span>
 
           {autoViews.length === 0 && (
             <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.15)' }}>
-                대화하면 여기에 쌓여요
+              <span style={{ fontSize: 13, color: 'var(--ou-text-disabled)', textAlign: 'center', lineHeight: 1.6 }}>
+                대화하면<br />여기에 쌓여요
               </span>
             </div>
           )}
@@ -126,33 +128,32 @@ export function OrbFullscreen({ open, onClose }: Props) {
           ))}
         </div>
 
-        {/* 중: Orb 대화 */}
+        {/* 중: Orb 대화 — pressed (깊이감) */}
         <div style={{
-          flex: 1, minWidth: 0,
-          borderRadius: 14,
-          border: '1px solid rgba(255,255,255,0.06)',
-          background: 'rgba(255,255,255,0.015)',
+          flex: 1.2, minWidth: 0,
+          borderRadius: 'var(--ou-radius-md)',
+          background: 'var(--ou-bg)',
+          boxShadow: 'var(--ou-neu-pressed-lg)',
           overflow: 'hidden',
         }}>
           <ChatPanel autoSendOnOpen={true} />
         </div>
 
-        {/* 우: 호출 뷰 (OUTPUT) */}
+        {/* 우: 호출 뷰 — pressed 컨테이너 */}
         <RequestedViewPanel />
       </div>
     </div>
   );
 }
 
-// ── 자동 뷰 카드 (좌측 패널) ──
+// ── 자동 뷰 카드 (좌측 패널) — raised 카드 ──
 const DOMAIN_LABELS: Record<string, string> = {
-  schedule: '📅 일정', finance: '💰 지출', task: '☑ 할 일',
-  emotion: '💭 감정', idea: '💡 아이디어', habit: '🔄 습관',
-  knowledge: '📖 지식', relation: '👤 인물', media: '🎬 미디어',
+  schedule: '일정', finance: '지출', task: '할 일',
+  emotion: '감정', idea: '아이디어', habit: '습관',
+  knowledge: '지식', relation: '인물', media: '미디어',
 };
 
 function AutoViewCard({ message }: { message: ChatMessage }) {
-  // 노드 생성 카드
   if (message.nodeCreated) {
     const domain = message.nodeCreated.domain;
     const label = DOMAIN_LABELS[domain] || domain;
@@ -162,40 +163,54 @@ function AutoViewCard({ message }: { message: ChatMessage }) {
 
     return (
       <div style={{
-        padding: '10px 12px', borderRadius: 8,
-        border: '0.5px solid rgba(255,255,255,0.06)',
-        background: 'rgba(255,255,255,0.02)',
+        padding: '12px 14px',
+        borderRadius: 'var(--ou-radius-sm)',
+        background: 'var(--ou-bg)',
+        boxShadow: 'var(--ou-neu-raised-sm)',
       }}>
-        <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', marginBottom: 4 }}>{label}</div>
-        <div style={{ fontSize: 12, color: 'var(--ou-text-secondary)', lineHeight: 1.5 }}>
+        <div style={{
+          fontSize: 11, fontWeight: 700, letterSpacing: 1,
+          color: 'var(--ou-accent)',
+          marginBottom: 6,
+        }}>
+          {label}
+        </div>
+        <div style={{ fontSize: 14, color: 'var(--ou-text-body)', lineHeight: 1.5 }}>
           {title}
         </div>
       </div>
     );
   }
 
-  // 한자 카드
   if (message.hanjaResults && message.hanjaResults.length > 0) {
     return (
       <div style={{
-        padding: '10px 12px', borderRadius: 8,
-        border: '0.5px solid rgba(255,255,255,0.06)',
-        background: 'rgba(255,255,255,0.02)',
+        padding: '12px 14px',
+        borderRadius: 'var(--ou-radius-sm)',
+        background: 'var(--ou-bg)',
+        boxShadow: 'var(--ou-neu-raised-sm)',
       }}>
-        <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', marginBottom: 4 }}>
-          漢 한자 {message.hanjaResults.length}자
+        <div style={{
+          fontSize: 11, fontWeight: 700, letterSpacing: 1,
+          color: 'var(--ou-accent)',
+          marginBottom: 6,
+        }}>
+          한자 {message.hanjaResults.length}자
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
           {message.hanjaResults.slice(0, 8).map(h => (
             <span key={h.char} style={{
-              fontSize: 18, padding: '2px 6px', borderRadius: 4,
-              border: '0.5px solid rgba(255,255,255,0.08)',
+              fontSize: 18, padding: '4px 8px',
+              borderRadius: 'var(--ou-radius-xs)',
+              background: 'var(--ou-bg)',
+              boxShadow: 'var(--ou-neu-raised-xs)',
+              color: 'var(--ou-text-heading)',
             }}>
               {h.char}
             </span>
           ))}
           {message.hanjaResults.length > 8 && (
-            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', alignSelf: 'center' }}>
+            <span style={{ fontSize: 12, color: 'var(--ou-text-disabled)', alignSelf: 'center' }}>
               +{message.hanjaResults.length - 8}
             </span>
           )}
@@ -204,12 +219,12 @@ function AutoViewCard({ message }: { message: ChatMessage }) {
     );
   }
 
-  // 유튜브 카드
   if (message.youtubeEmbed) {
     return (
       <div style={{
-        borderRadius: 8, overflow: 'hidden',
-        border: '0.5px solid rgba(255,255,255,0.06)',
+        borderRadius: 'var(--ou-radius-sm)',
+        overflow: 'hidden',
+        boxShadow: 'var(--ou-neu-raised-sm)',
       }}>
         <div style={{
           width: '100%', aspectRatio: '16/9',
@@ -219,9 +234,9 @@ function AutoViewCard({ message }: { message: ChatMessage }) {
           <div style={{
             position: 'absolute', inset: 0,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            background: 'rgba(0,0,0,0.4)',
+            background: 'rgba(0,0,0,0.3)',
           }}>
-            <span style={{ fontSize: 20, color: 'rgba(255,255,255,0.8)' }}>▶</span>
+            <span style={{ fontSize: 20, color: '#fff' }}>▶</span>
           </div>
         </div>
       </div>
@@ -231,7 +246,7 @@ function AutoViewCard({ message }: { message: ChatMessage }) {
   return null;
 }
 
-// ── 호출된 뷰 패널 (우측) ──
+// ── 호출된 뷰 패널 (우측) — pressed 컨테이너 ──
 function RequestedViewPanel() {
   const { requestedView, setRequestedView } = useChatStore();
 
@@ -240,39 +255,67 @@ function RequestedViewPanel() {
 
   return (
     <div style={{
-      width: 300, flexShrink: 0,
-      borderRadius: 14,
-      border: '1px solid rgba(255,255,255,0.06)',
-      background: 'rgba(255,255,255,0.02)',
+      flex: 1, minWidth: 280,
+      borderRadius: 'var(--ou-radius-md)',
+      background: 'var(--ou-bg)',
+      boxShadow: 'var(--ou-neu-raised-sm)',
       overflow: 'auto',
       display: 'flex', flexDirection: 'column',
     }}>
       {/* Header */}
       <div style={{
-        padding: '10px 14px',
+        padding: '12px 16px',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        borderBottom: requestedView ? '1px solid rgba(255,255,255,0.06)' : 'none',
+        borderBottom: requestedView ? '1px solid var(--ou-border-subtle)' : 'none',
       }}>
-        <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', letterSpacing: 1 }}>
+        <span style={{
+          fontSize: 11, fontWeight: 700, letterSpacing: 2,
+          color: 'var(--ou-text-muted)',
+          textTransform: 'uppercase',
+        }}>
           {requestedView ? viewLabel : '호출된 뷰'}
         </span>
         {requestedView && (
           <button
             onClick={() => setRequestedView(null)}
-            style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)', cursor: 'pointer' }}
+            style={{
+              width: 24, height: 24, borderRadius: '50%',
+              background: 'var(--ou-bg)',
+              boxShadow: 'var(--ou-neu-raised-xs)',
+              border: 'none',
+              fontSize: 12, color: 'var(--ou-text-muted)',
+              cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}
           >✕</button>
         )}
       </div>
 
       {/* Content */}
       {ViewComponent ? (
-        <div style={{ flex: 1, overflow: 'auto' }}>
-          <ViewComponent nodes={[]} filters={requestedView?.filter} />
+        <div style={{ flex: 1, overflow: 'auto', padding: 12 }}>
+          <ViewComponent
+            nodes={
+              requestedView?.cards
+                ? requestedView.cards.map((c, i) => ({
+                    id: `card-${i}`,
+                    domain: 'knowledge',
+                    raw: c.front,
+                    domain_data: { question: c.front, answer: c.back, term: c.front, definition: c.back },
+                    triples: [{ subject: c.front, predicate: 'is_a', object: c.back }],
+                  }))
+                : []
+            }
+            filters={requestedView?.filter}
+          />
         </div>
       ) : (
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 14 }}>
-          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.15)', textAlign: 'center', lineHeight: 1.8 }}>
-            "다음주 일정 보여줘"<br />같이 요청하면 여기에 표시돼요
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+          <span style={{
+            fontSize: 14, color: 'var(--ou-text-disabled)',
+            textAlign: 'center', lineHeight: 1.8,
+          }}>
+            &ldquo;다음주 일정 보여줘&rdquo;<br />같이 요청하면 여기에 표시돼요
           </span>
         </div>
       )}
