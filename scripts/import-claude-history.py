@@ -25,14 +25,20 @@ API_KEY = "ou_sk_64e351668a9dc6c25cd285634bde531d532cac735543de6ae98867172af27fe
 
 
 def extract_text_content(content):
-    """content 필드에서 텍스트만 추출 (thinking, tool_use 제외)"""
+    """content 필드에서 텍스트만 추출 (thinking, tool_use, image 제외)"""
+    import re
     if isinstance(content, str):
-        return content
+        # 이미지 참조 제거
+        text = re.sub(r'\[Image[^\]]*\]', '', content)
+        return text.strip()
     if isinstance(content, list):
         texts = []
         for block in content:
             if isinstance(block, dict) and block.get("type") == "text":
-                texts.append(block.get("text", ""))
+                text = block.get("text", "")
+                text = re.sub(r'\[Image[^\]]*\]', '', text)
+                if text.strip():
+                    texts.append(text.strip())
         return "\n".join(texts)
     return ""
 
@@ -86,19 +92,14 @@ def send_to_ou(turns, session_id, dry_run=False):
     if not turns:
         return 0
 
-    # 턴이 너무 많으면 10턴씩 묶어서 전송
-    batch_size = 10
     sent = 0
 
-    for i in range(0, len(turns), batch_size):
-        batch = turns[i : i + batch_size]
-        messages = []
-        for turn in batch:
-            messages.append({"role": "user", "content": turn["user"][:5000]})
-            if turn["assistant"]:
-                messages.append(
-                    {"role": "assistant", "content": turn["assistant"][:5000]}
-                )
+    for i, turn in enumerate(turns):
+        messages = [{"role": "user", "content": turn["user"][:5000]}]
+        if turn["assistant"]:
+            messages.append(
+                {"role": "assistant", "content": turn["assistant"][:5000]}
+            )
 
         payload = {
             "messages": messages,
@@ -111,10 +112,10 @@ def send_to_ou(turns, session_id, dry_run=False):
 
         if dry_run:
             print(
-                f"  [DRY] batch {i // batch_size + 1}: {len(messages)} messages, "
+                f"  [DRY] turn {i + 1}: "
                 f"user preview: {messages[0]['content'][:60]}..."
             )
-            sent += len(batch)
+            sent += 1
             continue
 
         try:
@@ -130,17 +131,15 @@ def send_to_ou(turns, session_id, dry_run=False):
             if resp.status_code == 200:
                 result = resp.json()
                 print(
-                    f"  batch {i // batch_size + 1}: "
-                    f"nodeId={result.get('nodeId', '?')}, "
+                    f"  turn {i + 1}: "
                     f"domain={result.get('domain', '?')}"
                 )
-                sent += len(batch)
+                sent += 1
             else:
-                print(f"  batch {i // batch_size + 1}: ERROR {resp.status_code} - {resp.text[:200]}")
-            # rate limiting
-            time.sleep(1)
+                print(f"  turn {i + 1}: ERROR {resp.status_code} - {resp.text[:200]}")
+            time.sleep(0.5)
         except Exception as e:
-            print(f"  batch {i // batch_size + 1}: FAILED - {e}")
+            print(f"  turn {i + 1}: FAILED - {e}")
 
     return sent
 

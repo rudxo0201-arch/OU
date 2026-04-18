@@ -210,6 +210,8 @@ ou-web/
 ## 대화 자동 기록 (OU 연동)
 
 ```
+- 작업 시작 전, MCP 툴 mcp__ou__search_universe 또는 mcp__ou__get_context로 관련 기존 데이터를 검색한다
+- 검색 결과가 있으면 기존 결정사항/맥락을 반영하여 응답한다
 - 모든 응답 완료 후, MCP 툴 mcp__ou__record_message를 호출하여 대화를 기록한다
 - 파라미터:
   - user_message: 사용자의 마지막 메시지
