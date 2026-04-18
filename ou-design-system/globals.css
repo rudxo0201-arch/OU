@@ -1,0 +1,76 @@
+/* ── 우주 배경 전역 설정 ── */
+/* 다크모드: PixiJS 캔버스 배경(#060810)과 완전 일치 */
+[data-mantine-color-scheme="dark"] {
+  --mantine-color-body: #060810;
+}
+[data-mantine-color-scheme="dark"] body {
+  background: #060810;
+}
+
+/* Mobile responsive utilities */
+
+/* Explore: desktop/mobile toggle */
+.explore-mobile-only {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-no-margin-right {
+    margin-right: 0 !important;
+  }
+
+  /* Boncho detail panel → bottom sheet on mobile */
+  .boncho-detail-panel {
+    top: auto !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    height: 85vh !important;
+    border-left: none !important;
+    border-top: 0.5px solid var(--mantine-color-default-border) !important;
+    border-radius: 16px 16px 0 0 !important;
+  }
+
+  /* HanjaPopup → center instead of off-screen */
+  .hanja-popup {
+    left: 50% !important;
+    transform: translateX(-50%);
+    top: -10px !important;
+  }
+
+  /* Explore: hide desktop, show mobile */
+  .explore-desktop-only {
+    display: none !important;
+  }
+
+  .explore-mobile-only {
+    display: block !important;
+  }
+
+  /* Landing page: stack vertically */
+  .landing-container {
+    flex-direction: column !important;
+  }
+
+  .landing-graph {
+    height: 50vh !important;
+    flex: none !important;
+  }
+
+  .landing-gradient {
+    top: auto !important;
+    bottom: 50% !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 15% !important;
+    background: linear-gradient(to bottom, transparent, var(--mantine-color-body)) !important;
+  }
+
+  .landing-content {
+    width: 100% !important;
+    height: 50vh !important;
+    flex: none !important;
+    padding: 0 24px;
+  }
+}

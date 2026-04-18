@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "ou": {
+      "type": "http",
+      "url": "https://ouuniverse.com/api/mcp/sse",
+      "headers": {
+        "Authorization": "Bearer ou_sk_677dd4e57c3dd93545c3fd53828439e25cd4d665f92648a95be43c0965ed8030"
+      }
+    }
+  }
+}
