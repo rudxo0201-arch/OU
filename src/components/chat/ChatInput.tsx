@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useCallback, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { useChatStore } from '@/stores/chatStore';
 
 interface ChatInputProps {
@@ -8,9 +8,17 @@ interface ChatInputProps {
   onSent?: () => void;
 }
 
-export function ChatInput({ initialMessage, onSent }: ChatInputProps = {}) {
+export interface ChatInputHandle {
+  sendMessage: (text: string) => void;
+}
+
+const LONG_TEXT_THRESHOLD = 300;
+
+export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function ChatInput({ initialMessage, onSent }: ChatInputProps = {}, ref) {
   const [input, setInput] = useState('');
   const [rows, setRows] = useState(1);
+  const [longTextCollapsed, setLongTextCollapsed] = useState(false);
+  const [longTextEditorOpen, setLongTextEditorOpen] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const { addMessage, updateMessage, isStreaming, setStreaming } = useChatStore();
@@ -184,17 +192,18 @@ export function ChatInput({ initialMessage, onSent }: ChatInputProps = {}) {
                 nodeId: data.nodeId,
                 confidence: data.confidence,
                 domain_data: data.domain_data,
+                suggestions: data.suggestions,
               };
             }
           } catch { /* skip */ }
         }
       }
 
-      // 뷰 호출 태그 파싱: ```json:view {"viewType":"..."}```
-      const viewMatch = accumulated.match(/```json:view\s*(\{[^}]+\})```/);
+      // 뷰 호출 태그 파싱: ```json:view {...}```
+      const viewMatch = accumulated.match(/```json:view\s*([\s\S]*?)```/);
       if (viewMatch) {
         try {
-          const viewData = JSON.parse(viewMatch[1]);
+          const viewData = JSON.parse(viewMatch[1].trim());
           if (viewData.viewType) {
             useChatStore.getState().setRequestedView(viewData);
           }
@@ -203,6 +212,7 @@ export function ChatInput({ initialMessage, onSent }: ChatInputProps = {}) {
 
       updateMessage(assistantId, {
         streaming: false,
+        suggestions: nodeInfo?.suggestions,
         ...(nodeInfo?.domain ? { nodeCreated: nodeInfo } : {}),
       });
     } catch {
@@ -271,17 +281,33 @@ export function ChatInput({ initialMessage, onSent }: ChatInputProps = {}) {
           try {
             const data = JSON.parse(line.slice(6));
             if (data.text) { accumulated += data.text; updateMessage(assistantId, { content: accumulated }); }
-            if (data.done) { nodeInfo = { domain: data.domain, nodeId: data.nodeId, confidence: data.confidence, domain_data: data.domain_data }; }
+            if (data.done) { nodeInfo = { domain: data.domain, nodeId: data.nodeId, confidence: data.confidence, domain_data: data.domain_data, suggestions: data.suggestions }; }
           } catch {}
         }
       }
-      updateMessage(assistantId, { streaming: false, ...(nodeInfo?.domain ? { nodeCreated: nodeInfo } : {}) });
+      const viewMatch2 = accumulated.match(/```json:view\s*([\s\S]*?)```/);
+      if (viewMatch2) {
+        try {
+          const viewData = JSON.parse(viewMatch2[1].trim());
+          if (viewData.viewType) useChatStore.getState().setRequestedView(viewData);
+        } catch { /* skip */ }
+      }
+      updateMessage(assistantId, {
+        streaming: false,
+        suggestions: nodeInfo?.suggestions,
+        ...(nodeInfo?.domain ? { nodeCreated: nodeInfo } : {}),
+      });
     } catch {
       updateMessage(assistantId, { content: '연결에 문제가 생겼어요.', streaming: false });
     } finally {
       setStreaming(false);
     }
   }, [isStreaming, addMessage, updateMessage, setStreaming]);
+
+  // Expose sendMessage to parent via ref
+  useImperativeHandle(ref, () => ({
+    sendMessage: (text: string) => sendWithText(text),
+  }), [sendWithText]);
 
   const handleFile = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -371,6 +397,14 @@ export function ChatInput({ initialMessage, onSent }: ChatInputProps = {}) {
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const val = e.target.value;
     setInput(val);
+
+    // 긴 텍스트 감지 (붙여넣기 등)
+    if (val.length > LONG_TEXT_THRESHOLD && !longTextCollapsed) {
+      setLongTextCollapsed(true);
+    } else if (val.length <= LONG_TEXT_THRESHOLD && longTextCollapsed) {
+      setLongTextCollapsed(false);
+    }
+
     const lineCount = Math.min(val.split('\n').length, 6);
     setRows(Math.max(1, lineCount));
 
@@ -395,9 +429,9 @@ export function ChatInput({ initialMessage, onSent }: ChatInputProps = {}) {
       {/* YouTube preview (realtime) */}
       {ytPreview && (
         <div style={{
-          marginBottom: 8, borderRadius: 12, overflow: 'hidden',
-          border: '1px solid rgba(255,255,255,0.1)',
-          background: 'rgba(0,0,0,0.3)',
+          marginBottom: 8, borderRadius: 'var(--ou-radius-md)', overflow: 'hidden',
+          background: 'var(--ou-bg)',
+          boxShadow: 'var(--ou-neu-raised-sm)',
           animation: 'ou-fade-in 0.2s ease',
         }}>
           <div style={{ position: 'relative', width: '100%', paddingTop: '56.25%' }}>
@@ -415,13 +449,13 @@ export function ChatInput({ initialMessage, onSent }: ChatInputProps = {}) {
             padding: '8px 12px',
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           }}>
-            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>
+            <span style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>
               엔터를 누르면 영상을 분석합니다
             </span>
             <button
               onClick={() => { setYtPreview(null); setInput(input.replace(YOUTUBE_REGEX, '').trim()); }}
               style={{
-                fontSize: 11, color: 'rgba(255,255,255,0.3)',
+                fontSize: 11, color: 'var(--ou-text-disabled)',
                 cursor: 'pointer', padding: '2px 6px',
               }}
             >✕</button>
@@ -438,73 +472,174 @@ export function ChatInput({ initialMessage, onSent }: ChatInputProps = {}) {
         style={{ display: 'none' }}
       />
 
-      {/* Input bar */}
+      {/* Input bar — neumorphism raised card */}
       <div style={{
-        display: 'flex', alignItems: 'center', gap: 8,
-        padding: '8px 8px 8px 18px',
-        borderRadius: 28,
-        border: '2px solid rgba(255,255,255,0.9)',
-        background: 'rgba(255,255,255,0.04)',
-        boxShadow: '0 0 16px rgba(255,255,255,0.15), 0 0 40px rgba(255,255,255,0.06)',
-        transition: '180ms ease',
+        background: 'var(--ou-bg)',
+        borderRadius: 'var(--ou-radius-lg)',
+        boxShadow: 'var(--ou-neu-raised-md)',
+        padding: '16px 20px 12px',
+        display: 'flex', flexDirection: 'column',
+        transition: 'all var(--ou-transition)',
       }}>
-        {/* Attach button */}
-        <button
-          onClick={() => fileRef.current?.click()}
-          disabled={isStreaming}
-          title="파일 첨부"
-          style={{
-            width: 32, height: 32,
-            borderRadius: '50%',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            flexShrink: 0,
-            opacity: isStreaming ? 0.3 : 0.5,
-            transition: '180ms ease',
-          }}
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <path d="M12 5v14M5 12h14" stroke="rgba(255,255,255,0.6)" strokeWidth="1.5" strokeLinecap="round" />
-          </svg>
-        </button>
+        {/* Textarea or collapsed long text */}
+        {longTextCollapsed ? (
+          <div
+            onClick={() => setLongTextEditorOpen(true)}
+            style={{
+              width: '100%', minHeight: 40, cursor: 'pointer',
+              display: 'flex', alignItems: 'center', gap: 8,
+              padding: '4px 0',
+            }}
+          >
+            <span style={{
+              padding: '6px 14px',
+              borderRadius: 'var(--ou-radius-sm)',
+              background: 'var(--ou-bg)',
+              boxShadow: 'var(--ou-neu-pressed-sm)',
+              fontSize: 13,
+              color: 'var(--ou-text-secondary)',
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+            }}>
+              <span style={{ fontSize: 14 }}>📄</span>
+              문서가 입력되었습니다. {input.length.toLocaleString()}자
+            </span>
+            <span style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>클릭하여 수정</span>
+          </div>
+        ) : (
+          <textarea
+            ref={textareaRef}
+            value={input}
+            onChange={handleInputChange}
+            onKeyDown={handleKeyDown}
+            rows={rows}
+            placeholder="Just talk..."
+            disabled={isStreaming}
+            style={{
+              width: '100%', border: 'none', outline: 'none',
+              background: 'transparent',
+              color: 'var(--ou-text-strong)',
+              fontSize: 16, lineHeight: 1.6,
+              resize: 'none', fontFamily: 'inherit',
+              minHeight: 40,
+            }}
+          />
+        )}
 
-        {/* Textarea */}
-        <textarea
-          ref={textareaRef}
-          value={input}
-          onChange={handleInputChange}
-          onKeyDown={handleKeyDown}
-          rows={rows}
-          placeholder="무엇이든 말해보세요"
-          disabled={isStreaming}
-          style={{
-            flex: 1, border: 'none', outline: 'none',
-            background: 'transparent',
-            color: 'rgba(255,255,255,0.9)',
-            fontSize: 15, lineHeight: '36px',
-            resize: 'none', fontFamily: 'inherit',
-            minHeight: 36,
-          }}
-        />
-
-        {/* Send button */}
-        <button
-          onClick={send}
-          disabled={!input.trim() || isStreaming}
-          style={{
-            width: 36, height: 36,
-            borderRadius: '50%',
+        {/* Long text editor modal */}
+        {longTextEditorOpen && (
+          <div style={{
+            position: 'fixed', inset: 0, zIndex: 9999,
+            background: 'rgba(0,0,0,0.3)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            background: input.trim() && !isStreaming ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.06)',
-            transition: '180ms ease',
-            flexShrink: 0,
-          }}
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path d="M5 12h14M12 5l7 7-7 7" stroke={input.trim() && !isStreaming ? '#111' : 'rgba(255,255,255,0.15)'}
-              strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </button>
+          }} onClick={(e) => { if (e.target === e.currentTarget) setLongTextEditorOpen(false); }}>
+            <div style={{
+              width: '90%', maxWidth: 600, maxHeight: '70vh',
+              background: 'var(--ou-bg)',
+              borderRadius: 'var(--ou-radius-lg)',
+              boxShadow: 'var(--ou-neu-raised-lg)',
+              padding: 24,
+              display: 'flex', flexDirection: 'column',
+              resize: 'both', overflow: 'auto',
+              minWidth: 300, minHeight: 200,
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ou-text-muted)', letterSpacing: 1 }}>
+                  입력 내용 수정 · {input.length.toLocaleString()}자
+                </span>
+                <button
+                  onClick={() => setLongTextEditorOpen(false)}
+                  style={{ fontSize: 18, color: 'var(--ou-text-muted)', cursor: 'pointer', lineHeight: 1 }}
+                >×</button>
+              </div>
+              <textarea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                style={{
+                  flex: 1, width: '100%', border: 'none', outline: 'none',
+                  background: 'var(--ou-bg)',
+                  boxShadow: 'var(--ou-neu-pressed-sm)',
+                  borderRadius: 'var(--ou-radius-sm)',
+                  padding: 14,
+                  color: 'var(--ou-text-strong)',
+                  fontSize: 14, lineHeight: 1.7,
+                  resize: 'none', fontFamily: 'inherit',
+                  minHeight: 150,
+                }}
+              />
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 12 }}>
+                <button
+                  onClick={() => { setInput(''); setLongTextCollapsed(false); setLongTextEditorOpen(false); }}
+                  style={{
+                    padding: '8px 16px', borderRadius: 'var(--ou-radius-pill)',
+                    background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-raised-sm)',
+                    fontSize: 12, color: 'var(--ou-text-secondary)', cursor: 'pointer',
+                  }}
+                >삭제</button>
+                <button
+                  onClick={() => setLongTextEditorOpen(false)}
+                  style={{
+                    padding: '8px 16px', borderRadius: 'var(--ou-radius-pill)',
+                    background: 'linear-gradient(135deg, var(--ou-accent), var(--ou-accent-secondary, var(--ou-accent)))',
+                    boxShadow: 'var(--ou-neu-raised-sm)',
+                    fontSize: 12, color: '#fff', cursor: 'pointer',
+                  }}
+                >확인</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Bottom toolbar */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingTop: 10 }}>
+          {/* Attach button */}
+          <button
+            onClick={() => fileRef.current?.click()}
+            disabled={isStreaming}
+            style={{
+              width: 32, height: 32,
+              borderRadius: '50%',
+              background: 'var(--ou-bg)',
+              boxShadow: 'var(--ou-neu-raised-sm)',
+              border: 'none',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              flexShrink: 0,
+              opacity: isStreaming ? 0.3 : 1,
+              cursor: isStreaming ? 'not-allowed' : 'pointer',
+              transition: 'all var(--ou-transition)',
+              fontSize: 18, fontWeight: 300, color: 'var(--ou-text-secondary)',
+            }}
+          >+</button>
+
+          <span style={{ flex: 1 }} />
+
+          {/* Send button */}
+          <button
+            onClick={send}
+            disabled={!input.trim() || isStreaming}
+            style={{
+              width: 36, height: 36,
+              borderRadius: '50%',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              background: input.trim() && !isStreaming
+                ? 'linear-gradient(135deg, var(--ou-accent), var(--ou-accent-secondary))'
+                : 'var(--ou-bg)',
+              boxShadow: input.trim() && !isStreaming
+                ? 'var(--ou-neu-raised-sm)'
+                : 'var(--ou-neu-raised-xs)',
+              border: 'none',
+              transition: 'all var(--ou-transition)',
+              flexShrink: 0,
+              cursor: !input.trim() || isStreaming ? 'not-allowed' : 'pointer',
+            }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path d="M5 12h14M12 5l7 7-7 7"
+                stroke={input.trim() && !isStreaming ? '#fff' : 'var(--ou-text-disabled)'}
+                strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   );
-}
+});
