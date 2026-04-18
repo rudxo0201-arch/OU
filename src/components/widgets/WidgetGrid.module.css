@@ -119,6 +119,7 @@
   transition: box-shadow 150ms ease !important;
   z-index: 10;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  opacity: 0.85;
 }
 
 /* The item being resized — instant follow */
@@ -127,12 +128,12 @@
   z-index: 10;
 }
 
-/* Placeholder — where the widget will snap to */
+/* Placeholder — where the widget will snap to (white outline only) */
 .gridWrapper :global(.react-grid-item.react-grid-placeholder) {
-  background: var(--ou-surface-muted) !important;
-  border: 1px dashed var(--ou-border-muted) !important;
+  background: transparent !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.5) !important;
   border-radius: var(--ou-radius-card);
-  opacity: 0.3;
+  opacity: 1;
   transition: transform 250ms cubic-bezier(0.25, 1, 0.5, 1);
 }
 

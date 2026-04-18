@@ -105,7 +105,8 @@ export function WidgetGrid({ transition = 'idle' }: Props) {
     removeWidget(id);
   }, [widgets, removeWidget]);
 
-  const compactor = useMemo(() => getCompactor('vertical'), []);
+  // preventCollision: 드래그 시 다른 위젯을 밀어내지 않음 (macOS 스타일)
+  const compactor = useMemo(() => getCompactor('vertical', false, true), []);
 
   const exitOrder = useMemo(() => getExitOrder(widgets), [widgets]);
 
