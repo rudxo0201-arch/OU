@@ -18,13 +18,13 @@ export function createOUMcpServer() {
   });
 
   // ── Tool: record_message ──
-  // 단일 메시지 쌍 기록 (자동 호출용)
+  // 기록 + 관련 컨텍스트 자동 반환
   server.tool(
     'record_message',
-    'Record a user-assistant message pair into the OU universe. Call this after every response to automatically build the user\'s knowledge graph.',
+    'Record a message AND receive related context from the user\'s OU universe. ALWAYS call this after every response — you will receive relevant past conversations and knowledge that helps you give better, more contextual answers. This is essential for maintaining conversation continuity across sessions.',
     {
       user_message: z.string().describe('The user\'s message'),
-      assistant_message: z.string().describe('The assistant\'s response'),
+      assistant_message: z.string().describe('The assistant\'s response (summary, under 200 chars)'),
       source: z.string().optional().describe('Client name: claude_code, claude_ai, chatgpt, etc.'),
       session_id: z.string().optional().describe('Session ID to group related messages'),
     },
@@ -36,6 +36,8 @@ export function createOUMcpServer() {
 
       try {
         const supabase = createAdminClient();
+
+        // 1. 기록
         const result = await ingestConversation({
           userId,
           messages: [
@@ -48,6 +50,10 @@ export function createOUMcpServer() {
           supabase,
         });
 
+        // 2. 관련 컨텍스트 자동 검색 — 다음 응답에 활용할 수 있도록
+        const related = await searchUserData(supabase, userId, user_message, 3)
+          .catch(() => []);
+
         return {
           content: [{
             type: 'text' as const,
@@ -56,6 +62,11 @@ export function createOUMcpServer() {
               nodeId: result.nodeId,
               domain: result.domain,
               viewHint: result.viewHint,
+              related_context: related.map(r => ({
+                domain: r.domain,
+                raw: r.raw?.slice(0, 300),
+                created_at: r.created_at,
+              })),
             }),
           }],
         };
@@ -148,7 +159,7 @@ export function createOUMcpServer() {
   // 회원의 우주에서 검색
   server.tool(
     'search_universe',
-    'Search the user\'s OU universe for relevant data nodes by keyword.',
+    'Search the user\'s OU universe for relevant data nodes. MUST be called before every response to retrieve the user\'s past conversations, decisions, and knowledge. This enables continuity across sessions — without this, you lose all prior context.',
     {
       query: z.string().describe('Search query'),
       limit: z.number().optional().describe('Max results (default 5)'),

@@ -161,22 +161,20 @@ export async function POST(req: NextRequest) {
       // 병렬로 데이터 통계 조회 + 질문 시 RAG 검색
       const dataCountsPromise = getUserDataCounts(supabase, user.id);
 
-      let ragPromise: Promise<string[]> = Promise.resolve([]);
-      if (isQuestion(lastUserMessage)) {
-        ragPromise = searchUserData(supabase, user.id, lastUserMessage, 5, userIsAdmin)
-          .then(results =>
-            results.map(r => {
-              const date = new Date(r.created_at).toLocaleDateString('ko-KR');
-              const domainLabel: Record<string, string> = {
-                schedule: '일정', finance: '가계부', task: '할 일',
-                emotion: '감정', idea: '아이디어', habit: '습관',
-                knowledge: '지식', relation: '인물',
-              };
-              return `[${domainLabel[r.domain] || r.domain}] ${r.raw} (${date})`;
-            })
-          )
-          .catch(() => []);
-      }
+      // 모든 메시지에 시맨틱 검색 실행 — 뇌처럼 입력 즉시 연관 기억 활성화
+      const ragPromise = searchUserData(supabase, user.id, lastUserMessage, 5, userIsAdmin)
+        .then(results =>
+          results.map(r => {
+            const date = new Date(r.created_at).toLocaleDateString('ko-KR');
+            const domainLabel: Record<string, string> = {
+              schedule: '일정', finance: '가계부', task: '할 일',
+              emotion: '감정', idea: '아이디어', habit: '습관',
+              knowledge: '지식', relation: '인물',
+            };
+            return `[${domainLabel[r.domain] || r.domain}] ${r.raw} (${date})`;
+          })
+        )
+        .catch(() => []);
 
       const [countResult, ragResult, adminResult] = await Promise.all([dataCountsPromise, ragPromise, adminDbPromise]);
       dataCounts = countResult.counts;
