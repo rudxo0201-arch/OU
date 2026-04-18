@@ -97,16 +97,6 @@ export function LandingPage() {
             나만의 우주
           </h1>
 
-          <p style={{
-            fontSize: 15, color: 'rgba(255,255,255,0.35)',
-            lineHeight: 1.8, fontWeight: 300,
-            maxWidth: 360,
-          }}>
-            말하면 데이터가 됩니다.
-            <br />
-            어떤 형태로든 꺼내 쓰세요.
-          </p>
-
           <div style={{ display: 'flex', gap: 12, marginTop: 12 }}>
             <button
               onClick={() => router.push('/login?tab=signup')}
