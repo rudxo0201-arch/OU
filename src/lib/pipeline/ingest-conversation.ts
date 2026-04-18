@@ -81,14 +81,14 @@ export async function ingestConversation({
   const { data: userMsg } = await supabase.from('messages').insert({
     user_id: userId,
     role: 'user',
-    raw: userMessages || fullText.slice(0, 5000),
+    raw: userMessages || fullText,
     type: messageType,
   }).select().single();
 
   const { data: assistantMsg } = await supabase.from('messages').insert({
     user_id: userId,
     role: 'assistant',
-    raw: assistantMessages.slice(0, 5000),
+    raw: assistantMessages,
     type: messageType,
     pair_id: userMsg?.id ?? null,
   }).select().single();
@@ -98,7 +98,7 @@ export async function ingestConversation({
     user_id: userId,
     message_id: assistantMsg?.id ?? userMsg?.id,
     domain,
-    raw: fullText.slice(0, 10000),
+    raw: fullText,
     source_type: sourceType,
     confidence,
     resolution: 'resolved',
@@ -134,11 +134,11 @@ export async function ingestConversation({
 
       const sentences = rawSentences.length > 0 ? rawSentences : [sections[i].content.trim()];
 
-      for (let j = 0; j < Math.min(sentences.length, 50); j++) {
+      for (let j = 0; j < sentences.length; j++) {
         await supabase.from('sentences').insert({
           section_id: sec.id,
           node_id: node.id,
-          text: sentences[j].slice(0, 2000),
+          text: sentences[j],
           order_idx: j,
           embed_status: 'pending',
           embed_tier: 'hot',
@@ -147,11 +147,11 @@ export async function ingestConversation({
     }
   }
 
-  // Layer 3 비동기 (embeddings + triples)
+  // Layer 3 비동기 (embeddings + triples) — 전부 실행, 비용 아끼지 않음
   import('@/lib/pipeline/layer3').then(({ embedPendingSentences, extractTriples }) => {
     embedPendingSentences(node.id).catch(e => console.error('[Ingest] embed failed:', e));
     extractTriples(node.id).catch(e => console.error('[Ingest] triple failed:', e));
-  }).catch(() => {});
+  }).catch(e => console.error('[Ingest] Layer3 import failed:', e));
 
   return {
     nodeId: node.id,

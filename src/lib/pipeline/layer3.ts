@@ -17,56 +17,18 @@ const VALID_PREDICATES = [
   'opposite_of', 'requires', 'example_of', 'involves', 'located_at', 'occurs_at',
 ];
 
-/**
- * Embedding Tier 분류 기준:
- * - hot  (< 7일):  즉시 임베딩 (기존 동작)
- * - warm (7~30일): embed_tier='warm'으로 마킹, 배치 크론에서 처리
- * - cold (> 30일): embed_tier='cold'로 마킹, 임베딩 생략
- */
-function classifyEmbedTier(nodeCreatedAt: string): 'hot' | 'warm' | 'cold' {
-  const ageMs = Date.now() - new Date(nodeCreatedAt).getTime();
-  const ageDays = ageMs / (1000 * 60 * 60 * 24);
-  if (ageDays < 7) return 'hot';
-  if (ageDays <= 30) return 'warm';
-  return 'cold';
-}
-
 export async function embedPendingSentences(nodeId: string) {
   const supabase = await createClient();
-
-  // 노드의 created_at 조회하여 tier 결정
-  const { data: node } = await supabase
-    .from('data_nodes')
-    .select('created_at')
-    .eq('id', nodeId)
-    .single();
-
-  if (!node) return;
-
-  const tier = classifyEmbedTier(node.created_at);
 
   const { data: sentences } = await supabase
     .from('sentences')
     .select('id, text')
     .eq('node_id', nodeId)
-    .eq('embed_status', 'pending')
-    .limit(50);
+    .eq('embed_status', 'pending');
 
   if (!sentences?.length) return;
 
-  // warm/cold tier: 임베딩 보류, tier만 마킹하고 종료
-  if (tier !== 'hot') {
-    for (const s of sentences) {
-      await supabase
-        .from('sentences')
-        .update({ embed_tier: tier })
-        .eq('id', s.id);
-    }
-    console.log(`[Layer3] Node ${nodeId} classified as ${tier} — ${sentences.length} sentences deferred`);
-    return;
-  }
-
-  // hot tier: 즉시 임베딩 (기존 동작)
+  // 전부 즉시 임베딩 — 비용 아끼지 않음
   const texts = sentences.map((s: { id: string; text: string }) => s.text);
 
   try {
