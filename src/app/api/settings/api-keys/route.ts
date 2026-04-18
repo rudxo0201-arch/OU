@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { generateApiKey, listApiKeys, revokeApiKey } from '@/lib/auth/api-key';
 
 export const runtime = 'nodejs';
@@ -29,8 +30,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'name is required' }, { status: 400 });
   }
 
-  const result = await generateApiKey(supabase, user.id, name.trim());
-  return NextResponse.json(result);
+  try {
+    const adminSupabase = createAdminClient();
+    const result = await generateApiKey(adminSupabase, user.id, name.trim());
+    return NextResponse.json(result);
+  } catch (e: any) {
+    return NextResponse.json({ error: e.message || 'API key creation failed' }, { status: 500 });
+  }
 }
 
 /**

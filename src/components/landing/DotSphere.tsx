@@ -5,7 +5,7 @@ import { useEffect, useRef } from 'react';
 export function DotSphere() {
   const containerRef = useRef<HTMLDivElement>(null);
   const destroyedRef = useRef(false);
-  const mouseRef = useRef({ x: 0, y: 0, active: false });
+  const mouseRef = useRef({ x: 0, y: 0, active: false, dragging: false });
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -13,16 +13,21 @@ export function DotSphere() {
     let animId: number;
     let app: any;
 
-    const onMouseMove = (e: MouseEvent) => {
+    const onMouseDown = (e: MouseEvent) => {
       if (!containerRef.current) return;
       const rect = containerRef.current.getBoundingClientRect();
-      mouseRef.current = {
-        x: ((e.clientX - rect.left) / rect.width - 0.5) * 2,
-        y: ((e.clientY - rect.top) / rect.height - 0.5) * 2,
-        active: true,
-      };
+      if (e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom) {
+        mouseRef.current.dragging = true;
+      }
     };
-    const onMouseLeave = () => { mouseRef.current.active = false; };
+    const onMouseUp = () => { mouseRef.current.dragging = false; mouseRef.current.active = false; };
+    const onMouseMove = (e: MouseEvent) => {
+      if (!containerRef.current || !mouseRef.current.dragging) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      mouseRef.current.x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+      mouseRef.current.y = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+      mouseRef.current.active = true;
+    };
 
     const init = async () => {
       const PIXI = await import('pixi.js');
@@ -41,9 +46,9 @@ export function DotSphere() {
 
       const NUM_POINTS = window.innerWidth < 768 ? 600 : 1000;
       const RADIUS = Math.min(w, h) * 0.38;
-      const CENTER_X = w * 0.5;
+      const CENTER_X = w * 0.55;
       const CENTER_Y = h * 0.5;
-      const PERSPECTIVE = 800;
+      const PERSPECTIVE = 1500;
 
       const goldenAngle = Math.PI * (3 - Math.sqrt(5));
       const points: { baseX: number; baseY: number; baseZ: number }[] = [];
@@ -66,14 +71,14 @@ export function DotSphere() {
         autoRotY += 0.002;
 
         if (mouseRef.current.active) {
-          targetRotY = mouseRef.current.x * 0.5;
-          targetRotX = mouseRef.current.y * 0.3;
+          targetRotY = mouseRef.current.x * 0.84;
+          targetRotX = mouseRef.current.y * 0.56;
         } else {
           targetRotY = 0;
           targetRotX = 0;
         }
-        currentRotX += (targetRotX - currentRotX) * 0.05;
-        currentRotY += (targetRotY - currentRotY) * 0.05;
+        currentRotY += (targetRotY - currentRotY) * 0.105;
+        currentRotX += (targetRotX - currentRotX) * 0.105;
 
         const rotY = autoRotY + currentRotY;
         const rotX = currentRotX;
@@ -93,21 +98,29 @@ export function DotSphere() {
           const sy = CENTER_Y + y2 * scale;
           const nz = (z2 + RADIUS) / (2 * RADIUS);
           const dotSize = 0.8 + nz * 2.5;
-          let alpha = 0.15 + nz * 0.65;
+          let alpha = 0.25 + nz * 0.7;
           if (nz > 0.6) alpha += Math.sin(frameCount * 0.02 + i * 0.1) * 0.15 * nz;
           projected.push({ sx, sy, z: z2, size: dotSize, alpha: Math.max(0.05, Math.min(1, alpha)) });
         }
         projected.sort((a, b) => a.z - b.z);
         for (const p of projected) {
+          // 소프트 글로우 (다중 레이어)
+          if (p.alpha > 0.3) {
+            gfx.circle(p.sx, p.sy, p.size * 4);
+            gfx.fill({ color: 0xffffff, alpha: p.alpha * 0.03 });
+            gfx.circle(p.sx, p.sy, p.size * 2.5);
+            gfx.fill({ color: 0xffffff, alpha: p.alpha * 0.06 });
+          }
           gfx.circle(p.sx, p.sy, p.size);
-          gfx.fill({ color: 0xaaaaaa, alpha: p.alpha });
+          gfx.fill({ color: 0xeeeeff, alpha: p.alpha });
         }
         animId = requestAnimationFrame(animate);
       };
       animId = requestAnimationFrame(animate);
 
-      container.addEventListener('mousemove', onMouseMove);
-      container.addEventListener('mouseleave', onMouseLeave);
+      window.addEventListener('mousedown', onMouseDown);
+      window.addEventListener('mouseup', onMouseUp);
+      window.addEventListener('mousemove', onMouseMove);
 
       const onResize = () => {
         if (!container || destroyedRef.current) return;
@@ -117,8 +130,9 @@ export function DotSphere() {
 
       (containerRef as any)._cleanup = () => {
         window.removeEventListener('resize', onResize);
-        container.removeEventListener('mousemove', onMouseMove);
-        container.removeEventListener('mouseleave', onMouseLeave);
+        window.removeEventListener('mousedown', onMouseDown);
+        window.removeEventListener('mouseup', onMouseUp);
+        window.removeEventListener('mousemove', onMouseMove);
         cancelAnimationFrame(animId);
         app.destroy(true);
       };

@@ -4,7 +4,14 @@
       "type": "http",
       "url": "https://ouuniverse.com/api/mcp/sse",
       "headers": {
-        "Authorization": "Bearer ou_sk_677dd4e57c3dd93545c3fd53828439e25cd4d665f92648a95be43c0965ed8030"
+        "Authorization": "Bearer ou_sk_64e351668a9dc6c25cd285634bde531d532cac735543de6ae98867172af27fe1"
+      }
+    },
+    "ou-local": {
+      "type": "http",
+      "url": "http://localhost:3001/api/mcp/sse",
+      "headers": {
+        "Authorization": "Bearer ou_sk_64e351668a9dc6c25cd285634bde531d532cac735543de6ae98867172af27fe1"
       }
     }
   }

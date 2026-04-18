@@ -51,47 +51,59 @@ export default function SettingsPage() {
   const visibleTabs = tabs.filter(t => !t.adminOnly || isAdmin);
 
   return (
-    <div style={{ minHeight: '100vh', padding: '0 32px', maxWidth: 840, margin: '0 auto' }}>
-      {/* Header */}
-      <div style={{ height: 80, display: 'flex', alignItems: 'center', gap: 16 }}>
-        <button
-          onClick={() => router.push('/my')}
-          style={{
-            width: 32, height: 32, borderRadius: '50%',
-            border: '0.5px solid var(--ou-border-subtle)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            cursor: 'pointer',
-          }}
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path d="M19 12H5M12 19l-7-7 7-7" stroke="var(--ou-text-dimmed)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </button>
-        <span style={{ fontSize: 18, fontWeight: 600, color: 'var(--ou-text-strong)' }}>설정</span>
-      </div>
+    <div style={{ minHeight: '100vh', display: 'flex' }}>
+      {/* 좌측 사이드바 */}
+      <aside style={{
+        width: 260, minHeight: '100vh', flexShrink: 0,
+        padding: '40px 24px',
+        borderRight: '1px solid var(--ou-border-subtle)',
+        display: 'flex', flexDirection: 'column', gap: 12,
+      }}>
+        {/* 헤더 */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
+          <button
+            onClick={() => router.push('/my')}
+            style={{
+              width: 36, height: 36, borderRadius: '50%',
+              border: '1px solid var(--ou-border-muted)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer',
+            }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path d="M19 12H5M12 19l-7-7 7-7" stroke="var(--ou-text-secondary)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+          <span style={{ fontSize: 22, fontWeight: 700, color: 'var(--ou-text-bright)' }}>설정</span>
+        </div>
 
-      {/* Tabs */}
-      <div style={{ display: 'flex', gap: 4, borderBottom: '1px solid var(--ou-border-subtle)', marginBottom: 32 }}>
+        {/* 탭 버튼 */}
         {visibleTabs.map(tab => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
             style={{
-              padding: '10px 20px', fontSize: 13, cursor: 'pointer', marginBottom: -1,
-              color: activeTab === tab.key ? 'var(--ou-text-strong)' : 'var(--ou-text-dimmed)',
-              borderBottom: activeTab === tab.key ? '2px solid var(--ou-text-strong)' : '2px solid transparent',
+              padding: '16px 20px', fontSize: 16, fontWeight: 500,
+              borderRadius: 12, cursor: 'pointer', textAlign: 'left',
+              border: activeTab === tab.key ? '1px solid var(--ou-border-medium)' : '1px solid transparent',
+              background: activeTab === tab.key ? 'rgba(255,255,255,0.05)' : 'transparent',
+              color: activeTab === tab.key ? 'var(--ou-text-bright)' : 'var(--ou-text-secondary)',
+              boxShadow: activeTab === tab.key ? 'var(--ou-glow-xs)' : 'none',
               transition: 'var(--ou-transition)',
             }}
           >
             {tab.label}
           </button>
         ))}
-      </div>
+      </aside>
 
-      {activeTab === 'general' && <GeneralTab user={user} />}
-      {activeTab === 'display' && <DisplayTab />}
-      {activeTab === 'views' && <ViewsTab />}
-      {activeTab === 'admin' && isAdmin && <AdminTab />}
+      {/* 우측 콘텐츠 */}
+      <main style={{ flex: 1, padding: '40px 60px', maxWidth: 900, overflow: 'auto' }}>
+        {activeTab === 'general' && <GeneralTab user={user} />}
+        {activeTab === 'display' && <DisplayTab />}
+        {activeTab === 'views' && <ViewsTab />}
+        {activeTab === 'admin' && isAdmin && <AdminTab />}
+      </main>
     </div>
   );
 }
@@ -201,12 +213,12 @@ function GeneralTab({ user }: { user: any }) {
 
       {/* BYOK */}
       <Section title="내 API 키 (BYOK)">
-        <p style={{ fontSize: 12, color: 'var(--ou-text-dimmed)', lineHeight: 1.8, marginBottom: 8 }}>
+        <p style={{ fontSize: 13, color: 'var(--ou-text-secondary)', lineHeight: 1.8, marginBottom: 8 }}>
           자신의 API 키를 등록하면 고급 모델을 직접 사용할 수 있습니다.
         </p>
         {(['anthropic', 'openai', 'google'] as const).map(provider => (
           <div key={provider} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 0', borderBottom: '1px solid var(--ou-border-subtle)' }}>
-            <span style={{ fontSize: 13, color: 'var(--ou-text-secondary)', width: 90 }}>
+            <span style={{ fontSize: 15, color: 'var(--ou-text-body)', width: 110 }}>
               {provider === 'anthropic' ? 'Anthropic' : provider === 'openai' ? 'OpenAI' : 'Google'}
             </span>
             {llmKeys[provider] ? (
@@ -274,16 +286,24 @@ function ApiKeySection() {
         body: JSON.stringify({ name }),
       });
       const data = await res.json();
+      if (!res.ok) {
+        alert(data.error || 'API 키 생성에 실패했습니다.');
+        return;
+      }
       if (data.plainKey) {
         setNewPlainKey(data.plainKey);
         setKeys(prev => [{ id: data.id, key_prefix: data.key_prefix, name: data.name, created_at: data.created_at }, ...prev]);
         setNewName('');
       }
-    } catch { /* ignore */ }
-    setCreating(false);
+    } catch {
+      alert('API 키 생성에 실패했습니다. 다시 시도해주세요.');
+    } finally {
+      setCreating(false);
+    }
   };
 
   const revokeKey = async (keyId: string) => {
+    if (!window.confirm('이 API 키를 삭제하시겠습니까? 삭제 후 복구할 수 없습니다.')) return;
     await fetch('/api/settings/api-keys', {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
@@ -300,7 +320,7 @@ function ApiKeySection() {
 
   return (
     <Section title="OU API Key">
-      <p style={{ fontSize: 12, color: 'var(--ou-text-dimmed)', lineHeight: 1.8, marginBottom: 8 }}>
+      <p style={{ fontSize: 13, color: 'var(--ou-text-secondary)', lineHeight: 1.8, marginBottom: 8 }}>
         Claude Code, MCP 등 외부 도구에서 OU 데이터에 접근할 때 사용합니다.
       </p>
 
@@ -379,7 +399,7 @@ function DisplayTab() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
       <Section title="홈 화면 그리드">
-        <p style={{ fontSize: 12, color: 'var(--ou-text-dimmed)', lineHeight: 1.8, marginBottom: 12 }}>
+        <p style={{ fontSize: 13, color: 'var(--ou-text-secondary)', lineHeight: 1.8, marginBottom: 12 }}>
           위젯 배치 그리드의 크기를 조절합니다. 크게 보기는 그리드 수가 줄어들고, 작게 보기는 늘어납니다.
         </p>
         <SliderField label="가로 칸 수" value={gridCols} min={4} max={12} onChange={setGridCols} />
@@ -696,7 +716,7 @@ function SeedButton({ type, label }: { type: string; label: string }) {
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid var(--ou-border-subtle)' }}>
-      <span style={{ fontSize: 13, color: 'var(--ou-text-secondary)' }}>{label}</span>
+      <span style={{ fontSize: 15, color: 'var(--ou-text-body)' }}>{label}</span>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         {result && <span style={{ fontSize: 11, color: status === 'error' ? '#e55' : 'var(--ou-text-dimmed)' }}>{result}</span>}
         <button onClick={run} disabled={status === 'loading'} style={{ ...btnSmall, opacity: status === 'loading' ? 0.5 : 1 }}>
@@ -713,7 +733,7 @@ function SeedButton({ type, label }: { type: string; label: string }) {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
-      <h3 style={{ fontSize: 13, fontWeight: 600, color: 'var(--ou-text-strong)', marginBottom: 12 }}>{title}</h3>
+      <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--ou-text-bright)', marginBottom: 20 }}>{title}</h3>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>{children}</div>
     </div>
   );
@@ -721,17 +741,17 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid var(--ou-border-subtle)' }}>
-      <span style={{ fontSize: 13, color: 'var(--ou-text-secondary)' }}>{label}</span>
-      <span style={{ fontSize: 13, color: 'var(--ou-text-dimmed)' }}>{value}</span>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 0', borderBottom: '1px solid var(--ou-border-subtle)' }}>
+      <span style={{ fontSize: 15, color: 'var(--ou-text-body)' }}>{label}</span>
+      <span style={{ fontSize: 15, color: 'var(--ou-text-secondary)' }}>{value}</span>
     </div>
   );
 }
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div style={{ marginBottom: 12 }}>
-      <label style={{ fontSize: 12, color: 'var(--ou-text-dimmed)', display: 'block', marginBottom: 4 }}>{label}</label>
+    <div style={{ marginBottom: 16 }}>
+      <label style={{ fontSize: 14, color: 'var(--ou-text-secondary)', display: 'block', marginBottom: 6 }}>{label}</label>
       {children}
     </div>
   );
@@ -740,36 +760,36 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 function SliderField({ label, value, min, max, onChange }: { label: string; value: number; min: number; max: number; onChange: (v: number) => void }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '6px 0' }}>
-      <span style={{ fontSize: 12, color: 'var(--ou-text-dimmed)', width: 90, flexShrink: 0 }}>{label}</span>
+      <span style={{ fontSize: 14, color: 'var(--ou-text-body)', width: 110, flexShrink: 0 }}>{label}</span>
       <input
         type="range" min={min} max={max} value={value}
         onChange={e => onChange(Number(e.target.value))}
         style={{ flex: 1, accentColor: 'rgba(255,255,255,0.5)' }}
       />
-      <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed)', width: 28, textAlign: 'right' }}>{value}</span>
+      <span style={{ fontSize: 12, color: 'var(--ou-text-secondary)', width: 28, textAlign: 'right' }}>{value}</span>
     </div>
   );
 }
 
 // ---- Styles ----
 const inputStyle: React.CSSProperties = {
-  padding: '8px 12px', borderRadius: 8,
-  border: '1px solid var(--ou-border-subtle)',
-  background: 'rgba(255,255,255,0.03)',
-  color: 'var(--ou-text-secondary)',
-  fontSize: 13, outline: 'none', width: '100%',
+  padding: '12px 16px', borderRadius: 10,
+  border: '1px solid var(--ou-border-muted)',
+  background: 'rgba(255,255,255,0.04)',
+  color: 'var(--ou-text-body)',
+  fontSize: 15, outline: 'none', width: '100%',
 };
 
 const btnStyle: React.CSSProperties = {
-  padding: '8px 20px', borderRadius: 999,
-  border: '0.5px solid var(--ou-border-subtle)',
-  fontSize: 12, color: 'var(--ou-text-dimmed)',
+  padding: '12px 28px', borderRadius: 999,
+  border: '1px solid var(--ou-border-muted)',
+  fontSize: 15, color: 'var(--ou-text-body)',
   cursor: 'pointer', transition: 'var(--ou-transition)',
 };
 
 const btnSmall: React.CSSProperties = {
-  padding: '4px 12px', borderRadius: 999,
-  border: '0.5px solid var(--ou-border-subtle)',
-  fontSize: 11, color: 'var(--ou-text-dimmed)',
+  padding: '8px 16px', borderRadius: 999,
+  border: '1px solid var(--ou-border-muted)',
+  fontSize: 13, color: 'var(--ou-text-secondary)',
   cursor: 'pointer',
 };
