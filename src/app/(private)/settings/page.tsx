@@ -236,6 +236,9 @@ function GeneralTab({ user }: { user: any }) {
         ))}
       </Section>
 
+      {/* OU API Key */}
+      <ApiKeySection />
+
       {/* 시스템 */}
       <Section title="시스템">
         <Row label="언어" value="한국어" />

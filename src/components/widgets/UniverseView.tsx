@@ -269,6 +269,9 @@ export function UniverseView({ visible }: Props) {
     confidence: string;
   } | null>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'empty' | 'error'>('loading');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [visibleLabels, setVisibleLabels] = useState<{ x: number; y: number; label: string }[]>([]);
 
   const ZOOM_THRESHOLD = 1600;
 
@@ -482,6 +485,28 @@ export function UniverseView({ visible }: Props) {
     container.addEventListener('pointerup', onPointerUp, { capture: true });
     container.addEventListener('pointermove', onPointerMove, { capture: true });
 
+    // Keyboard shortcuts
+    const onKeyDown = (e: KeyboardEvent) => {
+      // Don't intercept if user is typing in search input
+      if ((e.target as HTMLElement)?.tagName === 'INPUT') return;
+
+      if (e.key === 'Escape') {
+        if (state.selectedNodeId !== -1) exitLocal(state);
+        setSearchOpen(false);
+        setSearchQuery('');
+      }
+      if (e.key === '/' && !e.metaKey && !e.ctrlKey) {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+      if (e.key === 'r' && !e.metaKey && !e.ctrlKey) {
+        // Reset camera
+        camera.position.set(0, 0, 2500);
+        controls.target.set(0, 0, 0);
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+
     // Animation loop
     let frameCount = 0;
     const animate = () => {
@@ -544,6 +569,7 @@ export function UniverseView({ visible }: Props) {
       container.removeEventListener('pointerdown', onPointerDown, { capture: true });
       container.removeEventListener('pointerup', onPointerUp, { capture: true });
       container.removeEventListener('pointermove', onPointerMove, { capture: true });
+      window.removeEventListener('keydown', onKeyDown);
       (state.worker as any)?.postMessage({ type: 'STOP' });
       (state.worker as any)?.terminate();
       renderer.dispose(); composer.dispose();
@@ -858,6 +884,30 @@ export function UniverseView({ visible }: Props) {
       ndc[i * 2 + 1] = pos3.y;
     }
     projCacheRef.current.frame++;
+
+    // Update visible labels (only when zoomed in, top degree nodes visible on screen)
+    const container = containerRef.current;
+    if (!container) return;
+    const zoom = state.camera.position.distanceTo(state.controls.target);
+    if (zoom > 1200) { setVisibleLabels([]); return; }
+
+    const rect = container.getBoundingClientRect();
+    const labels: { x: number; y: number; label: string }[] = [];
+    const maxLabels = zoom < 500 ? 30 : 15;
+    // Sort by degree descending, pick visible ones
+    const degs = topo.nodeAdjacency.map((a, i) => ({ d: a.length, i }));
+    degs.sort((a, b) => b.d - a.d);
+
+    for (let di = 0; di < degs.length && labels.length < maxLabels; di++) {
+      const i = degs[di].i;
+      const nx = ndc[i * 2], ny = ndc[i * 2 + 1];
+      // Check if on screen
+      if (nx < -1 || nx > 1 || ny < -1 || ny > 1) continue;
+      const sx = (nx + 1) / 2 * rect.width;
+      const sy = (1 - ny) / 2 * rect.height;
+      labels.push({ x: sx, y: sy, label: topo.nodeLabels[i] });
+    }
+    setVisibleLabels(labels);
   }
 
   function getRaycastedNodeId(clientX: number, clientY: number, state: NonNullable<typeof sceneRef.current>, container: HTMLDivElement): number {
@@ -913,9 +963,47 @@ export function UniverseView({ visible }: Props) {
           border: '1px solid rgba(255, 255, 255, 0.15)', backdropFilter: 'blur(12px)',
           width: 240, zIndex: 100, maxHeight: '80vh', overflowY: 'auto',
         }}>
-          <h3 style={{ margin: '0 0 15px', fontSize: 13, borderBottom: '1px solid rgba(255,255,255,0.2)', paddingBottom: 10, fontWeight: 600, letterSpacing: 1, color: '#fff' }}>
+          <h3 style={{ margin: '0 0 12px', fontSize: 13, borderBottom: '1px solid rgba(255,255,255,0.2)', paddingBottom: 10, fontWeight: 600, letterSpacing: 1, color: '#fff' }}>
             GRAPH VIEW
           </h3>
+
+          {/* Search */}
+          <div style={{ marginBottom: 16 }}>
+            <input
+              type="text"
+              placeholder="노드 검색... ( / )"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              onFocus={() => setSearchOpen(true)}
+              onKeyDown={e => {
+                if (e.key === 'Enter' && searchQuery.trim()) {
+                  // Find and focus first match
+                  const s = sceneRef.current;
+                  if (!s) return;
+                  const q = searchQuery.trim().toLowerCase();
+                  const idx = s.topology.nodeLabels.findIndex(l => l.toLowerCase().includes(q));
+                  if (idx !== -1) {
+                    s.selectedNodeId = idx;
+                    applyHL(s, idx);
+                    showCard(s, idx);
+                    // Zoom to node
+                    const spread = s.uniforms.uSpread?.value ?? 1;
+                    const p = s.topology.positions;
+                    s.controls.target.set(p[idx * 3] * spread, p[idx * 3 + 1] * spread, p[idx * 3 + 2] * spread);
+                    s.camera.position.set(p[idx * 3] * spread, p[idx * 3 + 1] * spread, p[idx * 3 + 2] * spread + 400);
+                  }
+                }
+                if (e.key === 'Escape') { setSearchQuery(''); setSearchOpen(false); (e.target as HTMLElement).blur(); }
+              }}
+              ref={el => { if (searchOpen && el) el.focus(); }}
+              style={{
+                width: '100%', padding: '8px 10px',
+                background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.2)',
+                borderRadius: 4, color: '#fff', fontSize: 12,
+                outline: 'none',
+              }}
+            />
+          </div>
 
           {/* 2D/3D */}
           <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
@@ -937,6 +1025,24 @@ export function UniverseView({ visible }: Props) {
           <ControlSlider label="링크 장력" value={controlValues.linkForce} min={0.01} max={1.0} step={0.01} onChange={v => updateControl('linkForce', v)} />
           <ControlSlider label="링크 거리" value={controlValues.linkDistance} min={20} max={300} step={10} onChange={v => updateControl('linkDistance', v)} />
           <ControlSlider label="선 투명도" value={controlValues.opacity} min={0.01} max={0.2} step={0.01} onChange={v => updateControl('opacity', v)} />
+
+          <button
+            onClick={() => {
+              setControlValues({ size: 0.8, gravity: 1.0, repel: 1.0, linkForce: 0.3, linkDistance: 80, opacity: 0.05 });
+              const s = sceneRef.current;
+              if (s) { s.camera.position.set(0, 0, 2500); s.controls.target.set(0, 0, 0); }
+            }}
+            style={{
+              width: '100%', padding: 8, marginTop: 8,
+              background: 'none', color: 'rgba(255,255,255,0.4)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: 4, fontSize: 11, cursor: 'pointer', transition: 'all 0.2s',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)'; }}
+            onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.4)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; }}
+          >
+            초기화 (R)
+          </button>
         </div>
       )}
 
@@ -989,6 +1095,29 @@ export function UniverseView({ visible }: Props) {
           <span style={{ fontFamily: 'monospace', fontSize: 10 }}>{selectedCard?.realId?.slice(0, 8)}</span>
         </div>
       </div>
+
+      {/* Node labels overlay */}
+      {visibleLabels.length > 0 && (
+        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 50 }}>
+          {visibleLabels.map((lbl, i) => (
+            <span
+              key={i}
+              style={{
+                position: 'absolute',
+                left: lbl.x,
+                top: lbl.y + 12,
+                transform: 'translateX(-50%)',
+                fontSize: 10,
+                color: 'rgba(255,255,255,0.5)',
+                whiteSpace: 'nowrap',
+                textShadow: '0 1px 3px rgba(0,0,0,0.8)',
+              }}
+            >
+              {lbl.label}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
