@@ -22,6 +22,8 @@ export interface ChatMessage {
     ouContent?: string;
     nodeId?: string;
   };
+  /** 유튜브 임베드 (URL 감지 시) */
+  youtubeEmbed?: { videoId: string; title?: string };
   /** 한자 검색 결과 (메시지 내 CJK 문자 감지 시) */
   hanjaResults?: Array<{
     char: string;

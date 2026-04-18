@@ -72,12 +72,15 @@ export function ChatInput({ initialMessage, onSent }: ChatInputProps = {}) {
     const isSearchMode = !!(prevUserMsg?.hanjaResults && prevUserMsg.hanjaResults.length > 0 && hanjaRatio >= 0.5);
 
     const userMsgId = `u-${Date.now()}`;
+    const ytMatch = text.match(YOUTUBE_REGEX);
     addMessage({
       id: userMsgId,
       role: 'user',
       content: text,
       createdAt: new Date(),
+      ...(ytMatch ? { youtubeEmbed: { videoId: ytMatch[1] } } : {}),
     });
+    setYtPreview(null);
 
     // 검색 모드: LLM 스킵, 한자 카드만 표시
     if (isSearchMode && hanjaChars.length > 0) {
@@ -92,8 +95,8 @@ export function ChatInput({ initialMessage, onSent }: ChatInputProps = {}) {
     }
 
     // YouTube link detection — auto ingest
-    const ytMatch = text.match(YOUTUBE_REGEX);
-    if (ytMatch) {
+    const ytIngest = text.match(YOUTUBE_REGEX);
+    if (ytIngest) {
       const assistantId = `a-${Date.now()}`;
       addMessage({ id: assistantId, role: 'assistant', content: '유튜브 영상을 분석하고 있어요...', createdAt: new Date(), streaming: true });
       setStreaming(true);
@@ -351,11 +354,22 @@ export function ChatInput({ initialMessage, onSent }: ChatInputProps = {}) {
     }
   }, [addMessage, updateMessage, setStreaming]);
 
-  // ---- YouTube link detection ----
+  // ---- YouTube link detection (realtime) ----
+  const [ytPreview, setYtPreview] = useState<{ videoId: string; url: string } | null>(null);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setInput(e.target.value);
-    const lineCount = Math.min(e.target.value.split('\n').length, 6);
+    const val = e.target.value;
+    setInput(val);
+    const lineCount = Math.min(val.split('\n').length, 6);
     setRows(Math.max(1, lineCount));
+
+    // 실시간 유튜브 URL 감지
+    const ytMatch = val.match(YOUTUBE_REGEX);
+    if (ytMatch) {
+      setYtPreview({ videoId: ytMatch[1], url: ytMatch[0] });
+    } else {
+      setYtPreview(null);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -367,6 +381,43 @@ export function ChatInput({ initialMessage, onSent }: ChatInputProps = {}) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+      {/* YouTube preview (realtime) */}
+      {ytPreview && (
+        <div style={{
+          marginBottom: 8, borderRadius: 12, overflow: 'hidden',
+          border: '1px solid rgba(255,255,255,0.1)',
+          background: 'rgba(0,0,0,0.3)',
+          animation: 'ou-fade-in 0.2s ease',
+        }}>
+          <div style={{ position: 'relative', width: '100%', paddingTop: '56.25%' }}>
+            <iframe
+              src={`https://www.youtube.com/embed/${ytPreview.videoId}?rel=0`}
+              style={{
+                position: 'absolute', top: 0, left: 0,
+                width: '100%', height: '100%', border: 'none',
+              }}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+          <div style={{
+            padding: '8px 12px',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          }}>
+            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>
+              엔터를 누르면 영상을 분석합니다
+            </span>
+            <button
+              onClick={() => { setYtPreview(null); setInput(input.replace(YOUTUBE_REGEX, '').trim()); }}
+              style={{
+                fontSize: 11, color: 'rgba(255,255,255,0.3)',
+                cursor: 'pointer', padding: '2px 6px',
+              }}
+            >✕</button>
+          </div>
+        </div>
+      )}
+
       {/* Hidden file input */}
       <input
         ref={fileRef}

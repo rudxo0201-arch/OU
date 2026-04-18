@@ -136,6 +136,23 @@ function MessageBubble({ message, onNodeSelect }: { message: ChatMessage; onNode
         lineHeight: 1.8,
         color: 'rgba(255,255,255,0.7)',
       }}>
+        {/* YouTube embed */}
+        {message.youtubeEmbed && (
+          <div style={{
+            marginBottom: 8, borderRadius: 10, overflow: 'hidden',
+            border: '1px solid rgba(255,255,255,0.08)',
+          }}>
+            <div style={{ position: 'relative', width: '100%', paddingTop: '56.25%' }}>
+              <iframe
+                src={`https://www.youtube.com/embed/${message.youtubeEmbed.videoId}?rel=0`}
+                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+          </div>
+        )}
+
         {/* Image preview */}
         {message.imagePreview && (
           <div style={{ marginBottom: 8, borderRadius: 10, overflow: 'hidden', maxWidth: 240 }}>
