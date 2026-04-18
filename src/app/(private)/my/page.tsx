@@ -90,7 +90,7 @@ export default function MyPage() {
         {/* Widget grid — hidden via visibility when in universe mode (preserves state) */}
         <div style={{
           position: 'absolute',
-          top: 44, bottom: 96, left: 32, right: 32,
+          top: 56, bottom: 96, left: 32, right: 32,
           visibility: showWidgets ? 'visible' : 'hidden',
           pointerEvents: mode === 'dashboard' ? 'auto' : 'none',
         }}>
@@ -183,42 +183,46 @@ function MenuBar({ showLogo, email, onSettings, onLogout }: {
     <div style={{
       position: 'absolute',
       top: 0, left: 0, right: 0,
-      height: 36,
+      height: 56,
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      padding: '0 16px',
+      padding: '0 24px',
       zIndex: 10,
-      backdropFilter: 'blur(20px) saturate(180%)',
-      WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-      background: 'rgba(255,255,255,0.02)',
-      borderBottom: '0.5px solid rgba(255,255,255,0.04)',
     }}>
-      {/* Left: Logo */}
+      {/* Left: Logo — white, glowing */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         {showLogo ? (
-          <img src="/logo-ou-white.svg" alt="OU" style={{ height: 14, opacity: 0.7, filter: 'drop-shadow(0 0 4px rgba(255,255,255,0.1))' }} />
+          <img
+            src="/logo-ou-white.svg"
+            alt="OU"
+            style={{
+              height: 22,
+              opacity: 1,
+              filter: 'drop-shadow(0 0 8px rgba(255,255,255,0.4)) drop-shadow(0 0 20px rgba(255,255,255,0.15))',
+            }}
+          />
         ) : (
-          <div style={{ width: 28 }} />
+          <div style={{ width: 36 }} />
         )}
       </div>
 
       {/* Right: Time + Settings + Profile */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', fontVariantNumeric: 'tabular-nums' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+        <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', fontVariantNumeric: 'tabular-nums' }}>
           {time}
         </span>
         <button
           onClick={onSettings}
           className="ou-pressable"
-          style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', padding: '2px 8px', borderRadius: 4 }}
+          style={{ color: 'rgba(255,255,255,0.7)', padding: '4px 10px', borderRadius: 6 }}
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
             <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" strokeWidth="1.5" />
             <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z" stroke="currentColor" strokeWidth="1.5" />
           </svg>
         </button>
-        <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>{email?.split('@')[0]}</span>
+        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>{email?.split('@')[0]}</span>
       </div>
     </div>
   );

@@ -53,14 +53,14 @@ export function DockBar({ onUniverse, universeActive }: Props) {
       style={{
         display: 'inline-flex',
         alignItems: 'flex-end',
-        gap: 4,
-        padding: '8px 16px 10px',
-        borderRadius: 20,
-        background: 'rgba(255,255,255,0.03)',
-        backdropFilter: 'blur(20px) saturate(180%)',
-        WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-        border: '0.5px solid rgba(255,255,255,0.08)',
-        boxShadow: '0 4px 30px rgba(0,0,0,0.3)',
+        gap: 6,
+        padding: '10px 20px 12px',
+        borderRadius: 24,
+        background: 'rgba(0,0,0,0.3)',
+        backdropFilter: 'blur(24px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(24px) saturate(180%)',
+        border: '0.5px solid rgba(255,255,255,0.15)',
+        boxShadow: '0 4px 40px rgba(0,0,0,0.4), inset 0 0.5px 0 rgba(255,255,255,0.06)',
         transition: 'opacity 300ms ease, transform 300ms ease',
       }}
     >
@@ -101,19 +101,19 @@ export function DockBar({ onUniverse, universeActive }: Props) {
                 width: size,
                 height: size,
                 borderRadius: '50%',
-                border: 'none',
                 background: isUniverse
                   ? universeActive
-                    ? 'radial-gradient(circle at 35% 35%, rgba(255,255,255,0.25), rgba(255,255,255,0.05) 70%)'
-                    : 'radial-gradient(circle at 35% 35%, rgba(255,255,255,0.15), rgba(255,255,255,0.03) 70%)'
+                    ? 'radial-gradient(circle at 40% 35%, rgba(255,255,255,0.3), rgba(255,255,255,0.06) 70%)'
+                    : 'radial-gradient(circle at 40% 35%, rgba(255,255,255,0.18), rgba(255,255,255,0.04) 70%)'
                   : item.id === 'add'
-                    ? 'radial-gradient(circle at 35% 35%, rgba(255,255,255,0.08), rgba(255,255,255,0.02) 70%)'
-                    : 'radial-gradient(circle at 35% 35%, rgba(255,255,255,0.12), rgba(255,255,255,0.03) 70%)',
+                    ? 'radial-gradient(circle at 40% 35%, rgba(255,255,255,0.1), rgba(255,255,255,0.03) 70%)'
+                    : 'radial-gradient(circle at 40% 35%, rgba(255,255,255,0.15), rgba(255,255,255,0.04) 70%)',
+                border: '0.5px solid rgba(255,255,255,0.2)',
                 boxShadow: isUniverse && universeActive
-                  ? '0 0 24px 6px rgba(255,255,255,0.12), inset 0 0 12px rgba(255,255,255,0.08)'
+                  ? '0 0 20px 4px rgba(255,255,255,0.15), inset 0 0 10px rgba(255,255,255,0.1)'
                   : isHovered && mouseIndex >= 0
-                    ? '0 0 16px 3px rgba(255,255,255,0.08)'
-                    : '0 0 6px 1px rgba(255,255,255,0.03)',
+                    ? '0 0 14px 2px rgba(255,255,255,0.1), inset 0 0 6px rgba(255,255,255,0.05)'
+                    : '0 0 8px 1px rgba(255,255,255,0.04), inset 0 0 4px rgba(255,255,255,0.02)',
                 transition: 'width 200ms cubic-bezier(0.34, 1.56, 0.64, 1), height 200ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 200ms ease',
                 cursor: 'pointer',
                 animation: isUniverse && universeActive ? 'universe-pulse 3s ease-in-out infinite' : undefined,

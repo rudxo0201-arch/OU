@@ -14,16 +14,6 @@ export function LandingPage() {
       position: 'relative',
       overflow: 'hidden',
     }}>
-      {/* DotSphere 배경 */}
-      <div style={{
-        position: 'absolute',
-        inset: 0,
-        zIndex: 0,
-        opacity: 0.7,
-      }}>
-        <DotSphere />
-      </div>
-
       {/* Nav */}
       <nav style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
@@ -64,61 +54,87 @@ export function LandingPage() {
         </div>
       </nav>
 
-      {/* Hero — 구체 위에 오버레이 */}
+      {/* 좌우 분할 레이아웃 */}
       <div style={{
-        position: 'relative', zIndex: 1,
         minHeight: '100vh',
-        display: 'flex', flexDirection: 'column',
-        alignItems: 'center', justifyContent: 'center',
-        gap: 24,
-        pointerEvents: 'none',
+        display: 'flex',
+        alignItems: 'center',
       }}>
-        <img src="/logo-ou-white.svg" alt="OU" style={{
-          height: 64,
-          filter: 'drop-shadow(0 0 30px rgba(255,255,255,0.25)) drop-shadow(0 0 60px rgba(255,255,255,0.1))',
-        }} />
-
-        <span style={{
-          fontFamily: "var(--font-orbitron, 'Orbitron')",
-          fontSize: 9, color: 'rgba(255,255,255,0.25)',
-          letterSpacing: 6, textTransform: 'uppercase' as const,
+        {/* 좌: DotSphere */}
+        <div style={{
+          width: '50%',
+          height: '100vh',
+          position: 'relative',
         }}>
-          OWN UNIVERSE
-        </span>
+          <DotSphere />
+        </div>
 
-        <span style={{
-          fontSize: 42, fontWeight: 200,
-          color: 'rgba(255,255,255,0.85)',
-          letterSpacing: 2,
+        {/* 우: 카피 + CTA */}
+        <div style={{
+          width: '50%',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          padding: '0 60px',
+          gap: 20,
         }}>
-          Just talk.
-        </span>
+          <span style={{
+            fontFamily: "var(--font-orbitron, 'Orbitron')",
+            fontSize: 9, color: 'rgba(255,255,255,0.25)',
+            letterSpacing: 6, textTransform: 'uppercase' as const,
+          }}>
+            OWN UNIVERSE
+          </span>
 
-        <p style={{
-          fontSize: 15, color: 'rgba(255,255,255,0.4)',
-          maxWidth: 400, textAlign: 'center', lineHeight: 1.8,
-          fontWeight: 300,
-        }}>
-          말하면 데이터가 됩니다.
-          <br />
-          어떤 형태로든 꺼내 쓰세요.
-        </p>
+          <h1 style={{
+            fontSize: 40, fontWeight: 200,
+            color: 'rgba(255,255,255,0.9)',
+            lineHeight: 1.4,
+            margin: 0,
+          }}>
+            대화로 만드는
+            <br />
+            나만의 우주
+          </h1>
 
-        <button
-          onClick={() => router.push('/login?tab=signup')}
-          style={{
-            marginTop: 12, padding: '14px 48px', borderRadius: 999,
-            border: '1px solid rgba(255,255,255,0.6)', background: 'rgba(255,255,255,0.05)',
-            backdropFilter: 'blur(8px)',
-            color: '#fff', fontSize: 15, fontWeight: 500, letterSpacing: 1,
-            boxShadow: '0 0 30px rgba(255,255,255,0.06)',
-            cursor: 'pointer',
-            pointerEvents: 'auto',
-            transition: '200ms ease',
-          }}
-        >
-          시작하기
-        </button>
+          <p style={{
+            fontSize: 15, color: 'rgba(255,255,255,0.35)',
+            lineHeight: 1.8, fontWeight: 300,
+            maxWidth: 360,
+          }}>
+            말하면 데이터가 됩니다.
+            <br />
+            어떤 형태로든 꺼내 쓰세요.
+          </p>
+
+          <div style={{ display: 'flex', gap: 12, marginTop: 12 }}>
+            <button
+              onClick={() => router.push('/login?tab=signup')}
+              style={{
+                padding: '14px 40px', borderRadius: 999,
+                background: 'rgba(255,255,255,0.9)',
+                color: '#111', fontSize: 15, fontWeight: 600,
+                cursor: 'pointer',
+                transition: '200ms ease',
+              }}
+            >
+              시작하기
+            </button>
+            <button
+              onClick={() => router.push('/login')}
+              style={{
+                padding: '14px 32px', borderRadius: 999,
+                border: '1px solid rgba(255,255,255,0.2)',
+                background: 'transparent',
+                color: 'rgba(255,255,255,0.6)', fontSize: 15,
+                cursor: 'pointer',
+                transition: '200ms ease',
+              }}
+            >
+              로그인
+            </button>
+          </div>
+        </div>
       </div>
 
       <footer style={{

@@ -249,6 +249,125 @@ function GeneralTab({ user }: { user: any }) {
 }
 
 // ============================================================
+// API Key 관리
+// ============================================================
+function ApiKeySection() {
+  const [keys, setKeys] = useState<any[]>([]);
+  const [newName, setNewName] = useState('');
+  const [creating, setCreating] = useState(false);
+  const [newPlainKey, setNewPlainKey] = useState('');
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/settings/api-keys').then(r => r.json()).then(data => {
+      setKeys(data.keys || []);
+    }).catch(() => {});
+  }, []);
+
+  const createKey = async () => {
+    const name = newName.trim() || 'default';
+    setCreating(true);
+    try {
+      const res = await fetch('/api/settings/api-keys', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name }),
+      });
+      const data = await res.json();
+      if (data.plainKey) {
+        setNewPlainKey(data.plainKey);
+        setKeys(prev => [{ id: data.id, key_prefix: data.key_prefix, name: data.name, created_at: data.created_at }, ...prev]);
+        setNewName('');
+      }
+    } catch { /* ignore */ }
+    setCreating(false);
+  };
+
+  const revokeKey = async (keyId: string) => {
+    await fetch('/api/settings/api-keys', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ keyId }),
+    });
+    setKeys(prev => prev.filter(k => k.id !== keyId));
+  };
+
+  const copyKey = () => {
+    navigator.clipboard.writeText(newPlainKey);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <Section title="OU API Key">
+      <p style={{ fontSize: 12, color: 'var(--ou-text-dimmed)', lineHeight: 1.8, marginBottom: 8 }}>
+        Claude Code, MCP 등 외부 도구에서 OU 데이터에 접근할 때 사용합니다.
+      </p>
+
+      {/* 새 키 생성 후 표시 (1회만) */}
+      {newPlainKey && (
+        <div style={{
+          padding: 12, borderRadius: 8, marginBottom: 12,
+          border: '1px solid rgba(255,255,255,0.15)',
+          background: 'rgba(255,255,255,0.05)',
+        }}>
+          <div style={{ fontSize: 11, color: 'var(--ou-text-dimmed)', marginBottom: 6 }}>
+            키가 생성되었습니다. 이 키는 다시 표시되지 않으니 지금 복사하세요.
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <code style={{
+              flex: 1, fontSize: 11, padding: '6px 8px', borderRadius: 4,
+              background: 'rgba(0,0,0,0.3)', color: 'var(--ou-text-strong)',
+              wordBreak: 'break-all',
+            }}>
+              {newPlainKey}
+            </code>
+            <button onClick={copyKey} style={btnSmall}>
+              {copied ? '복사됨' : '복사'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 기존 키 목록 */}
+      {keys.map(k => (
+        <div key={k.id} style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '8px 0', borderBottom: '1px solid var(--ou-border-subtle)',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontSize: 13, color: 'var(--ou-text-secondary)' }}>{k.name}</span>
+            <code style={{ fontSize: 11, color: 'var(--ou-text-dimmed)' }}>{k.key_prefix}</code>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            {k.last_used_at && (
+              <span style={{ fontSize: 10, color: 'var(--ou-text-dimmed)' }}>
+                최근 사용: {new Date(k.last_used_at).toLocaleDateString('ko-KR')}
+              </span>
+            )}
+            <button onClick={() => revokeKey(k.id)} style={{ ...btnSmall, color: '#e55' }}>삭제</button>
+          </div>
+        </div>
+      ))}
+
+      {/* 새 키 생성 */}
+      <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+        <input
+          value={newName}
+          onChange={e => setNewName(e.target.value)}
+          placeholder="키 이름 (예: claude-code)"
+          onKeyDown={e => e.key === 'Enter' && createKey()}
+          style={{ ...inputStyle, flex: 1, fontSize: 12 }}
+        />
+        <button onClick={createKey} disabled={creating} style={btnSmall}>
+          {creating ? '...' : '생성'}
+        </button>
+      </div>
+    </Section>
+  );
+}
+
+// ============================================================
 // 디스플레이 탭
 // ============================================================
 function DisplayTab() {
