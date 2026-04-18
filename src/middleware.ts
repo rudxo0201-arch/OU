@@ -27,6 +27,14 @@ export async function middleware(request: NextRequest) {
     }
   );
 
+  // OAuth code가 루트(/)로 들어온 경우 → /auth/callback으로 전달
+  const code = request.nextUrl.searchParams.get('code');
+  if (code && request.nextUrl.pathname === '/') {
+    const callbackUrl = new URL('/auth/callback', request.url);
+    callbackUrl.searchParams.set('code', code);
+    return NextResponse.redirect(callbackUrl);
+  }
+
   const { data: { user } } = await supabase.auth.getUser();
   const path = request.nextUrl.pathname;
 
