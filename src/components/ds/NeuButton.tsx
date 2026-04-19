@@ -30,9 +30,9 @@ export function NeuButton({ children, variant = 'default', size = 'md', disabled
       boxShadow: 'var(--ou-neu-raised-md)',
     },
     accent: {
-      background: 'linear-gradient(135deg, var(--ou-accent), var(--ou-accent-secondary))',
-      color: '#fff',
-      boxShadow: 'var(--ou-neu-raised-md)',
+      background: 'var(--ou-bg)',
+      color: 'var(--ou-text-bright)',
+      boxShadow: 'var(--ou-neu-raised-md), inset 0 0 0 1.5px color-mix(in srgb, var(--ou-accent) 60%, transparent)',
     },
     ghost: {
       background: 'transparent',

@@ -10,20 +10,21 @@ interface NeuTabsProps {
 
 export function NeuTabs({ tabs, active, onChange, size = 'md' }: NeuTabsProps) {
   const containerStyle: CSSProperties = {
-    display: 'inline-flex',
-    gap: 3,
+    position: 'relative',
+    display: 'flex',
+    padding: 4,
+    borderRadius: 'var(--ou-radius-pill)',
     background: 'var(--ou-bg)',
     boxShadow: 'var(--ou-neu-pressed-sm)',
-    borderRadius: 'var(--ou-radius-pill)',
-    padding: 3,
   };
 
   const tabStyle = (isActive: boolean): CSSProperties => ({
-    padding: size === 'sm' ? '6px 14px' : '8px 20px',
+    padding: size === 'sm' ? '6px 14px' : '10px 0',
+    flex: '1',
     borderRadius: 'var(--ou-radius-pill)',
-    fontSize: size === 'sm' ? 11 : 12,
-    fontWeight: 600,
-    color: isActive ? 'var(--ou-accent)' : 'var(--ou-text-muted)',
+    fontSize: size === 'sm' ? 11 : 13,
+    fontWeight: isActive ? 600 : 500,
+    color: isActive ? 'var(--ou-text-bright)' : 'var(--ou-text-secondary)',
     background: isActive ? 'var(--ou-bg)' : 'transparent',
     boxShadow: isActive ? 'var(--ou-neu-raised-sm)' : 'none',
     border: 'none',

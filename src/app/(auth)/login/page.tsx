@@ -58,7 +58,7 @@ function LoginContent() {
   };
 
   return (
-    <NeuAuthLayout subtitle="Own Universe">
+    <NeuAuthLayout>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
         <NeuTabs
           tabs={['로그인', '회원가입']}
@@ -78,7 +78,7 @@ function LoginContent() {
           </NeuCard>
         ) : (
           <>
-            <NeuButton variant="default" fullWidth onClick={handleGoogle} style={{ gap: 10 }}>
+            <NeuButton variant="default" fullWidth onClick={handleGoogle} style={{ gap: 10, boxShadow: 'var(--ou-neu-raised-sm)', fontWeight: 600 }}>
               {GOOGLE_ICON}
               Google로 계속하기
             </NeuButton>
@@ -88,18 +88,20 @@ function LoginContent() {
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               <NeuInput
                 type="email"
-                placeholder="이메일"
+                placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                style={{ borderRadius: 999, padding: '13px 18px' }}
               />
               <NeuInput
                 type="password"
-                placeholder="비밀번호"
+                placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
+                style={{ borderRadius: 999, padding: '13px 18px' }}
               />
 
               {error && (
