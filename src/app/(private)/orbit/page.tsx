@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { VIEW_LABELS } from '@/components/views/registry';
+import { NeuPageLayout, NeuTabs, NeuCard } from '@/components/ds';
 
 const VIEW_ICONS: Record<string, string> = {
   todo: '☑', calendar: '📅', table: '📊', task: '📋', dictionary: '📖',
