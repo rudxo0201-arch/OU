@@ -5,6 +5,8 @@ import { TodaySummaryWidget } from './TodaySummaryWidget';
 import { RecentNodesWidget } from './RecentNodesWidget';
 import { QuickMemoWidget } from './QuickMemoWidget';
 import { ViewWidget } from './ViewWidget';
+import { DictionaryWidget } from './DictionaryWidget';
+import { BonchoWidget } from './BonchoWidget';
 
 registerWidget({
   type: 'ou-view',
@@ -61,14 +63,13 @@ registerWidget({
   needsCard: true,
 });
 
-// 범용 뷰 위젯 — 아무 뷰든 홈 위젯으로
 registerWidget({
   type: 'view-boncho',
   label: '본초학',
-  component: ViewWidget,
+  component: BonchoWidget,
   scrollable: 'both',
-  minSize: [3, 2],
-  defaultSize: [6, 4],
+  minSize: [2, 2],
+  defaultSize: [3, 3],
   removable: true,
   needsCard: true,
 });
@@ -76,7 +77,7 @@ registerWidget({
 registerWidget({
   type: 'view-dictionary',
   label: '한자사전',
-  component: ViewWidget,
+  component: DictionaryWidget,
   scrollable: 'both',
   minSize: [3, 2],
   defaultSize: [6, 4],

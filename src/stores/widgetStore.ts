@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { WidgetInstance } from '@/components/widgets/types';
 import { GRID_COLS, GRID_ROWS } from '@/components/widgets/types';
-import { DEFAULT_LAYOUT } from '@/components/widgets/presets';
+import { DEFAULT_LAYOUT, ADMIN_LAYOUT, ADMIN_PAGE2_LAYOUT } from '@/components/widgets/presets';
 
 const LAYOUT_VERSION = 4;
 
@@ -24,6 +24,9 @@ interface WidgetStore {
   setGridSize: (cols: number, rows: number) => void;
   addPage: (name?: string) => void;
   removePage: (index: number) => void;
+
+  // Admin layout init (idempotent)
+  initAdminLayout: () => void;
 
   // Widget operations (on current page)
   setWidgets: (widgets: WidgetInstance[]) => void;
@@ -65,6 +68,19 @@ export const useWidgetStore = create<WidgetStore>()(
         const state = get();
         return state.pages[state.currentPageIndex]?.widgets ?? [];
       },
+
+      initAdminLayout: () => set((s) => {
+        const alreadySet = s.pages[0]?.widgets.some(w => w.type === 'view-dictionary');
+        if (alreadySet) return s;
+        const pages = [...s.pages];
+        // page 1: 한자사전
+        pages[0] = { ...pages[0], name: '사전', widgets: clampToGrid(ADMIN_LAYOUT) };
+        // page 2: 본초학
+        if (pages[1]) {
+          pages[1] = { ...pages[1], name: '본초', widgets: clampToGrid(ADMIN_PAGE2_LAYOUT) };
+        }
+        return { pages, currentPageIndex: 0 };
+      }),
 
       setCurrentPage: (index) => set({ currentPageIndex: Math.max(0, Math.min(index, get().pages.length - 1)) }),
 

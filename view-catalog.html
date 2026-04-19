@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="light" data-palette="sunrise">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OU View Catalog — 50 Views + 12 Combos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=DM+Sans:opsz,wght@9..40,100..1000&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css" rel="stylesheet">
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+<style>
+/* === PALETTES === */
+[data-palette="sunrise"]{--p1:#e8976b;--p2:#f5c16c}
+[data-palette="arctic"]{--p1:#6b9de8;--p2:#6bcbdb}
+[data-palette="blossom"]{--p1:#d4849a;--p2:#e8a4b8}
+[data-palette="forest"]{--p1:#6bc49a;--p2:#a4d4a8}
+[data-palette="dusk"]{--p1:#8b7ec8;--p2:#b4a8e8}
+[data-palette="stone"]{--p1:#9a9a9a;--p2:#b8b8b8}
+
+/* === LIGHT === */
+:root,[data-theme="light"]{
+  --bg:#e8ecf1;--bg2:#dde1e8;
+  --sd:rgba(163,177,198,0.6);--sl:rgba(255,255,255,0.6);
+  --t-dis:rgba(0,0,0,.18);--t-mu:rgba(0,0,0,.32);--t-sec:rgba(0,0,0,.48);
+  --t-body:rgba(0,0,0,.58);--t-str:rgba(0,0,0,.76);--t-head:rgba(0,0,0,.88);
+  --brd:rgba(0,0,0,.05);--logo:rgba(0,0,0,.8);
+}
+/* === DARK === */
+[data-theme="dark"]{
+  --bg:#2a2d3e;--bg2:#232636;
+  --sd:rgba(0,0,0,.55);--sl:rgba(255,255,255,.04);
+  --t-dis:rgba(255,255,255,.18);--t-mu:rgba(255,255,255,.32);--t-sec:rgba(255,255,255,.52);
+  --t-body:rgba(255,255,255,.64);--t-str:rgba(255,255,255,.86);--t-head:rgba(255,255,255,.92);
+  --brd:rgba(255,255,255,.05);--logo:rgba(255,255,255,.9);
+}
+
+:root{
+  --acc:var(--p1,#e8976b);--acc2:var(--p2,#f5c16c);
+  --r-xs:2px 2px 4px var(--sd),-2px -2px 4px var(--sl);
+  --r-sm:3px 3px 6px var(--sd),-3px -3px 6px var(--sl);
+  --r-md:6px 6px 12px var(--sd),-6px -6px 12px var(--sl);
+  --r-lg:10px 10px 20px var(--sd),-10px -10px 20px var(--sl);
+  --p-sm:inset 2px 2px 5px var(--sd),inset -2px -2px 5px var(--sl);
+  --p-md:inset 4px 4px 8px var(--sd),inset -4px -4px 8px var(--sl);
+  --rad:12px;--rad-sm:8px;--rad-xs:4px;--rad-pill:999px;
+  --tr:200ms ease;
+  --f-logo:'Orbitron',sans-serif;
+  --f-display:'DM Sans',sans-serif;
+  --f-body:'Pretendard Variable','DM Sans',-apple-system,system-ui,sans-serif;
+  --f-mono:'JetBrains Mono',monospace;
+}
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--f-body);background:var(--bg);color:var(--t-body);min-height:100vh;-webkit-font-smoothing:antialiased;transition:background .4s,color .3s}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+
+/* === LAYOUT === */
+.hdr{text-align:center;padding:48px 24px 16px}
+.hdr h1{font-family:var(--f-logo);font-size:20px;font-weight:700;color:var(--t-head);letter-spacing:3px}
+.hdr p{font-size:11px;color:var(--t-mu);letter-spacing:1px;margin-top:4px}
+.ctrl{display:flex;justify-content:center;gap:16px;padding:16px 24px 40px;align-items:center;flex-wrap:wrap}
+.tbtn{padding:6px 16px;border-radius:var(--rad-pill);font-size:11px;font-weight:600;background:var(--bg);box-shadow:var(--r-sm);color:var(--t-sec);transition:all var(--tr)}
+.tbtn:active,.tbtn.on{box-shadow:var(--p-sm);color:var(--acc)}
+.pdots{display:flex;gap:8px}
+.pd{width:24px;height:24px;border-radius:50%;box-shadow:var(--r-sm);transition:all var(--tr)}
+.pd:active,.pd.on{box-shadow:var(--p-sm);transform:scale(.85)}
+.pd[data-p="sunrise"]{background:#e8976b}.pd[data-p="arctic"]{background:#6b9de8}
+.pd[data-p="blossom"]{background:#d4849a}.pd[data-p="forest"]{background:#6bc49a}
+.pd[data-p="dusk"]{background:#8b7ec8}.pd[data-p="stone"]{background:#9a9a9a}
+
+.page{max-width:1200px;margin:0 auto;padding:0 24px 80px}
+.tier{margin-bottom:56px}
+.tier-title{font-size:9px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--t-mu);margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.tier-title::after{content:'';flex:1;height:1px;background:var(--t-dis)}
+
+/* === VIEW CARD (wrapper for each view) === */
+.vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px}
+.vcard{background:var(--bg);border-radius:var(--rad);box-shadow:var(--r-md);padding:20px;transition:all var(--tr);display:flex;flex-direction:column;min-height:260px}
+.vcard:hover{box-shadow:var(--r-lg)}
+.vcard-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.vcard-name{font-family:var(--f-display);font-size:14px;font-weight:700;color:var(--t-head)}
+.vcard-trigger{font-size:9px;color:var(--t-mu);font-style:italic;margin-bottom:12px;line-height:1.4}
+.vcard-body{flex:1;display:flex;flex-direction:column;gap:6px}
+.vbadge{display:inline-flex;padding:3px 10px;border-radius:var(--rad-pill);font-size:8px;font-weight:700;background:var(--bg);box-shadow:var(--r-xs);color:var(--t-sec)}
+.vbadge-acc{color:var(--acc)}
+
+/* === REUSABLE INNER COMPONENTS === */
+.neo-input{background:var(--bg);box-shadow:var(--p-sm);border-radius:var(--rad-sm);padding:10px 12px;font-size:11px;color:var(--t-str);width:100%}
+.neo-btn{background:var(--bg);box-shadow:var(--r-sm);border-radius:var(--rad-pill);padding:6px 16px;font-size:10px;font-weight:600;color:var(--t-str);transition:all var(--tr)}
+.neo-btn:active{box-shadow:var(--p-sm)}
+.neo-btn-acc{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff}
+.neo-row{display:flex;align-items:center;gap:8px}
+.neo-chk{width:18px;height:18px;border-radius:var(--rad-xs);background:var(--bg);box-shadow:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:10px;color:transparent;flex-shrink:0}
+.neo-chk.on{color:var(--acc);box-shadow:var(--p-sm)}
+.neo-tag{display:inline-flex;padding:2px 8px;border-radius:var(--rad-pill);font-size:8px;font-weight:600;background:var(--bg);box-shadow:var(--r-xs);color:var(--t-sec)}
+.neo-prog{height:6px;border-radius:var(--rad-pill);background:var(--bg);box-shadow:var(--p-sm)}
+.neo-prog-fill{height:100%;border-radius:var(--rad-pill);background:linear-gradient(90deg,var(--acc),var(--acc2))}
+.neo-circle{border-radius:50%;background:var(--bg);box-shadow:var(--r-sm);display:flex;align-items:center;justify-content:center}
+.neo-pressed{background:var(--bg);box-shadow:var(--p-sm);border-radius:var(--rad-sm);padding:10px 12px}
+.neo-raised{background:var(--bg);box-shadow:var(--r-sm);border-radius:var(--rad-sm);padding:10px 12px}
+.sep{height:1px;background:var(--brd);margin:6px 0}
+.txt-h{font-family:var(--f-display);font-weight:700;color:var(--t-head)}
+.txt-b{color:var(--t-body);font-size:12px;line-height:1.5}
+.txt-s{color:var(--t-sec);font-size:11px}
+.txt-m{color:var(--t-mu);font-size:10px}
+.txt-num{font-family:var(--f-display);font-weight:300;color:var(--t-head)}
+
+/* heatmap cell */
+.hm-cell{width:12px;height:12px;border-radius:2px;background:var(--bg);box-shadow:var(--p-sm)}
+.hm-cell.l1{background:color-mix(in srgb,var(--acc) 20%,var(--bg))}
+.hm-cell.l2{background:color-mix(in srgb,var(--acc) 40%,var(--bg))}
+.hm-cell.l3{background:color-mix(in srgb,var(--acc) 65%,var(--bg))}
+.hm-cell.l4{background:var(--acc)}
+
+/* calendar mini */
+.cal-mini{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center}
+.cal-mini span{font-size:9px;padding:4px 0;border-radius:var(--rad-xs);color:var(--t-sec)}
+.cal-mini .today{box-shadow:var(--p-sm);color:var(--acc);font-weight:700}
+.cal-mini .has-ev::after{content:'';display:block;width:3px;height:3px;border-radius:50%;background:var(--acc);margin:1px auto 0}
+.cal-mini .head{font-size:7px;font-weight:700;color:var(--t-mu);letter-spacing:1px}
+
+/* timeline mini */
+.tl-mini{position:relative;padding-left:14px;font-size:10px;line-height:2}
+.tl-mini::before{content:'';position:absolute;left:3px;top:6px;bottom:6px;width:1.5px;background:var(--bg);box-shadow:var(--p-sm)}
+.tl-dot{position:absolute;left:-1px;width:6px;height:6px;border-radius:50%;margin-top:5px}
+.tl-dot-acc{background:var(--acc)}
+.tl-dot-def{background:var(--bg);box-shadow:var(--r-xs)}
+
+/* combo view */
+.combo{background:var(--bg);border-radius:var(--rad);box-shadow:var(--r-lg);padding:24px;margin-bottom:24px}
+.combo-title{font-family:var(--f-display);font-size:16px;font-weight:700;color:var(--t-head);margin-bottom:4px}
+.combo-desc{font-size:11px;color:var(--t-mu);margin-bottom:16px;font-style:italic}
+.combo-grid{display:grid;gap:12px}
+.combo-2{grid-template-columns:1fr 1fr}
+.combo-3{grid-template-columns:1fr 1fr 1fr}
+.combo-2-1{grid-template-columns:2fr 1fr}
+.combo-1-2{grid-template-columns:1fr 2fr}
+.combo-cell{background:var(--bg);box-shadow:var(--r-sm);border-radius:var(--rad-sm);padding:16px;min-height:120px;display:flex;flex-direction:column}
+.combo-cell-name{font-size:9px;font-weight:700;letter-spacing:1px;color:var(--t-mu);margin-bottom:8px;text-transform:uppercase}
+
+.footer{text-align:center;padding:40px;font-size:9px;letter-spacing:3px;color:var(--t-mu);font-weight:600}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <h1>OU VIEW CATALOG</h1>
+  <p>50 Single Views + 12 Combo Views &mdash; Neumorphism</p>
+</div>
+
+<div class="ctrl">
+  <button class="tbtn on" onclick="setT('light',this)">Light</button>
+  <button class="tbtn" onclick="setT('dark',this)">Dark</button>
+  <div style="width:1px;height:16px;background:var(--t-dis)"></div>
+  <div class="pdots">
+    <button class="pd on" data-p="sunrise" onclick="setP('sunrise')"></button>
+    <button class="pd" data-p="arctic" onclick="setP('arctic')"></button>
+    <button class="pd" data-p="blossom" onclick="setP('blossom')"></button>
+    <button class="pd" data-p="forest" onclick="setP('forest')"></button>
+    <button class="pd" data-p="dusk" onclick="setP('dusk')"></button>
+    <button class="pd" data-p="stone" onclick="setP('stone')"></button>
+  </div>
+</div>
+
+<div class="page">
+
+<!-- ============================================================
+     TIER 1 — KILLER (1-10)
+     ============================================================ -->
+<div class="tier">
+<div class="tier-title">Tier 1 — Killer</div>
+<div class="vgrid">
+
+<!-- 1. Todo -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Todo</span><span class="vbadge vbadge-acc">3/5</span></div>
+  <div class="vcard-trigger">"오늘 할 일 정리해줘"</div>
+  <div class="vcard-body">
+    <div class="neo-row"><div class="neo-chk on"><i class="ph-light ph-check" style="color:var(--acc)"></i></div><span class="txt-s" style="text-decoration:line-through;color:var(--t-mu)">디자인 시스템 토큰 정의</span></div>
+    <div class="neo-row"><div class="neo-chk on"><i class="ph-light ph-check" style="color:var(--acc)"></i></div><span class="txt-s" style="text-decoration:line-through;color:var(--t-mu)">색상 팔레트 리서치</span></div>
+    <div class="neo-row"><div class="neo-chk on"><i class="ph-light ph-check" style="color:var(--acc)"></i></div><span class="txt-s" style="text-decoration:line-through;color:var(--t-mu)">HTML 프리뷰 완성</span></div>
+    <div class="neo-row"><div class="neo-chk"><i class="ph-light ph-check" style="color:var(--acc)"></i></div><span class="txt-s">뷰 카탈로그 제작</span></div>
+    <div class="neo-row"><div class="neo-chk"><i class="ph-light ph-check" style="color:var(--acc)"></i></div><span class="txt-s">접근성 검증</span></div>
+    <div style="margin-top:auto"><div class="neo-prog"><div class="neo-prog-fill" style="width:60%"></div></div></div>
+  </div>
+</div>
+
+<!-- 2. Flashcard -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Flashcard</span><span class="vbadge">8장</span></div>
+  <div class="vcard-trigger">"시험 준비 중이야, 이거 외워야 해"</div>
+  <div class="vcard-body" style="align-items:center;justify-content:center">
+    <div style="background:var(--bg);box-shadow:var(--r-lg);border-radius:16px;padding:32px 28px;text-align:center;width:100%;min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center">
+      <div class="txt-h" style="font-size:24px;font-weight:300">學益陣</div>
+      <div class="txt-m" style="margin-top:6px">탭하여 뒤집기</div>
+    </div>
+    <div class="neo-row" style="justify-content:center;gap:10px;margin-top:8px">
+      <button class="neo-btn" style="color:#e06060;font-size:9px"><i class="ph-light ph-arrow-left"></i> 모름</button>
+      <button class="neo-btn" style="color:var(--acc);font-size:9px"><i class="ph-light ph-arrow-up"></i> 애매</button>
+      <button class="neo-btn" style="font-size:9px;color:#4caf88">알고 있음 <i class="ph-light ph-arrow-right"></i></button>
+    </div>
+  </div>
+</div>
+
+<!-- 3. Calendar -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Calendar</span><span class="vbadge">April 2026</span></div>
+  <div class="vcard-trigger">"다음 주 일정 알려줘"</div>
+  <div class="vcard-body">
+    <div class="cal-mini">
+      <span class="head">S</span><span class="head">M</span><span class="head">T</span><span class="head">W</span><span class="head">T</span><span class="head">F</span><span class="head">S</span>
+      <span></span><span></span><span></span><span>1</span><span>2</span><span class="has-ev">3</span><span>4</span>
+      <span>5</span><span class="has-ev">6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span>
+      <span>12</span><span>13</span><span class="has-ev">14</span><span>15</span><span>16</span><span>17</span><span class="today">18</span>
+      <span>19</span><span>20</span><span>21</span><span class="has-ev">22</span><span>23</span><span>24</span><span>25</span>
+      <span>26</span><span>27</span><span>28</span><span>29</span><span>30</span><span></span><span></span>
+    </div>
+    <div class="sep"></div>
+    <div class="neo-raised" style="padding:8px 10px;font-size:10px"><b style="color:var(--acc)">18일</b> <span class="txt-s">뉴모피즘 디자인 시스템 마감</span></div>
+  </div>
+</div>
+
+<!-- 4. Expense -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Expense</span><span class="vbadge vbadge-acc">4월</span></div>
+  <div class="vcard-trigger">"오늘 커피 4500원 썼어"</div>
+  <div class="vcard-body">
+    <div class="txt-num" style="font-size:28px">&#8361;342,500</div>
+    <div class="txt-m">이번 달 총 지출</div>
+    <div class="sep"></div>
+    <div style="display:flex;gap:6px;margin-bottom:4px">
+      <div style="flex:3;height:16px;border-radius:var(--rad-xs);background:var(--acc);opacity:.8"></div>
+      <div style="flex:2;height:16px;border-radius:var(--rad-xs);background:var(--acc2);opacity:.6"></div>
+      <div style="flex:1;height:16px;border-radius:var(--rad-xs);background:var(--bg);box-shadow:var(--p-sm)"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between">
+      <span class="txt-m">식비 42%</span><span class="txt-m">교통 28%</span><span class="txt-m">기타 30%</span>
+    </div>
+    <div class="sep"></div>
+    <div style="display:flex;justify-content:space-between;font-size:10px">
+      <span class="txt-s">오늘 커피</span><span class="txt-s" style="color:var(--acc)">-4,500</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:10px">
+      <span class="txt-s">점심 김밥</span><span class="txt-s" style="color:var(--acc)">-5,000</span>
+    </div>
+  </div>
+</div>
+
+<!-- 5. Journal -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Journal</span><span class="vbadge">오늘</span></div>
+  <div class="vcard-trigger">"오늘 좀 힘들었어"</div>
+  <div class="vcard-body">
+    <div style="display:flex;gap:6px;margin-bottom:4px">
+      <span class="txt-m" style="font-size:11px;font-weight:700;color:var(--t-sec);padding:4px 8px;border-radius:var(--rad-xs);background:var(--bg);box-shadow:var(--p-sm)">지침</span>
+      <div>
+        <div class="txt-h" style="font-size:13px">4월 18일 금요일</div>
+        <div class="txt-m">기분: 지침</div>
+      </div>
+    </div>
+    <div class="neo-pressed" style="font-size:11px;line-height:1.6;color:var(--t-body)">
+      프로젝트 마감이 다가오면서 스트레스를 많이 받았다. 그래도 디자인 시스템 작업은 재미있었고, 하나씩 완성되는 게 보여서 뿌듯했다.
+    </div>
+    <div style="display:flex;gap:4px;margin-top:4px">
+      <span class="neo-tag">스트레스</span><span class="neo-tag">뿌듯</span><span class="neo-tag">작업</span>
+    </div>
+  </div>
+</div>
+
+<!-- 6. Timer/Pomodoro -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Timer</span><span class="vbadge vbadge-acc">집중 중</span></div>
+  <div class="vcard-trigger">"공부 시작"</div>
+  <div class="vcard-body" style="align-items:center;justify-content:center">
+    <div class="neo-circle" style="width:130px;height:130px;box-shadow:var(--r-lg)">
+      <div style="text-align:center">
+        <div class="txt-num" style="font-size:36px">23:47</div>
+        <div class="txt-m">남은 시간</div>
+      </div>
+    </div>
+    <div class="neo-row" style="gap:10px;margin-top:12px">
+      <button class="neo-btn" style="font-size:10px">일시정지</button>
+      <button class="neo-btn neo-btn-acc" style="font-size:10px">완료</button>
+    </div>
+    <div class="txt-m" style="margin-top:4px">오늘 3세션 / 1시간 32분 집중</div>
+  </div>
+</div>
+
+<!-- 7. Summary -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Summary</span><span class="vbadge">요약</span></div>
+  <div class="vcard-trigger">"오늘 공부한 거 정리해줘"</div>
+  <div class="vcard-body">
+    <div class="txt-h" style="font-size:13px;margin-bottom:4px">임진왜란 핵심 정리</div>
+    <div class="neo-pressed" style="font-size:11px;line-height:1.7;color:var(--t-body)">
+      <b style="color:var(--t-str)">배경:</b> 히데요시의 정명가도 요구 거절<br>
+      <b style="color:var(--t-str)">전환점:</b> 이순신의 학익진, 해상 보급로 차단<br>
+      <b style="color:var(--t-str)">결과:</b> 7년 전쟁, 히데요시 사망으로 종전
+    </div>
+    <div style="display:flex;gap:4px;margin-top:auto">
+      <span class="neo-tag">역사</span><span class="neo-tag">임진왜란</span><span class="neo-tag">이순신</span>
+    </div>
+  </div>
+</div>
+
+<!-- 8. Dictionary -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Dictionary</span><span class="vbadge">24개 용어</span></div>
+  <div class="vcard-trigger">"이 분야 용어 모아보고 싶어"</div>
+  <div class="vcard-body">
+    <div class="neo-raised" style="margin-bottom:6px">
+      <div class="txt-h" style="font-size:14px">學益陣 <span style="font-weight:300;font-size:11px;color:var(--t-sec)">학익진</span></div>
+      <div class="txt-m" style="margin-top:2px">학 날개 포위 진형. 이순신 한산도 해전</div>
+    </div>
+    <div class="neo-raised" style="margin-bottom:6px">
+      <div class="txt-h" style="font-size:14px">征明假道 <span style="font-weight:300;font-size:11px;color:var(--t-sec)">정명가도</span></div>
+      <div class="txt-m" style="margin-top:2px">명나라 정벌 위해 길을 빌려달라는 요구</div>
+    </div>
+    <div class="neo-raised">
+      <div class="txt-h" style="font-size:14px">板屋船 <span style="font-weight:300;font-size:11px;color:var(--t-sec)">판옥선</span></div>
+      <div class="txt-m" style="margin-top:2px">조선 수군의 주력 전함. 화포 탑재</div>
+    </div>
+  </div>
+</div>
+
+<!-- 9. Table -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Table</span><span class="vbadge">4 rows</span></div>
+  <div class="vcard-trigger">"내가 모은 데이터 한눈에 보고 싶어"</div>
+  <div class="vcard-body">
+    <div class="neo-pressed" style="padding:0;overflow:hidden;border-radius:var(--rad-sm)">
+      <div style="display:grid;grid-template-columns:2fr 1fr 1fr;padding:8px 12px;font-size:9px;font-weight:700;color:var(--t-mu);letter-spacing:.5px;border-bottom:1px solid var(--brd)">
+        <span>이름</span><span>도메인</span><span>상태</span>
+      </div>
+      <div style="display:grid;grid-template-columns:2fr 1fr 1fr;padding:8px 12px;font-size:10px;align-items:center">
+        <span class="txt-s" style="font-weight:600;color:var(--t-str)">임진왜란</span><span class="txt-m">역사</span><span class="vbadge vbadge-acc" style="width:fit-content">Active</span>
+      </div>
+      <div style="display:grid;grid-template-columns:2fr 1fr 1fr;padding:8px 12px;font-size:10px;align-items:center">
+        <span class="txt-s" style="font-weight:600;color:var(--t-str)">React Hooks</span><span class="txt-m">개발</span><span class="vbadge" style="width:fit-content">Draft</span>
+      </div>
+      <div style="display:grid;grid-template-columns:2fr 1fr 1fr;padding:8px 12px;font-size:10px;align-items:center">
+        <span class="txt-s" style="font-weight:600;color:var(--t-str)">당귀</span><span class="txt-m">한의학</span><span class="vbadge vbadge-acc" style="width:fit-content">Active</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 10. Kanban -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Kanban</span><span class="vbadge">3 columns</span></div>
+  <div class="vcard-trigger">"프로젝트 진행상황 관리하고 싶어"</div>
+  <div class="vcard-body">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+      <div>
+        <div class="txt-m" style="font-weight:700;margin-bottom:6px;text-align:center">할 일</div>
+        <div class="neo-raised" style="padding:8px;font-size:10px;margin-bottom:4px"><span class="txt-s">접근성 검증</span></div>
+        <div class="neo-raised" style="padding:8px;font-size:10px"><span class="txt-s">다크 모드 미세조정</span></div>
+      </div>
+      <div>
+        <div class="txt-m" style="font-weight:700;margin-bottom:6px;text-align:center;color:var(--acc)">진행 중</div>
+        <div class="neo-raised" style="padding:8px;font-size:10px;border-left:2px solid var(--acc)"><span class="txt-s">뷰 카탈로그</span></div>
+      </div>
+      <div>
+        <div class="txt-m" style="font-weight:700;margin-bottom:6px;text-align:center">완료</div>
+        <div class="neo-pressed" style="padding:8px;font-size:10px;opacity:.6"><span class="txt-s" style="text-decoration:line-through">토큰 설계</span></div>
+        <div class="neo-pressed" style="padding:8px;font-size:10px;opacity:.6;margin-top:4px"><span class="txt-s" style="text-decoration:line-through">팔레트 리서치</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /vgrid -->
+</div><!-- /tier1 -->
+
+<!-- ============================================================
+     TIER 2 — STRONG (11-20)
+     ============================================================ -->
+<div class="tier">
+<div class="tier-title">Tier 2 — Strong</div>
+<div class="vgrid">
+
+<!-- 11. Quiz -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Quiz</span><span class="vbadge vbadge-acc">Q3/10</span></div>
+  <div class="vcard-trigger">"내가 배운 거 테스트해줘"</div>
+  <div class="vcard-body" style="align-items:center">
+    <div class="txt-h" style="font-size:13px;text-align:center;margin-bottom:12px">이순신이 한산도 해전에서<br>사용한 진형은?</div>
+    <div style="width:100%;display:flex;flex-direction:column;gap:6px">
+      <div class="neo-raised" style="padding:10px 14px;font-size:11px;cursor:pointer;text-align:center">어린진</div>
+      <div class="neo-pressed" style="padding:10px 14px;font-size:11px;cursor:pointer;text-align:center;border-left:2px solid var(--acc);color:var(--acc);font-weight:600">학익진</div>
+      <div class="neo-raised" style="padding:10px 14px;font-size:11px;cursor:pointer;text-align:center">장사진</div>
+      <div class="neo-raised" style="padding:10px 14px;font-size:11px;cursor:pointer;text-align:center">원진</div>
+    </div>
+  </div>
+</div>
+
+<!-- 12. Habit Tracker -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Habit Tracker</span><span class="vbadge">4월</span></div>
+  <div class="vcard-trigger">"운동 매일 하기로 했어"</div>
+  <div class="vcard-body">
+    <div class="txt-s" style="margin-bottom:6px;font-weight:600">운동</div>
+    <div style="display:flex;gap:3px;flex-wrap:wrap;margin-bottom:10px">
+      <div class="hm-cell l4"></div><div class="hm-cell l3"></div><div class="hm-cell l4"></div><div class="hm-cell"></div><div class="hm-cell l2"></div><div class="hm-cell l4"></div><div class="hm-cell l3"></div>
+      <div class="hm-cell l1"></div><div class="hm-cell l4"></div><div class="hm-cell l3"></div><div class="hm-cell l4"></div><div class="hm-cell"></div><div class="hm-cell l2"></div><div class="hm-cell l4"></div>
+      <div class="hm-cell l4"></div><div class="hm-cell l3"></div><div class="hm-cell l1"></div><div class="hm-cell l4"></div>
+    </div>
+    <div class="txt-s" style="margin-bottom:6px;font-weight:600">독서</div>
+    <div style="display:flex;gap:3px;flex-wrap:wrap">
+      <div class="hm-cell l2"></div><div class="hm-cell l1"></div><div class="hm-cell"></div><div class="hm-cell l3"></div><div class="hm-cell l1"></div><div class="hm-cell l2"></div><div class="hm-cell"></div>
+      <div class="hm-cell l1"></div><div class="hm-cell l3"></div><div class="hm-cell l2"></div><div class="hm-cell l1"></div><div class="hm-cell"></div><div class="hm-cell l2"></div><div class="hm-cell l1"></div>
+      <div class="hm-cell l3"></div><div class="hm-cell l2"></div><div class="hm-cell l1"></div><div class="hm-cell l3"></div>
+    </div>
+    <div class="txt-m" style="margin-top:auto">연속 4일 달성 중 <i class="ph-light ph-fire" style="color:var(--acc)"></i></div>
+  </div>
+</div>
+
+<!-- 13. Goal Tracker -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Goal Tracker</span><span class="vbadge">2026</span></div>
+  <div class="vcard-trigger">"올해 목표 3개 세웠어"</div>
+  <div class="vcard-body">
+    <div style="margin-bottom:10px">
+      <div class="neo-row" style="justify-content:space-between;margin-bottom:4px"><span class="txt-s" style="font-weight:600">토익 900점</span><span class="txt-m">72%</span></div>
+      <div class="neo-prog"><div class="neo-prog-fill" style="width:72%"></div></div>
+    </div>
+    <div style="margin-bottom:10px">
+      <div class="neo-row" style="justify-content:space-between;margin-bottom:4px"><span class="txt-s" style="font-weight:600">책 24권 읽기</span><span class="txt-m">38%</span></div>
+      <div class="neo-prog"><div class="neo-prog-fill" style="width:38%"></div></div>
+    </div>
+    <div>
+      <div class="neo-row" style="justify-content:space-between;margin-bottom:4px"><span class="txt-s" style="font-weight:600">체중 -5kg</span><span class="txt-m">60%</span></div>
+      <div class="neo-prog"><div class="neo-prog-fill" style="width:60%"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 14. Daily Planner -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Daily Planner</span><span class="vbadge vbadge-acc">오늘</span></div>
+  <div class="vcard-trigger">"내일 하루 계획 짜줘"</div>
+  <div class="vcard-body">
+    <div style="display:flex;gap:8px;margin-bottom:4px"><span class="txt-m" style="width:36px;flex-shrink:0">09:00</span><div class="neo-raised" style="flex:1;padding:6px 10px;font-size:10px;border-left:2px solid var(--acc)">뉴모피즘 뷰 카탈로그</div></div>
+    <div style="display:flex;gap:8px;margin-bottom:4px"><span class="txt-m" style="width:36px;flex-shrink:0">11:00</span><div class="neo-raised" style="flex:1;padding:6px 10px;font-size:10px">미팅 — 디자인 리뷰</div></div>
+    <div style="display:flex;gap:8px;margin-bottom:4px"><span class="txt-m" style="width:36px;flex-shrink:0">13:00</span><div style="flex:1;padding:6px 10px;font-size:10px;color:var(--t-mu)">점심</div></div>
+    <div style="display:flex;gap:8px;margin-bottom:4px"><span class="txt-m" style="width:36px;flex-shrink:0">14:00</span><div class="neo-raised" style="flex:1;padding:6px 10px;font-size:10px;border-left:2px solid var(--acc2)">프론트엔드 구현</div></div>
+    <div style="display:flex;gap:8px"><span class="txt-m" style="width:36px;flex-shrink:0">18:00</span><div class="neo-raised" style="flex:1;padding:6px 10px;font-size:10px">운동 — 상체</div></div>
+  </div>
+</div>
+
+<!-- 15. Timeline -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Timeline</span><span class="vbadge">5 events</span></div>
+  <div class="vcard-trigger">"역사 흐름 정리해줘"</div>
+  <div class="vcard-body">
+    <div class="tl-mini">
+      <div style="position:relative"><span class="tl-dot tl-dot-acc"></span><b style="color:var(--t-str)">1592.4</b> <span class="txt-s">부산 상륙, 한양 함락</span></div>
+      <div style="position:relative"><span class="tl-dot tl-dot-acc"></span><b style="color:var(--t-str)">1592.7</b> <span class="txt-s">한산도 해전</span></div>
+      <div style="position:relative"><span class="tl-dot tl-dot-def"></span><b style="color:var(--t-str)">1593.1</b> <span class="txt-s">평양성 탈환</span></div>
+      <div style="position:relative"><span class="tl-dot tl-dot-def"></span><b style="color:var(--t-str)">1597.9</b> <span class="txt-s">명량해전</span></div>
+      <div style="position:relative"><span class="tl-dot tl-dot-def"></span><b style="color:var(--t-str)">1598.11</b> <span class="txt-s">종전</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- 16. Mindmap -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Mindmap</span></div>
+  <div class="vcard-trigger">"이 주제 구조를 보고 싶어"</div>
+  <div class="vcard-body" style="align-items:center;justify-content:center">
+    <div style="position:relative;width:100%;height:160px">
+      <div class="neo-circle" style="width:60px;height:60px;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:10px;font-weight:700;color:var(--acc);box-shadow:var(--r-md);z-index:1">임진왜란</div>
+      <div class="neo-circle" style="width:44px;height:44px;position:absolute;left:10%;top:15%;font-size:8px;color:var(--t-str)">배경</div>
+      <div class="neo-circle" style="width:44px;height:44px;position:absolute;right:10%;top:10%;font-size:8px;color:var(--t-str)">이순신</div>
+      <div class="neo-circle" style="width:44px;height:44px;position:absolute;left:5%;bottom:15%;font-size:8px;color:var(--t-str)">전개</div>
+      <div class="neo-circle" style="width:44px;height:44px;position:absolute;right:8%;bottom:10%;font-size:8px;color:var(--t-str)">결과</div>
+    </div>
+  </div>
+</div>
+
+<!-- 17. Reading List -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Reading List</span><span class="vbadge">12권</span></div>
+  <div class="vcard-trigger">"이 책 읽어야지"</div>
+  <div class="vcard-body">
+    <div class="neo-row" style="margin-bottom:6px"><div class="neo-chk on"><i class="ph-light ph-check" style="color:var(--acc)"></i></div><div><div class="txt-s" style="font-weight:600;text-decoration:line-through;color:var(--t-mu)">사피엔스</div><div class="txt-m">유발 하라리</div></div></div>
+    <div class="neo-row" style="margin-bottom:6px"><div class="neo-chk"><i class="ph-light ph-check" style="color:var(--acc)"></i></div><div><div class="txt-s" style="font-weight:600">총균쇠</div><div class="txt-m">재레드 다이아몬드</div></div></div>
+    <div class="neo-row"><div class="neo-chk"><i class="ph-light ph-check" style="color:var(--acc)"></i></div><div><div class="txt-s" style="font-weight:600">넛지</div><div class="txt-m">리처드 탈러</div></div></div>
+    <div class="neo-prog" style="margin-top:auto"><div class="neo-prog-fill" style="width:25%"></div></div>
+    <div class="txt-m" style="margin-top:2px">3/12 완독</div>
+  </div>
+</div>
+
+<!-- 18. Workout Log -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Workout Log</span><span class="vbadge vbadge-acc">오늘</span></div>
+  <div class="vcard-trigger">"벤치프레스 60kg 5세트 했어"</div>
+  <div class="vcard-body">
+    <div class="txt-m" style="font-weight:600;margin-bottom:6px">상체 — 4월 18일</div>
+    <div class="neo-pressed" style="padding:8px 10px;margin-bottom:4px">
+      <div style="display:flex;justify-content:space-between;font-size:10px"><span class="txt-s" style="font-weight:600">벤치프레스</span><span class="txt-m">60kg × 5set</span></div>
+    </div>
+    <div class="neo-pressed" style="padding:8px 10px;margin-bottom:4px">
+      <div style="display:flex;justify-content:space-between;font-size:10px"><span class="txt-s" style="font-weight:600">덤벨 플라이</span><span class="txt-m">14kg × 4set</span></div>
+    </div>
+    <div class="neo-pressed" style="padding:8px 10px">
+      <div style="display:flex;justify-content:space-between;font-size:10px"><span class="txt-s" style="font-weight:600">숄더프레스</span><span class="txt-m">20kg × 4set</span></div>
+    </div>
+    <div class="txt-m" style="margin-top:auto">총 볼륨: 4,280kg</div>
+  </div>
+</div>
+
+<!-- 19. Recipe -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Recipe</span></div>
+  <div class="vcard-trigger">"어제 만든 파스타 레시피 기록해줘"</div>
+  <div class="vcard-body">
+    <div class="txt-h" style="font-size:15px;margin-bottom:2px">알리오 올리오</div>
+    <div class="txt-m" style="margin-bottom:8px">30분 · 2인분</div>
+    <div class="txt-m" style="font-weight:600;margin-bottom:4px">재료</div>
+    <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px">
+      <span class="neo-tag">스파게티 200g</span><span class="neo-tag">마늘 6쪽</span><span class="neo-tag">페퍼론치노</span><span class="neo-tag">올리브오일</span>
+    </div>
+    <div class="txt-m" style="font-weight:600;margin-bottom:4px">순서</div>
+    <div class="txt-s" style="line-height:1.7">1. 면 삶기 (소금물)<br>2. 마늘 슬라이스 + 올리브오일 약불<br>3. 면수 2큰술 + 면 투입<br>4. 페퍼론치노, 소금 간</div>
+  </div>
+</div>
+
+<!-- 20. Meeting Notes -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Meeting Notes</span><span class="vbadge">14:00</span></div>
+  <div class="vcard-trigger">"방금 회의 정리해줘"</div>
+  <div class="vcard-body">
+    <div class="txt-h" style="font-size:13px">디자인 리뷰 미팅</div>
+    <div class="txt-m" style="margin-bottom:8px">참석: 김태, 서연, 민수</div>
+    <div class="neo-pressed" style="font-size:10px;line-height:1.7;margin-bottom:8px">
+      <b style="color:var(--t-str)">결정사항:</b><br>
+      - 뉴모피즘 라이트 모드 우선<br>
+      - 악센트 6종 팔레트 확정<br>
+      - 다음 주 월요일까지 프로토타입
+    </div>
+    <div class="txt-m" style="font-weight:600;margin-bottom:4px">액션 아이템</div>
+    <div class="neo-row"><div class="neo-chk"><i class="ph-light ph-check" style="color:var(--acc)"></i></div><span class="txt-s">김태: 프로토타입 완성</span></div>
+    <div class="neo-row"><div class="neo-chk"><i class="ph-light ph-check" style="color:var(--acc)"></i></div><span class="txt-s">서연: 유저 테스트 준비</span></div>
+  </div>
+</div>
+
+</div><!-- /vgrid -->
+</div><!-- /tier2 -->
+
+<!-- ============================================================
+     TIER 3 — EXTENDED (21-30)
+     ============================================================ -->
+<div class="tier">
+<div class="tier-title">Tier 3 — Extended</div>
+<div class="vgrid">
+
+<!-- 21. Curriculum -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Curriculum</span><span class="vbadge vbadge-acc">진행 중</span></div>
+  <div class="vcard-trigger">"이 분야 처음부터 배우고 싶어"</div>
+  <div class="vcard-body">
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div class="neo-row"><div class="neo-chk on"><i class="ph-light ph-check" style="color:var(--acc)"></i></div><div><div class="txt-s" style="font-weight:600;color:var(--t-mu);text-decoration:line-through">1. 기초 개념</div></div></div>
+      <div class="neo-row"><div class="neo-chk on"><i class="ph-light ph-check" style="color:var(--acc)"></i></div><div><div class="txt-s" style="font-weight:600;color:var(--t-mu);text-decoration:line-through">2. 핵심 원리</div></div></div>
+      <div class="neo-row" style="border-left:2px solid var(--acc);padding-left:6px"><div class="neo-circle" style="width:18px;height:18px;font-size:9px;color:var(--acc);font-weight:700">3</div><div><div class="txt-s" style="font-weight:600">3. 실전 적용</div><div class="txt-m">현재 학습 중</div></div></div>
+      <div class="neo-row"><div class="neo-circle" style="width:18px;height:18px;font-size:9px;color:var(--t-mu)">4</div><div><div class="txt-s" style="color:var(--t-mu)">4. 심화 학습</div></div></div>
+      <div class="neo-row"><div class="neo-circle" style="width:18px;height:18px;font-size:9px;color:var(--t-mu)">5</div><div><div class="txt-s" style="color:var(--t-mu)">5. 마스터 프로젝트</div></div></div>
+    </div>
+    <div class="neo-prog" style="margin-top:auto"><div class="neo-prog-fill" style="width:45%"></div></div>
+  </div>
+</div>
+
+<!-- 22. Spaced Repetition -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Spaced Repetition</span></div>
+  <div class="vcard-trigger">"까먹기 전에 복습 알려줘"</div>
+  <div class="vcard-body">
+    <div class="txt-m" style="font-weight:600;margin-bottom:6px">오늘 복습할 카드</div>
+    <div class="neo-raised" style="padding:8px 10px;margin-bottom:4px;display:flex;justify-content:space-between;align-items:center">
+      <span class="txt-s" style="font-weight:600">학익진</span><span class="vbadge" style="background:color-mix(in srgb,var(--acc) 20%,var(--bg));color:var(--acc)">오늘</span>
+    </div>
+    <div class="neo-raised" style="padding:8px 10px;margin-bottom:4px;display:flex;justify-content:space-between;align-items:center">
+      <span class="txt-s" style="font-weight:600">정명가도</span><span class="vbadge" style="background:color-mix(in srgb,var(--acc) 20%,var(--bg));color:var(--acc)">오늘</span>
+    </div>
+    <div class="neo-raised" style="padding:8px 10px;display:flex;justify-content:space-between;align-items:center">
+      <span class="txt-s">판옥선</span><span class="vbadge">내일</span>
+    </div>
+    <div class="txt-m" style="margin-top:auto">마스터: 12 | 학습 중: 8 | 신규: 4</div>
+  </div>
+</div>
+
+<!-- 23. Travel Planner -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Travel Planner</span></div>
+  <div class="vcard-trigger">"도쿄 3박4일 계획 짜줘"</div>
+  <div class="vcard-body">
+    <div class="txt-h" style="font-size:14px">도쿄 3박 4일</div>
+    <div class="txt-m" style="margin-bottom:8px">5/10 ~ 5/13</div>
+    <div class="neo-raised" style="padding:8px 10px;margin-bottom:4px;border-left:2px solid var(--acc)">
+      <div class="txt-m" style="font-weight:700">Day 1</div>
+      <div class="txt-m">시부야 → 하라주쿠 → 신주쿠</div>
+    </div>
+    <div class="neo-raised" style="padding:8px 10px;margin-bottom:4px">
+      <div class="txt-m" style="font-weight:700">Day 2</div>
+      <div class="txt-m">아사쿠사 → 아키하바라 → 우에노</div>
+    </div>
+    <div class="neo-raised" style="padding:8px 10px">
+      <div class="txt-m" style="font-weight:700">Day 3</div>
+      <div class="txt-m">가마쿠라 당일치기</div>
+    </div>
+    <div class="txt-m" style="margin-top:auto">예상 예산: ¥150,000</div>
+  </div>
+</div>
+
+<!-- 24. Wishlist -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Wishlist</span><span class="vbadge">5개</span></div>
+  <div class="vcard-trigger">"이거 사고 싶다"</div>
+  <div class="vcard-body">
+    <div class="neo-raised" style="padding:8px 10px;margin-bottom:4px;display:flex;justify-content:space-between">
+      <div><div class="txt-s" style="font-weight:600">에어팟 프로</div><div class="txt-m">Apple</div></div>
+      <span class="txt-s" style="color:var(--acc)">₩359,000</span>
+    </div>
+    <div class="neo-raised" style="padding:8px 10px;margin-bottom:4px;display:flex;justify-content:space-between">
+      <div><div class="txt-s" style="font-weight:600">스탠딩 데스크</div><div class="txt-m">IKEA</div></div>
+      <span class="txt-s" style="color:var(--acc)">₩290,000</span>
+    </div>
+    <div class="neo-raised" style="padding:8px 10px;display:flex;justify-content:space-between">
+      <div><div class="txt-s" style="font-weight:600">런닝화</div><div class="txt-m">Nike Vomero</div></div>
+      <span class="txt-s" style="color:var(--acc)">₩189,000</span>
+    </div>
+  </div>
+</div>
+
+<!-- 25. Mood Board -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Mood Board</span></div>
+  <div class="vcard-trigger">"요즘 이런 분위기가 좋아"</div>
+  <div class="vcard-body">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
+      <div style="aspect-ratio:1;border-radius:var(--rad-sm);background:linear-gradient(135deg,#e8d5b7,#c4a882);box-shadow:var(--r-xs)"></div>
+      <div style="aspect-ratio:1;border-radius:var(--rad-sm);background:linear-gradient(135deg,#8BA5B5,#5A7A8C);box-shadow:var(--r-xs)"></div>
+      <div style="aspect-ratio:1;border-radius:var(--rad-sm);background:linear-gradient(135deg,#D4C5A9,#B8A88A);box-shadow:var(--r-xs)"></div>
+      <div style="aspect-ratio:1;border-radius:var(--rad-sm);background:linear-gradient(135deg,#A3B5A0,#7D9478);box-shadow:var(--r-xs)"></div>
+      <div style="aspect-ratio:1;border-radius:var(--rad-sm);background:linear-gradient(135deg,#E8C5B0,#C9A08A);box-shadow:var(--r-xs)"></div>
+      <div style="aspect-ratio:1;border-radius:var(--rad-sm);background:var(--bg);box-shadow:var(--p-sm);display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--t-dis)"><i class="ph-light ph-plus"></i></div>
+    </div>
+    <div style="display:flex;gap:4px;margin-top:8px"><span class="neo-tag">미니멀</span><span class="neo-tag">내추럴</span><span class="neo-tag">따뜻함</span></div>
+  </div>
+</div>
+
+<!-- 26. Gallery -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Gallery</span><span class="vbadge">18장</span></div>
+  <div class="vcard-trigger">"내 사진들 모아서 보여줘"</div>
+  <div class="vcard-body">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
+      <div style="aspect-ratio:1;border-radius:var(--rad-xs);background:linear-gradient(135deg,#c8d6e5,#8395a7);box-shadow:var(--r-xs)"></div>
+      <div style="aspect-ratio:1;border-radius:var(--rad-xs);background:linear-gradient(135deg,#ffeaa7,#fdcb6e);box-shadow:var(--r-xs)"></div>
+      <div style="aspect-ratio:1;border-radius:var(--rad-xs);background:linear-gradient(135deg,#dfe6e9,#b2bec3);box-shadow:var(--r-xs)"></div>
+      <div style="aspect-ratio:1;border-radius:var(--rad-xs);background:linear-gradient(135deg,#fab1a0,#e17055);box-shadow:var(--r-xs)"></div>
+      <div style="aspect-ratio:1;border-radius:var(--rad-xs);background:linear-gradient(135deg,#a29bfe,#6c5ce7);box-shadow:var(--r-xs)"></div>
+      <div style="aspect-ratio:1;border-radius:var(--rad-xs);background:linear-gradient(135deg,#55efc4,#00b894);box-shadow:var(--r-xs)"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 27. CRM -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">CRM</span><span class="vbadge">28명</span></div>
+  <div class="vcard-trigger">"이 사람이랑 언제 미팅했지?"</div>
+  <div class="vcard-body">
+    <div class="neo-raised" style="padding:8px 10px;margin-bottom:4px;display:flex;align-items:center;gap:8px">
+      <div class="neo-circle" style="width:28px;height:28px;font-size:10px;font-weight:700;color:var(--acc);flex-shrink:0">J</div>
+      <div><div class="txt-s" style="font-weight:600">정서연</div><div class="txt-m">디자이너 · 마지막 연락 3일 전</div></div>
+    </div>
+    <div class="neo-raised" style="padding:8px 10px;margin-bottom:4px;display:flex;align-items:center;gap:8px">
+      <div class="neo-circle" style="width:28px;height:28px;font-size:10px;font-weight:700;color:var(--acc);flex-shrink:0">K</div>
+      <div><div class="txt-s" style="font-weight:600">김민수</div><div class="txt-m">개발자 · 마지막 연락 1주 전</div></div>
+    </div>
+    <div class="neo-raised" style="padding:8px 10px;display:flex;align-items:center;gap:8px">
+      <div class="neo-circle" style="width:28px;height:28px;font-size:10px;font-weight:700;color:var(--acc2);flex-shrink:0">P</div>
+      <div><div class="txt-s" style="font-weight:600">박지호</div><div class="txt-m">투자자 · 미팅 예정 4/22</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 28. SWOT -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">SWOT</span></div>
+  <div class="vcard-trigger">"이 사업 아이디어 분석해줘"</div>
+  <div class="vcard-body">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+      <div class="neo-raised" style="padding:8px"><div class="txt-m" style="font-weight:700;color:var(--acc);margin-bottom:4px">Strengths</div><div class="txt-m">대화형 UX<br>자동 데이터화</div></div>
+      <div class="neo-raised" style="padding:8px"><div class="txt-m" style="font-weight:700;color:#e06060;margin-bottom:4px">Weaknesses</div><div class="txt-m">초기 콘텐츠 부족<br>인지도 없음</div></div>
+      <div class="neo-raised" style="padding:8px"><div class="txt-m" style="font-weight:700;color:#4caf88;margin-bottom:4px">Opportunities</div><div class="txt-m">AI 시장 성장<br>교육 시장 수요</div></div>
+      <div class="neo-raised" style="padding:8px"><div class="txt-m" style="font-weight:700;color:var(--t-mu);margin-bottom:4px">Threats</div><div class="txt-m">빅테크 경쟁<br>규제 리스크</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 29. Project Dashboard -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Project Dashboard</span></div>
+  <div class="vcard-trigger">"프로젝트 전체 현황 보여줘"</div>
+  <div class="vcard-body">
+    <div style="display:flex;gap:12px;margin-bottom:10px">
+      <div style="text-align:center"><div class="txt-num" style="font-size:22px">12</div><div class="txt-m">할 일</div></div>
+      <div style="text-align:center"><div class="txt-num" style="font-size:22px;color:var(--acc)">3</div><div class="txt-m">진행 중</div></div>
+      <div style="text-align:center"><div class="txt-num" style="font-size:22px">28</div><div class="txt-m">완료</div></div>
+    </div>
+    <div class="neo-prog" style="margin-bottom:6px"><div class="neo-prog-fill" style="width:65%"></div></div>
+    <div class="txt-m">전체 진행률 65%</div>
+    <div class="sep"></div>
+    <div class="txt-m" style="font-weight:600">다음 마일스톤</div>
+    <div class="txt-s">4/25 — 프로토타입 배포</div>
+  </div>
+</div>
+
+<!-- 30. KPI Board -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">KPI Board</span></div>
+  <div class="vcard-trigger">"이번 달 핵심 지표 보여줘"</div>
+  <div class="vcard-body">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div class="neo-pressed" style="text-align:center;padding:12px">
+        <div class="txt-num" style="font-size:24px">2,847</div>
+        <div class="txt-m">방문자</div>
+        <div style="font-size:9px;color:#4caf88"><i class="ph-light ph-trend-up"></i> 12%</div>
+      </div>
+      <div class="neo-pressed" style="text-align:center;padding:12px">
+        <div class="txt-num" style="font-size:24px">342</div>
+        <div class="txt-m">가입자</div>
+        <div style="font-size:9px;color:#4caf88"><i class="ph-light ph-trend-up"></i> 8%</div>
+      </div>
+      <div class="neo-pressed" style="text-align:center;padding:12px">
+        <div class="txt-num" style="font-size:24px">67%</div>
+        <div class="txt-m">리텐션</div>
+        <div style="font-size:9px;color:#e06060"><i class="ph-light ph-trend-down"></i> 3%</div>
+      </div>
+      <div class="neo-pressed" style="text-align:center;padding:12px">
+        <div class="txt-num" style="font-size:24px">4.2</div>
+        <div class="txt-m">NPS</div>
+        <div style="font-size:9px;color:#4caf88"><i class="ph-light ph-trend-up"></i> 0.3</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /vgrid -->
+</div><!-- /tier3 -->
+
+<!-- ============================================================
+     TIER 4 — PRO/CREATIVE (31-40)
+     ============================================================ -->
+<div class="tier">
+<div class="tier-title">Tier 4 — Pro / Creative</div>
+<div class="vgrid">
+
+<!-- 31. Invoice -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Invoice</span><span class="vbadge">#2026-042</span></div>
+  <div class="vcard-trigger">"견적서 만들어줘"</div>
+  <div class="vcard-body">
+    <div class="txt-h" style="font-size:12px">디자인 시스템 구축</div>
+    <div class="txt-m" style="margin-bottom:8px">클라이언트: OU Corp</div>
+    <div class="neo-pressed" style="padding:0;overflow:hidden;border-radius:var(--rad-xs);font-size:9px">
+      <div style="display:grid;grid-template-columns:3fr 1fr 1fr;padding:6px 8px;font-weight:700;color:var(--t-mu);border-bottom:1px solid var(--brd)"><span>항목</span><span>수량</span><span>금액</span></div>
+      <div style="display:grid;grid-template-columns:3fr 1fr 1fr;padding:6px 8px;color:var(--t-sec)"><span>UI 디자인</span><span>1</span><span>3,000,000</span></div>
+      <div style="display:grid;grid-template-columns:3fr 1fr 1fr;padding:6px 8px;color:var(--t-sec)"><span>프론트엔드</span><span>1</span><span>5,000,000</span></div>
+    </div>
+    <div style="text-align:right;margin-top:8px"><span class="txt-m">합계</span> <span class="txt-h" style="font-size:14px">₩8,000,000</span></div>
+  </div>
+</div>
+
+<!-- 32. Pitch Deck -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Pitch Deck</span><span class="vbadge">8 slides</span></div>
+  <div class="vcard-trigger">"투자 발표자료 뼈대 잡아줘"</div>
+  <div class="vcard-body" style="align-items:center">
+    <div style="background:var(--bg);box-shadow:var(--r-md);border-radius:var(--rad-sm);width:100%;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;flex-direction:column">
+      <div class="txt-h" style="font-size:16px;letter-spacing:2px">OU</div>
+      <div class="txt-m" style="margin-top:4px">Just talk.</div>
+    </div>
+    <div style="display:flex;gap:4px;margin-top:8px">
+      <div style="width:24px;height:16px;border-radius:2px;background:var(--acc);box-shadow:var(--r-xs)"></div>
+      <div style="width:24px;height:16px;border-radius:2px;background:var(--bg);box-shadow:var(--r-xs)"></div>
+      <div style="width:24px;height:16px;border-radius:2px;background:var(--bg);box-shadow:var(--r-xs)"></div>
+      <div style="width:24px;height:16px;border-radius:2px;background:var(--bg);box-shadow:var(--r-xs)"></div>
+      <div style="width:24px;height:16px;border-radius:2px;background:var(--bg);box-shadow:var(--r-xs)"></div>
+    </div>
+    <div class="txt-m">1 / 8</div>
+  </div>
+</div>
+
+<!-- 33. Storyboard -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Storyboard</span></div>
+  <div class="vcard-trigger">"영상 시나리오 짜고 있어"</div>
+  <div class="vcard-body">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+      <div class="neo-pressed" style="aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--t-dis)"><i class="ph-light ph-play" style="color:var(--t-dis)"></i></div>
+      <div style="font-size:9px;color:var(--t-sec);line-height:1.5;padding:4px"><b>Scene 1</b><br>오프닝 — OU 로고<br>"대화만 하세요"</div>
+      <div class="neo-pressed" style="aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--t-dis)"><i class="ph-light ph-play" style="color:var(--t-dis)"></i></div>
+      <div style="font-size:9px;color:var(--t-sec);line-height:1.5;padding:4px"><b>Scene 2</b><br>회원이 Orb에서 대화<br>DataNode 자동 생성</div>
+    </div>
+  </div>
+</div>
+
+<!-- 34. Scrapbook -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Scrapbook</span><span class="vbadge">12개</span></div>
+  <div class="vcard-trigger">"이 기사 스크랩해둬"</div>
+  <div class="vcard-body">
+    <div class="neo-raised" style="padding:10px;margin-bottom:6px">
+      <div class="txt-s" style="font-weight:600">AI 시대의 개인 데이터 관리</div>
+      <div class="txt-m">TechCrunch · 2026.04.15</div>
+      <div class="txt-m" style="margin-top:4px;line-height:1.4">개인 데이터를 소유하고 관리하는 새로운 패러다임이...</div>
+    </div>
+    <div class="neo-raised" style="padding:10px">
+      <div class="txt-s" style="font-weight:600">뉴모피즘 디자인 트렌드 2026</div>
+      <div class="txt-m">Medium · 2026.04.10</div>
+      <div class="txt-m" style="margin-top:4px;line-height:1.4">claymorphism과의 하이브리드 접근이...</div>
+    </div>
+  </div>
+</div>
+
+<!-- 35. Mood Palette -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Mood Palette</span></div>
+  <div class="vcard-trigger">"이 브랜드 컬러 정리해줘"</div>
+  <div class="vcard-body" style="align-items:center">
+    <div style="display:flex;gap:8px;margin-bottom:8px">
+      <div style="width:48px;height:48px;border-radius:50%;background:#e8976b;box-shadow:var(--r-sm)"></div>
+      <div style="width:48px;height:48px;border-radius:50%;background:#f5c16c;box-shadow:var(--r-sm)"></div>
+      <div style="width:48px;height:48px;border-radius:50%;background:#e8ecf1;box-shadow:var(--r-sm)"></div>
+      <div style="width:48px;height:48px;border-radius:50%;background:#2a2d3e;box-shadow:var(--r-sm)"></div>
+    </div>
+    <div style="display:flex;gap:16px;font-size:9px;color:var(--t-mu)">
+      <span>#e8976b</span><span>#f5c16c</span><span>#e8ecf1</span><span>#2a2d3e</span>
+    </div>
+    <div class="txt-m" style="margin-top:8px">OU Brand — Sunrise Palette</div>
+  </div>
+</div>
+
+<!-- 36. Profile -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Profile</span></div>
+  <div class="vcard-trigger">"내 프로필 보여줘"</div>
+  <div class="vcard-body" style="align-items:center">
+    <div class="neo-circle" style="width:64px;height:64px;font-size:24px;font-weight:700;color:var(--acc);box-shadow:var(--r-lg)">K</div>
+    <div class="txt-h" style="font-size:15px;margin-top:8px">김태</div>
+    <div class="txt-m">프론트엔드 개발자 · OU 빌더</div>
+    <div style="display:flex;gap:16px;margin-top:12px">
+      <div style="text-align:center"><div class="txt-num" style="font-size:18px">1,247</div><div class="txt-m">데이터</div></div>
+      <div style="text-align:center"><div class="txt-num" style="font-size:18px">7</div><div class="txt-m">도메인</div></div>
+      <div style="text-align:center"><div class="txt-num" style="font-size:18px">23</div><div class="txt-m">뷰</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 37. Feed -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Feed</span></div>
+  <div class="vcard-trigger">"다른 사람들은 뭘 공부하고 있지?"</div>
+  <div class="vcard-body">
+    <div class="neo-raised" style="padding:10px;margin-bottom:6px">
+      <div class="neo-row" style="margin-bottom:4px"><div class="neo-circle" style="width:20px;height:20px;font-size:8px;color:var(--acc)">S</div><span class="txt-s" style="font-weight:600">서연</span><span class="txt-m">· 2시간 전</span></div>
+      <div class="txt-s">임진왜란 타임라인 정리 완료! 이순신 장군의 전략이 정말 대단하다</div>
+      <div style="display:flex;gap:4px;margin-top:6px"><span class="neo-tag">역사</span><span class="neo-tag">공유됨</span></div>
+    </div>
+    <div class="neo-raised" style="padding:10px">
+      <div class="neo-row" style="margin-bottom:4px"><div class="neo-circle" style="width:20px;height:20px;font-size:8px;color:var(--acc2)">M</div><span class="txt-s" style="font-weight:600">민수</span><span class="txt-m">· 5시간 전</span></div>
+      <div class="txt-s">당귀 정리 자료 올립니다. 참조 자유롭게 추가하세요</div>
+    </div>
+  </div>
+</div>
+
+<!-- 38. Poll -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Poll</span><span class="vbadge">진행 중</span></div>
+  <div class="vcard-trigger">"스터디원들한테 투표 돌릴래"</div>
+  <div class="vcard-body">
+    <div class="txt-h" style="font-size:13px;margin-bottom:8px">다음 스터디 주제는?</div>
+    <div class="neo-raised" style="padding:8px 10px;margin-bottom:4px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span class="txt-s">정유재란</span><span class="txt-s" style="color:var(--acc);font-weight:600">45%</span></div>
+      <div class="neo-prog"><div class="neo-prog-fill" style="width:45%"></div></div>
+    </div>
+    <div class="neo-pressed" style="padding:8px 10px;margin-bottom:4px;border-left:2px solid var(--acc)">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span class="txt-s" style="font-weight:600">병자호란</span><span class="txt-s" style="color:var(--acc);font-weight:600">35%</span></div>
+      <div class="neo-prog"><div class="neo-prog-fill" style="width:35%"></div></div>
+    </div>
+    <div class="neo-raised" style="padding:8px 10px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span class="txt-s">동학농민운동</span><span class="txt-s" style="color:var(--acc)">20%</span></div>
+      <div class="neo-prog"><div class="neo-prog-fill" style="width:20%"></div></div>
+    </div>
+    <div class="txt-m" style="margin-top:auto">20명 참여 · 2일 남음</div>
+  </div>
+</div>
+
+<!-- 39. Leaderboard -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Leaderboard</span></div>
+  <div class="vcard-trigger">"스터디 그룹 랭킹 보고 싶어"</div>
+  <div class="vcard-body">
+    <div class="neo-raised" style="padding:8px 10px;margin-bottom:4px;display:flex;align-items:center;gap:8px;border-left:2px solid var(--acc)">
+      <i class="ph-light ph-medal" style="color:var(--acc);font-size:14px"></i><span class="txt-m" style="font-weight:700">1</span>
+      <div class="neo-circle" style="width:24px;height:24px;font-size:9px;color:var(--acc)">S</div>
+      <span class="txt-s" style="font-weight:700">서연</span>
+      <span class="txt-m" style="margin-left:auto">2,340점</span>
+    </div>
+    <div class="neo-raised" style="padding:8px 10px;margin-bottom:4px;display:flex;align-items:center;gap:8px">
+      <i class="ph-light ph-medal" style="color:var(--t-sec);font-size:14px"></i><span class="txt-m" style="font-weight:700">2</span>
+      <div class="neo-circle" style="width:24px;height:24px;font-size:9px;color:var(--acc)">K</div>
+      <span class="txt-s" style="font-weight:600">김태</span>
+      <span class="txt-m" style="margin-left:auto">2,180점</span>
+    </div>
+    <div class="neo-raised" style="padding:8px 10px;display:flex;align-items:center;gap:8px">
+      <i class="ph-light ph-medal" style="color:var(--acc2);font-size:14px"></i><span class="txt-m" style="font-weight:700">3</span>
+      <div class="neo-circle" style="width:24px;height:24px;font-size:9px;color:var(--acc2)">M</div>
+      <span class="txt-s" style="font-weight:600">민수</span>
+      <span class="txt-m" style="margin-left:auto">1,920점</span>
+    </div>
+  </div>
+</div>
+
+<!-- 40. Shared Notes -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Shared Notes</span><span class="vbadge vbadge-acc">실시간</span></div>
+  <div class="vcard-trigger">"이거 같이 정리하자"</div>
+  <div class="vcard-body">
+    <div class="neo-pressed" style="font-size:11px;line-height:1.7;min-height:100px">
+      <div style="color:var(--acc);font-weight:600">서연:</div>
+      <div style="color:var(--t-body)">임진왜란의 원인을 크게 3가지로 분류하면...</div>
+      <br>
+      <div style="color:var(--acc2);font-weight:600">민수:</div>
+      <div style="color:var(--t-body)">정명가도 거절이 직접적 원인이고, 히데요시의 내부 정치적 동기가 근본 원인</div>
+      <div style="color:var(--t-dis);margin-top:8px;font-size:9px">김태 입력 중...</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /vgrid -->
+</div><!-- /tier4 -->
+
+<!-- ============================================================
+     TIER 5 — ADDITIONAL (41-50)
+     ============================================================ -->
+<div class="tier">
+<div class="tier-title">Tier 5 — Additional</div>
+<div class="vgrid">
+
+<!-- 41. Study Group -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Study Group</span><span class="vbadge">5명</span></div>
+  <div class="vcard-trigger">"우리 그룹 진행상황 한눈에"</div>
+  <div class="vcard-body">
+    <div class="neo-raised" style="padding:8px 10px;margin-bottom:4px;display:flex;align-items:center;gap:8px">
+      <div class="neo-circle" style="width:24px;height:24px;font-size:9px;color:var(--acc)">S</div>
+      <span class="txt-s" style="flex:1">서연</span>
+      <div class="neo-prog" style="width:60px"><div class="neo-prog-fill" style="width:85%"></div></div>
+    </div>
+    <div class="neo-raised" style="padding:8px 10px;margin-bottom:4px;display:flex;align-items:center;gap:8px">
+      <div class="neo-circle" style="width:24px;height:24px;font-size:9px;color:var(--acc)">K</div>
+      <span class="txt-s" style="flex:1">김태</span>
+      <div class="neo-prog" style="width:60px"><div class="neo-prog-fill" style="width:72%"></div></div>
+    </div>
+    <div class="neo-raised" style="padding:8px 10px;display:flex;align-items:center;gap:8px">
+      <div class="neo-circle" style="width:24px;height:24px;font-size:9px;color:var(--acc2)">M</div>
+      <span class="txt-s" style="flex:1">민수</span>
+      <div class="neo-prog" style="width:60px"><div class="neo-prog-fill" style="width:60%"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 42. Bookmark Manager -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Bookmark</span><span class="vbadge">32개</span></div>
+  <div class="vcard-trigger">"자주 보는 데이터 즐겨찾기"</div>
+  <div class="vcard-body">
+    <div class="neo-row" style="margin-bottom:4px"><i class="ph-light ph-star" style="color:var(--acc)"></i><span class="txt-s" style="font-weight:600">임진왜란 타임라인</span></div>
+    <div class="neo-row" style="margin-bottom:4px"><i class="ph-light ph-star" style="color:var(--acc)"></i><span class="txt-s" style="font-weight:600">당귀 정리 노트</span></div>
+    <div class="neo-row" style="margin-bottom:4px"><i class="ph-light ph-star" style="color:var(--acc)"></i><span class="txt-s" style="font-weight:600">React Hooks 가이드</span></div>
+    <div class="neo-row"><i class="ph-light ph-star" style="color:var(--acc)"></i><span class="txt-s" style="font-weight:600">토익 단어장</span></div>
+  </div>
+</div>
+
+<!-- 43. Changelog -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Changelog</span></div>
+  <div class="vcard-trigger">"내 데이터 변경 이력 보여줘"</div>
+  <div class="vcard-body">
+    <div class="tl-mini">
+      <div style="position:relative"><span class="tl-dot tl-dot-acc"></span><b class="txt-m">방금</b> <span class="txt-m">학익진 내용 수정</span></div>
+      <div style="position:relative"><span class="tl-dot tl-dot-def"></span><b class="txt-m">1시간 전</b> <span class="txt-m">이순신 데이터 추가</span></div>
+      <div style="position:relative"><span class="tl-dot tl-dot-def"></span><b class="txt-m">3시간 전</b> <span class="txt-m">임진왜란 생성</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- 44. Checklist -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Checklist</span><span class="vbadge vbadge-acc">여행</span></div>
+  <div class="vcard-trigger">"여행 준비물 체크리스트"</div>
+  <div class="vcard-body">
+    <div class="neo-row" style="margin-bottom:3px"><div class="neo-chk on" style="width:16px;height:16px;font-size:9px"><i class="ph-light ph-check" style="color:var(--acc)"></i></div><span class="txt-s" style="text-decoration:line-through;color:var(--t-mu)">여권</span></div>
+    <div class="neo-row" style="margin-bottom:3px"><div class="neo-chk on" style="width:16px;height:16px;font-size:9px"><i class="ph-light ph-check" style="color:var(--acc)"></i></div><span class="txt-s" style="text-decoration:line-through;color:var(--t-mu)">항공권</span></div>
+    <div class="neo-row" style="margin-bottom:3px"><div class="neo-chk" style="width:16px;height:16px;font-size:9px"><i class="ph-light ph-check" style="color:var(--acc)"></i></div><span class="txt-s">숙소 예약 확인</span></div>
+    <div class="neo-row" style="margin-bottom:3px"><div class="neo-chk" style="width:16px;height:16px;font-size:9px"><i class="ph-light ph-check" style="color:var(--acc)"></i></div><span class="txt-s">환전</span></div>
+    <div class="neo-row"><div class="neo-chk" style="width:16px;height:16px;font-size:9px"><i class="ph-light ph-check" style="color:var(--acc)"></i></div><span class="txt-s">여행자 보험</span></div>
+  </div>
+</div>
+
+<!-- 45. Countdown -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Countdown</span></div>
+  <div class="vcard-trigger">"시험까지 며칠 남았어?"</div>
+  <div class="vcard-body" style="align-items:center;justify-content:center">
+    <div class="txt-m" style="margin-bottom:4px">중간고사까지</div>
+    <div class="txt-num" style="font-size:48px">D-7</div>
+    <div class="txt-m" style="margin-top:4px">4월 25일 (금)</div>
+  </div>
+</div>
+
+<!-- 46. Weather Log -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Weather Log</span></div>
+  <div class="vcard-trigger">"오늘 날씨 어때?"</div>
+  <div class="vcard-body" style="align-items:center">
+    <div style="font-size:36px;margin-bottom:4px"><i class="ph-light ph-cloud-sun" style="color:var(--t-sec)"></i></div>
+    <div class="txt-num" style="font-size:28px">18°</div>
+    <div class="txt-m">서울 · 구름 조금</div>
+    <div style="display:flex;gap:12px;margin-top:12px">
+      <div style="text-align:center"><div class="txt-m" style="font-weight:600">내일</div><div><i class="ph-light ph-sun" style="color:var(--acc2)"></i></div><div class="txt-m">20°</div></div>
+      <div style="text-align:center"><div class="txt-m" style="font-weight:600">모레</div><div><i class="ph-light ph-cloud-rain" style="color:var(--t-sec)"></i></div><div class="txt-m">15°</div></div>
+      <div style="text-align:center"><div class="txt-m" style="font-weight:600">월</div><div><i class="ph-light ph-sun" style="color:var(--acc)"></i></div><div class="txt-m">22°</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 47. Contact Card -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Contact Card</span></div>
+  <div class="vcard-trigger">"이 사람 연락처 저장해줘"</div>
+  <div class="vcard-body" style="align-items:center">
+    <div class="neo-circle" style="width:56px;height:56px;font-size:20px;color:var(--acc);box-shadow:var(--r-md)">P</div>
+    <div class="txt-h" style="font-size:14px;margin-top:8px">박지호</div>
+    <div class="txt-m">VC · 파트너</div>
+    <div class="sep" style="width:100%"></div>
+    <div class="txt-s" style="width:100%">010-1234-5678</div>
+    <div class="txt-s" style="width:100%">jiho@venture.kr</div>
+    <div class="txt-m" style="width:100%;margin-top:4px">메모: 4/22 미팅 예정, 시리즈A 논의</div>
+  </div>
+</div>
+
+<!-- 48. Comparison Table -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Comparison</span></div>
+  <div class="vcard-trigger">"이 두 개 비교해줘"</div>
+  <div class="vcard-body">
+    <div class="neo-pressed" style="padding:0;overflow:hidden;border-radius:var(--rad-xs);font-size:9px">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;padding:6px 8px;font-weight:700;color:var(--t-mu);border-bottom:1px solid var(--brd)"><span></span><span>판옥선</span><span>거북선</span></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;padding:6px 8px;color:var(--t-sec)"><span class="txt-m" style="font-weight:600">유형</span><span>주력함</span><span>돌격함</span></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;padding:6px 8px;color:var(--t-sec)"><span class="txt-m" style="font-weight:600">지붕</span><span>개방</span><span>철갑</span></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;padding:6px 8px;color:var(--t-sec)"><span class="txt-m" style="font-weight:600">화포</span><span>다수</span><span>다수</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- 49. Decision Matrix -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Decision Matrix</span></div>
+  <div class="vcard-trigger">"뭘 선택할지 정리해줘"</div>
+  <div class="vcard-body">
+    <div class="txt-h" style="font-size:12px;margin-bottom:8px">노트북 구매 결정</div>
+    <div class="neo-pressed" style="padding:0;overflow:hidden;border-radius:var(--rad-xs);font-size:9px">
+      <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;padding:6px 8px;font-weight:700;color:var(--t-mu);border-bottom:1px solid var(--brd)"><span></span><span>가격</span><span>성능</span><span>점수</span></div>
+      <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;padding:6px 8px;color:var(--t-sec);border-left:2px solid var(--acc)"><span style="font-weight:600;color:var(--t-str)">MacBook Air</span><span><i class="ph-light ph-star" style="color:var(--acc)"></i><i class="ph-light ph-star" style="color:var(--acc)"></i><i class="ph-light ph-star" style="color:var(--acc)"></i></span><span><i class="ph-light ph-star" style="color:var(--acc)"></i><i class="ph-light ph-star" style="color:var(--acc)"></i><i class="ph-light ph-star" style="color:var(--acc)"></i></span><span style="color:var(--acc);font-weight:700">9</span></div>
+      <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;padding:6px 8px;color:var(--t-sec)"><span style="font-weight:600;color:var(--t-str)">ThinkPad</span><span><i class="ph-light ph-star" style="color:var(--acc)"></i><i class="ph-light ph-star" style="color:var(--acc)"></i><i class="ph-light ph-star" style="color:var(--acc)"></i><i class="ph-light ph-star" style="color:var(--acc)"></i></span><span><i class="ph-light ph-star" style="color:var(--acc)"></i><i class="ph-light ph-star" style="color:var(--acc)"></i></span><span>7</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- 50. Retrospective -->
+<div class="vcard">
+  <div class="vcard-head"><span class="vcard-name">Retrospective</span><span class="vbadge">4월</span></div>
+  <div class="vcard-trigger">"이번 달 돌아보자"</div>
+  <div class="vcard-body">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+      <div class="neo-raised" style="padding:8px"><div class="txt-m" style="font-weight:700;color:#4caf88;margin-bottom:4px">잘한 점</div><div class="txt-m">디자인 시스템 완성<br>매일 운동</div></div>
+      <div class="neo-raised" style="padding:8px"><div class="txt-m" style="font-weight:700;color:#e06060;margin-bottom:4px">아쉬운 점</div><div class="txt-m">독서 목표 미달<br>수면 불규칙</div></div>
+    </div>
+    <div class="neo-raised" style="padding:8px;margin-top:6px"><div class="txt-m" style="font-weight:700;color:var(--acc);margin-bottom:4px">다음 달 액션</div><div class="txt-m">주 3회 독서 시간 확보 · 11시 취침</div></div>
+  </div>
+</div>
+
+</div><!-- /vgrid -->
+</div><!-- /tier5 -->
+
+<!-- ============================================================
+     COMBO VIEWS — SaaS 조합 화면
+     ============================================================ -->
+<div class="tier">
+<div class="tier-title">Combo Views — SaaS 조합 화면</div>
+
+<!-- Combo 1: 교육 SaaS -->
+<div class="combo">
+  <div class="combo-title">교육 SaaS</div>
+  <div class="combo-desc">"이 강의 들으면서 정리해줘" — Curriculum + Flashcard + Quiz + Timer</div>
+  <div class="combo-grid combo-2-1">
+    <div>
+      <div class="combo-grid combo-2" style="height:100%">
+        <div class="combo-cell">
+          <div class="combo-cell-name">Curriculum</div>
+          <div class="neo-row" style="margin-bottom:3px"><div class="neo-chk on" style="width:14px;height:14px;font-size:8px"><i class="ph-light ph-check" style="color:var(--acc)"></i></div><span class="txt-m" style="text-decoration:line-through">1. 기초</span></div>
+          <div class="neo-row" style="margin-bottom:3px;border-left:2px solid var(--acc);padding-left:4px"><div class="neo-circle" style="width:14px;height:14px;font-size:7px;color:var(--acc)">2</div><span class="txt-m" style="font-weight:600">2. 핵심</span></div>
+          <div class="neo-row"><div class="neo-circle" style="width:14px;height:14px;font-size:7px;color:var(--t-mu)">3</div><span class="txt-m">3. 실전</span></div>
+        </div>
+        <div class="combo-cell">
+          <div class="combo-cell-name">Flashcard</div>
+          <div style="background:var(--bg);box-shadow:var(--r-sm);border-radius:var(--rad-sm);padding:16px;text-align:center;flex:1;display:flex;align-items:center;justify-content:center">
+            <div class="txt-h" style="font-size:16px;font-weight:300">學益陣</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="combo-cell" style="align-items:center;justify-content:center">
+      <div class="combo-cell-name" style="align-self:flex-start">Timer</div>
+      <div class="neo-circle" style="width:80px;height:80px;box-shadow:var(--r-md)">
+        <div class="txt-num" style="font-size:22px">23:47</div>
+      </div>
+      <div class="txt-m" style="margin-top:8px">3세션 완료</div>
+    </div>
+  </div>
+</div>
+
+<!-- Combo 2: 프로젝트 관리 -->
+<div class="combo">
+  <div class="combo-title">프로젝트 관리</div>
+  <div class="combo-desc">"이 프로젝트 관리해줘" — Kanban + Calendar + Goal Tracker</div>
+  <div class="combo-grid combo-3">
+    <div class="combo-cell">
+      <div class="combo-cell-name">Kanban</div>
+      <div style="display:flex;gap:4px">
+        <div style="flex:1"><div class="txt-m" style="font-size:8px;text-align:center;margin-bottom:3px">할 일</div><div class="neo-raised" style="padding:4px 6px;font-size:8px;margin-bottom:2px">디자인</div><div class="neo-raised" style="padding:4px 6px;font-size:8px">테스트</div></div>
+        <div style="flex:1"><div class="txt-m" style="font-size:8px;text-align:center;margin-bottom:3px;color:var(--acc)">진행</div><div class="neo-raised" style="padding:4px 6px;font-size:8px;border-left:1px solid var(--acc)">개발</div></div>
+        <div style="flex:1"><div class="txt-m" style="font-size:8px;text-align:center;margin-bottom:3px">완료</div><div class="neo-pressed" style="padding:4px 6px;font-size:8px;opacity:.5">기획</div></div>
+      </div>
+    </div>
+    <div class="combo-cell">
+      <div class="combo-cell-name">Calendar</div>
+      <div class="cal-mini" style="font-size:8px">
+        <span class="head" style="font-size:6px">M</span><span class="head" style="font-size:6px">T</span><span class="head" style="font-size:6px">W</span><span class="head" style="font-size:6px">T</span><span class="head" style="font-size:6px">F</span>
+        <span>14</span><span>15</span><span>16</span><span>17</span><span class="today">18</span>
+        <span>21</span><span class="has-ev">22</span><span>23</span><span>24</span><span class="has-ev">25</span>
+      </div>
+    </div>
+    <div class="combo-cell">
+      <div class="combo-cell-name">Progress</div>
+      <div class="txt-num" style="font-size:28px;text-align:center">65%</div>
+      <div class="neo-prog" style="margin-top:8px"><div class="neo-prog-fill" style="width:65%"></div></div>
+      <div class="txt-m" style="margin-top:4px;text-align:center">마감 4/25</div>
+    </div>
+  </div>
+</div>
+
+<!-- Combo 3: 가계부 -->
+<div class="combo">
+  <div class="combo-title">가계부 / 재무</div>
+  <div class="combo-desc">"이번 달 돈 관리해줘" — Expense + Calendar + Goal Tracker</div>
+  <div class="combo-grid combo-2">
+    <div class="combo-cell">
+      <div class="combo-cell-name">Expense</div>
+      <div class="txt-num" style="font-size:24px">&#8361;342,500</div>
+      <div style="display:flex;gap:4px;margin:8px 0">
+        <div style="flex:3;height:12px;border-radius:var(--rad-xs);background:var(--acc);opacity:.8"></div>
+        <div style="flex:2;height:12px;border-radius:var(--rad-xs);background:var(--acc2);opacity:.6"></div>
+        <div style="flex:1;height:12px;border-radius:var(--rad-xs);background:var(--bg);box-shadow:var(--p-sm)"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between"><span class="txt-m">식비</span><span class="txt-m">교통</span><span class="txt-m">기타</span></div>
+    </div>
+    <div class="combo-cell">
+      <div class="combo-cell-name">Budget Goal</div>
+      <div style="margin-bottom:6px"><div class="neo-row" style="justify-content:space-between;margin-bottom:3px"><span class="txt-m">예산</span><span class="txt-m">₩500,000</span></div><div class="neo-prog"><div class="neo-prog-fill" style="width:68%"></div></div></div>
+      <div class="txt-m">남은 예산: ₩157,500</div>
+      <div class="txt-m" style="color:#4caf88;margin-top:auto">목표 달성 가능 <i class="ph-light ph-check" style="color:#4caf88"></i></div>
+    </div>
+  </div>
+</div>
+
+<!-- Combo 4: CRM -->
+<div class="combo">
+  <div class="combo-title">CRM / 영업</div>
+  <div class="combo-desc">"고객 관리해줘" — CRM + Calendar + Meeting Notes + KPI</div>
+  <div class="combo-grid combo-3">
+    <div class="combo-cell">
+      <div class="combo-cell-name">Contacts</div>
+      <div class="neo-raised" style="padding:6px 8px;margin-bottom:3px;display:flex;align-items:center;gap:6px;font-size:10px"><div class="neo-circle" style="width:20px;height:20px;font-size:8px;color:var(--acc)">J</div><span class="txt-s">정서연</span></div>
+      <div class="neo-raised" style="padding:6px 8px;margin-bottom:3px;display:flex;align-items:center;gap:6px;font-size:10px"><div class="neo-circle" style="width:20px;height:20px;font-size:8px;color:var(--acc)">P</div><span class="txt-s">박지호</span></div>
+      <div class="neo-raised" style="padding:6px 8px;display:flex;align-items:center;gap:6px;font-size:10px"><div class="neo-circle" style="width:20px;height:20px;font-size:8px;color:var(--acc2)">L</div><span class="txt-s">이하은</span></div>
+    </div>
+    <div class="combo-cell">
+      <div class="combo-cell-name">Upcoming</div>
+      <div class="txt-m" style="margin-bottom:4px"><b>4/22</b> 박지호 미팅</div>
+      <div class="txt-m" style="margin-bottom:4px"><b>4/25</b> 정서연 리뷰</div>
+      <div class="txt-m"><b>5/1</b> 이하은 온보딩</div>
+    </div>
+    <div class="combo-cell">
+      <div class="combo-cell-name">KPI</div>
+      <div style="text-align:center"><div class="txt-num" style="font-size:22px">12</div><div class="txt-m">미팅 이번 달</div></div>
+      <div style="text-align:center;margin-top:8px"><div class="txt-num" style="font-size:22px;color:var(--acc)">3</div><div class="txt-m">계약 성사</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- Combo 5: 다이어리 -->
+<div class="combo">
+  <div class="combo-title">다이어리 / 셀프케어</div>
+  <div class="combo-desc">"하루 기록하고 싶어" — Journal + Habit + Mood</div>
+  <div class="combo-grid combo-3">
+    <div class="combo-cell">
+      <div class="combo-cell-name">Journal</div>
+      <div class="txt-m" style="font-size:11px;font-weight:700;color:var(--acc);margin-bottom:4px;display:inline-flex;padding:3px 8px;border-radius:var(--rad-xs);background:var(--bg);box-shadow:var(--p-sm)">좋음</div>
+      <div class="txt-m" style="line-height:1.5">오늘은 좋은 하루였다. 디자인 시스템이 거의 완성되어 가고 있다.</div>
+    </div>
+    <div class="combo-cell">
+      <div class="combo-cell-name">Habits</div>
+      <div style="display:flex;gap:2px;flex-wrap:wrap">
+        <div class="hm-cell l4"></div><div class="hm-cell l3"></div><div class="hm-cell l4"></div><div class="hm-cell"></div><div class="hm-cell l2"></div><div class="hm-cell l4"></div><div class="hm-cell l3"></div>
+        <div class="hm-cell l1"></div><div class="hm-cell l4"></div><div class="hm-cell l3"></div><div class="hm-cell l4"></div><div class="hm-cell"></div><div class="hm-cell l2"></div><div class="hm-cell l4"></div>
+      </div>
+      <div class="txt-m" style="margin-top:6px">연속 4일 <i class="ph-light ph-fire" style="color:var(--acc)"></i></div>
+    </div>
+    <div class="combo-cell">
+      <div class="combo-cell-name">Mood</div>
+      <div style="display:flex;gap:4px;align-items:flex-end;height:60px">
+        <div style="width:16px;height:40%;border-radius:var(--rad-xs);background:color-mix(in srgb,var(--acc) 30%,var(--bg))"></div>
+        <div style="width:16px;height:60%;border-radius:var(--rad-xs);background:color-mix(in srgb,var(--acc) 50%,var(--bg))"></div>
+        <div style="width:16px;height:45%;border-radius:var(--rad-xs);background:color-mix(in srgb,var(--acc) 35%,var(--bg))"></div>
+        <div style="width:16px;height:80%;border-radius:var(--rad-xs);background:color-mix(in srgb,var(--acc) 70%,var(--bg))"></div>
+        <div style="width:16px;height:90%;border-radius:var(--rad-xs);background:var(--acc)"></div>
+      </div>
+      <div class="txt-m" style="margin-top:4px">이번 주 기분 추이</div>
+    </div>
+  </div>
+</div>
+
+<!-- Combo 6: 독서 -->
+<div class="combo">
+  <div class="combo-title">독서 / 큐레이션</div>
+  <div class="combo-desc">"읽은 책 정리하고 싶어" — Reading List + Summary + Dictionary</div>
+  <div class="combo-grid combo-2-1">
+    <div class="combo-cell">
+      <div class="combo-cell-name">Reading List</div>
+      <div class="neo-row" style="margin-bottom:4px"><div class="neo-chk on" style="width:14px;height:14px;font-size:8px"><i class="ph-light ph-check" style="color:var(--acc)"></i></div><div><div class="txt-s" style="font-weight:600;text-decoration:line-through;color:var(--t-mu)">사피엔스</div></div></div>
+      <div class="neo-row" style="margin-bottom:4px;border-left:2px solid var(--acc);padding-left:4px"><div class="neo-chk" style="width:14px;height:14px;font-size:8px"><i class="ph-light ph-check" style="color:var(--acc)"></i></div><div><div class="txt-s" style="font-weight:600">총균쇠</div><div class="txt-m">p.142 / 350</div></div></div>
+      <div class="neo-row"><div class="neo-chk" style="width:14px;height:14px;font-size:8px"><i class="ph-light ph-check" style="color:var(--acc)"></i></div><div><div class="txt-s">넛지</div></div></div>
+    </div>
+    <div class="combo-cell">
+      <div class="combo-cell-name">Summary</div>
+      <div class="txt-s" style="font-weight:600;margin-bottom:2px">사피엔스 핵심</div>
+      <div class="txt-m" style="line-height:1.5">인지혁명 → 농업혁명 → 과학혁명의 3단계로 인류 역사 조망</div>
+    </div>
+  </div>
+</div>
+
+<!-- Combo 7: 운동 -->
+<div class="combo">
+  <div class="combo-title">운동 / 건강</div>
+  <div class="combo-desc">"운동 기록하고 싶어" — Workout + Habit + Goal</div>
+  <div class="combo-grid combo-3">
+    <div class="combo-cell">
+      <div class="combo-cell-name">Today</div>
+      <div class="neo-pressed" style="padding:6px 8px;margin-bottom:3px;font-size:9px"><span class="txt-s" style="font-weight:600">벤치</span> <span class="txt-m">60kg × 5</span></div>
+      <div class="neo-pressed" style="padding:6px 8px;margin-bottom:3px;font-size:9px"><span class="txt-s" style="font-weight:600">플라이</span> <span class="txt-m">14kg × 4</span></div>
+      <div class="neo-pressed" style="padding:6px 8px;font-size:9px"><span class="txt-s" style="font-weight:600">숄더</span> <span class="txt-m">20kg × 4</span></div>
+    </div>
+    <div class="combo-cell">
+      <div class="combo-cell-name">Streak</div>
+      <div style="display:flex;gap:2px;flex-wrap:wrap">
+        <div class="hm-cell l4"></div><div class="hm-cell l3"></div><div class="hm-cell"></div><div class="hm-cell l4"></div><div class="hm-cell l2"></div><div class="hm-cell l4"></div><div class="hm-cell l3"></div>
+      </div>
+      <div class="txt-m" style="margin-top:auto">이번 주 5/7</div>
+    </div>
+    <div class="combo-cell" style="align-items:center;justify-content:center">
+      <div class="combo-cell-name" style="align-self:flex-start">Goal</div>
+      <div class="txt-num" style="font-size:28px">-3kg</div>
+      <div class="neo-prog" style="width:100%;margin-top:8px"><div class="neo-prog-fill" style="width:60%"></div></div>
+      <div class="txt-m" style="margin-top:4px">목표 -5kg</div>
+    </div>
+  </div>
+</div>
+
+<!-- Combo 8: 창업 -->
+<div class="combo">
+  <div class="combo-title">창업 / 사업</div>
+  <div class="combo-desc">"사업 준비 중이야" — SWOT + KPI + Project + Pitch</div>
+  <div class="combo-grid combo-2">
+    <div class="combo-cell">
+      <div class="combo-cell-name">SWOT</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:8px">
+        <div class="neo-raised" style="padding:6px"><span style="font-weight:700;color:var(--acc)">S</span> 대화형 UX</div>
+        <div class="neo-raised" style="padding:6px"><span style="font-weight:700;color:#e06060">W</span> 인지도</div>
+        <div class="neo-raised" style="padding:6px"><span style="font-weight:700;color:#4caf88">O</span> AI 성장</div>
+        <div class="neo-raised" style="padding:6px"><span style="font-weight:700;color:var(--t-mu)">T</span> 빅테크</div>
+      </div>
+    </div>
+    <div class="combo-cell">
+      <div class="combo-cell-name">KPI</div>
+      <div style="display:flex;gap:12px">
+        <div style="text-align:center"><div class="txt-num" style="font-size:18px">2.8K</div><div class="txt-m">MAU</div></div>
+        <div style="text-align:center"><div class="txt-num" style="font-size:18px">67%</div><div class="txt-m">리텐션</div></div>
+        <div style="text-align:center"><div class="txt-num" style="font-size:18px;color:var(--acc)">342</div><div class="txt-m">가입</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Combo 9: 스터디 그룹 -->
+<div class="combo">
+  <div class="combo-title">스터디 그룹</div>
+  <div class="combo-desc">"스터디 만들자" — Group + Notes + Flashcard + Leaderboard</div>
+  <div class="combo-grid combo-2">
+    <div class="combo-cell">
+      <div class="combo-cell-name">Members</div>
+      <div class="neo-raised" style="padding:6px 8px;margin-bottom:3px;display:flex;align-items:center;gap:6px;font-size:10px">
+        <div class="neo-circle" style="width:20px;height:20px;font-size:8px;color:var(--acc)">S</div><span class="txt-s">서연</span>
+        <div class="neo-prog" style="width:40px;margin-left:auto"><div class="neo-prog-fill" style="width:85%"></div></div>
+      </div>
+      <div class="neo-raised" style="padding:6px 8px;margin-bottom:3px;display:flex;align-items:center;gap:6px;font-size:10px">
+        <div class="neo-circle" style="width:20px;height:20px;font-size:8px;color:var(--acc)">K</div><span class="txt-s">김태</span>
+        <div class="neo-prog" style="width:40px;margin-left:auto"><div class="neo-prog-fill" style="width:72%"></div></div>
+      </div>
+    </div>
+    <div class="combo-cell">
+      <div class="combo-cell-name">Ranking</div>
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:10px"><i class="ph-light ph-medal" style="color:var(--acc)"></i><span class="txt-s" style="font-weight:700">서연</span><span class="txt-m" style="margin-left:auto">2,340</span></div>
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:10px"><i class="ph-light ph-medal" style="color:var(--t-sec)"></i><span class="txt-s">김태</span><span class="txt-m" style="margin-left:auto">2,180</span></div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:10px"><i class="ph-light ph-medal" style="color:var(--acc2)"></i><span class="txt-s">민수</span><span class="txt-m" style="margin-left:auto">1,920</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- Combo 10: 여행 -->
+<div class="combo">
+  <div class="combo-title">여행</div>
+  <div class="combo-desc">"여행 계획 짜줘" — Planner + Calendar + Expense + Checklist</div>
+  <div class="combo-grid combo-3">
+    <div class="combo-cell">
+      <div class="combo-cell-name">Itinerary</div>
+      <div class="neo-raised" style="padding:6px 8px;margin-bottom:3px;border-left:2px solid var(--acc);font-size:9px"><b>Day 1</b> 시부야 → 하라주쿠</div>
+      <div class="neo-raised" style="padding:6px 8px;margin-bottom:3px;font-size:9px"><b>Day 2</b> 아사쿠사 → 아키하바라</div>
+      <div class="neo-raised" style="padding:6px 8px;font-size:9px"><b>Day 3</b> 가마쿠라</div>
+    </div>
+    <div class="combo-cell">
+      <div class="combo-cell-name">Budget</div>
+      <div class="txt-num" style="font-size:18px">¥150,000</div>
+      <div class="neo-prog" style="margin-top:6px"><div class="neo-prog-fill" style="width:35%"></div></div>
+      <div class="txt-m" style="margin-top:4px">사용 35%</div>
+    </div>
+    <div class="combo-cell">
+      <div class="combo-cell-name">Checklist</div>
+      <div class="neo-row" style="margin-bottom:2px"><div class="neo-chk on" style="width:12px;height:12px;font-size:7px"><i class="ph-light ph-check" style="color:var(--acc)"></i></div><span class="txt-m">여권</span></div>
+      <div class="neo-row" style="margin-bottom:2px"><div class="neo-chk on" style="width:12px;height:12px;font-size:7px"><i class="ph-light ph-check" style="color:var(--acc)"></i></div><span class="txt-m">항공권</span></div>
+      <div class="neo-row" style="margin-bottom:2px"><div class="neo-chk" style="width:12px;height:12px;font-size:7px"><i class="ph-light ph-check" style="color:var(--acc)"></i></div><span class="txt-m">환전</span></div>
+      <div class="neo-row"><div class="neo-chk" style="width:12px;height:12px;font-size:7px"><i class="ph-light ph-check" style="color:var(--acc)"></i></div><span class="txt-m">보험</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- Combo 11: 포트폴리오 -->
+<div class="combo">
+  <div class="combo-title">포트폴리오</div>
+  <div class="combo-desc">"포트폴리오 만들고 싶어" — Gallery + Timeline + Profile</div>
+  <div class="combo-grid combo-1-2">
+    <div class="combo-cell" style="align-items:center;justify-content:center">
+      <div class="neo-circle" style="width:56px;height:56px;font-size:20px;color:var(--acc);box-shadow:var(--r-md)">K</div>
+      <div class="txt-h" style="font-size:13px;margin-top:6px">김태</div>
+      <div class="txt-m">Frontend Developer</div>
+    </div>
+    <div class="combo-cell">
+      <div class="combo-cell-name">Projects</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
+        <div style="aspect-ratio:4/3;border-radius:var(--rad-xs);background:linear-gradient(135deg,var(--acc),var(--acc2));box-shadow:var(--r-xs);display:flex;align-items:center;justify-content:center;font-size:8px;color:#fff;font-weight:600">OU</div>
+        <div style="aspect-ratio:4/3;border-radius:var(--rad-xs);background:linear-gradient(135deg,#8BA5B5,#5A7A8C);box-shadow:var(--r-xs);display:flex;align-items:center;justify-content:center;font-size:8px;color:#fff;font-weight:600">App</div>
+        <div style="aspect-ratio:4/3;border-radius:var(--rad-xs);background:linear-gradient(135deg,#A3B5A0,#7D9478);box-shadow:var(--r-xs);display:flex;align-items:center;justify-content:center;font-size:8px;color:#fff;font-weight:600">Web</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Combo 12: 요리/식단 -->
+<div class="combo">
+  <div class="combo-title">요리 / 식단</div>
+  <div class="combo-desc">"식단 관리해줘" — Recipe + Calendar + Expense</div>
+  <div class="combo-grid combo-3">
+    <div class="combo-cell">
+      <div class="combo-cell-name">Recipe</div>
+      <div class="txt-s" style="font-weight:600;margin-bottom:2px">알리오 올리오</div>
+      <div class="txt-m">30분 · 2인분</div>
+      <div style="display:flex;gap:3px;margin-top:6px;flex-wrap:wrap">
+        <span class="neo-tag" style="font-size:7px">파스타</span><span class="neo-tag" style="font-size:7px">마늘</span><span class="neo-tag" style="font-size:7px">올리브오일</span>
+      </div>
+    </div>
+    <div class="combo-cell">
+      <div class="combo-cell-name">Meal Plan</div>
+      <div class="txt-m"><b>월</b> 샐러드 / 파스타 / 닭가슴살</div>
+      <div class="txt-m"><b>화</b> 토스트 / 김밥 / 스테이크</div>
+      <div class="txt-m"><b>수</b> 오트밀 / 비빔밥 / 연어</div>
+    </div>
+    <div class="combo-cell">
+      <div class="combo-cell-name">Food Cost</div>
+      <div class="txt-num" style="font-size:18px">₩186,000</div>
+      <div class="txt-m" style="margin-top:4px">이번 주 식비</div>
+      <div class="neo-prog" style="margin-top:8px"><div class="neo-prog-fill" style="width:74%"></div></div>
+      <div class="txt-m" style="margin-top:2px">주간 예산의 74%</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /tier combos -->
+
+</div><!-- /page -->
+
+<div class="footer">OU &mdash; OWN UNIVERSE &middot; 50 VIEWS + 12 COMBOS</div>
+
+<script>
+function setT(t,el){
+  document.documentElement.setAttribute('data-theme',t);
+  document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+}
+function setP(n){
+  document.documentElement.setAttribute('data-palette',n);
+  document.querySelectorAll('.pd').forEach(d=>d.classList.remove('on'));
+  document.querySelector(`[data-p="${n}"]`).classList.add('on');
+}
+</script>
+</body>
+</html>

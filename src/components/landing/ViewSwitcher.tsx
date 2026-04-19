@@ -96,7 +96,7 @@ export function ViewSwitcher() {
               {GRAPH_EDGES.map((e, i) => {
                 const from = GRAPH_NODES.find(n => n.id === e.from)!;
                 const to = GRAPH_NODES.find(n => n.id === e.to)!;
-                return <line key={i} x1={`${from.x}%`} y1={`${from.y}%`} x2={`${to.x}%`} y2={`${to.y}%`} stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />;
+                return <line key={i} x1={`${from.x}%`} y1={`${from.y}%`} x2={`${to.x}%`} y2={`${to.y}%`} stroke="var(--ou-border-faint)" strokeWidth="0.5" />;
               })}
             </svg>
             {GRAPH_NODES.map(n => (
@@ -107,8 +107,8 @@ export function ViewSwitcher() {
               }}>
                 <div style={{
                   width: n.size * 2, height: n.size * 2, borderRadius: '50%',
-                  background: `rgba(255,255,255,${n.size > 6 ? 0.85 : 0.6})`,
-                  boxShadow: `0 0 ${n.size * 2}px ${n.size}px rgba(255,255,255,0.08)`,
+                  background: `rgba(0,0,0,${n.size > 6 ? 0.76 : 0.48})`,
+                  boxShadow: 'var(--ou-neu-raised-sm)',
                 }} />
                 <span style={{ fontSize: 10, color: 'var(--ou-text-dimmed)', whiteSpace: 'nowrap' }}>{n.label}</span>
               </div>

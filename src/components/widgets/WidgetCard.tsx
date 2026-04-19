@@ -24,8 +24,9 @@ export const WidgetCard = memo(function WidgetCard({ widgetId, type, removable, 
     scrollable === 'both'       ? { overflow: 'auto' } :
                                   { overflow: 'hidden' };
 
-  // Edit mode: show card border+bg. Normal mode: transparent.
-  const cardClassName = editMode ? styles.cardEdit : styles.cardNormal;
+  // Orb widget: always transparent card. Others: neumorphism raised.
+  const isOrb = type === 'ou-view';
+  const cardClassName = editMode ? styles.cardEdit : (isOrb ? styles.cardless : styles.cardNormal);
 
   return (
     <div className={cardClassName} style={editMode ? { animation: 'wiggle 1.5s ease-in-out infinite' } : undefined}>

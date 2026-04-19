@@ -10,7 +10,7 @@ const VIEW_GEN_SYSTEM = `당신은 OU 데이터 뷰를 생성하는 전문가입
 규칙:
 1. 외부 네트워크 fetch 절대 금지
 2. const OU = window.OU 로 데이터 접근
-3. CSS는 var(--mantine-color-*) 변수 우선 사용
+3. CSS는 var(--ou-*) 변수 우선 사용
 4. 배경색 유채색 금지. 흰~흑 계열만.
 5. 완성된 HTML 파일만 출력. 설명 없이.`;
 

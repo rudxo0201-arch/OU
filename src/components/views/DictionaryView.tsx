@@ -1,10 +1,8 @@
 'use client';
 
-import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { MagnifyingGlass, X, ArrowLeft } from '@phosphor-icons/react';
 import type { ViewProps } from './registry';
-import { useLayoutStyles } from '@/hooks/useLayoutStyles';
-import type { LayoutConfig } from '@/types/layout-config';
 
 const CJK_REGEX = /[\u4E00-\u9FFF\u3400-\u4DBF\uF900-\uFAFF]/g;
 
@@ -75,27 +73,95 @@ function getAvailableFilters(nodes: any[]) {
   };
 }
 
-function HanjaCard({ node, onClick, styles }: { node: any; onClick: () => void; styles: ReturnType<typeof useLayoutStyles> }) {
+// hangul_reading "물 수" 형식 → { hun: "물", eum: "수" } 파싱
+function parseHangulReading(raw: string): { hun: string; eum: string } {
+  const trimmed = raw.trim();
+  if (!trimmed) return { hun: '', eum: '' };
+  const parts = trimmed.split(/\s+/);
+  if (parts.length === 1) return { hun: '', eum: parts[0] };
+  return { hun: parts.slice(0, -1).join(' '), eum: parts[parts.length - 1] };
+}
+
+const CJK_FONT = '"PingFang SC", "Apple SD Gothic Neo", "Noto Serif KR", "Source Han Serif K", "Microsoft YaHei", "Noto Sans CJK KR", serif';
+
+function HanjaCard({ node, onClick }: { node: any; onClick: () => void }) {
   const d = getNodeDomainData(node);
-  const hun = d.readings?.ko_hun?.[0] || '';
-  const eum = d.readings?.ko?.[0] || d.hangul_reading || '';
-  const displayReading = hun && eum ? `${hun} ${eum}` : eum || hun;
+
+  // 음(음독): readings.ko 우선, 없으면 hangul_reading 파싱
+  const parsedReading = useMemo(() => parseHangulReading(d.hangul_reading || ''), [d.hangul_reading]);
+  const eum = d.readings?.ko?.[0] || parsedReading.eum;
+  const hun = d.readings?.ko_hun?.[0] || parsedReading.hun;
 
   return (
-    <div onClick={onClick} className="hanja-card" style={{ ...styles.card, cursor: 'pointer', textAlign: 'center', transition: 'border-color 0.15s ease', border: '0.5px solid var(--ou-border, #333)', borderRadius: 8, padding: 12 }}>
-      <span style={styles.primary}>{d.char}</span>
-      {styles.isFieldVisible('reading') && (
-        <span style={{ ...styles.secondary, marginTop: 4, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{displayReading}</span>
+    <div
+      onClick={onClick}
+      style={{
+        cursor: 'pointer',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 5,
+        padding: '12px 6px 10px',
+        borderRadius: 10,
+        border: '0.5px solid var(--ou-border-faint, rgba(0,0,0,0.08))',
+        background: 'var(--ou-bg)',
+        transition: 'box-shadow 0.15s ease, border-color 0.15s ease',
+        minHeight: 90,
+        userSelect: 'none',
+        overflow: 'hidden',
+      }}
+      onMouseEnter={e => {
+        (e.currentTarget as HTMLElement).style.boxShadow = 'var(--ou-neu-raised-sm, 0 2px 8px rgba(0,0,0,0.1))';
+        (e.currentTarget as HTMLElement).style.borderColor = 'var(--ou-border, rgba(0,0,0,0.2))';
+      }}
+      onMouseLeave={e => {
+        (e.currentTarget as HTMLElement).style.boxShadow = '';
+        (e.currentTarget as HTMLElement).style.borderColor = 'var(--ou-border-faint, rgba(0,0,0,0.08))';
+      }}
+    >
+      {/* 한자 */}
+      <span style={{
+        fontSize: 34,
+        fontWeight: 600,
+        lineHeight: 1,
+        color: 'var(--ou-text-strong)',
+        fontFamily: CJK_FONT,
+      }}>
+        {d.char}
+      </span>
+
+      {/* 뜻 (훈) — 둥근 pill 테두리 */}
+      {hun ? (
+        <span style={{
+          display: 'inline-block',
+          maxWidth: 'calc(100% - 8px)',
+          padding: '1px 8px',
+          border: '0.5px solid var(--ou-border, rgba(0,0,0,0.18))',
+          borderRadius: 999,
+          fontSize: 10,
+          color: 'var(--ou-text-body)',
+          lineHeight: 1.5,
+          textAlign: 'center',
+          wordBreak: 'keep-all',
+          overflowWrap: 'break-word',
+          whiteSpace: 'normal',
+        }}>
+          {hun}
+        </span>
+      ) : (
+        <span style={{ height: 18 }} />
       )}
-      <div style={{ display: 'flex', gap: 4, marginTop: 4, justifyContent: 'center', alignItems: 'center' }}>
-        {styles.isFieldVisible('stroke') && <span style={styles.tertiary}>{d.stroke_count}획</span>}
-        {styles.isFieldVisible('radical') && d.radical_char && <span style={styles.tertiary}>{d.radical_char}부</span>}
-        {styles.isFieldVisible('grade') && d.grade != null && (
-          <span style={{ fontSize: 10, padding: '1px 6px', border: '0.5px solid var(--ou-border, #333)', borderRadius: 4 }}>
-            {d.grade > 0 ? `${d.grade}급` : '특급'}
-          </span>
-        )}
-      </div>
+
+      {/* 음 (음독) */}
+      <span style={{
+        fontSize: 11,
+        color: eum ? 'var(--ou-text-secondary)' : 'transparent',
+        letterSpacing: '0.03em',
+        minHeight: 14,
+      }}>
+        {eum || '·'}
+      </span>
     </div>
   );
 }
@@ -182,8 +248,7 @@ interface DictionaryViewProps extends ViewProps {
   loading?: boolean;
 }
 
-export function DictionaryView({ nodes, onSearch, total, loading, layoutConfig }: DictionaryViewProps) {
-  const styles = useLayoutStyles(layoutConfig);
+export function DictionaryView({ nodes, onSearch, total, loading }: DictionaryViewProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedQuery = useDebouncedValue(searchQuery, 200);
   const [filters, setFilters] = useState<Filters>({});
@@ -199,11 +264,33 @@ export function DictionaryView({ nodes, onSearch, total, loading, layoutConfig }
     onSearch({ query: debouncedQuery || undefined, radical: filters.radical, grade: filters.gradeMin?.toString(), page });
   }, [debouncedQuery, filters, page, isServerMode]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // 클라이언트 모드 검색 로그 (서버 모드는 API에서 직접 로깅)
+  useEffect(() => {
+    if (isServerMode) return;
+    if (!debouncedQuery && Object.keys(filters).length === 0) return;
+    fetch('/api/log/search', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        searchContext: 'dictionary',
+        query: debouncedQuery,
+        filters,
+        resultCount: filteredNodes.length,
+        searchMode: 'client',
+        page,
+      }),
+    }).catch(() => {});
+  }, [debouncedQuery, filters, isServerMode]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const filteredNodes = useMemo(() => {
     if (isServerMode) return nodes;
+    const seenChars = new Set<string>();
     let result = nodes.filter(n => {
       const d = getNodeDomainData(n);
       if (d.type !== 'hanja') return false;
+      // char 기준 중복 제거
+      if (d.char && seenChars.has(d.char)) return false;
+      if (d.char) seenChars.add(d.char);
       if (!matchesSearchFn(n, debouncedQuery, hanjaChars)) return false;
       if (!matchesFilters(n, filters)) return false;
       return true;
@@ -225,8 +312,6 @@ export function DictionaryView({ nodes, onSearch, total, loading, layoutConfig }
   const handleFilterChange = useCallback((key: keyof Filters, value: any) => { setFilters(prev => ({ ...prev, [key]: value })); setPage(1); }, []);
   const clearFilter = useCallback((key: keyof Filters) => { setFilters(prev => { const next = { ...prev }; delete next[key]; return next; }); setPage(1); }, []);
   const handleSearchChange = useCallback((val: string) => { setSearchQuery(val); setPage(1); }, []);
-
-  const gridCols = typeof styles.gridColumns === 'number' ? styles.gridColumns : 6;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: 16 }}>
@@ -295,9 +380,9 @@ export function DictionaryView({ nodes, onSearch, total, loading, layoutConfig }
         <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)' }}>{totalCount.toLocaleString()}자</span>
       </div>
 
-      {/* Card grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${gridCols}, 1fr)`, gap: styles.gridGap ?? 8 }}>
-        {pagedNodes.map(node => (<HanjaCard key={node.id} node={node} onClick={() => handleCardClick(node)} styles={styles} />))}
+      {/* Card grid — auto-fill, 최소 88px 카드 */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(88px, 1fr))', gap: 8 }}>
+        {pagedNodes.filter(n => getNodeDomainData(n).char).map(node => (<HanjaCard key={node.id} node={node} onClick={() => handleCardClick(node)} />))}
       </div>
 
       {/* Pagination */}

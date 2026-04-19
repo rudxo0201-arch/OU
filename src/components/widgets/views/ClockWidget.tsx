@@ -28,7 +28,7 @@ export function ClockWidget() {
       gap: 8,
     }}>
       <span style={{
-        fontFamily: "var(--ou-font-logo)",
+        fontFamily: "var(--ou-font-display)",
         fontSize: 36,
         fontWeight: 300,
         color: 'var(--ou-text-bright)',

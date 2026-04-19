@@ -567,6 +567,7 @@ export function UniverseView({ visible }: Props) {
 
     // Animation loop
     let frameCount = 0;
+    let prevZoomLevel: 'macro' | 'micro' | 'local' = 'macro';
     const animate = () => {
       state.raf = requestAnimationFrame(animate);
       controls.update();
@@ -612,9 +613,10 @@ export function UniverseView({ visible }: Props) {
       }
 
       const currentZoom = camera.position.distanceTo(controls.target);
-      if (currentZoom > ZOOM_THRESHOLD) setZoomLevel('macro');
-      else if (state.selectedNodeId !== -1) setZoomLevel('local');
-      else setZoomLevel('micro');
+      const newZoom: 'macro' | 'micro' | 'local' =
+        currentZoom > ZOOM_THRESHOLD ? 'macro' :
+        state.selectedNodeId !== -1 ? 'local' : 'micro';
+      if (newZoom !== prevZoomLevel) { prevZoomLevel = newZoom; setZoomLevel(newZoom); }
 
       composer.render();
     };
@@ -994,6 +996,7 @@ export function UniverseView({ visible }: Props) {
 
   // Projected node cache for fast raycasting — rebuilt periodically
   const projCacheRef = useRef<{ ndc: Float32Array; frame: number }>({ ndc: new Float32Array(0), frame: 0 });
+  const prevLabelsKeyRef = useRef<string>('');
 
   function rebuildProjCache(state: NonNullable<typeof sceneRef.current>) {
     const topo = state.topology;
@@ -1021,7 +1024,10 @@ export function UniverseView({ visible }: Props) {
     const container = containerRef.current;
     if (!container) return;
     const zoom = state.camera.position.distanceTo(state.controls.target);
-    if (zoom > 1200) { setVisibleLabels([]); return; }
+    if (zoom > 1200) {
+      if (prevLabelsKeyRef.current !== '') { prevLabelsKeyRef.current = ''; setVisibleLabels([]); }
+      return;
+    }
 
     const rect = container.getBoundingClientRect();
     const labels: { x: number; y: number; label: string }[] = [];
@@ -1039,7 +1045,8 @@ export function UniverseView({ visible }: Props) {
       const sy = (1 - ny) / 2 * rect.height;
       labels.push({ x: sx, y: sy, label: topo.nodeLabels[i] });
     }
-    setVisibleLabels(labels);
+    const key = labels.map(l => `${Math.round(l.x)},${Math.round(l.y)},${l.label}`).join('|');
+    if (key !== prevLabelsKeyRef.current) { prevLabelsKeyRef.current = key; setVisibleLabels(labels); }
   }
 
   function getRaycastedNodeId(clientX: number, clientY: number, state: NonNullable<typeof sceneRef.current>, container: HTMLDivElement): number {

@@ -142,9 +142,9 @@ export function FlashcardView({ nodes }: ViewProps) {
         </div>
 
         <div style={{ display: 'flex', justifyContent: 'center', gap: 20, marginBottom: 24 }}>
-          <StatBadge label="쉬움" count={easy} color="rgba(120,255,180,0.3)" />
-          <StatBadge label="보통" count={medium} color="rgba(255,220,100,0.3)" />
-          <StatBadge label="어려움" count={hard} color="rgba(255,120,100,0.3)" />
+          <StatBadge label="쉬움" count={easy} />
+          <StatBadge label="보통" count={medium} />
+          <StatBadge label="어려움" count={hard} />
         </div>
 
         <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
@@ -177,14 +177,15 @@ export function FlashcardView({ nodes }: ViewProps) {
 
       {/* Progress bar */}
       <div style={{
-        width: '100%', maxWidth: 420, height: 3,
-        borderRadius: 2, background: 'rgba(255,255,255,0.06)',
+        width: '100%', maxWidth: 420, height: 4,
+        borderRadius: 2, background: 'var(--ou-bg)',
+        boxShadow: 'var(--ou-neu-pressed-sm)',
         marginBottom: 20, overflow: 'hidden',
       }}>
         <div style={{
           height: '100%', borderRadius: 2,
           width: `${((currentIndex + 1) / cards.length) * 100}%`,
-          background: 'rgba(255,255,255,0.3)',
+          background: 'var(--ou-text-muted)',
           transition: 'width 0.3s ease',
         }} />
       </div>
@@ -201,9 +202,10 @@ export function FlashcardView({ nodes }: ViewProps) {
         <div style={{
           minHeight: 240,
           borderRadius: 16,
-          border: '1px solid rgba(255,255,255,0.1)',
-          background: 'rgba(255,255,255,0.03)',
-          transition: 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+          border: 'none',
+          background: 'var(--ou-bg)',
+          boxShadow: flipped ? 'var(--ou-neu-pressed-lg)' : 'var(--ou-neu-raised-lg)',
+          transition: 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease',
           transformStyle: 'preserve-3d',
           transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
           position: 'relative',
@@ -215,7 +217,7 @@ export function FlashcardView({ nodes }: ViewProps) {
             alignItems: 'center', justifyContent: 'center',
             padding: 32, backfaceVisibility: 'hidden',
           }}>
-            <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', marginBottom: 12, letterSpacing: 1 }}>
+            <span style={{ fontSize: 10, color: 'var(--ou-text-muted)', marginBottom: 12, letterSpacing: 1 }}>
               FRONT · 탭하여 뒤집기
             </span>
             <span style={{
@@ -236,7 +238,7 @@ export function FlashcardView({ nodes }: ViewProps) {
             padding: 32, backfaceVisibility: 'hidden',
             transform: 'rotateY(180deg)',
           }}>
-            <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', marginBottom: 12, letterSpacing: 1 }}>
+            <span style={{ fontSize: 10, color: 'var(--ou-text-muted)', marginBottom: 12, letterSpacing: 1 }}>
               BACK
             </span>
             <span style={{
@@ -256,9 +258,9 @@ export function FlashcardView({ nodes }: ViewProps) {
           display: 'flex', gap: 8, marginBottom: 16,
           animation: 'ou-fade-in 0.2s ease',
         }}>
-          <RateButton label="어려움" shortcut="1" color="rgba(255,120,100,0.15)" borderColor="rgba(255,120,100,0.3)" onClick={() => rate(1)} />
-          <RateButton label="보통" shortcut="2" color="rgba(255,220,100,0.15)" borderColor="rgba(255,220,100,0.3)" onClick={() => rate(2)} />
-          <RateButton label="쉬움" shortcut="3" color="rgba(120,255,180,0.15)" borderColor="rgba(120,255,180,0.3)" onClick={() => rate(3)} />
+          <RateButton label="어려움" shortcut="1" onClick={() => rate(1)} />
+          <RateButton label="보통" shortcut="2" onClick={() => rate(2)} />
+          <RateButton label="쉬움" shortcut="3" onClick={() => rate(3)} />
         </div>
       )}
 
@@ -271,7 +273,7 @@ export function FlashcardView({ nodes }: ViewProps) {
         >
           <CaretLeft size={20} />
         </button>
-        <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)' }}>
+        <span style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>
           Space로 뒤집기 · ←→ 이동
         </span>
         <button
@@ -286,29 +288,33 @@ export function FlashcardView({ nodes }: ViewProps) {
   );
 }
 
-function RateButton({ label, shortcut, color, borderColor, onClick }: {
-  label: string; shortcut: string; color: string; borderColor: string; onClick: () => void;
+function RateButton({ label, shortcut, onClick }: {
+  label: string; shortcut: string; color?: string; borderColor?: string; onClick: () => void;
 }) {
   return (
     <button onClick={onClick} style={{
       padding: '10px 20px', borderRadius: 10,
-      background: color, border: `1px solid ${borderColor}`,
+      background: 'var(--ou-bg)',
+      border: 'none',
+      boxShadow: 'var(--ou-neu-raised-sm)',
       cursor: 'pointer', fontSize: 13,
       color: 'var(--ou-text-secondary)',
       display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2,
       transition: '150ms ease', minWidth: 80,
     }}>
       {label}
-      <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.25)' }}>{shortcut}</span>
+      <span style={{ fontSize: 9, color: 'var(--ou-text-muted)' }}>{shortcut}</span>
     </button>
   );
 }
 
-function StatBadge({ label, count, color }: { label: string; count: number; color: string }) {
+function StatBadge({ label, count }: { label: string; count: number; color?: string }) {
   return (
     <div style={{
       padding: '8px 16px', borderRadius: 10,
-      background: color, textAlign: 'center',
+      background: 'var(--ou-bg)',
+      boxShadow: 'var(--ou-neu-pressed-sm)',
+      textAlign: 'center',
     }}>
       <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--ou-text-strong)' }}>{count}</div>
       <div style={{ fontSize: 11, color: 'var(--ou-text-dimmed)' }}>{label}</div>
@@ -317,7 +323,9 @@ function StatBadge({ label, count, color }: { label: string; count: number; colo
 }
 
 const navBtn: React.CSSProperties = {
-  background: 'none', border: 'none',
+  background: 'var(--ou-bg)', border: 'none',
+  boxShadow: 'var(--ou-neu-raised-sm)',
+  borderRadius: 8,
   cursor: 'pointer', padding: 8,
   display: 'flex', alignItems: 'center',
   color: 'inherit',
@@ -326,7 +334,9 @@ const navBtn: React.CSSProperties = {
 const actionBtn: React.CSSProperties = {
   display: 'flex', alignItems: 'center', gap: 6,
   padding: '8px 16px', borderRadius: 999,
-  border: '0.5px solid var(--ou-border-subtle)',
+  border: 'none',
+  background: 'var(--ou-bg)',
+  boxShadow: 'var(--ou-neu-raised-sm)',
   fontSize: 12, color: 'var(--ou-text-dimmed)',
   cursor: 'pointer',
 };

@@ -2,7 +2,6 @@ import './globals.css';
 
 import { Orbitron } from 'next/font/google';
 import { AuthProvider } from '@/components/ui/AuthProvider';
-import { Stars } from '@/components/ui/Stars';
 
 const orbitron = Orbitron({
   subsets: ['latin'],
@@ -18,17 +17,26 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ko" className={orbitron.variable} data-theme="dark">
+    <html lang="ko" className={orbitron.variable} data-theme="light" data-palette="sunrise">
       <head>
+        <script dangerouslySetInnerHTML={{ __html: `
+          try{
+            var t=localStorage.getItem('ou-theme');
+            var p=localStorage.getItem('ou-palette');
+            if(t)document.documentElement.setAttribute('data-theme',t);
+            if(p)document.documentElement.setAttribute('data-palette',p);
+          }catch(e){}
+        `}} />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" sizes="any" />
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#060810" />
+        <meta name="theme-color" content="#e8ecf1" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet" />
       </head>
-      <body style={{ background: '#060810', color: 'rgba(255,255,255,0.85)', margin: 0 }}>
-        <Stars />
+      <body>
         <AuthProvider>
           {children}
         </AuthProvider>

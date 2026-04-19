@@ -29,7 +29,7 @@ const MOOD_MAP: Record<string, { emoji: string; color: string; label: string }> 
   '설렘':  { emoji: '🥰', color: 'rgba(255,180,200,0.3)', label: '설렘' },
 };
 
-const DEFAULT_MOOD = { emoji: '📝', color: 'rgba(255,255,255,0.05)', label: '' };
+const DEFAULT_MOOD = { emoji: '📝', color: 'var(--ou-border-faint)', label: '' };
 
 function getMoodInfo(mood?: string) {
   if (!mood) return DEFAULT_MOOD;
@@ -99,8 +99,9 @@ export function JournalView({ nodes }: ViewProps) {
         <div style={{
           display: 'flex', gap: 8, marginBottom: 24,
           padding: '12px 16px', borderRadius: 12,
-          background: 'rgba(255,255,255,0.02)',
-          border: '1px solid rgba(255,255,255,0.06)',
+          background: 'var(--ou-bg)',
+          border: 'none',
+          boxShadow: 'var(--ou-neu-pressed-sm)',
           flexWrap: 'wrap',
         }}>
           {moodStats.slice(0, 5).map(([mood, count]) => {
@@ -149,10 +150,11 @@ export function JournalView({ nodes }: ViewProps) {
                     style={{
                       padding: '12px 16px',
                       borderRadius: 10,
-                      border: `1px solid ${isExpanded ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.06)'}`,
+                      border: 'none',
                       background: info.color,
                       cursor: 'pointer',
                       transition: '150ms ease',
+                      boxShadow: isExpanded ? 'var(--ou-neu-pressed-sm)' : 'var(--ou-neu-raised-sm)',
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>

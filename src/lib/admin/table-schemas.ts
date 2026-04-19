@@ -411,6 +411,22 @@ export const TABLE_SCHEMAS: TableSchema[] = [
       { name: 'created_at', type: 'timestamp', label: '생성일', editable: false },
     ],
   },
+  {
+    name: 'search_log',
+    label: '검색 로그',
+    defaultSort: 'created_at',
+    columns: [
+      { name: 'id', type: 'uuid', label: 'ID', editable: false },
+      { name: 'user_id', type: 'uuid', label: '회원', editable: false, fkTable: 'profiles', fkDisplay: 'display_name' },
+      { name: 'search_context', type: 'text', label: '검색 위치', editable: false },
+      { name: 'query', type: 'text', label: '검색어', editable: false },
+      { name: 'filters', type: 'json', label: '필터', editable: false },
+      { name: 'result_count', type: 'integer', label: '결과 수', editable: false },
+      { name: 'search_mode', type: 'text', label: '검색 모드', editable: false },
+      { name: 'page', type: 'integer', label: '페이지', editable: false },
+      { name: 'created_at', type: 'timestamp', label: '검색 시각', editable: false },
+    ],
+  },
 ];
 
 /** 테이블명 화이트리스트 */

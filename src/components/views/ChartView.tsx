@@ -77,8 +77,8 @@ function DonutChart({ data, total }: { data: [string, number][]; total: number }
   if (data.length === 0) {
     return (
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-        <circle cx={size/2} cy={size/2} r={radius} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={strokeWidth} />
-        <text x={size/2} y={size/2} textAnchor="middle" dy="0.35em" fill="rgba(255,255,255,0.3)" fontSize="12">데이터 없음</text>
+        <circle cx={size/2} cy={size/2} r={radius} fill="none" stroke="var(--ou-border-faint)" strokeWidth={strokeWidth} />
+        <text x={size/2} y={size/2} textAnchor="middle" dy="0.35em" fill="var(--ou-text-dimmed)" fontSize="12">데이터 없음</text>
       </svg>
     );
   }
@@ -137,11 +137,12 @@ export function ChartView({ nodes, inline }: ViewProps & { inline?: boolean }) {
     return (
       <div style={{
         padding: '10px 14px',
-        border: '0.5px solid var(--ou-border-subtle)',
+        border: 'none',
         borderRadius: 'var(--ou-radius-md, 8px)',
+        boxShadow: 'var(--ou-neu-pressed-sm)',
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', letterSpacing: 1 }}>SPENDING</span>
+          <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed)', letterSpacing: 1 }}>SPENDING</span>
           <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ou-text-strong)' }}>
             {totalAmount.toLocaleString()}원
           </span>
@@ -172,7 +173,7 @@ export function ChartView({ nodes, inline }: ViewProps & { inline?: boolean }) {
       </div>
 
       {/* Donut chart */}
-      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }}>
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24, padding: 16, borderRadius: 12, boxShadow: 'var(--ou-neu-raised-sm)' }}>
         <DonutChart data={byCategory} total={totalAmount} />
       </div>
 
@@ -189,7 +190,7 @@ export function ChartView({ nodes, inline }: ViewProps & { inline?: boolean }) {
                 </div>
                 <span style={{ fontSize: 12, color: 'var(--ou-text-dimmed)' }}>{amount.toLocaleString()}원 ({percent}%)</span>
               </div>
-              <div style={{ height: 6, borderRadius: 3, background: 'rgba(255,255,255,0.04)', overflow: 'hidden' }}>
+              <div style={{ height: 6, borderRadius: 3, background: 'var(--ou-border-faint)', overflow: 'hidden' }}>
                 <div style={{
                   height: '100%', borderRadius: 3,
                   width: `${(amount / maxCatAmount) * 100}%`,
@@ -208,8 +209,10 @@ export function ChartView({ nodes, inline }: ViewProps & { inline?: boolean }) {
         {monthItems.slice(0, 10).map((item, i) => (
           <div key={`${item.id}-${i}`} style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            padding: '8px 0',
-            borderBottom: '1px solid rgba(255,255,255,0.04)',
+            padding: '10px 12px',
+            marginBottom: 6,
+            borderRadius: 8,
+            boxShadow: 'var(--ou-neu-raised-sm)',
           }}>
             <div>
               <div style={{ fontSize: 13, color: 'var(--ou-text-secondary)' }}>{item.title}</div>

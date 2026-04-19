@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { logSearch } from '@/lib/logging/search-log';
 
 // CJK Unicode 범위
 const CJK_REGEX = /[\u4E00-\u9FFF\u3400-\u4DBF\uF900-\uFAFF]/g;
@@ -64,10 +65,27 @@ export async function GET(req: NextRequest) {
       query = query.filter('domain_data->composition->>type', 'eq', compType);
     }
 
+    // 정렬 (획수 오름차순, 미지정 시 id 순)
+    if (!isHanjaSearch) {
+      query = query.order('id', { ascending: true });
+    }
+
     // 페이지네이션
     query = query.range(offset, offset + limit - 1);
 
     const { data, count, error } = await query;
+
+    // 검색 로그 (fire-and-forget)
+    if (!error && (q || radical || grade || compType)) {
+      void logSearch({
+        searchContext: 'dictionary',
+        query: q,
+        filters: { radical, grade, compType, strokeMin, strokeMax },
+        resultCount: count ?? 0,
+        searchMode: 'server',
+        page,
+      });
+    }
 
     if (error) {
       console.error('[Hanja Search] Error:', error);
@@ -75,6 +93,15 @@ export async function GET(req: NextRequest) {
     }
 
     let nodes = data || [];
+
+    // char 기준 중복 제거 (DB에 동일 한자 중복 입력된 경우 대응)
+    const seen = new Set<string>();
+    nodes = nodes.filter((n: any) => {
+      const char = n.domain_data?.char;
+      if (!char || seen.has(char)) return false;
+      seen.add(char);
+      return true;
+    });
 
     // 한자 검색인 경우 입력 순서대로 정렬
     if (isHanjaSearch && nodes.length > 0) {

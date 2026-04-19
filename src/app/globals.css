@@ -1,77 +1,123 @@
-/* ===== OU Design Tokens ===== */
+/* ===== OU Neumorphism Design Tokens ===== */
+
+/* --- Accent Palettes --- */
+[data-palette="sunrise"] { --palette-primary: #e8976b; --palette-secondary: #f5c16c; }
+[data-palette="arctic"]  { --palette-primary: #6b9de8; --palette-secondary: #6bcbdb; }
+[data-palette="blossom"] { --palette-primary: #d4849a; --palette-secondary: #e8a4b8; }
+[data-palette="forest"]  { --palette-primary: #6bc49a; --palette-secondary: #a4d4a8; }
+[data-palette="dusk"]    { --palette-primary: #8b7ec8; --palette-secondary: #b4a8e8; }
+[data-palette="stone"]   { --palette-primary: #9a9a9a; --palette-secondary: #b8b8b8; }
+
+/* --- Light Mode (기본) --- */
 :root {
-  --ou-space: #060810;
-  --ou-space-alt: #0a0e18;
+  /* Base */
+  --ou-bg: #e8ecf1;
+  --ou-bg-alt: #dde1e8;
+  --ou-space: var(--ou-bg);
+  --ou-space-alt: var(--ou-bg-alt);
 
-  --ou-glow-xs: 0 0 8px 0 rgba(255,255,255,0.04);
-  --ou-glow-sm: 0 0 12px 1px rgba(255,255,255,0.06);
-  --ou-glow-md: 0 0 20px 2px rgba(255,255,255,0.08);
-  --ou-glow-lg: 0 0 32px 4px rgba(255,255,255,0.10);
-  --ou-glow-hover: 0 0 24px 3px rgba(255,255,255,0.12);
-  --ou-glow-important: 0 0 24px 6px rgba(255,255,255,0.15);
+  /* Neumorphism shadows */
+  --ou-shadow-dark: rgba(163,177,198,0.6);
+  --ou-shadow-light: rgba(255,255,255,0.6);
 
-  --ou-border-faint: rgba(255,255,255,0.06);
-  --ou-border-subtle: rgba(255,255,255,0.10);
-  --ou-border-muted: rgba(255,255,255,0.14);
-  --ou-border-medium: rgba(255,255,255,0.18);
-  --ou-border-hover: rgba(255,255,255,0.25);
-  --ou-border-strong: rgba(255,255,255,0.30);
+  /* Raised (볼록 — 액션 가능, "눌러") */
+  --ou-neu-raised-xs: 2px 2px 4px var(--ou-shadow-dark), -2px -2px 4px var(--ou-shadow-light);
+  --ou-neu-raised-sm: 3px 3px 6px var(--ou-shadow-dark), -3px -3px 6px var(--ou-shadow-light);
+  --ou-neu-raised-md: 6px 6px 12px var(--ou-shadow-dark), -6px -6px 12px var(--ou-shadow-light);
+  --ou-neu-raised-lg: 10px 10px 20px var(--ou-shadow-dark), -10px -10px 20px var(--ou-shadow-light);
 
-  --ou-surface-faint: rgba(255,255,255,0.015);
-  --ou-surface-subtle: rgba(255,255,255,0.03);
-  --ou-surface-muted: rgba(255,255,255,0.05);
-  --ou-surface-hover: rgba(255,255,255,0.08);
+  /* Pressed (오목 — 완료/활성, "이미 됨") */
+  --ou-neu-pressed-sm: inset 2px 2px 5px var(--ou-shadow-dark), inset -2px -2px 5px var(--ou-shadow-light);
+  --ou-neu-pressed-md: inset 4px 4px 8px var(--ou-shadow-dark), inset -4px -4px 8px var(--ou-shadow-light);
+  --ou-neu-pressed-lg: inset 6px 6px 12px var(--ou-shadow-dark), inset -6px -6px 12px var(--ou-shadow-light);
 
-  --ou-text-faint: rgba(255,255,255,0.15);
-  --ou-text-muted: rgba(255,255,255,0.25);
-  --ou-text-dimmed: rgba(255,255,255,0.40);
-  --ou-text-secondary: rgba(255,255,255,0.55);
-  --ou-text-body: rgba(255,255,255,0.70);
-  --ou-text-strong: rgba(255,255,255,0.85);
-  --ou-text-bright: rgba(255,255,255,0.95);
-  --ou-text-heading: rgba(255,255,255,0.35);
+  /* Glow (하위 호환 — 기존 코드에서 참조) */
+  --ou-glow-xs: var(--ou-neu-raised-xs);
+  --ou-glow-sm: var(--ou-neu-raised-sm);
+  --ou-glow-md: var(--ou-neu-raised-md);
+  --ou-glow-lg: var(--ou-neu-raised-lg);
+  --ou-glow-hover: var(--ou-neu-raised-lg);
+  --ou-glow-important: var(--ou-neu-raised-lg);
 
-  --ou-font-logo: 'Orbitron', sans-serif;
-  --ou-font-body: 'Pretendard Variable', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  /* Accent */
+  --ou-accent: var(--palette-primary, #e8976b);
+  --ou-accent-secondary: var(--palette-secondary, #f5c16c);
+  --ou-accent-glow: 0 0 16px 4px color-mix(in srgb, var(--ou-accent) 40%, transparent);
 
+  /* Border */
+  --ou-border-faint: rgba(0,0,0,0.04);
+  --ou-border-subtle: rgba(0,0,0,0.06);
+  --ou-border-muted: rgba(0,0,0,0.10);
+  --ou-border-medium: rgba(0,0,0,0.14);
+  --ou-border-hover: rgba(0,0,0,0.20);
+  --ou-border-strong: rgba(0,0,0,0.26);
+
+  /* Surface */
+  --ou-surface-faint: rgba(255,255,255,0.3);
+  --ou-surface-subtle: rgba(255,255,255,0.5);
+  --ou-surface-muted: rgba(255,255,255,0.7);
+  --ou-surface-hover: rgba(255,255,255,0.9);
+
+  /* Text */
+  --ou-text-disabled: rgba(0,0,0,0.18);
+  --ou-text-faint: rgba(0,0,0,0.15);
+  --ou-text-muted: rgba(0,0,0,0.32);
+  --ou-text-dimmed: rgba(0,0,0,0.42);
+  --ou-text-secondary: rgba(0,0,0,0.48);
+  --ou-text-body: rgba(0,0,0,0.58);
+  --ou-text-strong: rgba(0,0,0,0.76);
+  --ou-text-bright: rgba(0,0,0,0.88);
+  --ou-text-heading: rgba(0,0,0,0.88);
+
+  /* Shape */
   --ou-radius-pill: 999px;
   --ou-radius-chat: 24px;
   --ou-radius-card: 16px;
-  --ou-radius-lg: 16px;
-  --ou-radius-md: 10px;
-  --ou-radius-sm: 6px;
+  --ou-radius-lg: 20px;
+  --ou-radius-md: 12px;
+  --ou-radius-sm: 8px;
 
-  --ou-transition: 180ms ease;
+  /* Motion */
+  --ou-transition: 200ms ease;
+
+  /* Typography */
+  --ou-font-logo: 'Orbitron', sans-serif;
+  --ou-font-display: 'DM Sans', sans-serif;
+  --ou-font-body: 'Pretendard Variable', 'DM Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --ou-font-mono: 'JetBrains Mono', monospace;
 }
 
-/* ===== Light mode ===== */
-[data-theme="light"] {
-  --ou-space: #f0f0f4;
-  --ou-space-alt: #e8e8ec;
-  --ou-glow-xs: 0 0 8px 0 rgba(0,0,0,0.03);
-  --ou-glow-sm: 0 0 12px 1px rgba(0,0,0,0.04);
-  --ou-glow-md: 0 0 20px 2px rgba(0,0,0,0.06);
-  --ou-glow-lg: 0 0 32px 4px rgba(0,0,0,0.08);
-  --ou-glow-hover: 0 0 24px 3px rgba(0,0,0,0.08);
-  --ou-glow-important: 0 0 24px 6px rgba(0,0,0,0.10);
-  --ou-border-faint: rgba(0,0,0,0.06);
-  --ou-border-subtle: rgba(0,0,0,0.10);
-  --ou-border-muted: rgba(0,0,0,0.14);
-  --ou-border-medium: rgba(0,0,0,0.18);
-  --ou-border-hover: rgba(0,0,0,0.25);
-  --ou-border-strong: rgba(0,0,0,0.30);
-  --ou-surface-faint: rgba(0,0,0,0.01);
-  --ou-surface-subtle: rgba(0,0,0,0.02);
-  --ou-surface-muted: rgba(0,0,0,0.04);
-  --ou-surface-hover: rgba(0,0,0,0.06);
-  --ou-text-faint: rgba(0,0,0,0.10);
-  --ou-text-muted: rgba(0,0,0,0.25);
-  --ou-text-dimmed: rgba(0,0,0,0.40);
-  --ou-text-secondary: rgba(0,0,0,0.50);
-  --ou-text-body: rgba(0,0,0,0.65);
-  --ou-text-strong: rgba(0,0,0,0.80);
-  --ou-text-bright: rgba(0,0,0,0.90);
-  --ou-text-heading: rgba(0,0,0,0.45);
+/* --- Dark Mode --- */
+[data-theme="dark"] {
+  --ou-bg: #2a2d3e;
+  --ou-bg-alt: #232636;
+  --ou-space: var(--ou-bg);
+  --ou-space-alt: var(--ou-bg-alt);
+
+  --ou-shadow-dark: rgba(0,0,0,0.55);
+  --ou-shadow-light: rgba(255,255,255,0.04);
+
+  --ou-border-faint: rgba(255,255,255,0.06);
+  --ou-border-subtle: rgba(255,255,255,0.08);
+  --ou-border-muted: rgba(255,255,255,0.12);
+  --ou-border-medium: rgba(255,255,255,0.16);
+  --ou-border-hover: rgba(255,255,255,0.22);
+  --ou-border-strong: rgba(255,255,255,0.28);
+
+  --ou-surface-faint: rgba(255,255,255,0.02);
+  --ou-surface-subtle: rgba(255,255,255,0.04);
+  --ou-surface-muted: rgba(255,255,255,0.06);
+  --ou-surface-hover: rgba(255,255,255,0.08);
+
+  --ou-text-disabled: rgba(255,255,255,0.18);
+  --ou-text-faint: rgba(255,255,255,0.15);
+  --ou-text-muted: rgba(255,255,255,0.32);
+  --ou-text-dimmed: rgba(255,255,255,0.42);
+  --ou-text-secondary: rgba(255,255,255,0.52);
+  --ou-text-body: rgba(255,255,255,0.64);
+  --ou-text-strong: rgba(255,255,255,0.86);
+  --ou-text-bright: rgba(255,255,255,0.92);
+  --ou-text-heading: rgba(255,255,255,0.92);
 }
 
 /* ===== Reset ===== */
@@ -79,14 +125,13 @@
 
 body {
   font-family: var(--ou-font-body);
-  background: #060810;
-  background: var(--ou-space);
-  color: rgba(255,255,255,0.70);
+  background: var(--ou-bg);
   color: var(--ou-text-body);
   min-height: 100vh;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background 0.4s ease, color 0.3s ease;
 }
 
 a { color: inherit; text-decoration: none; }
@@ -104,6 +149,68 @@ input, textarea {
   color: inherit;
   background: transparent;
   outline: none;
+  border: none;
+}
+
+/* ===== Neumorphism Utility Classes ===== */
+
+.ou-raised-xs { box-shadow: var(--ou-neu-raised-xs); }
+.ou-raised-sm { box-shadow: var(--ou-neu-raised-sm); }
+.ou-raised, .ou-raised-md { box-shadow: var(--ou-neu-raised-md); }
+.ou-raised-lg { box-shadow: var(--ou-neu-raised-lg); }
+
+.ou-pressed-sm { box-shadow: var(--ou-neu-pressed-sm); }
+.ou-pressed, .ou-pressed-md { box-shadow: var(--ou-neu-pressed-md); }
+.ou-pressed-lg { box-shadow: var(--ou-neu-pressed-lg); }
+
+.ou-flat { box-shadow: none; }
+
+.ou-card {
+  background: var(--ou-bg);
+  border-radius: var(--ou-radius-md);
+  box-shadow: var(--ou-neu-raised-md);
+  padding: 20px;
+  transition: all var(--ou-transition);
+}
+.ou-card:hover { box-shadow: var(--ou-neu-raised-lg); }
+
+.ou-input {
+  background: var(--ou-bg);
+  border-radius: var(--ou-radius-sm);
+  box-shadow: var(--ou-neu-pressed-md);
+  padding: 12px 16px;
+  font-size: 14px;
+  color: var(--ou-text-strong);
+  width: 100%;
+  transition: all var(--ou-transition);
+}
+.ou-input:focus {
+  box-shadow: var(--ou-neu-pressed-md), 0 0 0 2px color-mix(in srgb, var(--ou-accent) 45%, transparent);
+}
+
+.ou-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 24px;
+  border-radius: var(--ou-radius-pill);
+  font-size: 13px;
+  font-weight: 600;
+  background: var(--ou-bg);
+  color: var(--ou-text-strong);
+  box-shadow: var(--ou-neu-raised-md);
+  transition: all var(--ou-transition);
+}
+.ou-btn:hover { box-shadow: var(--ou-neu-raised-lg); }
+.ou-btn:active { box-shadow: var(--ou-neu-pressed-md); }
+
+.ou-btn-accent {
+  background: linear-gradient(135deg, var(--ou-accent), var(--ou-accent-secondary));
+  color: #fff;
+}
+.ou-btn-accent:hover {
+  box-shadow: var(--ou-neu-raised-lg), var(--ou-accent-glow);
 }
 
 /* ===== Animations ===== */
@@ -117,9 +224,13 @@ input, textarea {
   to { opacity: 1; transform: scale(1); }
 }
 
-@keyframes twinkle {
-  0% { opacity: 0.15; }
-  100% { opacity: 0.7; }
+@keyframes ou-loader-pulse {
+  0% { filter: drop-shadow(0 0 0px currentColor); }
+  10% { filter: drop-shadow(0 0 12px currentColor) drop-shadow(0 0 24px currentColor); }
+  18% { filter: drop-shadow(0 0 2px currentColor); }
+  26% { filter: drop-shadow(0 0 10px currentColor) drop-shadow(0 0 20px currentColor); }
+  36% { filter: drop-shadow(0 0 0px currentColor); }
+  100% { filter: drop-shadow(0 0 0px currentColor); }
 }
 
 @keyframes blink {
@@ -132,23 +243,6 @@ input, textarea {
   to { transform: rotate(360deg); }
 }
 
-@keyframes universe-pulse {
-  0%, 100% { box-shadow: 0 0 24px 6px rgba(255,255,255,0.12), inset 0 0 12px rgba(255,255,255,0.08); }
-  50% { box-shadow: 0 0 32px 10px rgba(255,255,255,0.18), inset 0 0 16px rgba(255,255,255,0.12); }
-}
-
-@keyframes sphere-expand {
-  0% { transform: scale(1) rotate(0deg); opacity: 1; }
-  60% { transform: scale(12) rotate(270deg); opacity: 0.6; }
-  100% { transform: scale(20) rotate(360deg); opacity: 0; }
-}
-
-@keyframes sphere-collapse {
-  0% { transform: scale(20) rotate(360deg); opacity: 0; }
-  40% { transform: scale(12) rotate(90deg); opacity: 0.6; }
-  100% { transform: scale(1) rotate(0deg); opacity: 1; }
-}
-
 @keyframes wiggle {
   0%, 100% { transform: rotate(-0.15deg); }
   50% { transform: rotate(0.15deg); }
@@ -159,9 +253,8 @@ input, textarea {
   50% { transform: translateY(8px); }
 }
 
-/* ===== iOS-inspired UX utilities ===== */
+/* ===== UX Utilities ===== */
 
-/* Smooth scroll with rubber-band overscroll */
 .ou-scroll {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
@@ -170,7 +263,6 @@ input, textarea {
 }
 .ou-scroll::-webkit-scrollbar { display: none; }
 
-/* Tap/click feedback — press scale */
 .ou-pressable {
   transition: transform 120ms cubic-bezier(0.25, 0.1, 0.25, 1), opacity 120ms ease;
   cursor: pointer;
@@ -182,51 +274,19 @@ input, textarea {
   opacity: 0.85;
 }
 
-/* Spring animation timing */
 .ou-spring {
   transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* iOS squircle corners (continuous border-radius) */
-.ou-squircle {
-  border-radius: 22%;
-  -webkit-mask-image: -webkit-radial-gradient(white, black);
-}
-
-/* Blur backdrop for modals/sheets */
 .ou-backdrop {
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
 }
 
-/* Long-press context trigger */
-.ou-longpress {
-  -webkit-touch-callout: none;
-  touch-action: manipulation;
-}
-
-/* Smooth page transitions */
 .ou-page-enter {
   animation: ou-page-in 350ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 @keyframes ou-page-in {
   from { opacity: 0; transform: scale(0.96) translateY(8px); }
   to { opacity: 1; transform: scale(1) translateY(0); }
-}
-
-/* Dock magnification */
-.ou-dock-item {
-  transition: transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.ou-dock-item:hover {
-  transform: scale(1.3) translateY(-8px);
-}
-
-/* Glass surface (iOS-style frosted glass) */
-.ou-glass {
-  background: rgba(255,255,255,0.015);
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
-  border: 0.5px solid rgba(255,255,255,0.10);
-  border-radius: var(--ou-radius-card);
 }

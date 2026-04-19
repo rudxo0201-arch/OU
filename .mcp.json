@@ -4,14 +4,16 @@
       "type": "http",
       "url": "https://ouuniverse.com/api/mcp/sse",
       "headers": {
-        "Authorization": "Bearer ou_sk_64e351668a9dc6c25cd285634bde531d532cac735543de6ae98867172af27fe1"
+        "Authorization": "Bearer ou_sk_64e351668a9dc6c25cd285634bde531d532cac735543de6ae98867172af27fe1",
+        "Accept": "application/json, text/event-stream"
       }
     },
     "ou-local": {
       "type": "http",
       "url": "http://localhost:3001/api/mcp/sse",
       "headers": {
-        "Authorization": "Bearer ou_sk_64e351668a9dc6c25cd285634bde531d532cac735543de6ae98867172af27fe1"
+        "Authorization": "Bearer ou_sk_64e351668a9dc6c25cd285634bde531d532cac735543de6ae98867172af27fe1",
+        "Accept": "application/json, text/event-stream"
       }
     }
   }

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@/lib/supabase/server';
 
 function detectImageType(text: string): 'timetable' | 'receipt' | 'document' | 'general' {
   if (/[월화수목금토일]/.test(text) && /\d{1,2}:\d{2}/.test(text)) return 'timetable';
@@ -8,6 +9,12 @@ function detectImageType(text: string): 'timetable' | 'receipt' | 'document' | '
 }
 
 export async function POST(req: NextRequest) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   let formData: FormData;
   try {
     formData = await req.formData();

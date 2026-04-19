@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OU Orb Scenario Report v3</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=DM+Sans:wght@400;500;700&family=Pretendard+Variable:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root, [data-theme="light"] {
+  --ou-bg: #e8ecf1;
+  --ou-shadow-dark: rgba(163,177,198,0.6);
+  --ou-shadow-light: rgba(255,255,255,0.6);
+  --ou-text-body: rgba(0,0,0,0.58);
+  --ou-text-strong: rgba(0,0,0,0.76);
+  --ou-text-heading: rgba(0,0,0,0.88);
+  --ou-text-muted: rgba(0,0,0,0.32);
+  --ou-text-secondary: rgba(0,0,0,0.48);
+  --ou-text-disabled: rgba(0,0,0,0.18);
+  --ou-border-subtle: rgba(0,0,0,0.05);
+  --ou-accent: #e8976b;
+  --ou-accent2: #f5c16c;
+  --ou-neu-raised-xs: 2px 2px 4px var(--ou-shadow-dark), -2px -2px 4px var(--ou-shadow-light);
+  --ou-neu-raised-sm: 3px 3px 6px var(--ou-shadow-dark), -3px -3px 6px var(--ou-shadow-light);
+  --ou-neu-raised-md: 6px 6px 12px var(--ou-shadow-dark), -6px -6px 12px var(--ou-shadow-light);
+  --ou-neu-raised-lg: 10px 10px 20px var(--ou-shadow-dark), -10px -10px 20px var(--ou-shadow-light);
+  --ou-neu-pressed-sm: inset 2px 2px 5px var(--ou-shadow-dark), inset -2px -2px 5px var(--ou-shadow-light);
+  --ou-neu-pressed-md: inset 4px 4px 8px var(--ou-shadow-dark), inset -4px -4px 8px var(--ou-shadow-light);
+  --ou-radius-pill: 999px;
+  --ou-radius-lg: 20px;
+  --ou-radius-md: 12px;
+  --ou-radius-sm: 8px;
+  --ou-radius-xs: 4px;
+  --ou-font-logo: 'Orbitron', sans-serif;
+  --ou-font-display: 'DM Sans', sans-serif;
+  --ou-font-body: 'Pretendard Variable', 'DM Sans', -apple-system, system-ui, sans-serif;
+  --ou-font-mono: 'JetBrains Mono', monospace;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background: var(--ou-bg);
+  font-family: var(--ou-font-body);
+  color: var(--ou-text-body);
+  line-height: 1.6;
+  padding: 20px;
+}
+.container { max-width: 1100px; margin: 0 auto; }
+
+/* Logo */
+.logo-wrap { text-align:center; margin-bottom: 8px; }
+.logo-wrap svg { width: 80px; height: auto; fill: var(--ou-text-heading); }
+.report-title {
+  text-align: center;
+  font-family: var(--ou-font-display);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--ou-text-heading);
+  margin-bottom: 6px;
+}
+.report-sub {
+  text-align: center;
+  font-size: 14px;
+  color: var(--ou-text-secondary);
+  margin-bottom: 40px;
+}
+
+/* Neu cards */
+.card {
+  background: var(--ou-bg);
+  border-radius: var(--ou-radius-lg);
+  box-shadow: var(--ou-neu-raised-md);
+  padding: 28px;
+  margin-bottom: 24px;
+}
+.card-sm {
+  background: var(--ou-bg);
+  border-radius: var(--ou-radius-md);
+  box-shadow: var(--ou-neu-raised-sm);
+  padding: 18px;
+  margin-bottom: 16px;
+}
+.pressed {
+  box-shadow: var(--ou-neu-pressed-md);
+  border-radius: var(--ou-radius-md);
+  padding: 14px;
+  background: var(--ou-bg);
+}
+.pressed-sm {
+  box-shadow: var(--ou-neu-pressed-sm);
+  border-radius: var(--ou-radius-sm);
+  padding: 10px 14px;
+  background: var(--ou-bg);
+}
+
+/* Section titles */
+.section-title {
+  font-family: var(--ou-font-display);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ou-text-heading);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.section-title .num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--ou-bg);
+  box-shadow: var(--ou-neu-raised-xs);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ou-accent);
+}
+
+/* Summary stats */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+.stat-card {
+  background: var(--ou-bg);
+  box-shadow: var(--ou-neu-raised-sm);
+  border-radius: var(--ou-radius-md);
+  padding: 20px;
+  text-align: center;
+}
+.stat-val {
+  font-family: var(--ou-font-display);
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--ou-text-heading);
+}
+.stat-label {
+  font-size: 12px;
+  color: var(--ou-text-muted);
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Bar chart */
+.bar-chart { margin-bottom: 24px; }
+.bar-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  gap: 10px;
+}
+.bar-label {
+  width: 100px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ou-text-strong);
+  text-align: right;
+  flex-shrink: 0;
+}
+.bar-track {
+  flex: 1;
+  height: 22px;
+  border-radius: var(--ou-radius-pill);
+  box-shadow: var(--ou-neu-pressed-sm);
+  overflow: hidden;
+  position: relative;
+}
+.bar-fill {
+  height: 100%;
+  border-radius: var(--ou-radius-pill);
+  background: linear-gradient(135deg, rgba(0,0,0,0.12), rgba(0,0,0,0.22));
+  transition: width 0.5s ease;
+  position: relative;
+}
+.bar-fill.accent-fill {
+  background: linear-gradient(135deg, var(--ou-accent), var(--ou-accent2));
+}
+.bar-count {
+  width: 36px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ou-text-secondary);
+  flex-shrink: 0;
+}
+
+/* Domain badges */
+.badge {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: var(--ou-radius-pill);
+  font-size: 11px;
+  font-weight: 600;
+  margin: 2px 3px;
+  box-shadow: var(--ou-neu-raised-xs);
+  background: var(--ou-bg);
+  color: var(--ou-text-strong);
+}
+.badge-schedule { color: rgba(0,0,0,0.7); }
+.badge-finance { color: rgba(0,0,0,0.65); }
+.badge-emotion { color: var(--ou-accent); }
+.badge-task { color: rgba(0,0,0,0.72); }
+.badge-idea { color: rgba(0,0,0,0.55); }
+.badge-habit { color: rgba(0,0,0,0.6); }
+.badge-knowledge { color: rgba(0,0,0,0.68); }
+.badge-education { color: rgba(0,0,0,0.75); }
+.badge-health { color: rgba(0,0,0,0.62); }
+.badge-relationship { color: rgba(0,0,0,0.58); }
+.badge-development { color: rgba(0,0,0,0.7); font-family: var(--ou-font-mono); }
+.badge-media { color: rgba(0,0,0,0.52); }
+
+/* Persona card */
+.persona-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.persona-avatar {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  box-shadow: var(--ou-neu-raised-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  background: var(--ou-bg);
+  flex-shrink: 0;
+}
+.persona-info h3 {
+  font-family: var(--ou-font-display);
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ou-text-heading);
+}
+.persona-info p {
+  font-size: 13px;
+  color: var(--ou-text-secondary);
+}
+
+/* Chat bubble - member */
+.chat-bubble {
+  background: var(--ou-bg);
+  box-shadow: var(--ou-neu-raised-sm);
+  border-radius: 18px 18px 4px 18px;
+  padding: 12px 18px;
+  margin-bottom: 8px;
+  display: inline-block;
+  max-width: 82%;
+  font-size: 14.5px;
+  color: var(--ou-text-heading);
+  line-height: 1.5;
+  word-break: break-word;
+  align-self: flex-end;
+}
+.chat-bubble-wrap {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 4px;
+}
+
+/* Orb bubble */
+.orb-bubble {
+  background: var(--ou-bg);
+  box-shadow: var(--ou-neu-pressed-md);
+  border-radius: 18px 18px 18px 4px;
+  padding: 12px 18px;
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--ou-text-body);
+  align-self: flex-start;
+  max-width: 82%;
+  display: inline-block;
+  margin-bottom: 4px;
+}
+.orb-bubble-wrap {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.orb-avatar {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  box-shadow: var(--ou-neu-raised-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ou-bg);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.orb-avatar svg {
+  width: 14px; height: auto;
+  fill: var(--ou-text-muted);
+}
+
+/* Inline view card */
+.inline-view-card {
+  background: var(--ou-bg);
+  box-shadow: var(--ou-neu-pressed-sm);
+  border-radius: var(--ou-radius-sm);
+  padding: 10px 14px;
+  margin: 8px 0 8px 32px;
+  font-size: 12px;
+  max-width: 80%;
+}
+.inline-view-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--ou-text-muted);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.inline-view-content {
+  color: var(--ou-text-strong);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.inline-view-content .iv-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 2px 0;
+  border-bottom: 1px solid var(--ou-border-subtle);
+}
+.inline-view-content .iv-row:last-child { border-bottom: none; }
+.inline-view-content .iv-key { color: var(--ou-text-muted); font-size: 11px; }
+.inline-view-content .iv-val { color: var(--ou-text-heading); font-weight: 600; font-size: 12px; }
+
+/* No response */
+.no-response {
+  font-size: 11px;
+  color: var(--ou-text-disabled);
+  font-style: italic;
+  padding: 8px 0 8px 32px;
+}
+
+/* Sentence entry */
+.sentence-entry { margin-bottom: 22px; padding-bottom: 18px; border-bottom: 1px solid var(--ou-border-subtle); }
+.sentence-entry:last-child { border-bottom: none; }
+.domains-row { margin: 8px 0; }
+.extracted-data {
+  margin-top: 10px;
+  font-size: 12px;
+  font-family: var(--ou-font-mono);
+  color: var(--ou-text-secondary);
+  overflow-x: auto;
+}
+.extracted-data table { width: 100%; border-collapse: collapse; }
+.extracted-data th {
+  text-align: left;
+  padding: 4px 8px;
+  font-weight: 600;
+  color: var(--ou-text-strong);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.extracted-data td { padding: 4px 8px; font-size: 12px; }
+.note {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--ou-text-muted);
+  font-style: italic;
+}
+
+/* Domain summary */
+.domain-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+/* Ambiguous highlight */
+.ambiguous { border-left: 3px solid var(--ou-accent); padding-left: 14px; }
+
+/* Followup questions */
+.followup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+.followup-tag {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 2px 8px;
+  border-radius: var(--ou-radius-pill);
+  background: var(--ou-bg);
+  box-shadow: var(--ou-neu-raised-xs);
+  white-space: nowrap;
+}
+.followup-tag.immediate {
+  color: var(--ou-accent);
+}
+.followup-tag.later {
+  color: var(--ou-text-muted);
+}
+.followup-text {
+  font-size: 12px;
+  color: var(--ou-text-secondary);
+  font-style: italic;
+}
+
+/* Ambiguous scenario badges */
+.classifiable-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: var(--ou-radius-pill);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  box-shadow: var(--ou-neu-raised-xs);
+  background: var(--ou-bg);
+}
+.classifiable-badge.yes { color: var(--ou-text-strong); }
+.classifiable-badge.no { color: var(--ou-accent); }
+.classifiable-badge.partial { color: var(--ou-text-muted); }
+
+.system-response {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--ou-text-secondary);
+  padding: 8px 12px;
+  border-radius: var(--ou-radius-sm);
+  box-shadow: var(--ou-neu-pressed-sm);
+  background: var(--ou-bg);
+}
+.system-response strong {
+  color: var(--ou-text-strong);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  body { padding: 10px; }
+  .card { padding: 18px; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .chat-bubble { max-width: 95%; }
+  .orb-bubble { max-width: 95%; }
+  .bar-label { width: 70px; font-size: 11px; }
+  .persona-header { gap: 10px; }
+  .domain-summary-grid { grid-template-columns: 1fr; }
+}
+
+/* Nav */
+.toc { margin-bottom: 16px; }
+.toc a {
+  display: inline-block;
+  padding: 4px 14px;
+  margin: 3px;
+  border-radius: var(--ou-radius-pill);
+  box-shadow: var(--ou-neu-raised-xs);
+  background: var(--ou-bg);
+  color: var(--ou-text-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.toc a:hover { color: var(--ou-accent); }
+
+.collapse-btn {
+  background: var(--ou-bg);
+  box-shadow: var(--ou-neu-raised-xs);
+  border: none;
+  border-radius: var(--ou-radius-pill);
+  padding: 4px 14px;
+  font-size: 12px;
+  color: var(--ou-text-secondary);
+  cursor: pointer;
+  font-family: var(--ou-font-body);
+  float: right;
+}
+.collapse-btn:hover { color: var(--ou-accent); }
+.collapsible { transition: max-height 0.3s ease; overflow: hidden; }
+
+/* Category label for ambiguous section */
+.category-label {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: var(--ou-radius-pill);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  box-shadow: var(--ou-neu-raised-xs);
+  background: var(--ou-bg);
+  color: var(--ou-text-secondary);
+  margin-bottom: 6px;
+}
+
+/* Date conversion inline */
+.date-conv {
+  font-size: 11px;
+  color: var(--ou-text-muted);
+  font-family: var(--ou-font-mono);
+  margin-left: 4px;
+}
+
+/* Orb principles box */
+.principles-box {
+  background: var(--ou-bg);
+  box-shadow: var(--ou-neu-pressed-sm);
+  border-radius: var(--ou-radius-md);
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--ou-text-secondary);
+}
+.principles-box h4 {
+  font-size: 13px;
+  color: var(--ou-text-strong);
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+.principles-box li {
+  margin-left: 16px;
+  margin-bottom: 2px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- Header -->
+<div class="logo-wrap">
+  <svg viewBox="0 0 193 92" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="146.5" cy="39.66" r="11.5"/>
+    <path d="M92 7.79883V84.2012L84.2012 92H7.79883L0 84.2012V7.79883L7.79883 0H84.2012L92 7.79883ZM18 14C15.7909 14 14 15.7909 14 18V74C14 76.2091 15.7909 78 18 78H74C76.2091 78 78 76.2091 78 74V18C78 15.7909 76.2091 14 74 14H18Z"/>
+    <path d="M115 74C115 76.2091 116.791 78 119 78H175C177.209 78 179 76.2091 179 74V0H193V84.2012L185.201 92H108.799L101 84.2012V0H115V74Z"/>
+  </svg>
+</div>
+<h1 class="report-title">Orb Scenario Report v3</h1>
+<p class="report-sub">20 Personas &middot; 320+ Sentences &middot; 12 Domains &middot; Orb Inline Reactions &middot; Inline Views &middot; Ambiguous Input Scenarios</p>
+
+<div id="report-root"></div>
+
+</div><!-- /container -->
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+const TODAY = "2026-04-18";
+const DOMAINS = {
+  schedule:"일정",finance:"금융",emotion:"감정",task:"할 일",idea:"아이디어",
+  habit:"습관",knowledge:"지식",education:"교육",health:"건강",
+  relationship:"관계",development:"개발",media:"미디어"
+};
+
+const ORB_SVG = `<svg viewBox="0 0 193 92" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="146.5" cy="39.66" r="11.5"/><path d="M92 7.79883V84.2012L84.2012 92H7.79883L0 84.2012V7.79883L7.79883 0H84.2012L92 7.79883ZM18 14C15.7909 14 14 15.7909 14 18V74C14 76.2091 15.7909 78 18 78H74C76.2091 78 78 76.2091 78 74V18C78 15.7909 76.2091 14 74 14H18Z"/><path d="M115 74C115 76.2091 116.791 78 119 78H175C177.209 78 179 76.2091 179 74V0H193V84.2012L185.201 92H108.799L101 84.2012V0H115V74Z"/></svg>`;
+
+// Helper: resolve relative dates to absolute
+function resolveDate(relStr) {
+  const base = new Date("2026-04-18");
+  const s = relStr.trim();
+  if (s === "내일") { const d = new Date(base); d.setDate(d.getDate()+1); return d.toISOString().slice(0,10); }
+  if (s === "오늘") { return base.toISOString().slice(0,10); }
+  if (s === "모레" || s === "모래") { const d = new Date(base); d.setDate(d.getDate()+2); return d.toISOString().slice(0,10); }
+  if (s === "어제") { const d = new Date(base); d.setDate(d.getDate()-1); return d.toISOString().slice(0,10); }
+  if (s === "주말" || s === "이번 주말" || s === "이번 주 토요일") {
+    const d = new Date(base); const day = d.getDay(); const diff = 6 - day; d.setDate(d.getDate()+diff); return d.toISOString().slice(0,10);
+  }
+  if (s.includes("다음 주")) {
+    const dayMap = {"월요일":1,"화요일":2,"수요일":3,"목요일":4,"금요일":5,"토요일":6,"일요일":0};
+    for (const [name, dow] of Object.entries(dayMap)) {
+      if (s.includes(name)) {
+        const d = new Date(base);
+        const curr = d.getDay();
+        let diff = (dow - curr + 7) % 7 + 7;
+        d.setDate(d.getDate() + diff);
+        return d.toISOString().slice(0,10);
+      }
+    }
+    const d = new Date(base); d.setDate(d.getDate()+7); return d.toISOString().slice(0,10) + " (approx)";
+  }
+  if (s === "이번 주") { return "2026-04-13~2026-04-19"; }
+  if (s === "지난주") { return "2026-04-06~2026-04-12"; }
+  if (s === "다음 달" || s === "다음달") { return "2026-05 (approx)"; }
+  return null;
+}
+
+const personas = [
+// ---- 1. 수연 ----
+{
+  id:"suyeon", name:"김수연", age:17, role:"고등학생 여", emoji:"--",
+  traits:"수능, 학원, 친구, 용돈, 게임",
+  sentences:[
+    {input:"수학 모의고사 망했어 ㅠㅠ 62점",domains:["education","emotion"],data:{education:{subject:"수학",examType:"모의고사",score:62},emotion:{mood:"negative",cause:"시험 성적",intensity:"high"}},note:"점수 데이터 유실 방지. '모의고사 몇 점?' 검색 시 반환 필요",followup:{immediate:"목표 점수가 있으세요?",later:"시험 준비는 어떻게 하고 계세요?"},orb:{text:"시험이 잘 안 되셨군요. 다음에는 더 좋은 결과가 있을 거예요.",inlineView:{type:"성적 기록",content:"수학 모의고사 -- 62점"}}},
+    {input:"엄마가 이번 달 용돈 5만원 줬는데 벌써 3만원 씀 ㅋㅋㅋ",domains:["finance"],data:{finance:{amount_received:50000,spent:30000,remaining:20000,source:"용돈"}},note:"",followup:{immediate:null,later:"뭐에 제일 많이 쓰셨어요?"},orb:{text:null,inlineView:{type:"용돈 현황",content:"이번 달 용돈 50,000원 | 사용 30,000원 | 잔액 20,000원"}}},
+    {input:"내일 영어학원 6시인데 그 전에 수학 숙제 끝내야 해",domains:["schedule","task","education"],data:{schedule:{date:"내일",time:"18:00",place:"영어학원",dateResolved:"2026-04-19"},task:{todo:"수학 숙제",deadline:"내일 6시 전"},education:{subject:"영어, 수학"}},note:"",followup:{immediate:null,later:"수학 숙제 어디까지 하셨어요?"},orb:{text:null,inlineView:{type:"일정",content:"4/19(토) 18:00 영어학원 | 그 전까지: 수학 숙제"}}},
+    {input:"지은이랑 싸웠어… 걔가 내 얘기를 다른 애한테 했대",domains:["relationship","emotion"],data:{relationship:{person:"지은",relation:"친구",event:"갈등",cause:"내 얘기를 다른 사람에게 전달"},emotion:{mood:"negative",cause:"친구 갈등",intensity:"high"}},note:"",followup:{immediate:null,later:"지은이랑 화해하셨어요?"},orb:{text:"속상하셨겠어요. 신뢰가 무너진 느낌이면 더 힘드셨을 거예요.",inlineView:null}},
+    {input:"롤 하고 싶다 ㅠ 근데 시험기간이라 참는 중",domains:["media","emotion","education"],data:{media:{title:"League of Legends",type:"게임"},emotion:{mood:"frustrated",cause:"게임 자제"},education:{context:"시험기간"}},note:"",followup:{immediate:null,later:null},orb:{text:"시험 끝나면 마음껏 즐기실 수 있을 거예요. 조금만 힘내세요.",inlineView:null}},
+    {input:"국어 1등급 나왔어!!!!!",domains:["education","emotion"],data:{education:{subject:"국어",grade:"1등급"},emotion:{mood:"positive",intensity:"very_high",cause:"성적"}},note:"",followup:{immediate:"몇 점이세요?",later:"어떻게 공부하셨어요?"},orb:{text:"정말 대단하세요! 노력한 보람이 있으셨네요.",inlineView:{type:"성적 기록",content:"국어 -- 1등급"}}},
+    {input:"학원 끝나고 편의점에서 떡볶이 먹었는데 2500원",domains:["finance","schedule"],data:{finance:{amount:2500,category:"식비",item:"떡볶이"},schedule:{time:"학원 후",place:"편의점",dateResolved:"timestamp"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"지출 기록",content:"식비 -- 떡볶이 2,500원"}}},
+    {input:"아 진짜 잠 좀 자고 싶다 새벽 2시에 잤거든",domains:["health","emotion"],data:{health:{sleep_time:"02:00",issue:"수면 부족"},emotion:{mood:"exhausted",intensity:"high"}},note:"",followup:{immediate:null,later:"요즘 매일 그 시간에 주무세요?"},orb:{text:"수면이 부족하시면 공부 효율도 떨어질 수 있어요. 오늘은 좀 일찍 쉬어보시는 건 어떨까요.",inlineView:{type:"수면 기록",content:"취침 02:00"}}},
+    {input:"수능 D-200인데 실감이 안 나 솔직히",domains:["education","emotion"],data:{education:{event:"수능",dday:200},emotion:{mood:"anxious_mild",cause:"수능"}},note:"",followup:{immediate:null,later:"수능 목표 등급이 있으세요?"},orb:{text:null,inlineView:{type:"D-Day",content:"수능 D-200"}}},
+    {input:"주말에 지은이랑 카페 가기로 했어 화해함 ㅎㅎ",domains:["schedule","relationship","emotion"],data:{schedule:{date:"주말",place:"카페",dateResolved:"2026-04-19"},relationship:{person:"지은",event:"화해"},emotion:{mood:"positive",cause:"친구 화해"}},note:"",followup:{immediate:null,later:null},orb:{text:"다행이에요. 좋은 시간 보내시길 바랍니다.",inlineView:{type:"일정",content:"4/19(토) 지은 -- 카페"}}},
+    {input:"생물 외울 게 너무 많아 미토콘드리아가 뭔데 진짜",domains:["education","emotion"],data:{education:{subject:"생물",topic:"미토콘드리아"},emotion:{mood:"overwhelmed",cause:"학습량"}},note:"",followup:{immediate:null,later:"생물 시험이 언제세요?"},orb:{text:"양이 많으면 쪼개서 외우시는 것도 방법이에요.",inlineView:null}},
+    {input:"오늘부터 매일 영단어 50개씩 외우기로 함",domains:["habit","education"],data:{habit:{name:"영단어 암기",frequency:"매일",quantity:"50개"},education:{subject:"영어"}},note:"",followup:{immediate:null,later:"영단어 오늘 몇 개 외우셨어요?"},orb:{text:null,inlineView:{type:"습관 시작",content:"영단어 암기 -- 매일 50개"}}},
+    {input:"아까 그거 뭐였지? 선생님이 시험에 나온다고 한 거",domains:["education"],data:{education:{context:"시험 출제 범위 언급"}},note:"맥락 의존적 발화. 이전 대화 참조 필요",followup:{immediate:"어떤 과목 말씀이세요?",later:null},orb:{text:"어떤 과목에서 말씀하신 건지 알려주시면 찾아볼게요.",inlineView:null}},
+    {input:"버스카드 충전해야 되는데 맨날 까먹어",domains:["task","finance"],data:{task:{todo:"버스카드 충전",priority:"low",recurring:true},finance:{category:"교통비"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"할 일",content:"버스카드 충전"}}},
+    {input:"엄마 생신 다음 주 화요일인데 선물 뭐 사지",domains:["schedule","relationship","task"],data:{schedule:{date:"다음 주 화요일",event:"엄마 생신",dateResolved:"2026-04-21"},relationship:{person:"엄마",event:"생일"},task:{todo:"선물 구매"}},note:"",followup:{immediate:"예산은 어느 정도 생각하세요?",later:"엄마가 요즘 뭐 갖고 싶어하세요?"},orb:{text:null,inlineView:{type:"일정",content:"4/21(화) 엄마 생신 | 할 일: 선물 구매"}}},
+    {input:"ㅋㅋㅋㅋ 걍 웃겨서",domains:["emotion"],data:{emotion:{mood:"amused",intensity:"low"}},note:"단독 감정, 맥락 의존적",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}}
+  ]
+},
+// ---- 2. 민준 ----
+{
+  id:"minjun", name:"박민준", age:18, role:"고등학생 남", emoji:"--",
+  traits:"진로, 야자, 체육대회, 게임",
+  sentences:[
+    {input:"진로 상담 했는데 선생님이 컴공 가라고 함",domains:["education","idea"],data:{education:{event:"진로 상담",recommendation:"컴퓨터공학"},idea:{category:"진로",content:"컴공 진학"}},note:"",followup:{immediate:"본인은 어떻게 생각하세요? 컴공에 관심 있으세요?",later:"다른 과도 생각해보신 거 있으세요?"},orb:{text:"진로 상담을 받으셨군요. 선생님의 추천도 참고가 되셨을 거예요.",inlineView:{type:"진로 메모",content:"선생님 추천: 컴퓨터공학"}}},
+    {input:"야자 빠지고 싶다 진심으로",domains:["education","emotion"],data:{education:{event:"야간자율학습"},emotion:{mood:"reluctant",intensity:"high"}},note:"",followup:{immediate:null,later:null},orb:{text:"많이 지치셨나 봐요.",inlineView:null}},
+    {input:"체육대회 우리반 축구 1등 했어 ㅋㅋㅋㅋ 개꿀",domains:["education","emotion"],data:{education:{event:"체육대회",result:"축구 1등"},emotion:{mood:"excited",intensity:"high"}},note:"",followup:{immediate:null,later:null},orb:{text:"축하드려요! 우리 반이 1등이라니 정말 뿌듯하셨겠어요.",inlineView:null}},
+    {input:"발로란트 레디언트 찍었다 ㄹㅇ 실화",domains:["media","emotion"],data:{media:{title:"Valorant",type:"게임",achievement:"Radiant"},emotion:{mood:"proud",intensity:"very_high"}},note:"",followup:{immediate:"얼마나 걸리셨어요?",later:null},orb:{text:"레디언트라니 정말 대단하세요!",inlineView:{type:"게임 기록",content:"Valorant -- Radiant 달성"}}},
+    {input:"수행평가 ppt 만들어야 되는데 주제를 모르겠음",domains:["education","task"],data:{education:{type:"수행평가",format:"PPT"},task:{todo:"PPT 제작",blocker:"주제 미정"}},note:"",followup:{immediate:"어떤 과목이세요?",later:"마감이 언제세요?"},orb:{text:"어떤 과목인지 알려주시면 주제 아이디어를 같이 생각해볼 수 있어요.",inlineView:null}},
+    {input:"점심에 급식 진짜 맛없었어 제육인데 왜 그래",domains:["emotion"],data:{emotion:{mood:"disappointed",cause:"급식",intensity:"low"}},note:"단순 불만",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"아빠가 성적 오르면 에어팟 사준다고 함 개이득",domains:["education","relationship","emotion"],data:{education:{context:"성적 향상 조건"},relationship:{person:"아빠",event:"보상 약속"},emotion:{mood:"motivated",intensity:"medium"}},note:"",followup:{immediate:null,later:null},orb:{text:"좋은 동기부여가 되셨겠어요.",inlineView:null}},
+    {input:"코딩 독학 시작해볼까 유튜브로",domains:["development","education","idea"],data:{development:{action:"독학 시작",resource:"유튜브"},education:{subject:"코딩"},idea:{content:"코딩 독학"}},note:"",followup:{immediate:"어떤 언어로 시작하실 생각이세요?",later:null},orb:{text:"좋은 생각이세요. 궁금한 점 있으시면 언제든 물어보세요.",inlineView:null}},
+    {input:"내일 모의고사인데 1도 공부 안 했음 ㅋ",domains:["education","emotion"],data:{education:{event:"모의고사",date:"내일",dateResolved:"2026-04-19"},emotion:{mood:"indifferent_anxious",intensity:"medium"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"일정",content:"4/19(토) 모의고사"}}},
+    {input:"형이 대학가니까 방 혼자 쓴다 개좋아",domains:["relationship","emotion"],data:{relationship:{person:"형",event:"대학 진학"},emotion:{mood:"happy",cause:"독방",intensity:"medium"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"담주 월요일 치과 예약됨 교정 조이러 가야 해",domains:["schedule","health"],data:{schedule:{date:"다음 주 월요일",place:"치과",dateResolved:"2026-04-20"},health:{treatment:"교정 조임"}},note:"",followup:{immediate:"몇 시에 예약이세요?",later:null},orb:{text:null,inlineView:{type:"일정",content:"4/20(월) 치과 -- 교정"}}},
+    {input:"물리 포기할까 진지하게 고민 중",domains:["education","emotion"],data:{education:{subject:"물리",decision:"포기 고민"},emotion:{mood:"frustrated",intensity:"high"}},note:"",followup:{immediate:"어디서부터 막히세요?",later:"선생님한테 상담 받아보셨어요?"},orb:{text:"물리가 많이 어려우신가 봐요. 포기하시기 전에 어디서 막히시는지 한번 정리해보시는 건 어떨까요.",inlineView:null}},
+    {input:"ㅅㅂ 또 지각이야 버스 놓침",domains:["emotion","schedule"],data:{emotion:{mood:"angry",intensity:"high",cause:"지각"},schedule:{event:"지각",cause:"버스 놓침",dateResolved:"timestamp"}},note:"비속어 포함",followup:{immediate:null,later:null},orb:{text:"안좋은 일이 있으셨나요.",inlineView:null}},
+    {input:"동아리에서 밴드 하는데 기타 연습 해야함",domains:["task","media"],data:{task:{todo:"기타 연습"},media:{type:"음악",instrument:"기타",context:"밴드 동아리"}},note:"",followup:{immediate:null,later:"어떤 곡 연습하세요?"},orb:{text:null,inlineView:{type:"할 일",content:"기타 연습"}}},
+    {input:"용돈 다 떨어졌는데 PC방 가고 싶어",domains:["finance","emotion","media"],data:{finance:{status:"용돈 소진"},emotion:{mood:"wanting",cause:"PC방"},media:{type:"게임",place:"PC방"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"용돈 현황",content:"잔액: 0원"}}},
+    {input:"자소서 써야 하는데 뭘 써야 할지 모르겠다",domains:["education","task","emotion"],data:{education:{type:"자기소개서"},task:{todo:"자소서 작성"},emotion:{mood:"lost",intensity:"medium"}},note:"",followup:{immediate:"어디에 지원하시려고요?",later:"자소서 마감이 언제세요?"},orb:{text:"자소서가 막막하시군요. 어디에 지원하시는지 알려주시면 같이 생각해볼 수 있어요.",inlineView:null}}
+  ]
+},
+// ---- 3. 하윤 ----
+{
+  id:"hayun", name:"이하윤", age:21, role:"대학생 여 문과", emoji:"--",
+  traits:"레포트, 동아리, 연애, 카페 알바",
+  sentences:[
+    {input:"레포트 마감이 내일인데 아직 서론도 못 썼어 하하하",domains:["education","task","emotion"],data:{education:{type:"레포트",deadline:"내일",dateResolved:"2026-04-19"},task:{todo:"레포트 작성",progress:"서론 미완"},emotion:{mood:"anxious_laughing",intensity:"high"}},note:"",followup:{immediate:"어떤 주제세요?",later:null},orb:{text:"마감이 내일이시군요. 힘내세요.",inlineView:{type:"할 일",content:"레포트 마감 -- 4/19(토)"}}},
+    {input:"남친이 기념일에 편지 써줬어 울뻔",domains:["relationship","emotion"],data:{relationship:{person:"남자친구",event:"기념일 편지"},emotion:{mood:"touched",intensity:"very_high"}},note:"",followup:{immediate:null,later:null},orb:{text:"마음이 담긴 편지를 받으시다니 정말 좋으셨겠어요.",inlineView:null}},
+    {input:"카페 알바 시급 올랐다 10,030원 ㅋ",domains:["finance"],data:{finance:{type:"수입",source:"카페 알바",hourlyWage:10030}},note:"",followup:{immediate:null,later:"한 주에 몇 시간 일하세요?"},orb:{text:null,inlineView:{type:"수입 기록",content:"카페 알바 시급 10,030원"}}},
+    {input:"동아리 MT 이번 주 토요일인데 갈까 말까",domains:["schedule","relationship","emotion"],data:{schedule:{date:"이번 주 토요일",event:"동아리 MT",dateResolved:"2026-04-19"},relationship:{context:"동아리"},emotion:{mood:"indecisive"}},note:"",followup:{immediate:"고민이 되시는 이유가 있으세요?",later:null},orb:{text:null,inlineView:{type:"일정",content:"4/19(토) 동아리 MT"}}},
+    {input:"심리학개론 중간고사 A+ 받았어!!! 교수님 감사합니다",domains:["education","emotion"],data:{education:{subject:"심리학개론",examType:"중간고사",grade:"A+"},emotion:{mood:"grateful",intensity:"very_high"}},note:"",followup:{immediate:"정말 축하드려요! 어떻게 공부하셨어요?",later:null},orb:{text:"축하드려요! A+이시라니 정말 잘하셨어요.",inlineView:{type:"성적 기록",content:"심리학개론 중간고사 -- A+"}}},
+    {input:"이번 달 알바비 87만원인데 월세 35만원 나가면 뭐가 남지",domains:["finance"],data:{finance:{income:870000,source:"알바",expense_rent:350000}},note:"",followup:{immediate:null,later:"생활비 얼마 정도 드시는 편이세요?"},orb:{text:null,inlineView:{type:"이번 달 수지",content:"수입 870,000원 | 월세 -350,000원 | 잔액 520,000원"}}},
+    {input:"넷플릭스에서 더 글로리 정주행 함 진짜 미쳤어",domains:["media","emotion"],data:{media:{platform:"Netflix",title:"더 글로리",action:"정주행"},emotion:{mood:"impressed",intensity:"high"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"오늘 도서관에서 8시간 앉아있었는데 집중한 건 2시간",domains:["education","emotion"],data:{education:{place:"도서관",studyTime:"8시간",focusTime:"2시간"},emotion:{mood:"self_critical",intensity:"medium"}},note:"",followup:{immediate:null,later:"집중 안 될 때 어떻게 하세요?"},orb:{text:"도서관에 오래 계신 것만으로도 대단하세요. 집중 시간은 조금씩 늘려가시면 돼요.",inlineView:{type:"공부 기록",content:"도서관 8시간 | 집중 2시간"}}},
+    {input:"내일 아침 9시 수업인데 알람 7시 반에 맞춰야지",domains:["schedule","education"],data:{schedule:{date:"내일",alarmTime:"07:30",classTime:"09:00",dateResolved:"2026-04-19"},education:{context:"수업"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"일정",content:"4/19(토) 07:30 알람 | 09:00 수업"}}},
+    {input:"학점 관리 때문에 교양 뭐 들을지 고민이야",domains:["education","idea"],data:{education:{context:"수강신청",goal:"학점 관리"},idea:{category:"교양 선택"}},note:"",followup:{immediate:"지금 학점이 어떻게 되세요?",later:"관심 있는 교양이 있으세요?"},orb:{text:"교양 선택이 고민이시군요. 관심 분야가 있으시면 알려주세요.",inlineView:null}},
+    {input:"친구가 공모전 같이 나가자는데 할 수 있을까",domains:["education","relationship","emotion"],data:{education:{type:"공모전"},relationship:{person:"친구",proposal:"공모전 참여"},emotion:{mood:"uncertain"}},note:"",followup:{immediate:"어떤 공모전이세요?",later:"마감이 언제세요?"},orb:{text:"좋은 기회인 것 같아요. 어떤 공모전인지 알려주시면 같이 생각해볼 수 있어요.",inlineView:null}},
+    {input:"카공하다가 아메리카노 3잔째 마시는 중 ㅋㅋ",domains:["education","health"],data:{education:{activity:"카페 공부"},health:{item:"카페인",amount:"아메리카노 3잔"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"졸업 후에 뭐 하지 진짜 막막하다",domains:["emotion","idea"],data:{emotion:{mood:"anxious",cause:"진로",intensity:"high"},idea:{category:"졸업 후 진로"}},note:"",followup:{immediate:"지금까지 생각해보신 거 있으세요?",later:"관심 있는 분야가 뭐세요?"},orb:{text:"막막하신 마음 충분히 이해해요. 천천히 생각해보셔도 돼요.",inlineView:null}},
+    {input:"이번 주 할 일: 레포트, 동아리 회의, 알바 3회, 남친 약속",domains:["task","schedule"],data:{task:{list:["레포트","동아리 회의","알바 3회","남친 약속"]},schedule:{period:"이번 주",dateResolved:"2026-04-13~2026-04-19"}},note:"복합 태스크 나열",followup:{immediate:null,later:"이 중에 제일 급한 거 뭐세요?"},orb:{text:null,inlineView:{type:"이번 주 할 일",content:"레포트 / 동아리 회의 / 알바 3회 / 남친 약속"}}},
+    {input:"요즘 매일 운동하려고 하는데 3일째 성공 중",domains:["habit","health","emotion"],data:{habit:{name:"매일 운동",streak:3},health:{activity:"운동"},emotion:{mood:"proud",intensity:"medium"}},note:"",followup:{immediate:"어떤 운동 하세요?",later:null},orb:{text:"3일째 꾸준히 하고 계시네요. 대단하세요.",inlineView:{type:"습관 기록",content:"매일 운동 -- 3일 연속"}}},
+    {input:"교수님한테 메일 보내야 하는데 어떻게 쓰지",domains:["task","education","emotion"],data:{task:{todo:"교수 메일 작성"},education:{context:"교수 연락"},emotion:{mood:"nervous",intensity:"low"}},note:"",followup:{immediate:"어떤 건으로 보내시려고요?",later:null},orb:{text:"어떤 내용인지 알려주시면 같이 정리해볼 수 있어요.",inlineView:null}}
+  ]
+},
+// ---- 4. 성호 ----
+{
+  id:"sungho", name:"최성호", age:23, role:"대학생 남 공대", emoji:"--",
+  traits:"코딩, 자격증, 취준, 프로젝트",
+  sentences:[
+    {input:"React useEffect 무한루프 걸려서 3시간 날림",domains:["development","emotion"],data:{development:{tech:"React",issue:"useEffect 무한루프",timeSpent:"3시간"},emotion:{mood:"frustrated",intensity:"very_high"}},note:"",followup:{immediate:null,later:null},orb:{text:"3시간이나 고생하셨군요. 의존성 배열 쪽을 확인해보시는 건 어떨까요.",inlineView:null}},
+    {input:"정보처리기사 실기 다음 달인데 SQL 파트 아직 안 봤어",domains:["education","task","development"],data:{education:{certification:"정보처리기사",part:"실기",examDate:"다음 달",dateResolved:"2026-05 (approx)"},task:{todo:"SQL 파트 학습"},development:{tech:"SQL"}},note:"",followup:{immediate:null,later:"SQL 어디까지 아세요?"},orb:{text:null,inlineView:{type:"시험 일정",content:"정보처리기사 실기 -- 2026년 5월 | 남은 준비: SQL 파트"}}},
+    {input:"팀 프로젝트 백엔드 내가 맡았는데 Node.js로 할 예정",domains:["development","education"],data:{development:{role:"백엔드",tech:"Node.js",context:"팀 프로젝트"},education:{type:"팀 프로젝트"}},note:"",followup:{immediate:"팀원 몇 명이세요?",later:"마감이 언제세요?"},orb:{text:null,inlineView:{type:"프로젝트 메모",content:"팀 프로젝트 백엔드 -- Node.js"}}},
+    {input:"코테 준비 백준 골드 찍었다",domains:["development","education","emotion"],data:{development:{platform:"백준",level:"골드"},education:{context:"코딩테스트 준비"},emotion:{mood:"accomplished",intensity:"high"}},note:"",followup:{immediate:"축하드려요! 몇 문제 푸셨어요?",later:null},orb:{text:"축하드려요! 꾸준히 하신 보람이 있으시네요.",inlineView:{type:"코딩 기록",content:"백준 -- 골드 달성"}}},
+    {input:"면접 준비 어떻게 해야 하지 CS 기초부터 다시?",domains:["task","education","development"],data:{task:{todo:"면접 준비"},education:{context:"취업 면접"},development:{topic:"CS 기초"}},note:"",followup:{immediate:"어디 지원하셨어요?",later:"면접 일정 잡히셨어요?"},orb:{text:"면접 준비가 고민이시군요. CS 기초부터 정리해가시는 것도 좋은 방법이에요.",inlineView:null}},
+    {input:"깃허브 잔디 100일 연속 채우기 도전 중",domains:["habit","development"],data:{habit:{name:"깃허브 커밋",streak_goal:100},development:{platform:"GitHub"}},note:"",followup:{immediate:"지금 몇 일째세요?",later:null},orb:{text:null,inlineView:{type:"습관 기록",content:"깃허브 연속 커밋 -- 목표 100일"}}},
+    {input:"학교 근처 원룸 월세가 45만원인데 보증금 500이야 ㅋ",domains:["finance"],data:{finance:{type:"주거비",rent:450000,deposit:5000000,location:"학교 근처"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"주거비",content:"월세 450,000원 | 보증금 5,000,000원"}}},
+    {input:"알고리즘 스터디 매주 화목 저녁 7시",domains:["schedule","development","education"],data:{schedule:{days:["화","목"],time:"19:00",recurring:true},development:{topic:"알고리즘"},education:{type:"스터디"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"정기 일정",content:"알고리즘 스터디 -- 매주 화/목 19:00"}}},
+    {input:"AWS 프리티어 쓰다가 과금 폭탄 맞을 뻔",domains:["development","finance","emotion"],data:{development:{service:"AWS",issue:"프리티어 초과"},finance:{risk:"클라우드 과금"},emotion:{mood:"shocked",intensity:"high"}},note:"",followup:{immediate:"얼마나 나왔어요?",later:null},orb:{text:"아이고, 다행히 크게 나오지 않으셨으면 좋겠어요. 알림 설정을 해두시면 예방할 수 있어요.",inlineView:null}},
+    {input:"취업 못하면 어쩌지 ㅋㅋ 솔직히 무섭다",domains:["emotion"],data:{emotion:{mood:"anxious",cause:"취업",intensity:"high"}},note:"",followup:{immediate:null,later:"어떤 회사에 가고 싶으세요?"},orb:{text:"걱정되시는 마음 충분히 이해해요. 하나씩 준비해 나가다 보면 길이 보일 거예요.",inlineView:null}},
+    {input:"카카오 코테 떨어짐… 2차에서 막힘",domains:["development","education","emotion"],data:{development:{company:"카카오",event:"코딩테스트",stage:"2차"},education:{context:"취업"},emotion:{mood:"dejected",intensity:"high"}},note:"",followup:{immediate:"아쉬우셨겠어요. 몇 번째 문제에서 막히셨어요?",later:"다음 코테 일정이 있으세요?"},orb:{text:"아쉬우셨겠어요. 2차까지 가신 것만으로도 실력이 있으신 거예요.",inlineView:null}},
+    {input:"Docker 처음 써보는데 뭔 소린지 모르겠어",domains:["development","education"],data:{development:{tech:"Docker",proficiency:"beginner"},education:{context:"자기학습"}},note:"",followup:{immediate:null,later:null},orb:{text:"처음에는 다 어려워요. 이미지와 컨테이너 개념부터 천천히 시작해보세요.",inlineView:null}},
+    {input:"오늘 점심 학식 3000원 저녁 편의점 4500원",domains:["finance"],data:{finance:{meals:[{meal:"점심",cost:3000,place:"학식"},{meal:"저녁",cost:4500,place:"편의점"}]}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"식비 기록",content:"점심 학식 3,000원 | 저녁 편의점 4,500원 | 합계 7,500원"}}},
+    {input:"포트폴리오 사이트 만들어야 하는데 디자인을 못 하겠어",domains:["development","task","emotion"],data:{development:{project:"포트폴리오 사이트",blocker:"디자인"},task:{todo:"포트폴리오 제작"},emotion:{mood:"stuck",intensity:"medium"}},note:"",followup:{immediate:"템플릿을 활용해보시는 건 어떠세요?",later:null},orb:{text:"디자인이 막히시는군요. 템플릿이나 참고할 만한 사이트를 찾아보시는 것도 방법이에요.",inlineView:null}},
+    {input:"친구가 네카라 붙었대 축하하면서도 부럽다",domains:["relationship","emotion"],data:{relationship:{person:"친구",event:"대기업 합격"},emotion:{mood:"envious_happy",intensity:"medium"}},note:"복합 감정",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"오늘 새벽까지 코딩했더니 목이랑 허리 아파",domains:["development","health"],data:{development:{activity:"야간 코딩"},health:{symptoms:["목 통증","허리 통증"],cause:"장시간 코딩"}},note:"",followup:{immediate:null,later:null},orb:{text:"오래 앉아계시면 몸에 무리가 올 수 있어요. 중간중간 스트레칭 해주세요.",inlineView:{type:"건강 기록",content:"목 통증, 허리 통증 -- 장시간 코딩"}}}
+  ]
+},
+// ---- 5. 지현 ----
+{
+  id:"jihyun", name:"박지현", age:26, role:"의대생 여", emoji:"--",
+  traits:"해부학, 병원 실습, 스터디",
+  sentences:[
+    {input:"해부학 시험 범위가 상지 전체인데 외울 게 산더미",domains:["education","emotion"],data:{education:{subject:"해부학",scope:"상지 전체"},emotion:{mood:"overwhelmed",intensity:"high"}},note:"",followup:{immediate:"시험이 언제세요?",later:null},orb:{text:"범위가 넓으시군요. 부위별로 나눠서 정리해보시는 건 어떨까요.",inlineView:null}},
+    {input:"오늘 병원 실습에서 처음으로 봉합 했어 손 떨렸다",domains:["education","health","emotion"],data:{education:{type:"병원 실습",procedure:"봉합"},health:{context:"의료 실습"},emotion:{mood:"nervous_excited",intensity:"high"}},note:"",followup:{immediate:"잘 되셨어요?",later:null},orb:{text:"처음 봉합을 하시다니 정말 떨리셨겠어요. 대단하세요.",inlineView:null}},
+    {input:"스터디 그룹 내일 오전 10시 도서관 3층",domains:["schedule","education"],data:{schedule:{date:"내일",time:"10:00",place:"도서관 3층",dateResolved:"2026-04-19"},education:{type:"스터디"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"일정",content:"4/19(토) 10:00 스터디 -- 도서관 3층"}}},
+    {input:"약리학 교수님이 시험에 부작용 위주로 낸대",domains:["education"],data:{education:{subject:"약리학",examHint:"부작용 위주"}},note:"",followup:{immediate:null,later:"시험 범위 어디까지세요?"},orb:{text:null,inlineView:{type:"시험 메모",content:"약리학 -- 부작용 위주 출제"}}},
+    {input:"커피 5잔째인데 아직도 졸려 이게 맞나",domains:["health","emotion"],data:{health:{caffeine:"커피 5잔",symptom:"졸림"},emotion:{mood:"exhausted",intensity:"high"}},note:"",followup:{immediate:null,later:null},orb:{text:"5잔이면 카페인이 많으시네요. 잠시 눈을 붙이시는 게 더 효과적일 수도 있어요.",inlineView:null}},
+    {input:"전공 서적 한 권에 15만원 ㅋㅋ 장사를 하네",domains:["finance","education","emotion"],data:{finance:{amount:150000,category:"서적"},education:{context:"전공 서적 구매"},emotion:{mood:"incredulous",intensity:"medium"}},note:"",followup:{immediate:null,later:"중고로 구할 수 있는 건 아닌지 확인해보셨어요?"},orb:{text:null,inlineView:{type:"지출 기록",content:"전공 서적 150,000원"}}},
+    {input:"환자분이 고맙다고 하셨을 때 이 길 잘 왔다 싶었어",domains:["emotion","relationship"],data:{emotion:{mood:"fulfilled",intensity:"very_high",cause:"환자 감사"},relationship:{person:"환자",interaction:"감사 인사"}},note:"",followup:{immediate:null,later:null},orb:{text:"정말 보람 있으셨겠어요.",inlineView:null}},
+    {input:"의사국시 언제 준비 시작하지 벌써 불안해",domains:["education","emotion"],data:{education:{exam:"의사국가시험"},emotion:{mood:"anxious",cause:"국시",intensity:"medium"}},note:"",followup:{immediate:null,later:null},orb:{text:"아직 시간이 있으시니까 너무 걱정하지 마세요. 때가 되면 자연스럽게 준비하시게 될 거예요.",inlineView:null}},
+    {input:"오늘 병리학 슬라이드 200장 봐야 해",domains:["education","task"],data:{education:{subject:"병리학"},task:{todo:"슬라이드 200장 학습"}},note:"",followup:{immediate:null,later:"다 보셨어요?"},orb:{text:null,inlineView:{type:"할 일",content:"병리학 슬라이드 200장"}}},
+    {input:"실습 끝나고 치킨 시켜먹었다 18000원 나옴",domains:["finance","schedule"],data:{finance:{amount:18000,category:"식비",item:"치킨"},schedule:{timing:"실습 후",dateResolved:"timestamp"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"지출 기록",content:"식비 -- 치킨 18,000원"}}},
+    {input:"매일 아침 6시에 일어나서 조깅하는 거 2주째 유지 중",domains:["habit","health"],data:{habit:{name:"아침 조깅",time:"06:00",streak:"2주"},health:{activity:"조깅"}},note:"",followup:{immediate:"대단하세요! 몇 km 뛰세요?",later:null},orb:{text:"2주째 꾸준히 하고 계시다니 대단하세요.",inlineView:{type:"습관 기록",content:"아침 조깅 06:00 -- 2주 연속"}}},
+    {input:"의학 드라마 보면 웃긴 게 진짜 저러면 환자 죽어",domains:["media","knowledge","emotion"],data:{media:{genre:"의학 드라마"},knowledge:{domain:"의학",context:"드라마 고증 오류"},emotion:{mood:"amused",intensity:"low"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"해부학 실습실 냄새 적응이 안 돼 3년째인데",domains:["education","emotion","health"],data:{education:{subject:"해부학 실습"},emotion:{mood:"uncomfortable",intensity:"medium"},health:{issue:"냄새 민감"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"선배가 레지던트 생활 지옥이라고 하는데 나도 갈 건데",domains:["education","emotion","relationship"],data:{education:{context:"레지던트"},emotion:{mood:"apprehensive",intensity:"medium"},relationship:{person:"선배",info:"레지던트 경험"}},note:"",followup:{immediate:"어떤 과 생각하고 계세요?",later:null},orb:{text:"걱정이 되실 수 있지만, 그때 가면 또 방법이 생기실 거예요.",inlineView:null}},
+    {input:"오늘 공부한 거 정리: 심장 구조, 관상동맥, 심전도 기초",domains:["education","knowledge"],data:{education:{subject:"심장학"},knowledge:{topics:["심장 구조","관상동맥","심전도 기초"]}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"학습 기록",content:"심장 구조 / 관상동맥 / 심전도 기초"}}},
+    {input:"주말에 좀 쉬고 싶은데 시험이 2주 뒤야",domains:["emotion","education","schedule"],data:{emotion:{mood:"tired",intensity:"medium"},education:{exam_in:"2주"},schedule:{desire:"주말 휴식",dateResolved:"2026-04-19"}},note:"",followup:{immediate:null,later:"주말에 뭐 하고 싶으세요?"},orb:{text:"적당한 휴식도 공부의 일부예요. 무리하지 마세요.",inlineView:null}}
+  ]
+},
+// ---- 6. 서아 ----
+{
+  id:"seoa", name:"정서아", age:25, role:"사회초년생 여", emoji:"--",
+  traits:"첫 월급, 자취, 적금, 회사",
+  sentences:[
+    {input:"첫 월급 들어왔다!!! 세후 248만원 ㅠㅠ 세금 도둑",domains:["finance","emotion"],data:{finance:{type:"수입",amount:2480000,source:"월급",note:"세후"},emotion:{mood:"bittersweet",intensity:"high"}},note:"",followup:{immediate:"첫 월급으로 뭐 하실 계획이세요?",later:null},orb:{text:"첫 월급 축하드려요!",inlineView:{type:"수입 기록",content:"월급(세후) 2,480,000원"}}},
+    {input:"자취방 보일러 고장났는데 집주인이 연락이 안 돼",domains:["task","emotion"],data:{task:{todo:"보일러 수리",blocker:"집주인 미연락"},emotion:{mood:"frustrated",intensity:"high"}},note:"",followup:{immediate:"지금 춥지 않으세요?",later:"집주인 연락 되셨어요?"},orb:{text:"불편하시겠어요. 문자로도 한번 남겨보시는 건 어떨까요.",inlineView:{type:"할 일",content:"보일러 수리 -- 집주인 연락 필요"}}},
+    {input:"적금 매달 50만원씩 넣기로 했어 1년 목표",domains:["finance","habit"],data:{finance:{type:"저축",amount:500000,product:"적금",goal:"1년"},habit:{name:"적금",frequency:"매달"}},note:"",followup:{immediate:null,later:"어떤 적금 상품이세요?"},orb:{text:null,inlineView:{type:"저축 계획",content:"적금 월 500,000원 -- 1년 목표"}}},
+    {input:"팀장님이 보고서 다시 쓰라고 했는데 뭐가 문제인지 모르겠어",domains:["task","emotion","relationship"],data:{task:{todo:"보고서 재작성"},emotion:{mood:"confused_frustrated",intensity:"medium"},relationship:{person:"팀장님",event:"보고서 피드백"}},note:"",followup:{immediate:"구체적인 피드백을 안 주셨어요?",later:null},orb:{text:"답답하셨겠어요. 팀장님께 구체적으로 어떤 부분인지 여쭤보시는 것도 방법이에요.",inlineView:null}},
+    {input:"퇴근하고 요가 다니기 시작했어 월 8만원",domains:["health","habit","finance"],data:{health:{activity:"요가"},habit:{name:"요가",frequency:"정기"},finance:{amount:80000,category:"운동",period:"월"}},note:"",followup:{immediate:"좋은 선택이세요! 주 몇 회 가세요?",later:null},orb:{text:null,inlineView:{type:"고정 지출",content:"요가 월 80,000원"}}},
+    {input:"회사 사람들이랑 점심 먹는 게 제일 어색해",domains:["relationship","emotion"],data:{relationship:{context:"직장 동료",situation:"점심"},emotion:{mood:"awkward",intensity:"medium"}},note:"",followup:{immediate:null,later:null},orb:{text:"처음에는 다 그러세요. 시간이 지나면 자연스러워지실 거예요.",inlineView:null}},
+    {input:"주말에 이케아 가서 수납장 사야지 89000원짜리",domains:["schedule","finance","task"],data:{schedule:{date:"주말",place:"이케아",dateResolved:"2026-04-19"},finance:{amount:89000,category:"가구",item:"수납장"},task:{todo:"수납장 구매"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"일정 + 지출 예정",content:"4/19(토) 이케아 -- 수납장 89,000원"}}},
+    {input:"엄마가 밑반찬 택배로 보내줬어 눈물남",domains:["relationship","emotion"],data:{relationship:{person:"엄마",event:"밑반찬 택배"},emotion:{mood:"touched",intensity:"very_high",cause:"엄마 정성"}},note:"",followup:{immediate:null,later:null},orb:{text:"엄마의 마음이 담긴 택배네요. 정말 따뜻하시겠어요.",inlineView:null}},
+    {input:"이번 달 카드값 78만원 어디서 이렇게 쓴 거야",domains:["finance","emotion"],data:{finance:{amount:780000,type:"지출",method:"카드"},emotion:{mood:"shocked",intensity:"high"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"카드 지출",content:"이번 달 카드값 780,000원"}}},
+    {input:"출근 루틴: 7시 기상 → 7:30 샤워 → 8시 출발 → 8:40 도착",domains:["habit","schedule"],data:{habit:{name:"출근 루틴"},schedule:{wakeup:"07:00",shower:"07:30",depart:"08:00",arrive:"08:40"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"루틴",content:"07:00 기상 -- 07:30 샤워 -- 08:00 출발 -- 08:40 도착"}}},
+    {input:"오늘 야근이야 ㅋㅋ 9시에나 갈 듯",domains:["schedule","emotion"],data:{schedule:{event:"야근",endTime:"21:00",dateResolved:"timestamp"},emotion:{mood:"resigned",intensity:"medium"}},note:"",followup:{immediate:null,later:null},orb:{text:"고생하시네요. 너무 무리하지 마세요.",inlineView:null}},
+    {input:"갑자기 여행 가고 싶다 제주도 비행기 얼마지",domains:["idea","emotion","finance"],data:{idea:{content:"제주도 여행"},emotion:{mood:"wanderlust",intensity:"medium"},finance:{inquiry:"항공권 가격"}},note:"",followup:{immediate:"언제쯤 가고 싶으세요?",later:null},orb:{text:null,inlineView:null}},
+    {input:"회사에서 쓰는 엑셀 함수 VLOOKUP 드디어 이해함",domains:["development","knowledge","emotion"],data:{development:{tool:"엑셀",skill:"VLOOKUP"},knowledge:{topic:"엑셀 함수"},emotion:{mood:"accomplished",intensity:"medium"}},note:"development 경계 모호",followup:{immediate:null,later:null},orb:{text:"하나 익히셨으니 다음 함수도 금방이실 거예요.",inlineView:null}},
+    {input:"월세 55만원 + 관리비 8만원 + 인터넷 2만원 고정비가 65만원",domains:["finance"],data:{finance:{fixedCosts:{rent:550000,maintenance:80000,internet:20000,total:650000}}},note:"",followup:{immediate:null,later:"월급 대비 고정비 비율이 어떠세요?"},orb:{text:null,inlineView:{type:"고정비",content:"월세 550,000 | 관리비 80,000 | 인터넷 20,000 | 합계 650,000원"}}},
+    {input:"대학 친구 만나서 수다 떨었더니 스트레스 풀렸어",domains:["relationship","emotion","health"],data:{relationship:{person:"대학 친구",activity:"만남"},emotion:{mood:"relieved",intensity:"medium"},health:{effect:"스트레스 해소"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"내일 아침 회의 9시인데 발표 자료 아직 안 만듦",domains:["schedule","task","emotion"],data:{schedule:{date:"내일",time:"09:00",event:"회의",dateResolved:"2026-04-19"},task:{todo:"발표 자료 제작"},emotion:{mood:"anxious",intensity:"high"}},note:"",followup:{immediate:"발표 주제가 뭐세요?",later:null},orb:{text:"시간이 촉박하시군요. 핵심 위주로 먼저 정리해보시는 건 어떨까요.",inlineView:{type:"일정",content:"4/19(토) 09:00 회의 -- 발표 자료 준비 필요"}}}
+  ]
+},
+// ---- 7. 태윤 ----
+{
+  id:"taeyun", name:"이태윤", age:27, role:"사회초년생 남", emoji:"--",
+  traits:"이직, 야근, 운동, 주식",
+  sentences:[
+    {input:"이직 준비 중인데 이력서 쓰는 게 제일 어렵다",domains:["task","emotion"],data:{task:{todo:"이력서 작성"},emotion:{mood:"frustrated",cause:"이력서",intensity:"medium"}},note:"",followup:{immediate:"어떤 업종 보고 계세요?",later:"이력서 피드백 받아보셨어요?"},orb:{text:"이력서가 제일 어려운 부분이시군요. 어떤 업종을 보고 계신지 알려주시면 같이 정리해볼 수 있어요.",inlineView:null}},
+    {input:"삼성전자 10주 샀는데 -3% ㅋ 존버",domains:["finance","emotion"],data:{finance:{type:"투자",stock:"삼성전자",shares:10,change:"-3%"},emotion:{mood:"resigned_hopeful",intensity:"low"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"투자 기록",content:"삼성전자 10주 -- 수익률 -3%"}}},
+    {input:"오늘 헬스장에서 벤치프레스 70kg 성공!",domains:["health","emotion","habit"],data:{health:{exercise:"벤치프레스",weight:"70kg"},emotion:{mood:"proud",intensity:"high"},habit:{name:"헬스",activity:"벤치프레스"}},note:"",followup:{immediate:"대단하세요! 전에는 몇 kg이셨어요?",later:null},orb:{text:"70kg 성공이시라니 정말 대단하세요!",inlineView:{type:"운동 기록",content:"벤치프레스 70kg 성공"}}},
+    {input:"ㅅㅂ 또 야근이야 이 회사 진짜",domains:["emotion","schedule"],data:{emotion:{mood:"angry",intensity:"very_high",cause:"야근"},schedule:{event:"야근",dateResolved:"timestamp"}},note:"비속어 포함",followup:{immediate:null,later:null},orb:{text:"안좋은 일이 있으셨나요.",inlineView:null}},
+    {input:"연봉 협상 때 300 올려달라고 했는데 200만 줌",domains:["finance","emotion"],data:{finance:{event:"연봉 협상",requested:3000000,received:2000000},emotion:{mood:"disappointed",intensity:"medium"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"연봉 메모",content:"연봉 협상 -- 요청 +300만 / 결과 +200만"}}},
+    {input:"주말마다 등산 가기로 함 이번 주 북한산",domains:["habit","health","schedule"],data:{habit:{name:"주말 등산",frequency:"매주"},health:{activity:"등산"},schedule:{date:"이번 주말",place:"북한산",dateResolved:"2026-04-19"}},note:"",followup:{immediate:"몇 시에 출발하세요?",later:null},orb:{text:null,inlineView:{type:"일정 + 습관",content:"4/19(토) 북한산 등산 | 주말 등산 시작"}}},
+    {input:"점심에 같이 먹는 동기가 퇴사한대 나도 흔들려",domains:["relationship","emotion"],data:{relationship:{person:"동기",event:"퇴사"},emotion:{mood:"wavering",cause:"동기 퇴사",intensity:"high"}},note:"",followup:{immediate:null,later:null},orb:{text:"가까운 분이 떠나시면 마음이 흔들릴 수 있어요.",inlineView:null}},
+    {input:"코인 좀 해볼까 하다가 참았어 위험하다고 들어서",domains:["finance","idea"],data:{finance:{consideration:"암호화폐 투자"},idea:{content:"코인 투자",decision:"보류"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"매일 아침 영어 뉴스 듣기 한 달째",domains:["habit","education","knowledge"],data:{habit:{name:"영어 뉴스 듣기",frequency:"매일",streak:"1개월"},education:{subject:"영어"},knowledge:{source:"영어 뉴스"}},note:"",followup:{immediate:null,later:"무엇으로 들으세요?"},orb:{text:null,inlineView:{type:"습관 기록",content:"영어 뉴스 듣기 -- 1개월 연속"}}},
+    {input:"이번 달 식비가 42만원 ㄷㄷ 배달 줄여야지",domains:["finance","task"],data:{finance:{category:"식비",amount:420000,period:"이번 달"},task:{todo:"배달 줄이기"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"지출 현황",content:"이번 달 식비 420,000원"}}},
+    {input:"링크드인 프로필 업데이트해야 하는데 귀찮아",domains:["task","development","emotion"],data:{task:{todo:"링크드인 프로필 업데이트"},development:{platform:"LinkedIn"},emotion:{mood:"lazy",intensity:"low"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"할 일",content:"링크드인 프로필 업데이트"}}},
+    {input:"회식 다음 주 금요일 강남 고깃집",domains:["schedule","relationship","finance"],data:{schedule:{date:"다음 주 금요일",place:"강남 고깃집",event:"회식",dateResolved:"2026-04-24"},relationship:{context:"직장"},finance:{category:"회식비"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"일정",content:"4/24(금) 회식 -- 강남 고깃집"}}},
+    {input:"퇴근 후에 사이드 프로젝트 하고 있는데 진도가 안 나가",domains:["development","emotion"],data:{development:{type:"사이드 프로젝트"},emotion:{mood:"stuck",intensity:"medium"}},note:"",followup:{immediate:"어떤 프로젝트세요?",later:null},orb:{text:"퇴근 후에 또 작업하시는 거 자체가 대단하세요. 작은 단위로 나눠보시는 건 어떨까요.",inlineView:null}},
+    {input:"건강검진 결과 나왔는데 간수치가 높대 술 줄여야지",domains:["health","task"],data:{health:{exam:"건강검진",result:"간수치 높음",cause:"음주"},task:{todo:"술 줄이기"}},note:"",followup:{immediate:"수치가 얼마나 높았어요?",later:null},orb:{text:null,inlineView:{type:"건강 기록",content:"건강검진 -- 간수치 높음"}}},
+    {input:"이직하면 연봉 500 이상은 받아야 하는데",domains:["finance","idea"],data:{finance:{target_salary:"5000만원 이상"},idea:{content:"이직 연봉 기준"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"이직 메모",content:"목표 연봉 5,000만원 이상"}}},
+    {input:"요즘 번아웃 온 거 같아 아무것도 하기 싫어",domains:["emotion","health"],data:{emotion:{mood:"burnout",intensity:"very_high"},health:{condition:"번아웃"}},note:"emotion vs health 경계 모호",followup:{immediate:null,later:"쉴 수 있는 날이 있으세요?"},orb:{text:"많이 지치신 것 같아요. 지금은 쉬어가시는 것도 괜찮아요.",inlineView:null}}
+  ]
+},
+// ---- 8. 은지 ----
+{
+  id:"eunji", name:"한은지", age:32, role:"워킹맘 여", emoji:"--",
+  traits:"육아+직장, 이유식, 어린이집",
+  sentences:[
+    {input:"이유식 만들다가 회사 지각할 뻔 했어 ㅋㅋ",domains:["task","schedule","emotion"],data:{task:{activity:"이유식 제작"},schedule:{event:"출근",risk:"지각",dateResolved:"timestamp"},emotion:{mood:"flustered",intensity:"medium"}},note:"",followup:{immediate:null,later:null},orb:{text:"아침에 정말 분주하셨겠어요.",inlineView:null}},
+    {input:"어린이집 원비 38만원 나왔어 매달 이거 아까워",domains:["finance","emotion"],data:{finance:{amount:380000,category:"어린이집",period:"월"},emotion:{mood:"burdened",intensity:"medium"}},note:"",followup:{immediate:null,later:"보육료 지원 받고 계세요?"},orb:{text:null,inlineView:{type:"고정 지출",content:"어린이집 원비 월 380,000원"}}},
+    {input:"아이가 첫 걸음 떼었어!!! 11개월 만에!!!",domains:["relationship","emotion"],data:{relationship:{person:"아이",milestone:"첫 걸음",age:"11개월"},emotion:{mood:"overjoyed",intensity:"very_high"}},note:"",followup:{immediate:null,later:null},orb:{text:"정말 축하드려요! 감동적인 순간이셨겠어요.",inlineView:{type:"아이 성장 기록",content:"첫 걸음 -- 11개월"}}},
+    {input:"회사에서 육아휴직 눈치 보여서 못 쓰겠어",domains:["emotion","relationship"],data:{emotion:{mood:"pressured",cause:"육아휴직 눈치",intensity:"high"},relationship:{context:"직장 분위기"}},note:"",followup:{immediate:null,later:null},orb:{text:"힘드시겠어요. 당연한 권리인데 눈치가 보이시다니 답답하실 거예요.",inlineView:null}},
+    {input:"주말에 남편이랑 번갈아 애 보기로 함 나도 좀 쉬어야지",domains:["schedule","relationship","health"],data:{schedule:{date:"주말",plan:"번갈아 육아",dateResolved:"2026-04-19"},relationship:{person:"남편",arrangement:"육아 분담"},health:{need:"휴식"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"애기 열이 38.5도야 병원 가야 하나",domains:["health","emotion","schedule"],data:{health:{person:"아이",symptom:"발열",temperature:38.5},emotion:{mood:"worried",intensity:"very_high"},schedule:{potential:"병원 방문"}},note:"",followup:{immediate:"다른 증상도 있으세요? 기침이나 콧물은요?",later:null},orb:{text:"걱정되시겠어요. 38.5도이시면 병원에 한번 가보시는 게 안심이 되실 거예요.",inlineView:{type:"건강 기록",content:"아이 발열 38.5도"}}},
+    {input:"아 오늘 진짜 힘들다 회사도 집도 쉴 틈이 없어",domains:["emotion","health"],data:{emotion:{mood:"exhausted",intensity:"very_high",cause:"직장+육아"},health:{status:"피로 누적"}},note:"",followup:{immediate:null,later:"도와줄 분이 계세요?"},orb:{text:"정말 고생이 많으세요. 쉴 수 있는 시간이 조금이라도 생기시길 바랍니다.",inlineView:null}},
+    {input:"이유식 재료 당근 소고기 브로콜리 마트에서 사와야 해",domains:["task","finance"],data:{task:{todo:"이유식 재료 구매",items:["당근","소고기","브로콜리"]},finance:{category:"식재료"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"장보기 목록",content:"당근 / 소고기 / 브로콜리"}}},
+    {input:"맘카페에서 추천받은 아기 로션 28000원 괜찮은가",domains:["finance","knowledge","health"],data:{finance:{amount:28000,item:"아기 로션"},knowledge:{source:"맘카페"},health:{category:"아기 스킨케어"}},note:"",followup:{immediate:"어떤 브랜드세요?",later:null},orb:{text:null,inlineView:{type:"지출 검토",content:"아기 로션 28,000원"}}},
+    {input:"남편이 퇴근 후에 설거지 해줘서 감동",domains:["relationship","emotion"],data:{relationship:{person:"남편",action:"설거지"},emotion:{mood:"grateful",intensity:"medium"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"내일 어린이집 학부모 상담 3시",domains:["schedule","education"],data:{schedule:{date:"내일",time:"15:00",event:"학부모 상담",dateResolved:"2026-04-19"},education:{type:"어린이집 상담"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"일정",content:"4/19(토) 15:00 어린이집 학부모 상담"}}},
+    {input:"요즘 살이 너무 쪘어 출산 전 몸무게로 돌아가고 싶다",domains:["health","emotion"],data:{health:{concern:"체중 증가",goal:"출산 전 체중"},emotion:{mood:"self_conscious",intensity:"medium"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"회사 프로젝트 마감이랑 애 예방접종이 같은 날이야",domains:["schedule","task","health"],data:{schedule:{conflict:["프로젝트 마감","예방접종"],dateResolved:"timestamp"},task:{dilemma:"일정 충돌"},health:{event:"예방접종"}},note:"",followup:{immediate:"남편분이 대신 가실 수 있으세요?",later:null},orb:{text:"일정이 겹치셨군요. 남편분이 대신 가실 수 있는지 확인해보시는 건 어떨까요.",inlineView:{type:"일정 충돌",content:"같은 날: 프로젝트 마감 + 예방접종"}}},
+    {input:"아기 옷 정리하는데 금방 작아져서 아깝다",domains:["task","emotion","finance"],data:{task:{activity:"아기 옷 정리"},emotion:{mood:"bittersweet",cause:"아기 성장"},finance:{waste:"아기 옷"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"잠을 4시간밖에 못 잤어 아기가 3번 깼거든",domains:["health","emotion"],data:{health:{sleep:"4시간",disturbance:"아기 3회 기상"},emotion:{mood:"exhausted",intensity:"very_high"}},note:"",followup:{immediate:null,later:null},orb:{text:"많이 힘드시겠어요. 낮에 잠깐이라도 눈 붙이실 수 있으면 좋겠어요.",inlineView:{type:"수면 기록",content:"수면 4시간 -- 아기 3회 기상"}}},
+    {input:"나를 위한 시간이 필요해 카페에서 혼자 한 시간만",domains:["emotion","health","idea"],data:{emotion:{mood:"needing_space",intensity:"high"},health:{need:"개인 시간"},idea:{content:"혼자만의 카페 시간"}},note:"",followup:{immediate:null,later:null},orb:{text:"충분히 그러실 만해요. 잠깐이라도 자신만의 시간을 가지시는 게 좋아요.",inlineView:null}}
+  ]
+},
+// ---- 9. 준혁 ----
+{
+  id:"junhyuk", name:"김준혁", age:34, role:"팀장 남", emoji:"--",
+  traits:"프로젝트 관리, 투자, 팀원 면담",
+  sentences:[
+    {input:"이번 분기 KPI 달성률 78%인데 목표가 90이야",domains:["task","emotion"],data:{task:{metric:"KPI",current:"78%",target:"90%"},emotion:{mood:"pressured",intensity:"high"}},note:"",followup:{immediate:"어디서 빠졌어요?",later:"분기 마감까지 얼마나 남으셨어요?"},orb:{text:null,inlineView:{type:"KPI 현황",content:"달성률 78% / 목표 90% -- 차이 12%p"}}},
+    {input:"신입 면담했는데 적응 힘들어하더라 좀 챙겨야겠어",domains:["relationship","task"],data:{relationship:{person:"신입",context:"면담"},task:{todo:"신입 케어"}},note:"",followup:{immediate:null,later:null},orb:{text:"팀원을 챙기시는 모습이 좋으시네요.",inlineView:{type:"할 일",content:"신입 사원 케어"}}},
+    {input:"ETF에 매달 100만원씩 적립식으로 넣고 있어",domains:["finance","habit"],data:{finance:{type:"투자",product:"ETF",amount:1000000,frequency:"월"},habit:{name:"ETF 적립투자"}},note:"",followup:{immediate:null,later:"어떤 ETF세요?"},orb:{text:null,inlineView:{type:"투자 기록",content:"ETF 적립투자 월 1,000,000원"}}},
+    {input:"프로젝트 일정 2주 밀렸어 클라이언트한테 뭐라 하지",domains:["task","relationship","emotion"],data:{task:{status:"2주 지연"},relationship:{person:"클라이언트",communication:"일정 지연 알림"},emotion:{mood:"stressed",intensity:"high"}},note:"",followup:{immediate:"밀린 원인이 뭐세요?",later:null},orb:{text:"스트레스 받으시겠어요. 원인과 대안을 함께 정리해서 말씀드리시면 이해해주실 거예요.",inlineView:null}},
+    {input:"팀원 A가 퇴사 의사 밝힘 설득해야 하나 보내야 하나",domains:["relationship","emotion","task"],data:{relationship:{person:"팀원 A",event:"퇴사 의사"},emotion:{mood:"conflicted",intensity:"high"},task:{decision:"퇴사 대응"}},note:"",followup:{immediate:"퇴사 이유가 뭐래요?",later:null},orb:{text:"어려운 상황이시겠어요.",inlineView:null}},
+    {input:"임원 보고 자료 금요일까지 만들어야 해",domains:["task","schedule"],data:{task:{todo:"임원 보고 자료"},schedule:{deadline:"금요일",dateResolved:"2026-04-18"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"일정",content:"4/18(금) 마감 -- 임원 보고 자료"}}},
+    {input:"부동산 투자 공부 시작함 유튜브로",domains:["finance","knowledge","education"],data:{finance:{topic:"부동산 투자"},knowledge:{source:"유튜브"},education:{subject:"부동산"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"아내 생일 다음 주인데 레스토랑 예약해야지",domains:["schedule","relationship","task"],data:{schedule:{date:"다음 주",event:"아내 생일",dateResolved:"2026-04-25 (approx)"},relationship:{person:"아내"},task:{todo:"레스토랑 예약"}},note:"",followup:{immediate:"어디서 식사하실 생각이세요?",later:"선물은 뭘로 하실 건가요?"},orb:{text:null,inlineView:{type:"일정 + 할 일",content:"다음 주 아내 생일 | 할 일: 레스토랑 예약"}}},
+    {input:"팀 회식 장소 찾는 중 예산 인당 3만원",domains:["task","finance","relationship"],data:{task:{todo:"회식 장소 선정"},finance:{budget:30000,per:"인당"},relationship:{context:"팀"}},note:"",followup:{immediate:"몇 명이세요?",later:null},orb:{text:null,inlineView:{type:"할 일",content:"팀 회식 장소 선정 -- 예산 인당 30,000원"}}},
+    {input:"워라밸이 뭔지 모르겠다 주말에도 슬랙 온다",domains:["emotion","health"],data:{emotion:{mood:"exhausted",cause:"업무 침범",intensity:"high"},health:{issue:"워라밸 부족"}},note:"",followup:{immediate:null,later:null},orb:{text:"주말까지 업무 연락이 오시면 정말 쉬기 어려우시겠어요.",inlineView:null}},
+    {input:"주식 포트폴리오 리밸런싱 해야 하는데 귀찮아",domains:["finance","task"],data:{finance:{action:"포트폴리오 리밸런싱"},task:{todo:"리밸런싱",priority:"low"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"할 일",content:"주식 포트폴리오 리밸런싱"}}},
+    {input:"오전 10시 스크럼 회의 / 오후 2시 클라이언트 미팅 / 4시 팀원 1on1",domains:["schedule"],data:{schedule:{meetings:[{time:"10:00",event:"스크럼"},{time:"14:00",event:"클라이언트 미팅"},{time:"16:00",event:"1on1"}],dateResolved:"timestamp"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"오늘 일정",content:"10:00 스크럼 | 14:00 클라이언트 미팅 | 16:00 1on1"}}},
+    {input:"리더십 책 추천받았는데 읽을 시간이 없어",domains:["media","task","emotion"],data:{media:{type:"책",genre:"리더십"},task:{todo:"독서"},emotion:{mood:"overwhelmed",intensity:"low"}},note:"",followup:{immediate:"어떤 책이세요?",later:null},orb:{text:null,noResponse:true}},
+    {input:"연말 평가 시즌인데 피드백 쓰는 게 제일 스트레스",domains:["task","emotion"],data:{task:{todo:"연말 평가 피드백 작성"},emotion:{mood:"stressed",cause:"평가 시즌",intensity:"high"}},note:"",followup:{immediate:null,later:null},orb:{text:"평가 작성이 부담되시죠. 한 명씩 차근차근 하시면 돼요.",inlineView:null}},
+    {input:"5년 차인데 아직도 이 일이 맞는지 모르겠어",domains:["emotion","idea"],data:{emotion:{mood:"existential",cause:"커리어 의문",intensity:"high"},idea:{category:"커리어 방향"}},note:"",followup:{immediate:"요즘 특히 그러세요?",later:null},orb:{text:"그런 고민이 드실 수 있어요. 자연스러운 거예요.",inlineView:null}},
+    {input:"아들 돌잔치 준비 시작해야 해 장소 알아보는 중",domains:["schedule","task","relationship","finance"],data:{schedule:{event:"돌잔치"},task:{todo:"장소 섭외"},relationship:{person:"아들"},finance:{category:"돌잔치 비용"}},note:"4개 도메인 복합",followup:{immediate:"언제 하실 예정이세요?",later:"예산은 어느 정도 생각하세요?"},orb:{text:null,inlineView:{type:"할 일",content:"아들 돌잔치 -- 장소 알아보기"}}}
+  ]
+},
+// ---- 10. 도윤 ----
+{
+  id:"doyun", name:"강도윤", age:31, role:"프리랜서 디자이너 남", emoji:"--",
+  traits:"클라이언트, 세금, 포트폴리오",
+  sentences:[
+    {input:"클라이언트가 수정 7번째 요청함 이건 좀 아닌데",domains:["task","emotion","relationship"],data:{task:{revision:7},emotion:{mood:"exasperated",intensity:"very_high"},relationship:{person:"클라이언트",issue:"과도한 수정 요청"}},note:"",followup:{immediate:"계약서에 수정 횟수를 명시하셨어요?",later:null},orb:{text:"7번이면 정말 많으시네요. 힘드시겠어요.",inlineView:null}},
+    {input:"종합소득세 신고 기간인데 경비처리 뭐뭐 되는 거야",domains:["finance","task"],data:{finance:{event:"종소세 신고",question:"경비처리 항목"},task:{todo:"세금 신고"}},note:"",followup:{immediate:null,later:"세무사 쓰고 계세요?"},orb:{text:null,inlineView:{type:"할 일",content:"종합소득세 신고"}}},
+    {input:"비핸스에 포트폴리오 올렸더니 좋아요 200개 넘음",domains:["development","emotion"],data:{development:{platform:"Behance",action:"포트폴리오 업로드"},emotion:{mood:"proud",intensity:"high"}},note:"development 경계 모호 - 디자인 작업",followup:{immediate:"어떤 작업물이세요?",later:null},orb:{text:"200개 넘으셨다니 대단하세요!",inlineView:{type:"포트폴리오 기록",content:"Behance 좋아요 200+"}}},
+    {input:"이번 달 수입이 0원이야 ㅋㅋㅋ 프리랜서 현실",domains:["finance","emotion"],data:{finance:{income:0,period:"이번 달"},emotion:{mood:"dark_humor",intensity:"high"}},note:"",followup:{immediate:"다음 프로젝트 잡히신 거 있으세요?",later:null},orb:{text:"프리랜서 특성상 수입이 들쭉날쭉할 수 있어요. 다음 프로젝트가 곧 들어올 거예요.",inlineView:{type:"이번 달 수입",content:"수입 0원"}}},
+    {input:"피그마 업데이트 됐는데 새 기능 좋다",domains:["development","knowledge"],data:{development:{tool:"Figma",event:"업데이트"},knowledge:{topic:"Figma 신기능"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"새벽에 영감 와서 바로 스케치함 이거 괜찮을지도",domains:["idea","emotion"],data:{idea:{content:"새벽 스케치",category:"디자인"},emotion:{mood:"inspired",intensity:"high"}},note:"",followup:{immediate:null,later:null},orb:{text:"영감이 오셨을 때 바로 작업하시는 거 좋으시네요.",inlineView:null}},
+    {input:"코워킹 스페이스 월 22만원 너무 비싼가",domains:["finance"],data:{finance:{amount:220000,category:"업무공간",type:"코워킹 스페이스",period:"월"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"고정 지출",content:"코워킹 스페이스 월 220,000원"}}},
+    {input:"내일 오후 2시 클라이언트 미팅 잠실",domains:["schedule"],data:{schedule:{date:"내일",time:"14:00",event:"클라이언트 미팅",place:"잠실",dateResolved:"2026-04-19"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"일정",content:"4/19(토) 14:00 클라이언트 미팅 -- 잠실"}}},
+    {input:"운동 안 한 지 3개월째... 몸이 찌뿌둥해",domains:["health","emotion"],data:{health:{inactivity:"3개월",symptoms:["찌뿌둥"]},emotion:{mood:"guilty",intensity:"medium"}},note:"",followup:{immediate:null,later:"뭐라도 시작해보실 생각 있으세요?"},orb:{text:null,noResponse:true}},
+    {input:"디자인 트렌드 뉴스레터 구독 시작함",domains:["knowledge","habit"],data:{knowledge:{topic:"디자인 트렌드",source:"뉴스레터"},habit:{name:"뉴스레터 구독"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"견적서 300만원 보냈는데 깎아달래 ㅋ",domains:["finance","relationship","emotion"],data:{finance:{amount:3000000,type:"견적"},relationship:{person:"클라이언트",negotiation:"가격 할인 요청"},emotion:{mood:"annoyed",intensity:"medium"}},note:"",followup:{immediate:"얼마로 깎자는 거예요?",later:null},orb:{text:null,inlineView:{type:"견적 현황",content:"견적 3,000,000원 -- 할인 요청 받음"}}},
+    {input:"카페에서 작업하다 아메리카노 리필 3번째",domains:["health","finance"],data:{health:{caffeine:"아메리카노 3잔"},finance:{category:"카페",est_amount:12000}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"일러스트레이터 강의 들을까 말까 udemy에서 59000원",domains:["education","finance","idea"],data:{education:{subject:"일러스트레이터",platform:"Udemy"},finance:{amount:59000},idea:{content:"스킬업"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"교육 검토",content:"Udemy 일러스트레이터 강의 59,000원"}}},
+    {input:"작업물 백업 안 해서 날릴 뻔 했어 외장하드 사야 해",domains:["task","development","emotion"],data:{task:{todo:"외장하드 구매"},development:{issue:"백업 미비"},emotion:{mood:"relieved_scared",intensity:"high"}},note:"",followup:{immediate:"클라우드 백업은 안 쓰고 계세요?",later:null},orb:{text:"다행히 날리지 않으셨군요. 클라우드 백업도 병행하시면 더 안전해요.",inlineView:{type:"할 일",content:"외장하드 구매 + 백업 체계 정비"}}},
+    {input:"올해 목표: 월 수입 400만원 이상 안정화",domains:["finance","idea"],data:{finance:{goal:"월 400만원 이상"},idea:{content:"수입 안정화 목표"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"목표",content:"월 수입 4,000,000원 이상 안정화"}}},
+    {input:"혼자 일하니까 가끔 외로워 사람이 그립다",domains:["emotion","relationship"],data:{emotion:{mood:"lonely",intensity:"medium"},relationship:{lack:"동료",context:"프리랜서"}},note:"",followup:{immediate:null,later:"프리랜서 모임 같은 거 나가보신 적 있으세요?"},orb:{text:"혼자 일하시면 그런 마음이 드실 수 있어요.",inlineView:null}}
+  ]
+},
+// ---- 11. 미소 ----
+{
+  id:"miso", name:"장미소", age:36, role:"카페 사장 여", emoji:"--",
+  traits:"매출, 재료비, 알바, 신메뉴",
+  sentences:[
+    {input:"오늘 매출 87만원 평일치고 괜찮다",domains:["finance"],data:{finance:{revenue:870000,period:"오늘",note:"평일",dateResolved:"timestamp"}},note:"",followup:{immediate:null,later:"평일 평균 매출이 얼마세요?"},orb:{text:null,inlineView:{type:"매출 기록",content:"오늘 매출 870,000원 (평일)"}}},
+    {input:"알바생이 갑자기 그만둔대 다음 주부터 어떡해",domains:["relationship","task","emotion"],data:{relationship:{person:"알바생",event:"퇴사"},task:{todo:"대체 인력 구하기"},emotion:{mood:"panicked",intensity:"high"}},note:"",followup:{immediate:"구인 공고 올리셨어요?",later:null},orb:{text:"갑작스러우셨겠어요. 구인 공고를 빨리 올려보시는 게 좋을 것 같아요.",inlineView:{type:"할 일",content:"대체 알바생 구인"}}},
+    {input:"신메뉴 딸기 라떼 레시피 테스트 중 원가가 문제야",domains:["idea","finance","task"],data:{idea:{content:"딸기 라떼",category:"신메뉴"},finance:{issue:"원가율"},task:{activity:"레시피 테스트"}},note:"",followup:{immediate:"원가 얼마 나와요?",later:"판매가는 얼마로 생각하세요?"},orb:{text:null,inlineView:{type:"신메뉴 테스트",content:"딸기 라떼 -- 원가 검토 중"}}},
+    {input:"원두 발주해야 해 에티오피아 예가체프 10kg",domains:["task","finance"],data:{task:{todo:"원두 발주",item:"에티오피아 예가체프 10kg"},finance:{category:"재료비"}},note:"",followup:{immediate:"언제까지 필요하세요?",later:null},orb:{text:null,inlineView:{type:"발주",content:"에티오피아 예가체프 10kg"}}},
+    {input:"인스타에 카페 사진 올렸더니 좋아요 500개 ㅎㅎ",domains:["media","emotion"],data:{media:{platform:"Instagram",content:"카페 사진",engagement:500},emotion:{mood:"pleased",intensity:"medium"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"이번 달 재료비가 320만원 나왔어 너무 많이 나갔다",domains:["finance","emotion"],data:{finance:{amount:3200000,category:"재료비",period:"이번 달"},emotion:{mood:"concerned",intensity:"medium"}},note:"",followup:{immediate:"지난달이랑 비교하면 어떠세요?",later:null},orb:{text:null,inlineView:{type:"지출 현황",content:"이번 달 재료비 3,200,000원"}}},
+    {input:"손님이 커피가 맛있다고 해주셔서 기분 좋았어",domains:["relationship","emotion"],data:{relationship:{person:"손님",feedback:"긍정"},emotion:{mood:"happy",intensity:"medium"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"배달앱 수수료가 15%야 남는 게 없어",domains:["finance","emotion"],data:{finance:{platform:"배달앱",commission:"15%"},emotion:{mood:"frustrated",intensity:"high"}},note:"",followup:{immediate:"매출 중 배달 비중이 어느 정도세요?",later:null},orb:{text:null,inlineView:{type:"비용 분석",content:"배달앱 수수료 15%"}}},
+    {input:"카페 인테리어 바꾸고 싶은데 예산이 부족해",domains:["idea","finance"],data:{idea:{content:"인테리어 변경"},finance:{constraint:"예산 부족"}},note:"",followup:{immediate:"대략 얼마 정도 생각하세요?",later:null},orb:{text:null,noResponse:true}},
+    {input:"내일 오전에 보건소 위생 점검 온대",domains:["schedule","task"],data:{schedule:{date:"내일",time:"오전",event:"위생 점검",place:"보건소",dateResolved:"2026-04-19"},task:{prep:"위생 점검 대비"}},note:"",followup:{immediate:"준비할 거 다 하셨어요?",later:null},orb:{text:null,inlineView:{type:"일정",content:"4/19(토) 오전 -- 보건소 위생 점검"}}},
+    {input:"에어컨 필터 교체했어 12만원 나옴",domains:["finance","task"],data:{finance:{amount:120000,category:"설비 유지"},task:{completed:"에어컨 필터 교체"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"지출 기록",content:"에어컨 필터 교체 120,000원"}}},
+    {input:"가게 월세 180만원 + 관리비 20만원 매달 나가는 게 무섭다",domains:["finance","emotion"],data:{finance:{rent:1800000,maintenance:200000,period:"월"},emotion:{mood:"anxious",cause:"고정비",intensity:"high"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"고정비",content:"월세 1,800,000 | 관리비 200,000 | 합계 2,000,000원"}}},
+    {input:"바리스타 자격증 따려는 알바생 응원 중",domains:["relationship","education"],data:{relationship:{person:"알바생",support:"응원"},education:{certification:"바리스타 자격증"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"크리스마스 시즌 메뉴 기획해야 돼 11월부터 시작",domains:["task","schedule","idea"],data:{task:{todo:"시즌 메뉴 기획"},schedule:{start:"11월",event:"크리스마스"},idea:{content:"시즌 메뉴"}},note:"",followup:{immediate:null,later:"작년에는 어떤 메뉴를 하셨어요?"},orb:{text:null,inlineView:{type:"계획",content:"크리스마스 시즌 메뉴 기획 -- 11월 시작"}}},
+    {input:"매일 가게 문 여는 게 6시반인데 이제 적응됨",domains:["habit","schedule"],data:{habit:{name:"가게 오픈",time:"06:30"},schedule:{dailyOpen:"06:30"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"폐업하고 싶은 날도 있어 솔직히 말하면",domains:["emotion","idea"],data:{emotion:{mood:"burnt_out",intensity:"high"},idea:{content:"폐업 고민"}},note:"",followup:{immediate:"오늘 특히 힘드셨어요?",later:null},orb:{text:"많이 힘드신 날이셨나 봐요.",inlineView:null}}
+  ]
+},
+// ---- 12. 상훈 ----
+{
+  id:"sanghun", name:"이상훈", age:43, role:"중간관리자 남", emoji:"--",
+  traits:"임원 보고, 부서 예산, 골프",
+  sentences:[
+    {input:"부서 예산 15% 삭감 통보받았어 어디서 줄이지",domains:["finance","task","emotion"],data:{finance:{event:"예산 삭감",rate:"15%"},task:{todo:"예산 조정"},emotion:{mood:"stressed",intensity:"high"}},note:"",followup:{immediate:"어떤 항목이 제일 큰 비중이세요?",later:null},orb:{text:"갑작스러운 삭감이면 부담되시겠어요.",inlineView:{type:"할 일",content:"부서 예산 15% 삭감 대응"}}},
+    {input:"토요일 골프 예약했어 용인 CC 7시 티오프",domains:["schedule","health"],data:{schedule:{date:"토요일",place:"용인 CC",time:"07:00",event:"골프",dateResolved:"2026-04-19"},health:{activity:"골프"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"일정",content:"4/19(토) 07:00 골프 -- 용인 CC"}}},
+    {input:"임원 보고 PT 20장 만들어야 하는데 핵심이 뭔지 모르겠어",domains:["task","emotion"],data:{task:{todo:"임원 보고 PT",pages:20},emotion:{mood:"confused",intensity:"medium"}},note:"",followup:{immediate:"보고 주제가 뭐세요?",later:null},orb:{text:"핵심 메시지 하나를 먼저 정하시면 나머지가 따라올 거예요.",inlineView:null}},
+    {input:"부장 진급 심사 내년인데 올해 실적이 관건이야",domains:["task","schedule","emotion"],data:{task:{goal:"부장 진급"},schedule:{timeline:"내년 심사"},emotion:{mood:"ambitious_anxious",intensity:"high"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"아들 중학교 입학인데 교복비가 42만원이래",domains:["finance","relationship","schedule"],data:{finance:{amount:420000,category:"교육비",item:"교복"},relationship:{person:"아들",event:"중학교 입학"},schedule:{event:"입학"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"지출 기록",content:"아들 교복비 420,000원"}}},
+    {input:"혈압약 먹기 시작했어 140/90이었거든",domains:["health"],data:{health:{condition:"고혈압",medication:"혈압약",reading:"140/90"}},note:"",followup:{immediate:null,later:"의사 선생님이 뭐라고 하셨어요?"},orb:{text:null,inlineView:{type:"건강 기록",content:"혈압 140/90 -- 혈압약 복용 시작"}}},
+    {input:"후배가 상담 요청 왔는데 이직 고민이래",domains:["relationship"],data:{relationship:{person:"후배",event:"이직 상담 요청"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"와이프가 집 인테리어 바꾸자는데 견적이 2000만원",domains:["finance","relationship"],data:{finance:{amount:20000000,category:"인테리어"},relationship:{person:"아내",proposal:"인테리어 변경"}},note:"",followup:{immediate:"어디를 바꾸자는 거세요?",later:null},orb:{text:null,inlineView:{type:"지출 검토",content:"집 인테리어 견적 20,000,000원"}}},
+    {input:"연말 회식 장소 잡아야 하는데 50명 수용 가능한 곳",domains:["task","schedule","finance"],data:{task:{todo:"회식 장소"},schedule:{timing:"연말"},finance:{headcount:50}},note:"",followup:{immediate:"예산 인당 얼마세요?",later:null},orb:{text:null,inlineView:{type:"할 일",content:"연말 회식 장소 -- 50명 수용"}}},
+    {input:"매일 아침 경제 뉴스 보는 게 루틴이야",domains:["habit","knowledge"],data:{habit:{name:"경제 뉴스 확인",frequency:"매일 아침"},knowledge:{topic:"경제"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"허리 디스크 재발한 거 같아 앉아있기가 힘들어",domains:["health","emotion"],data:{health:{condition:"허리 디스크",symptom:"재발 의심"},emotion:{mood:"worried",intensity:"high"}},note:"",followup:{immediate:"병원 가보셨어요?",later:null},orb:{text:"많이 아프시겠어요. 병원에 한번 가보시는 게 좋을 것 같아요.",inlineView:null}},
+    {input:"팀원들 성과 평가 기준 다시 세워야 해",domains:["task"],data:{task:{todo:"성과 평가 기준 재설정"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"할 일",content:"성과 평가 기준 재설정"}}},
+    {input:"주말에 가족 여행 가기로 함 경주 1박 2일",domains:["schedule","relationship","finance"],data:{schedule:{date:"주말",destination:"경주",duration:"1박 2일",dateResolved:"2026-04-19"},relationship:{context:"가족"},finance:{category:"여행"}},note:"",followup:{immediate:"숙소 잡으셨어요?",later:null},orb:{text:null,inlineView:{type:"일정",content:"4/19(토) 가족 여행 -- 경주 1박 2일"}}},
+    {input:"담배 끊은 지 100일째 참을 만해졌어",domains:["habit","health","emotion"],data:{habit:{name:"금연",streak:"100일"},health:{benefit:"금연"},emotion:{mood:"proud",intensity:"medium"}},note:"",followup:{immediate:"대단하세요!",later:null},orb:{text:"100일이시라니 정말 대단하세요. 건강에도 좋은 변화가 있으실 거예요.",inlineView:{type:"습관 기록",content:"금연 -- 100일 연속"}}},
+    {input:"부동산 매물 보고 있는데 서울은 진짜 답 없다",domains:["finance","emotion"],data:{finance:{type:"부동산",region:"서울"},emotion:{mood:"hopeless",cause:"집값",intensity:"high"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"다음 주 화요일 본사 미팅 출장 KTX 예매해야 해",domains:["schedule","task","finance"],data:{schedule:{date:"다음 주 화요일",event:"본사 미팅",dateResolved:"2026-04-21"},task:{todo:"KTX 예매"},finance:{category:"출장비"}},note:"",followup:{immediate:"몇 시 기차세요?",later:null},orb:{text:null,inlineView:{type:"일정 + 할 일",content:"4/21(화) 본사 미팅 | 할 일: KTX 예매"}}}
+  ]
+},
+// ---- 13. 윤아 ----
+{
+  id:"yuna", name:"최윤아", age:41, role:"워킹맘 여", emoji:"--",
+  traits:"학부모 모임, 아이 학원, 건강검진",
+  sentences:[
+    {input:"학부모 모임에서 수학학원 어디 보내는지 물어봤어",domains:["relationship","education"],data:{relationship:{context:"학부모 모임"},education:{topic:"수학학원 정보"}},note:"",followup:{immediate:"뭐라고 하던가요?",later:null},orb:{text:null,noResponse:true}},
+    {input:"큰아이 학원비 월 120만원이야 이게 맞나",domains:["finance","education","emotion"],data:{finance:{amount:1200000,category:"학원비",period:"월"},education:{context:"아이 학원"},emotion:{mood:"burdened",intensity:"high"}},note:"",followup:{immediate:"학원 몇 개 다니세요?",later:null},orb:{text:null,inlineView:{type:"교육비",content:"큰아이 학원비 월 1,200,000원"}}},
+    {input:"건강검진 받았는데 갑상선 결절이래 정밀검사 해야 한대",domains:["health","emotion","schedule"],data:{health:{exam:"건강검진",finding:"갑상선 결절",next:"정밀검사"},emotion:{mood:"worried",intensity:"very_high"},schedule:{todo:"정밀검사 예약"}},note:"",followup:{immediate:"정밀검사 예약하셨어요?",later:null},orb:{text:"걱정되시겠어요. 정밀검사 받으시면 정확한 상황을 아실 수 있을 거예요.",inlineView:{type:"건강 + 할 일",content:"갑상선 결절 -- 정밀검사 필요"}}},
+    {input:"아이 발표회 다음 주 수요일 오후 3시 학교 강당",domains:["schedule","relationship"],data:{schedule:{date:"다음 주 수요일",time:"15:00",place:"학교 강당",event:"발표회",dateResolved:"2026-04-22"},relationship:{person:"아이"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"일정",content:"4/22(수) 15:00 아이 발표회 -- 학교 강당"}}},
+    {input:"남편이 요즘 너무 늦게 들어와 대화가 없어",domains:["relationship","emotion"],data:{relationship:{person:"남편",issue:"소통 부족"},emotion:{mood:"lonely",intensity:"high"}},note:"",followup:{immediate:null,later:null},orb:{text:"외로우시겠어요.",inlineView:null}},
+    {input:"요가 다시 시작하려고 등록함 주 3회 월 15만원",domains:["health","habit","finance"],data:{health:{activity:"요가"},habit:{name:"요가",frequency:"주 3회"},finance:{amount:150000,period:"월"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"고정 지출 + 습관",content:"요가 주 3회 -- 월 150,000원"}}},
+    {input:"아이가 학교에서 왕따 당하는 것 같다고 함 가슴이 무너져",domains:["relationship","emotion"],data:{relationship:{person:"아이",issue:"학교 왕따 의심"},emotion:{mood:"heartbroken",intensity:"very_high"}},note:"",followup:{immediate:"아이가 구체적으로 어떤 일이 있었다고 하세요?",later:"담임선생님한테 말씀해보셨어요?"},orb:{text:"정말 마음이 아프시겠어요. 아이 이야기를 천천히 들어봐 주시는 게 지금 가장 중요할 거예요.",inlineView:null}},
+    {input:"이번 달 가계부 정리했는데 식비가 180만원",domains:["finance"],data:{finance:{category:"식비",amount:1800000,period:"이번 달"}},note:"",followup:{immediate:null,later:"외식이 많으셨어요?"},orb:{text:null,inlineView:{type:"가계부",content:"이번 달 식비 1,800,000원"}}},
+    {input:"주말에 아이들 데리고 키즈카페 갔는데 5만원 날림",domains:["schedule","finance","relationship"],data:{schedule:{date:"주말",place:"키즈카페",dateResolved:"2026-04-19"},finance:{amount:50000},relationship:{context:"아이들"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"지출 기록",content:"키즈카페 50,000원"}}},
+    {input:"엄마가 명절에 오신대 방 정리해야 해",domains:["schedule","task","relationship"],data:{schedule:{event:"명절",visitor:"엄마"},task:{todo:"방 정리"},relationship:{person:"엄마"}},note:"",followup:{immediate:"명절이 언제세요?",later:null},orb:{text:null,inlineView:{type:"할 일",content:"명절 대비 -- 방 정리"}}},
+    {input:"PTA 회장 맡아달라는데 시간이 없어 거절할까",domains:["relationship","task","emotion"],data:{relationship:{context:"PTA",request:"회장"},task:{decision:"수락/거절"},emotion:{mood:"reluctant",intensity:"medium"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"아이 영어 원어민 수업 시작했는데 효과가 있는지 모르겠어",domains:["education","finance","emotion"],data:{education:{subject:"영어",type:"원어민 수업"},finance:{category:"학원비"},emotion:{mood:"uncertain",cause:"효과 의문"}},note:"",followup:{immediate:"몇 개월 되셨어요?",later:null},orb:{text:"처음에는 효과가 바로 보이지 않을 수 있어요. 조금 더 지켜보시는 것도 방법이에요.",inlineView:null}},
+    {input:"매일 아침 도시락 3개 싸는 게 일이야",domains:["habit","task"],data:{habit:{name:"도시락 만들기",frequency:"매일",count:3},task:{daily:"도시락 3개"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"피부가 너무 안 좋아져서 피부과 갈까",domains:["health","schedule"],data:{health:{concern:"피부 상태"},schedule:{plan:"피부과 방문"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"아이가 의사 되고 싶대 기특하면서도 걱정이야",domains:["relationship","emotion","education"],data:{relationship:{person:"아이",dream:"의사"},emotion:{mood:"proud_worried",intensity:"medium"},education:{context:"진로"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"오늘 하루 진짜 아무것도 하기 싫다 그냥 드라마나 볼까",domains:["emotion","media"],data:{emotion:{mood:"drained",intensity:"high"},media:{plan:"드라마 시청"}},note:"",followup:{immediate:null,later:null},orb:{text:"오늘은 쉬어가셔도 괜찮아요.",inlineView:null}}
+  ]
+},
+// ---- 14. 동현 ----
+{
+  id:"donghyun", name:"한동현", age:45, role:"쇼핑몰 사장 남", emoji:"--",
+  traits:"택배, CS, 매출, 광고",
+  sentences:[
+    {input:"오늘 주문 320건 들어왔는데 포장할 사람이 없어",domains:["task","emotion"],data:{task:{orders:320,issue:"인력 부족"},emotion:{mood:"overwhelmed",intensity:"high"}},note:"",followup:{immediate:null,later:null},orb:{text:"320건이면 정말 바쁘시겠어요.",inlineView:{type:"주문 현황",content:"오늘 주문 320건 -- 인력 부족"}}},
+    {input:"네이버 광고비 이번 달 450만원 썼는데 ROAS가 200%야",domains:["finance"],data:{finance:{adSpend:4500000,platform:"네이버",roas:"200%"}},note:"",followup:{immediate:null,later:"ROAS 목표치가 얼마세요?"},orb:{text:null,inlineView:{type:"광고 성과",content:"네이버 광고 4,500,000원 | ROAS 200%"}}},
+    {input:"CS 전화 30통 받았더니 목이 나갔어",domains:["task","health","emotion"],data:{task:{activity:"CS 전화",count:30},health:{symptom:"목 통증"},emotion:{mood:"exhausted",intensity:"high"}},note:"",followup:{immediate:null,later:null},orb:{text:"30통이면 정말 고되셨겠어요. 목 좀 쉬어주세요.",inlineView:null}},
+    {input:"택배비 단가 협상해야 해 건당 2800원은 너무 비싸",domains:["finance","task"],data:{finance:{item:"택배비",current:2800,action:"단가 협상"},task:{todo:"택배비 협상"}},note:"",followup:{immediate:"월 발송 건수 얼마세요?",later:null},orb:{text:null,inlineView:{type:"할 일",content:"택배비 단가 협상 -- 현재 건당 2,800원"}}},
+    {input:"인스타 광고 돌렸는데 전환율이 0.8%밖에 안 돼",domains:["finance","task"],data:{finance:{platform:"Instagram",conversionRate:"0.8%"},task:{issue:"낮은 전환율"}},note:"",followup:{immediate:"타겟팅 어떻게 설정하셨어요?",later:null},orb:{text:null,inlineView:{type:"광고 성과",content:"Instagram 전환율 0.8%"}}},
+    {input:"블랙프라이데이 준비 시작해야 해 10월부터",domains:["task","schedule","idea"],data:{task:{todo:"블랙프라이데이 준비"},schedule:{start:"10월",event:"블랙프라이데이"},idea:{content:"프로모션 기획"}},note:"",followup:{immediate:null,later:"작년 블프 매출 어떠셨어요?"},orb:{text:null,inlineView:{type:"계획",content:"블랙프라이데이 준비 -- 10월 시작"}}},
+    {input:"반품률이 8%야 뭐가 문제인지 분석해봐야 해",domains:["task","finance"],data:{task:{todo:"반품 원인 분석"},finance:{returnRate:"8%"}},note:"",followup:{immediate:"반품 사유 1위가 뭐세요?",later:null},orb:{text:null,inlineView:{type:"분석 필요",content:"반품률 8% -- 원인 분석 필요"}}},
+    {input:"새 상품 소싱하러 동대문 가야 하는데 내일 새벽 4시",domains:["schedule","task"],data:{schedule:{date:"내일",time:"04:00",place:"동대문",dateResolved:"2026-04-19"},task:{activity:"상품 소싱"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"일정",content:"4/19(토) 04:00 동대문 -- 상품 소싱"}}},
+    {input:"쿠팡 입점하면 매출 오를까 고민 중",domains:["idea","finance"],data:{idea:{content:"쿠팡 입점"},finance:{goal:"매출 증대"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"직원 월급날인데 통장 잔고가 빠듯해",domains:["finance","emotion"],data:{finance:{event:"급여 지급",issue:"자금 부족"},emotion:{mood:"anxious",intensity:"very_high"}},note:"",followup:{immediate:null,later:null},orb:{text:"자금 사정이 빠듯하시면 걱정이 많으시겠어요.",inlineView:null}},
+    {input:"경쟁업체가 가격 다 내렸어 우리도 맞춰야 하나",domains:["finance","task","emotion"],data:{finance:{issue:"가격 경쟁"},task:{decision:"가격 조정"},emotion:{mood:"pressured",intensity:"high"}},note:"",followup:{immediate:"얼마나 내렸어요?",later:null},orb:{text:null,noResponse:true}},
+    {input:"사무실 임대료 250만원 + 창고 100만원 고정비가 무서워",domains:["finance","emotion"],data:{finance:{office_rent:2500000,warehouse:1000000},emotion:{mood:"anxious",cause:"고정비",intensity:"high"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"고정비",content:"사무실 2,500,000 | 창고 1,000,000 | 합계 3,500,000원"}}},
+    {input:"매출 3억 찍었다 이번 달! 순이익은 1500만원이지만",domains:["finance","emotion"],data:{finance:{revenue:300000000,profit:15000000,period:"이번 달"},emotion:{mood:"mixed",intensity:"medium"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"이번 달 실적",content:"매출 3억 | 순이익 1,500만 | 마진율 5%"}}},
+    {input:"ERP 시스템 도입할까 재고 관리가 엉망이야",domains:["development","task","idea"],data:{development:{system:"ERP"},task:{issue:"재고 관리"},idea:{content:"ERP 도입"}},note:"",followup:{immediate:"지금 재고 관리 어떻게 하세요?",later:null},orb:{text:null,noResponse:true}},
+    {input:"아내가 가게 일 좀 도와달라는데 미안하다",domains:["relationship","emotion"],data:{relationship:{person:"아내",request:"가게 도움"},emotion:{mood:"guilty",intensity:"medium"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"10년 하다 보니 이제 좀 알겠다 장사라는 게",domains:["knowledge","emotion"],data:{knowledge:{domain:"사업 운영",experience:"10년"},emotion:{mood:"reflective",intensity:"low"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}}
+  ]
+},
+// ---- 15. 영수 ----
+{
+  id:"youngsu", name:"박영수", age:52, role:"식당 사장 남", emoji:"--",
+  traits:"매출 하락, 배달앱, 직원",
+  sentences:[
+    {input:"매출이 작년 대비 30% 빠졌어 장사가 안 돼",domains:["finance","emotion"],data:{finance:{change:"-30%",comparison:"전년 대비"},emotion:{mood:"desperate",intensity:"very_high"}},note:"",followup:{immediate:"원인이 뭔 것 같으세요?",later:null},orb:{text:"많이 힘드시겠어요.",inlineView:{type:"매출 현황",content:"전년 대비 매출 -30%"}}},
+    {input:"배달의민족 수수료가 매출의 20% 가까이 먹어",domains:["finance","emotion"],data:{finance:{platform:"배달의민족",commission:"~20%"},emotion:{mood:"frustrated",intensity:"high"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"비용 분석",content:"배달의민족 수수료 ~20%"}}},
+    {input:"주방 보조 한 명 더 구해야 하는데 시급 맞추기가 힘들어",domains:["task","finance"],data:{task:{todo:"주방 보조 채용"},finance:{issue:"인건비"}},note:"",followup:{immediate:"시급 얼마 줄 생각이세요?",later:null},orb:{text:null,inlineView:{type:"할 일",content:"주방 보조 채용"}}},
+    {input:"식자재 가격이 미쳤어 대파가 한 단에 5000원",domains:["finance","emotion"],data:{finance:{item:"대파",price:5000,category:"식자재"},emotion:{mood:"incredulous",intensity:"high"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"식자재 가격",content:"대파 1단 5,000원"}}},
+    {input:"오늘 단체 예약 30명 들어왔다 준비해야 해",domains:["schedule","task"],data:{schedule:{date:"오늘",event:"단체 예약",headcount:30,dateResolved:"2026-04-18"},task:{todo:"단체 준비"}},note:"",followup:{immediate:"몇 시세요?",later:null},orb:{text:null,inlineView:{type:"오늘 일정",content:"단체 예약 30명"}}},
+    {input:"가게 리모델링 하고 싶은데 2000만원은 들겠지",domains:["idea","finance"],data:{idea:{content:"가게 리모델링"},finance:{estimate:20000000}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"아들이 가게 물려받기 싫다고 해서 서운하다",domains:["relationship","emotion"],data:{relationship:{person:"아들",event:"가게 승계 거부"},emotion:{mood:"hurt",intensity:"high"}},note:"",followup:{immediate:null,later:null},orb:{text:"서운하신 마음 충분히 이해해요.",inlineView:null}},
+    {input:"건강이 안 좋아서 가게 문 일찍 닫았어",domains:["health","schedule"],data:{health:{status:"안 좋음"},schedule:{change:"조기 폐점",dateResolved:"timestamp"}},note:"",followup:{immediate:"어디가 안 좋으세요?",later:"병원 가보셨어요?"},orb:{text:"건강이 최우선이에요. 무리하지 마세요.",inlineView:null}},
+    {input:"단골손님이 오늘도 오셨다 15년째 오시는 분",domains:["relationship","emotion"],data:{relationship:{person:"단골손님",duration:"15년"},emotion:{mood:"grateful",intensity:"medium"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"이번 달 순이익이 200만원도 안 돼 한숨 나온다",domains:["finance","emotion"],data:{finance:{profit:"<200만원",period:"이번 달"},emotion:{mood:"dejected",intensity:"very_high"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"이번 달 실적",content:"순이익 200만원 미만"}}},
+    {input:"메뉴 가격 올려야 하는데 손님 빠질까 봐 무서워",domains:["finance","emotion","task"],data:{finance:{action:"가격 인상"},emotion:{mood:"fearful",cause:"고객 이탈",intensity:"high"},task:{decision:"메뉴 가격 조정"}},note:"",followup:{immediate:"얼마나 올리실 생각이세요?",later:null},orb:{text:"어려운 결정이시겠어요.",inlineView:null}},
+    {input:"새벽 5시에 시장 가서 재료 사오는 게 일상",domains:["habit","schedule"],data:{habit:{name:"새벽 시장",time:"05:00"},schedule:{daily:"05:00 시장"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"폐업 신고 절차가 어떻게 되는지 한번 알아봤어",domains:["finance","knowledge","emotion"],data:{finance:{consideration:"폐업"},knowledge:{topic:"폐업 절차"},emotion:{mood:"contemplative",intensity:"high"}},note:"심각한 고민",followup:{immediate:"많이 힘드세요?",later:null},orb:{text:"많이 고민이 되시나 봐요. 혼자 결정하기 어려우시면 주변 분들과 이야기 나눠보시는 것도 좋아요.",inlineView:null}},
+    {input:"아내가 같이 가게 하자는데 부부가 같이 하면 싸운다고",domains:["relationship","emotion"],data:{relationship:{person:"아내",proposal:"공동 운영"},emotion:{mood:"reluctant",cause:"부부 갈등 우려"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"손이 다 틈 ㅋㅋ 주방 일 20년 했더니",domains:["health","emotion"],data:{health:{condition:"손 갈라짐",cause:"장기 주방 노동"},emotion:{mood:"resigned_humor",intensity:"low"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"내일 보건소 위생교육 4시간이야 가게 문 닫아야 해",domains:["schedule","task","finance"],data:{schedule:{date:"내일",event:"위생교육",duration:"4시간",dateResolved:"2026-04-19"},task:{action:"임시 휴업"},finance:{loss:"하루 매출"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"일정",content:"4/19(토) 위생교육 4시간 -- 임시 휴업"}}}
+  ]
+},
+// ---- 16. 정숙 ----
+{
+  id:"jungsuk", name:"김정숙", age:55, role:"주부 여", emoji:"--",
+  traits:"건강, 자녀 결혼, 여행, 요리",
+  sentences:[
+    {input:"큰딸 결혼식이 3개월 후인데 준비할 게 산더미야",domains:["schedule","task","relationship"],data:{schedule:{event:"결혼식",timeline:"3개월 후",dateResolved:"2026-07 (approx)"},task:{todo:"결혼 준비"},relationship:{person:"큰딸"}},note:"",followup:{immediate:"지금 어디까지 진행되셨어요?",later:null},orb:{text:null,inlineView:{type:"일정",content:"큰딸 결혼식 -- 약 3개월 후 (2026년 7월)"}}},
+    {input:"오늘 등산 다녀왔어 북한산 4시간 코스",domains:["health","schedule"],data:{health:{activity:"등산",place:"북한산",duration:"4시간"},schedule:{date:"오늘",dateResolved:"2026-04-18"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"운동 기록",content:"북한산 등산 4시간"}}},
+    {input:"혼수 비용이 5000만원은 들겠지 걱정이야",domains:["finance","emotion"],data:{finance:{estimate:50000000,category:"혼수"},emotion:{mood:"worried",cause:"비용",intensity:"high"}},note:"",followup:{immediate:null,later:null},orb:{text:"큰 금액이시라 걱정이 되시겠어요.",inlineView:{type:"예상 비용",content:"혼수 비용 예상 ~50,000,000원"}}},
+    {input:"오늘 김장했어 배추 40포기 팔이 빠질 것 같아",domains:["task","health"],data:{task:{completed:"김장",quantity:"배추 40포기"},health:{symptom:"팔 통증"}},note:"",followup:{immediate:"40포기나요! 누가 도와주셨어요?",later:null},orb:{text:"40포기나 하셨으니 정말 고생하셨어요. 푹 쉬세요.",inlineView:null}},
+    {input:"남편이 건강검진에서 당뇨 전단계래 식단 관리해야 해",domains:["health","relationship","task"],data:{health:{person:"남편",condition:"당뇨 전단계"},relationship:{person:"남편"},task:{todo:"식단 관리"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"건강 기록 + 할 일",content:"남편 당뇨 전단계 -- 식단 관리 필요"}}},
+    {input:"제주도 여행 예약했어 다음 달 3박 4일 89만원",domains:["schedule","finance"],data:{schedule:{destination:"제주도",date:"다음 달",duration:"3박 4일",dateResolved:"2026-05 (approx)"},finance:{amount:890000,category:"여행"}},note:"",followup:{immediate:"누구랑 가세요?",later:null},orb:{text:null,inlineView:{type:"일정 + 지출",content:"제주도 3박 4일 -- 2026년 5월 | 비용 890,000원"}}},
+    {input:"요리 유튜브 보고 새로운 레시피 따라해봤어 대성공",domains:["media","knowledge","emotion"],data:{media:{platform:"유튜브",genre:"요리"},knowledge:{topic:"새 레시피"},emotion:{mood:"satisfied",intensity:"medium"}},note:"",followup:{immediate:"뭐 만드셨어요?",later:null},orb:{text:"성공하셨다니 잘하셨어요!",inlineView:null}},
+    {input:"손주가 할머니 좋아~ 하면 세상 다 가진 기분",domains:["relationship","emotion"],data:{relationship:{person:"손주"},emotion:{mood:"blissful",intensity:"very_high"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"무릎이 시려워서 정형외과 갔더니 퇴행성 관절염이래",domains:["health","emotion"],data:{health:{condition:"퇴행성 관절염",symptom:"무릎 시림"},emotion:{mood:"disheartened",intensity:"high"}},note:"",followup:{immediate:"치료는 어떻게 한대요?",later:null},orb:{text:"걱정되시겠어요. 의사 선생님 말씀대로 잘 관리하시면 좋아지실 거예요.",inlineView:{type:"건강 기록",content:"퇴행성 관절염 -- 정형외과 진단"}}},
+    {input:"동창회 모임 다음 주 금요일 강남역 근처",domains:["schedule","relationship"],data:{schedule:{date:"다음 주 금요일",place:"강남역 근처",event:"동창회",dateResolved:"2026-04-24"},relationship:{context:"동창"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"일정",content:"4/24(금) 동창회 -- 강남역 근처"}}},
+    {input:"매일 아침 공원 산책 30분이 루틴이야",domains:["habit","health"],data:{habit:{name:"아침 산책",duration:"30분",frequency:"매일"},health:{activity:"산책"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"아들이 아직 미혼인데 결혼 안 하냐고 하면 화내",domains:["relationship","emotion"],data:{relationship:{person:"아들",topic:"결혼"},emotion:{mood:"worried_frustrated",intensity:"medium"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"반찬 만들어서 딸네 보내야지 된장찌개랑 잡채",domains:["task","relationship"],data:{task:{todo:"반찬 만들기",items:["된장찌개","잡채"]},relationship:{person:"딸",action:"음식 보내기"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"할 일",content:"딸네 반찬 보내기 -- 된장찌개, 잡채"}}},
+    {input:"보험료 매달 32만원 나가는데 진짜 아까워",domains:["finance","emotion"],data:{finance:{amount:320000,category:"보험",period:"월"},emotion:{mood:"reluctant",intensity:"medium"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"고정 지출",content:"보험료 월 320,000원"}}},
+    {input:"성당 봉사활동 매주 수요일 오전",domains:["schedule","habit"],data:{schedule:{day:"수요일",time:"오전",event:"봉사활동"},habit:{name:"봉사활동",frequency:"매주"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"정기 일정",content:"봉사활동 -- 매주 수요일 오전"}}},
+    {input:"요즘 잠을 통으로 못 자 새벽에 꼭 깨",domains:["health","emotion"],data:{health:{issue:"수면 장애",pattern:"새벽 기상"},emotion:{mood:"tired",intensity:"medium"}},note:"",followup:{immediate:"몇 시에 깨세요?",later:"병원 가보셨어요?"},orb:{text:"수면이 안 좋으시면 일상에 영향이 크시겠어요.",inlineView:null}}
+  ]
+},
+// ---- 17. 병철 ----
+{
+  id:"byungchul", name:"박병철", age:58, role:"은퇴 준비 남", emoji:"--",
+  traits:"연금, 노후, 취미, 손주",
+  sentences:[
+    {input:"국민연금 예상 수령액 계산해봤는데 월 143만원이래",domains:["finance"],data:{finance:{type:"연금",amount:1430000,frequency:"월",status:"예상"}},note:"",followup:{immediate:null,later:"개인연금도 있으세요?"},orb:{text:null,inlineView:{type:"연금 정보",content:"국민연금 예상 수령액 월 1,430,000원"}}},
+    {input:"은퇴하면 뭐 하고 살지 막막하다",domains:["emotion","idea"],data:{emotion:{mood:"anxious",cause:"은퇴 후 삶",intensity:"high"},idea:{category:"은퇴 후 계획"}},note:"",followup:{immediate:"은퇴 시기가 언제세요?",later:"해보고 싶으신 거 있으세요?"},orb:{text:"막막하신 마음 이해해요. 천천히 생각해보셔도 돼요.",inlineView:null}},
+    {input:"손주 돌잔치에서 금반지 해줘야 하는데 요즘 금값이",domains:["finance","relationship","schedule"],data:{finance:{item:"금반지",context:"금값 상승"},relationship:{person:"손주",event:"돌잔치"},schedule:{event:"돌잔치"}},note:"",followup:{immediate:"돌잔치가 언제세요?",later:null},orb:{text:null,inlineView:null}},
+    {input:"낚시 갔다 왔어 은어 5마리 잡았다",domains:["health","emotion"],data:{health:{activity:"낚시"},emotion:{mood:"satisfied",intensity:"medium"}},note:"health 포함 여부 모호",followup:{immediate:"어디서 잡으셨어요?",later:null},orb:{text:"좋은 시간 보내셨군요.",inlineView:null}},
+    {input:"퇴직금 운용을 어떻게 해야 할지 증권사 상담 예약했어",domains:["finance","schedule"],data:{finance:{topic:"퇴직금 운용"},schedule:{event:"증권사 상담"}},note:"",followup:{immediate:"언제 예약하셨어요?",later:null},orb:{text:null,inlineView:{type:"할 일",content:"증권사 상담 -- 퇴직금 운용"}}},
+    {input:"매일 아침 산책하고 체조하는 게 건강 비결이야",domains:["habit","health"],data:{habit:{name:"아침 산책+체조",frequency:"매일"},health:{activity:"산책, 체조"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"아내랑 세계여행 버킷리스트 만들었어",domains:["idea","relationship"],data:{idea:{content:"세계여행",type:"버킷리스트"},relationship:{person:"아내",activity:"함께 계획"}},note:"",followup:{immediate:"어디 제일 가고 싶으세요?",later:null},orb:{text:"멋진 계획이시네요.",inlineView:null}},
+    {input:"고혈압 약 매일 먹는 거 잊으면 안 돼",domains:["health","habit"],data:{health:{medication:"고혈압 약"},habit:{name:"약 복용",frequency:"매일"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"매일 할 일",content:"고혈압 약 복용"}}},
+    {input:"예전 직장 동료 모임 다음 달 첫째 주 토요일",domains:["schedule","relationship"],data:{schedule:{date:"다음 달 첫째 주 토요일",event:"동료 모임",dateResolved:"2026-05-02"},relationship:{context:"예전 직장"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"일정",content:"5/2(토) 예전 직장 동료 모임"}}},
+    {input:"텃밭 가꾸기 시작했어 상추 고추 토마토 심었다",domains:["habit","idea"],data:{habit:{name:"텃밭 가꾸기"},idea:{content:"텃밭 농작",items:["상추","고추","토마토"]}},note:"",followup:{immediate:"어디에 텃밭이 있으세요?",later:null},orb:{text:"좋은 취미를 시작하셨네요.",inlineView:{type:"텃밭 기록",content:"상추 / 고추 / 토마토 심기"}}},
+    {input:"건강보험료가 매달 28만원이야 은퇴하면 어떡하지",domains:["finance","health","emotion"],data:{finance:{amount:280000,category:"건강보험",period:"월"},health:{context:"보험"},emotion:{mood:"worried",cause:"은퇴 후 보험료",intensity:"medium"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"고정 지출",content:"건강보험료 월 280,000원"}}},
+    {input:"유튜브에서 노후 재테크 영상 봤는데 도움이 됐어",domains:["media","finance","knowledge"],data:{media:{platform:"유튜브",genre:"재테크"},finance:{topic:"노후 재테크"},knowledge:{source:"유튜브"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"손주가 할아버지 그림 그려줬는데 눈물 났어",domains:["relationship","emotion"],data:{relationship:{person:"손주",event:"그림 선물"},emotion:{mood:"deeply_moved",intensity:"very_high"}},note:"",followup:{immediate:null,later:null},orb:{text:"정말 감동적인 선물이셨겠어요.",inlineView:null}},
+    {input:"서예 교실 다니기 시작했어 매주 목요일 오후",domains:["schedule","habit","idea"],data:{schedule:{day:"목요일",time:"오후",event:"서예 교실"},habit:{name:"서예",frequency:"매주"},idea:{content:"서예 취미"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"정기 일정 + 습관",content:"서예 교실 -- 매주 목요일 오후"}}},
+    {input:"아이들한테 짐이 되기 싫어서 노후 자금은 스스로 준비해야지",domains:["finance","emotion","relationship"],data:{finance:{goal:"노후 자금 자체 준비"},emotion:{mood:"determined",intensity:"medium"},relationship:{context:"자녀 부담 최소화"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"옛날 사진 정리하다가 시간 가는 줄 몰랐어",domains:["task","emotion"],data:{task:{activity:"사진 정리"},emotion:{mood:"nostalgic",intensity:"medium"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}}
+  ]
+},
+// ---- 18. 소희 ----
+{
+  id:"sohee", name:"이소희", age:22, role:"유학생 여", emoji:"--",
+  traits:"영어+한국어 섞임, 환율, 향수병",
+  sentences:[
+    {input:"Midterm 끝났는데 GPA 걱정이야 ㅠ 3.0은 넘어야 하는데",domains:["education","emotion"],data:{education:{event:"Midterm",target:"GPA 3.0+"},emotion:{mood:"anxious",intensity:"high"}},note:"",followup:{immediate:"시험 느낌이 어떠셨어요?",later:null},orb:{text:"시험 보시느라 고생하셨어요. 결과를 기다리는 것도 힘드시죠.",inlineView:null}},
+    {input:"환율이 1380원이야 ㅋㅋ 송금받을 때마다 손해",domains:["finance","emotion"],data:{finance:{exchangeRate:1380,issue:"환율 불리"},emotion:{mood:"frustrated",intensity:"medium"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"환율 메모",content:"USD/KRW 1,380원"}}},
+    {input:"오늘 homesick 심해서 한국 음식 해먹었어 김치찌개",domains:["emotion","health"],data:{emotion:{mood:"homesick",intensity:"very_high"},health:{meal:"김치찌개",context:"comfort food"}},note:"emotion vs health 경계",followup:{immediate:"한국 언제 들어오세요?",later:null},orb:{text:"보고 싶은 마음이 크시겠어요. 김치찌개 드시니 좀 나으셨어요?",inlineView:null}},
+    {input:"Roommate가 시끄러워서 library에서 공부 중",domains:["education","relationship"],data:{education:{place:"도서관"},relationship:{person:"룸메이트",issue:"소음"}},note:"",followup:{immediate:null,later:"룸메이트랑 이야기해보셨어요?"},orb:{text:null,noResponse:true}},
+    {input:"이번 학기 tuition이 $18,000이야 부모님한테 죄송해",domains:["finance","emotion","relationship"],data:{finance:{amount:18000,currency:"USD",category:"등록금"},emotion:{mood:"guilty",intensity:"high"},relationship:{person:"부모님"}},note:"",followup:{immediate:null,later:"장학금 알아보셨어요?"},orb:{text:"부모님 생각에 마음이 무거우시겠어요. 열심히 하고 계신 것만으로도 충분해요.",inlineView:{type:"학비",content:"이번 학기 등록금 $18,000"}}},
+    {input:"한국 친구들이 보고 싶어 카톡 영상통화 했어 2시간",domains:["relationship","emotion"],data:{relationship:{person:"한국 친구들",activity:"영상통화",duration:"2시간"},emotion:{mood:"bittersweet",intensity:"medium"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"Part-time job 구해야 하는데 비자가 문제야",domains:["task","finance"],data:{task:{todo:"아르바이트 구하기",blocker:"비자"},finance:{need:"아르바이트 수입"}},note:"",followup:{immediate:"학교 내 job은 없어요?",later:null},orb:{text:"비자 문제가 있으시군요. 학교 내 일자리는 비자 제한이 적을 수 있어요.",inlineView:null}},
+    {input:"오늘 presentation 했는데 교수님이 칭찬해줬어 so happy",domains:["education","emotion"],data:{education:{event:"프레젠테이션",feedback:"칭찬"},emotion:{mood:"happy",intensity:"high"}},note:"",followup:{immediate:null,later:null},orb:{text:"칭찬받으시다니 정말 잘하셨어요!",inlineView:null}},
+    {input:"rent $800/month인데 utility 포함이라 그나마 나아",domains:["finance"],data:{finance:{rent:800,currency:"USD",includes:"utility",period:"월"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"고정 지출",content:"월세 $800 (utility 포함)"}}},
+    {input:"thanksgiving break에 뉴욕 가기로 했어 버스 $45",domains:["schedule","finance"],data:{schedule:{event:"Thanksgiving break",destination:"뉴욕"},finance:{transport:45,currency:"USD"}},note:"",followup:{immediate:"누구랑 가세요?",later:null},orb:{text:null,inlineView:{type:"일정",content:"Thanksgiving -- 뉴욕 | 버스 $45"}}},
+    {input:"ESL class 들을까 말까 English가 아직 부족해",domains:["education","idea"],data:{education:{subject:"ESL",need:"영어 향상"},idea:{content:"ESL 수강"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"한국에서 택배 왔다!! 엄마가 라면이랑 김 보내줌 ㅠㅠ",domains:["relationship","emotion"],data:{relationship:{person:"엄마",action:"택배"},emotion:{mood:"touched",intensity:"very_high",cause:"엄마 선물"}},note:"",followup:{immediate:null,later:null},orb:{text:"엄마의 마음이 담긴 택배네요. 정말 따뜻하시겠어요.",inlineView:null}},
+    {input:"Study group 매주 수요일 저녁 7시 campus cafe",domains:["schedule","education"],data:{schedule:{day:"수요일",time:"19:00",place:"campus cafe"},education:{type:"스터디"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"정기 일정",content:"Study group -- 매주 수요일 19:00 campus cafe"}}},
+    {input:"Credit card bill이 $1,200 나왔어 grocery랑 eating out이 문제",domains:["finance","emotion"],data:{finance:{amount:1200,currency:"USD",categories:["grocery","eating out"]},emotion:{mood:"shocked",intensity:"high"}},note:"",followup:{immediate:null,later:"예산 정해놓고 계세요?"},orb:{text:null,inlineView:{type:"카드 지출",content:"이번 달 카드 $1,200"}}},
+    {input:"졸업 후에 한국 돌아갈지 여기서 취업할지 고민이야",domains:["idea","emotion"],data:{idea:{content:"졸업 후 진로",options:["귀국","현지 취업"]},emotion:{mood:"conflicted",intensity:"high"}},note:"",followup:{immediate:"마음이 어디 쪽으로 더 기우세요?",later:null},orb:{text:"큰 결정이라 고민이 많으시겠어요. 천천히 생각해보셔도 돼요.",inlineView:null}},
+    {input:"Netflix로 한국 드라마 봐야 한국어 안 까먹어 ㅋ",domains:["media","education"],data:{media:{platform:"Netflix",genre:"한국 드라마"},education:{purpose:"한국어 유지"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}}
+  ]
+},
+// ---- 19. 현우 ----
+{
+  id:"hyunwoo", name:"장현우", age:28, role:"유튜버 남", emoji:"--",
+  traits:"콘텐츠, 수익, 편집, 기획",
+  sentences:[
+    {input:"이번 영상 조회수 50만 찍었다 역대 최고!",domains:["media","emotion","finance"],data:{media:{platform:"YouTube",views:500000},emotion:{mood:"ecstatic",intensity:"very_high"},finance:{impact:"수익 증가"}},note:"",followup:{immediate:"어떤 영상이세요?",later:null},orb:{text:"50만이라니 정말 대단하세요! 축하드려요.",inlineView:{type:"유튜브 기록",content:"조회수 500,000 -- 역대 최고"}}},
+    {input:"편집 12시간 했더니 눈이 빠질 것 같아",domains:["task","health"],data:{task:{activity:"영상 편집",duration:"12시간"},health:{symptom:"눈 피로"}},note:"",followup:{immediate:null,later:null},orb:{text:"12시간이면 눈이 정말 피로하시겠어요. 잠깐 쉬어가세요.",inlineView:null}},
+    {input:"이번 달 유튜브 수익 380만원 AdSense 기준",domains:["finance"],data:{finance:{amount:3800000,source:"YouTube AdSense",period:"이번 달"}},note:"",followup:{immediate:null,later:"협찬 수익도 있으세요?"},orb:{text:null,inlineView:{type:"수입 기록",content:"유튜브 AdSense 이번 달 3,800,000원"}}},
+    {input:"새 카메라 Sony A7IV 살까 320만원인데",domains:["finance","idea","development"],data:{finance:{amount:3200000,item:"Sony A7IV"},idea:{content:"카메라 업그레이드"},development:{tool:"Sony A7IV"}},note:"development 경계 모호",followup:{immediate:"지금 카메라 뭐 쓰세요?",later:null},orb:{text:null,inlineView:{type:"구매 검토",content:"Sony A7IV -- 3,200,000원"}}},
+    {input:"협찬 제안 들어왔는데 내 채널이랑 안 맞아서 거절함",domains:["finance","task"],data:{finance:{type:"협찬 제안",decision:"거절"},task:{completed:"협찬 검토"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"다음 영상 기획: 24시간 편의점 음식만 먹기 챌린지",domains:["idea","task"],data:{idea:{content:"24시간 편의점 챌린지"},task:{todo:"영상 기획"}},note:"",followup:{immediate:"언제 촬영하실 거세요?",later:null},orb:{text:null,inlineView:{type:"기획 메모",content:"24시간 편의점 음식만 먹기 챌린지"}}},
+    {input:"구독자 10만 찍으면 실버버튼 온다 지금 87000명",domains:["media","emotion"],data:{media:{platform:"YouTube",subscribers:87000,milestone:100000},emotion:{mood:"anticipating",intensity:"high"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"구독자 현황",content:"87,000명 / 목표 100,000명 (87%)"}}},
+    {input:"썸네일 디자인 A/B 테스트 했는데 B가 CTR 2배 높음",domains:["development","knowledge"],data:{development:{activity:"A/B 테스트",tool:"썸네일"},knowledge:{finding:"B 디자인 CTR 2배"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"테스트 결과",content:"썸네일 A/B -- B안 CTR 2배"}}},
+    {input:"매일 아침 댓글 확인하고 답변하는 게 루틴",domains:["habit","task"],data:{habit:{name:"댓글 확인/답변",frequency:"매일 아침"},task:{daily:"댓글 관리"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"악플 달린 거 보면 아직도 상처받아 멘탈 관리 해야지",domains:["emotion","health"],data:{emotion:{mood:"hurt",cause:"악플",intensity:"high"},health:{need:"멘탈 관리"}},note:"",followup:{immediate:null,later:null},orb:{text:"악플은 신경 쓰이실 수밖에 없어요. 너무 마음에 담아두지 마세요.",inlineView:null}},
+    {input:"프리미어 프로 새 버전 나왔는데 편집 속도 체감 빨라졌어",domains:["development","knowledge"],data:{development:{tool:"Premiere Pro",update:"신버전"},knowledge:{topic:"편집 소프트웨어"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"세금 신고 기간인데 사업자등록 하고 나서 첫 신고라 모르겠어",domains:["finance","task"],data:{finance:{event:"세금 신고",context:"첫 사업자 신고"},task:{todo:"세금 신고"}},note:"",followup:{immediate:"세무사 있으세요?",later:null},orb:{text:"첫 신고라 낯설으시겠어요. 세무사 도움을 받아보시는 것도 방법이에요.",inlineView:{type:"할 일",content:"사업자 첫 세금 신고"}}},
+    {input:"콜라보 제안 왔는데 같이 하면 시너지 날 것 같아",domains:["relationship","idea"],data:{relationship:{context:"콜라보 제안"},idea:{content:"콜라보 영상"}},note:"",followup:{immediate:"누구세요?",later:null},orb:{text:null,noResponse:true}},
+    {input:"요즘 번아웃 와서 영상 업로드 주기가 늘어나고 있어",domains:["health","emotion","task"],data:{health:{condition:"번아웃"},emotion:{mood:"drained",intensity:"high"},task:{issue:"업로드 주기 지연"}},note:"",followup:{immediate:null,later:null},orb:{text:"번아웃이 오셨군요. 쉬어가시는 것도 괜찮아요. 구독자분들도 이해해주실 거예요.",inlineView:null}},
+    {input:"운동 시작했어 헬스 영상도 찍을 겸",domains:["health","habit","idea"],data:{health:{activity:"헬스"},habit:{name:"운동"},idea:{content:"헬스 콘텐츠"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"10년 뒤에도 유튜브가 먹힐까 불안할 때가 있어",domains:["emotion","idea"],data:{emotion:{mood:"uncertain",cause:"직업 미래",intensity:"medium"},idea:{category:"장기 커리어"}},note:"",followup:{immediate:null,later:null},orb:{text:"미래에 대한 불안은 자연스러운 거예요. 지금 하시는 경험이 어떤 형태로든 도움이 될 거예요.",inlineView:null}}
+  ]
+},
+// ---- 20. 기훈 ----
+{
+  id:"gihun", name:"조기훈", age:48, role:"소상공인 남", emoji:"--",
+  traits:"대출, 임대료, 직원 관리",
+  sentences:[
+    {input:"대출 이자가 매달 180만원이야 죽겠다 진짜",domains:["finance","emotion"],data:{finance:{amount:1800000,type:"대출 이자",period:"월"},emotion:{mood:"desperate",intensity:"very_high"}},note:"",followup:{immediate:null,later:"금리 낮출 수 있는 거 알아보셨어요?"},orb:{text:"정말 부담이 크시겠어요.",inlineView:{type:"고정 지출",content:"대출 이자 월 1,800,000원"}}},
+    {input:"임대료 올려달라는 건물주 연락 왔어 10% 인상",domains:["finance","emotion","relationship"],data:{finance:{event:"임대료 인상",rate:"10%"},emotion:{mood:"angry",intensity:"very_high"},relationship:{person:"건물주",issue:"임대료 인상"}},note:"",followup:{immediate:"계약 기간 언제까지세요?",later:null},orb:{text:"갑작스러운 인상 요청이면 당황스러우시겠어요. 계약서를 다시 확인해보시는 게 좋을 것 같아요.",inlineView:null}},
+    {input:"직원 3명 월급이 총 750만원 매달 빠져나가",domains:["finance"],data:{finance:{amount:7500000,category:"인건비",employees:3,period:"월"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"고정 지출",content:"직원 인건비 월 7,500,000원 (3명)"}}},
+    {input:"코로나 때 받은 긴급 대출 아직 갚고 있어",domains:["finance"],data:{finance:{type:"긴급 대출",origin:"코로나 시기",status:"상환 중"}},note:"",followup:{immediate:"얼마나 남으셨어요?",later:null},orb:{text:null,noResponse:true}},
+    {input:"내일 거래처 미팅 오전 10시 을지로",domains:["schedule"],data:{schedule:{date:"내일",time:"10:00",place:"을지로",event:"거래처 미팅",dateResolved:"2026-04-19"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"일정",content:"4/19(토) 10:00 거래처 미팅 -- 을지로"}}},
+    {input:"직원이 무단결근했어 연락도 안 받아",domains:["relationship","emotion","task"],data:{relationship:{person:"직원",event:"무단결근"},emotion:{mood:"frustrated",intensity:"high"},task:{issue:"인력 공백"}},note:"",followup:{immediate:"다른 직원이 커버 가능하세요?",later:null},orb:{text:"답답하시겠어요.",inlineView:null}},
+    {input:"사업자 대출 금리가 7.5%야 은행이 도둑이지",domains:["finance","emotion"],data:{finance:{type:"사업자 대출",rate:"7.5%"},emotion:{mood:"bitter",intensity:"high"}},note:"",followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"대출 정보",content:"사업자 대출 금리 7.5%"}}},
+    {input:"매출은 올랐는데 순이익은 줄었어 원가가 문제야",domains:["finance"],data:{finance:{situation:"매출 증가, 이익 감소",cause:"원가 상승"}},note:"",followup:{immediate:"어떤 원가가 제일 많이 올랐어요?",later:null},orb:{text:null,inlineView:{type:"경영 현황",content:"매출 증가 / 순이익 감소 -- 원인: 원가 상승"}}},
+    {input:"밤에 잠이 안 와 사업 걱정 때문에",domains:["health","emotion"],data:{health:{issue:"불면증",cause:"스트레스"},emotion:{mood:"anxious",cause:"사업 걱정",intensity:"very_high"}},note:"",followup:{immediate:null,later:null},orb:{text:"걱정이 많으시면 잠이 안 오시죠. 너무 혼자 끌어안지 마세요.",inlineView:null}},
+    {input:"아내가 좀 쉬라고 하는데 쉴 수가 없어",domains:["relationship","emotion","health"],data:{relationship:{person:"아내",concern:"건강"},emotion:{mood:"trapped",intensity:"high"},health:{need:"휴식"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"세무사 비용도 아깝지만 혼자 하면 더 손해야",domains:["finance","knowledge"],data:{finance:{category:"세무사 비용"},knowledge:{insight:"전문가 비용 대비 효율"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"소상공인 지원금 신청했는데 탈락했어",domains:["finance","emotion"],data:{finance:{event:"지원금 탈락"},emotion:{mood:"dejected",intensity:"high"}},note:"",followup:{immediate:"탈락 사유가 뭐래요?",later:"다른 지원 사업 알아보셨어요?"},orb:{text:"아쉬우시겠어요. 다른 지원 사업도 있으니 알아보시는 건 어떨까요.",inlineView:null}},
+    {input:"가게 CCTV 보니까 직원이 근무 시간에 핸드폰만 해",domains:["relationship","emotion","task"],data:{relationship:{person:"직원",issue:"근태"},emotion:{mood:"disappointed",intensity:"high"},task:{issue:"직원 관리"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+    {input:"20년 넘게 이 일 했는데 요즘은 진짜 힘들어",domains:["emotion"],data:{emotion:{mood:"exhausted",cause:"장기 사업 피로",intensity:"very_high"}},note:"",followup:{immediate:null,later:null},orb:{text:"오랜 시간 정말 고생 많으셨어요.",inlineView:null}},
+    {input:"아들 대학 등록금도 내야 하는데 여유가 없어",domains:["finance","education","emotion","relationship"],data:{finance:{category:"등록금",constraint:"자금 부족"},education:{context:"아들 대학"},emotion:{mood:"burdened",intensity:"very_high"},relationship:{person:"아들"}},note:"4개 도메인",followup:{immediate:null,later:"장학금 알아보셨어요?"},orb:{text:"여러 가지가 겹치시면 정말 힘드시겠어요.",inlineView:null}},
+    {input:"이것만 넘기면 괜찮아질 거야 버텨야지",domains:["emotion"],data:{emotion:{mood:"determined_hopeful",intensity:"high"}},note:"",followup:{immediate:null,later:null},orb:{text:null,noResponse:true}}
+  ]
+}
+];
+
+// ============================================================
+// AMBIGUOUS INPUT SCENARIOS (Section 3)
+// ============================================================
+const ambiguousInputs = [
+// 초짧은 입력
+{input:"응",category:"초짧은 입력",classifiable:"불가능",systemResponse:"맥락 필요. 이전 대화 참조하여 확인 응답으로 처리",domains:[],data:{},followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+{input:"ㅇㅇ",category:"초짧은 입력",classifiable:"불가능",systemResponse:"이전 대화의 확인/긍정으로 저장. 단독이면 저장 불가",domains:[],data:{},followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+{input:"ㅋㅋ",category:"초짧은 입력",classifiable:"부분적",systemResponse:"emotion: amused로 저장 가능하나 데이터 가치 낮음. 백그라운드 저장",domains:["emotion"],data:{emotion:{mood:"amused",intensity:"very_low"}},followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+{input:"아",category:"초짧은 입력",classifiable:"불가능",systemResponse:"단독 감탄사. 맥락 없이 저장 불가",domains:[],data:{},followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+{input:"뭐",category:"초짧은 입력",classifiable:"불가능",systemResponse:"질문인지 감탄인지 모호. 맥락 유도 필요",domains:[],data:{},followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+{input:"그래",category:"초짧은 입력",classifiable:"불가능",systemResponse:"이전 대화 동의/확인. 단독이면 저장 불가",domains:[],data:{},followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+{input:"아 몰라",category:"초짧은 입력",classifiable:"부분적",systemResponse:"emotion: frustrated/indifferent 백그라운드 저장",domains:["emotion"],data:{emotion:{mood:"frustrated",intensity:"low"}},followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+
+// 대명사/지시어만
+{input:"그거 해줘",category:"대명사/지시어",classifiable:"불가능",systemResponse:"'그거'의 대상 불명. 이전 대화 참조 필수",domains:[],data:{},followup:{immediate:null,later:null},orb:{text:"어떤 것을 도와드릴까요?",inlineView:null}},
+{input:"아까 그거",category:"대명사/지시어",classifiable:"불가능",systemResponse:"시간 참조 + 지시어. 이전 대화 검색 필요",domains:[],data:{},followup:{immediate:null,later:null},orb:{text:"어떤 것을 말씀하시는 건지 알려주시면 찾아볼게요.",inlineView:null}},
+{input:"저번에 말한 거",category:"대명사/지시어",classifiable:"불가능",systemResponse:"과거 대화 참조. 검색 시도 후 확인 질문",domains:[],data:{},followup:{immediate:null,later:null},orb:{text:"어떤 내용인지 힌트를 주시면 찾아볼게요.",inlineView:null}},
+{input:"걔 누구였지",category:"대명사/지시어",classifiable:"불가능",systemResponse:"인물 참조. 이전 대화에서 인물 검색 시도",domains:[],data:{},followup:{immediate:null,later:null},orb:{text:"누구를 말씀하시는 건가요?",inlineView:null}},
+{input:"그때 그 장소",category:"대명사/지시어",classifiable:"불가능",systemResponse:"시간+장소 참조 모두 모호",domains:[],data:{},followup:{immediate:null,later:null},orb:{text:"어떤 때, 어떤 장소인지 알려주시면 찾아볼게요.",inlineView:null}},
+
+// 맥락 없는 후속
+{input:"더 알려줘",category:"맥락 없는 후속",classifiable:"불가능",systemResponse:"이전 주제 참조. 가장 최근 대화 주제로 연결 시도",domains:[],data:{},followup:{immediate:null,later:null},orb:{text:"어떤 것에 대해 더 알려드릴까요?",inlineView:null}},
+{input:"계속해",category:"맥락 없는 후속",classifiable:"불가능",systemResponse:"이전 대화 연속 요청. 맥락 이어가기",domains:[],data:{},followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+{input:"그래서?",category:"맥락 없는 후속",classifiable:"불가능",systemResponse:"후속 정보 요청. 이전 대화 참조",domains:[],data:{},followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+{input:"다른 거는?",category:"맥락 없는 후속",classifiable:"불가능",systemResponse:"대안/추가 정보 요청. 이전 주제 기반 확장",domains:[],data:{},followup:{immediate:null,later:null},orb:{text:"어떤 다른 것을 찾아볼까요?",inlineView:null}},
+
+// 모호한 감정
+{input:"아 ㅅㅂ",category:"모호한 감정",classifiable:"부분적",systemResponse:"emotion: angry/frustrated 백그라운드 저장. 원인 파악 필요",domains:["emotion"],data:{emotion:{mood:"angry",intensity:"high"}},followup:{immediate:null,later:null},orb:{text:"안좋은 일이 있으셨나요.",inlineView:null}},
+{input:"에휴",category:"모호한 감정",classifiable:"부분적",systemResponse:"emotion: tired/resigned 백그라운드 저장",domains:["emotion"],data:{emotion:{mood:"tired",intensity:"medium"}},followup:{immediate:null,later:null},orb:{text:"무슨 일 있으셨어요?",inlineView:null}},
+{input:"하...",category:"모호한 감정",classifiable:"부분적",systemResponse:"emotion: exhausted/frustrated 백그라운드 저장",domains:["emotion"],data:{emotion:{mood:"exhausted",intensity:"medium"}},followup:{immediate:null,later:null},orb:{text:"힘드신 일이 있으신가요?",inlineView:null}},
+{input:"미치겠다",category:"모호한 감정",classifiable:"부분적",systemResponse:"emotion: overwhelmed 백그라운드 저장. 원인 파악 당장질문",domains:["emotion"],data:{emotion:{mood:"overwhelmed",intensity:"very_high"}},followup:{immediate:null,later:null},orb:{text:"무슨 일이세요?",inlineView:null}},
+{input:"죽겠어",category:"모호한 감정",classifiable:"부분적",systemResponse:"emotion: extreme_negative. 비유적 표현이지만 감정 강도 highest 기록",domains:["emotion"],data:{emotion:{mood:"extreme_negative",intensity:"very_high"}},followup:{immediate:null,later:null},orb:{text:"많이 힘드시죠. 무슨 일인지 말씀해주시면 들을게요.",inlineView:null}},
+{input:"개빡쳐",category:"모호한 감정",classifiable:"부분적",systemResponse:"emotion: angry 백그라운드 저장. 원인 파악 필요",domains:["emotion"],data:{emotion:{mood:"angry",intensity:"very_high"}},followup:{immediate:null,later:null},orb:{text:"안좋은 일이 있으셨나요.",inlineView:null}},
+{input:"ㅎㅎ",category:"모호한 감정",classifiable:"부분적",systemResponse:"emotion: mildly_amused. 데이터 가치 매우 낮음. 백그라운드 저장",domains:["emotion"],data:{emotion:{mood:"amused",intensity:"very_low"}},followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+
+// 정보 불완전
+{input:"약속 있어",category:"정보 불완전",classifiable:"부분적",systemResponse:"schedule 도메인 저장 가능하나 시간/장소/대상 미상",domains:["schedule"],data:{schedule:{event:"약속",date:"unknown",time:"unknown",person:"unknown"}},followup:{immediate:"누구랑요? 언제세요?",later:null},orb:{text:"약속이 있으시군요. 언제, 누구랑이세요?",inlineView:null}},
+{input:"돈 좀 써야 하는데",category:"정보 불완전",classifiable:"부분적",systemResponse:"finance 저장 가능하나 금액/용도 미상",domains:["finance"],data:{finance:{type:"지출 예정",amount:"unknown",category:"unknown"}},followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+{input:"뭐 하나 사야 해",category:"정보 불완전",classifiable:"부분적",systemResponse:"task + finance 저장 가능하나 대상 미상",domains:["task"],data:{task:{todo:"구매",item:"unknown"}},followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+{input:"어딘가 가야 해",category:"정보 불완전",classifiable:"부분적",systemResponse:"schedule 저장 가능하나 장소/시간 미상",domains:["schedule"],data:{schedule:{event:"이동",destination:"unknown"}},followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+{input:"누가 연락 왔어",category:"정보 불완전",classifiable:"부분적",systemResponse:"relationship 저장 가능하나 대상 미상",domains:["relationship"],data:{relationship:{event:"연락",person:"unknown"}},followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+
+// 혼잣말/독백
+{input:"뭐 먹지",category:"혼잣말/독백",classifiable:"부분적",systemResponse:"task/idea 저장 가능. 식사 계획으로 분류. 전부 저장",domains:["task"],data:{task:{decision:"식사 메뉴 선택"}},followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+{input:"심심하다",category:"혼잣말/독백",classifiable:"부분적",systemResponse:"emotion: bored 백그라운드 저장",domains:["emotion"],data:{emotion:{mood:"bored",intensity:"low"}},followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+{input:"졸려",category:"혼잣말/독백",classifiable:"부분적",systemResponse:"health: 졸림 + emotion 백그라운드 저장",domains:["health","emotion"],data:{health:{status:"졸림"},emotion:{mood:"sleepy",intensity:"low"}},followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+{input:"배고파",category:"혼잣말/독백",classifiable:"부분적",systemResponse:"health: 공복 백그라운드 저장",domains:["health"],data:{health:{status:"공복"}},followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+{input:"집 가고 싶다",category:"혼잣말/독백",classifiable:"부분적",systemResponse:"emotion: wanting_home 백그라운드 저장",domains:["emotion"],data:{emotion:{mood:"wanting_home",intensity:"medium"}},followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+{input:"아 귀찮아",category:"혼잣말/독백",classifiable:"부분적",systemResponse:"emotion: lazy/reluctant 백그라운드 저장",domains:["emotion"],data:{emotion:{mood:"reluctant",intensity:"low"}},followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+
+// 오타/비문
+{input:"ㅁ니ㅏ러",category:"오타/비문",classifiable:"불가능",systemResponse:"해석 불가. 원본 저장 후 확인 질문",domains:[],data:{},followup:{immediate:null,later:null},orb:{text:"잘 안 보여요. 다시 말씀해주시겠어요?",inlineView:null}},
+{input:"우뜬ㅁ",category:"오타/비문",classifiable:"불가능",systemResponse:"해석 불가. 원본 저장",domains:[],data:{},followup:{immediate:null,later:null},orb:{text:"다시 한번 말씀해주시겠어요?",inlineView:null}},
+{input:"아ㅋㅋㅋ그거ㅋㅋ",category:"오타/비문",classifiable:"불가능",systemResponse:"감정(amused) + 지시어. 맥락 필요",domains:["emotion"],data:{emotion:{mood:"amused",intensity:"medium"}},followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+{input:"한ㅋㅋ시에ㅋ만나자",category:"오타/비문",classifiable:"부분적",systemResponse:"파싱 시도: '한 시에 만나자' -> schedule 저장",domains:["schedule"],data:{schedule:{time:"13:00",event:"만남",dateResolved:"timestamp"}},followup:{immediate:"어디에서요?",later:null},orb:{text:null,inlineView:{type:"일정",content:"13:00 만남"}}},
+
+// 영어 섞임
+{input:"deadline 내일인데 ㅋㅋ",category:"영어 섞임",classifiable:"가능",systemResponse:"task: deadline 내일. schedule 저장",domains:["task","schedule","emotion"],data:{task:{deadline:"내일",dateResolved:"2026-04-19"},schedule:{date:"내일",dateResolved:"2026-04-19"},emotion:{mood:"anxious_humor",intensity:"medium"}},followup:{immediate:"어떤 마감이세요?",later:null},orb:{text:null,inlineView:{type:"일정",content:"4/19(토) deadline"}}},
+{input:"meeting 취소됐대",category:"영어 섞임",classifiable:"가능",systemResponse:"schedule: 미팅 취소 저장",domains:["schedule"],data:{schedule:{event:"meeting",status:"취소",dateResolved:"timestamp"}},followup:{immediate:null,later:null},orb:{text:null,inlineView:{type:"일정 변경",content:"meeting 취소"}}},
+{input:"report 써야 해",category:"영어 섞임",classifiable:"가능",systemResponse:"task 저장",domains:["task"],data:{task:{todo:"report 작성"}},followup:{immediate:"마감이 언제세요?",later:null},orb:{text:null,inlineView:{type:"할 일",content:"report 작성"}}},
+{input:"lunch 뭐 먹지 budget 만원",category:"영어 섞임",classifiable:"가능",systemResponse:"task + finance 저장",domains:["task","finance"],data:{task:{decision:"점심 메뉴"},finance:{budget:10000,category:"식비"}},followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+
+// 숫자만
+{input:"62",category:"숫자만",classifiable:"불가능",systemResponse:"숫자 단독. 맥락 없이 의미 파악 불가. 이전 대화 참조",domains:[],data:{},followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+{input:"350",category:"숫자만",classifiable:"불가능",systemResponse:"금액인지 점수인지 불명. 맥락 필요",domains:[],data:{},followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+{input:"3시",category:"숫자만",classifiable:"부분적",systemResponse:"schedule: 시간 저장 가능하나 날짜/이벤트 미상",domains:["schedule"],data:{schedule:{time:"15:00",event:"unknown"}},followup:{immediate:"3시에 뭐가 있으세요?",later:null},orb:{text:"3시에 무엇이 있으세요?",inlineView:null}},
+{input:"내일",category:"숫자만",classifiable:"부분적",systemResponse:"schedule: 날짜만 저장. 이벤트 미상",domains:["schedule"],data:{schedule:{date:"내일",dateResolved:"2026-04-19"}},followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+
+// 질문인지 혼잣말인지 모호
+{input:"치킨 먹을까",category:"질문/혼잣말 모호",classifiable:"부분적",systemResponse:"task: 식사 결정 저장. 전부 저장",domains:["task"],data:{task:{consideration:"치킨",category:"식사"}},followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+{input:"영화 볼까",category:"질문/혼잣말 모호",classifiable:"부분적",systemResponse:"idea/media 저장. 전부 저장",domains:["idea","media"],data:{idea:{content:"영화 관람"},media:{type:"영화"}},followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+{input:"운동 할까 말까",category:"질문/혼잣말 모호",classifiable:"부분적",systemResponse:"health/task 저장. 전부 저장",domains:["health","task"],data:{health:{activity:"운동"},task:{decision:"운동 여부"}},followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+{input:"자소서 지금 쓸까",category:"질문/혼잣말 모호",classifiable:"가능",systemResponse:"task 저장. 우선순위 판단. 전부 저장",domains:["task","education"],data:{task:{todo:"자소서 작성",timing:"지금"},education:{type:"자기소개서"}},followup:{immediate:"마감이 언제세요?",later:null},orb:{text:"구체적인 계획이 있으신가요?",inlineView:null}},
+{input:"이사 가야 하나",category:"질문/혼잣말 모호",classifiable:"부분적",systemResponse:"idea 저장. 큰 의사결정. 전부 저장",domains:["idea","emotion"],data:{idea:{content:"이사 고민"},emotion:{mood:"uncertain",intensity:"medium"}},followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+{input:"퇴사할까",category:"질문/혼잣말 모호",classifiable:"부분적",systemResponse:"idea + emotion 저장. 중요 의사결정. 전부 저장",domains:["idea","emotion"],data:{idea:{content:"퇴사 고민"},emotion:{mood:"conflicted",intensity:"high"}},followup:{immediate:null,later:null},orb:{text:null,noResponse:true}},
+];
+
+// ============================================================
+// RENDER
+// ============================================================
+const root = document.getElementById('report-root');
+
+// Compute stats
+let totalSentences = 0;
+const domainCounts = {};
+let singleDomain = 0, multiDomain = 0;
+const domainSentences = {};
+
+Object.keys(DOMAINS).forEach(d => { domainCounts[d] = 0; domainSentences[d] = []; });
+
+personas.forEach(p => {
+  p.sentences.forEach(s => {
+    totalSentences++;
+    if (s.domains.length === 1) singleDomain++;
+    else multiDomain++;
+    s.domains.forEach(d => {
+      domainCounts[d] = (domainCounts[d]||0) + 1;
+      if (!domainSentences[d]) domainSentences[d] = [];
+      domainSentences[d].push({persona: p.name, input: s.input, allDomains: s.domains});
+    });
+  });
+});
+
+const maxCount = Math.max(...Object.values(domainCounts));
+
+function badge(d) {
+  return `<span class="badge badge-${d}">${d}</span>`;
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function renderExtracted(data) {
+  let rows = '';
+  Object.entries(data).forEach(([domain, obj]) => {
+    Object.entries(obj).forEach(([k, v]) => {
+      let val = typeof v === 'object' ? JSON.stringify(v, null, 0) : v;
+      if (k === 'dateResolved') {
+        rows += `<tr><td style="color:var(--ou-text-muted)">${domain}</td><td>${escHtml(String(k))}</td><td><span class="date-conv">${escHtml(String(val))}</span></td></tr>`;
+        return;
+      }
+      if (k === 'date' && data[domain] && data[domain].dateResolved) {
+        rows += `<tr><td style="color:var(--ou-text-muted)">${domain}</td><td>${escHtml(String(k))}</td><td>${escHtml(String(val))} <span class="date-conv">&rarr; ${escHtml(String(data[domain].dateResolved))}</span></td></tr>`;
+        return;
+      }
+      rows += `<tr><td style="color:var(--ou-text-muted)">${domain}</td><td>${escHtml(String(k))}</td><td>${escHtml(String(val))}</td></tr>`;
+    });
+  });
+  return `<div class="pressed-sm extracted-data"><table><thead><tr><th>Domain</th><th>Key</th><th>Value</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+function renderFollowup(followup) {
+  if (!followup) return '';
+  let html = '';
+  if (followup.immediate) {
+    html += `<div class="followup"><div class="followup-tag immediate">당장질문</div><div class="followup-text">"${escHtml(followup.immediate)}"</div></div>`;
+  }
+  if (followup.later) {
+    html += `<div class="followup"><div class="followup-tag later">추가질문</div><div class="followup-text">"${escHtml(followup.later)}"</div></div>`;
+  }
+  return html;
+}
+
+function renderOrbReaction(orb) {
+  if (!orb) return '<div class="no-response">(Orb 반응 데이터 없음)</div>';
+  let html = '';
+  if (orb.noResponse && !orb.text && !orb.inlineView) {
+    html += '<div class="no-response">(무응답 -- 백그라운드 저장)</div>';
+    return html;
+  }
+  if (orb.text) {
+    html += `<div class="orb-bubble-wrap"><div class="orb-avatar">${ORB_SVG}</div><div class="orb-bubble">${escHtml(orb.text)}</div></div>`;
+  }
+  if (orb.inlineView) {
+    html += `<div class="inline-view-card"><div class="inline-view-label">${escHtml(orb.inlineView.type)}</div><div class="inline-view-content">${escHtml(orb.inlineView.content)}</div></div>`;
+  }
+  if (!orb.text && !orb.inlineView && !orb.noResponse) {
+    html += '<div class="no-response">(무응답 -- 백그라운드 저장)</div>';
+  }
+  return html;
+}
+
+// ---- Section 0: Orb Principles ----
+let html = `
+<div class="card">
+  <div class="section-title"><span class="num">0</span> Orb Reaction Principles</div>
+  <div class="principles-box">
+    <h4>Orb 성격 원칙</h4>
+    <ul>
+      <li><strong>무조건 따뜻한 존댓말</strong> -- 반말, 캐주얼 톤 절대 금지</li>
+      <li><strong>상대하기 편한 존재</strong> -- 물어봐도 부담 없고, 무시해도 서운해하지 않고, 보채지 않음</li>
+      <li><strong>보이지 않는 서비스</strong> -- "DataNode가 생성되었습니다" 같은 알림 금지. 뷰만 보여줌</li>
+      <li><strong>아는 것 =/= 말하는 것</strong> -- 과거 데이터를 알아도 회원이 먼저 꺼내기 전 모르는 척</li>
+      <li><strong>감정은 hidden layer</strong> -- 감정 분석/기록 사실을 드러내지 않음</li>
+      <li><strong>위로 먼저, 기록은 나중</strong> -- 감정 대화에서 데이터 수집 먼저 하면 안 됨</li>
+    </ul>
+  </div>
+  <div class="principles-box">
+    <h4>반응 유형</h4>
+    <ul>
+      <li><strong>텍스트 반응</strong> -- Orb가 말하는 것 (따뜻한 존댓말)</li>
+      <li><strong>인라인 뷰</strong> -- 자동으로 보여주는 뷰. 알림 없이 자연스럽게</li>
+      <li><strong>당장질문</strong> -- 데이터 보충을 위해 바로 물어보는 것 (부담 없는 톤)</li>
+      <li><strong>추가질문</strong> -- 나중에 물어볼 수 있는 것 (넌지시)</li>
+      <li><strong>무응답</strong> -- 반응하지 않아도 되는 경우. 백그라운드 저장만</li>
+    </ul>
+  </div>
+  <div class="principles-box">
+    <h4>확정 원칙</h4>
+    <ul>
+      <li><strong>emotion</strong> -- 전부 백그라운드 저장. 회원에게 알리지 않음</li>
+      <li><strong>relationship</strong> -- 사람 이름 나오면 전부 저장. 추가질문에 넌지시</li>
+      <li><strong>task vs idea</strong> -- 구분 불필요. "구체적인 계획이 있으신가요?" 정도만 넌지시</li>
+      <li><strong>혼잣말</strong> -- 전부 저장. 반응은 상황에 따라 (무응답 OK)</li>
+      <li><strong>데이터 전부 저장</strong> -- 비용 아끼지 않음. 잘림 없음</li>
+    </ul>
+  </div>
+</div>
+`;
+
+// ---- Section 1: Summary ----
+html += `
+<div class="card">
+  <div class="section-title"><span class="num">1</span> Summary</div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-val">${totalSentences}</div><div class="stat-label">Persona Sentences</div></div>
+    <div class="stat-card"><div class="stat-val">${personas.length}</div><div class="stat-label">Personas</div></div>
+    <div class="stat-card"><div class="stat-val">${Object.keys(DOMAINS).length}</div><div class="stat-label">Domains</div></div>
+    <div class="stat-card"><div class="stat-val">${singleDomain}</div><div class="stat-label">Single Domain</div></div>
+    <div class="stat-card"><div class="stat-val">${multiDomain}</div><div class="stat-label">Multi Domain</div></div>
+    <div class="stat-card"><div class="stat-val">${ambiguousInputs.length}</div><div class="stat-label">Ambiguous Inputs</div></div>
+    <div class="stat-card"><div class="stat-val">${(multiDomain / totalSentences * 100).toFixed(0)}%</div><div class="stat-label">Multi Rate</div></div>
+  </div>
+  <h4 style="color:var(--ou-text-strong);margin-bottom:12px;font-size:14px;">Domain Frequency</h4>
+  <div class="bar-chart">
+    ${Object.entries(domainCounts).sort((a,b)=>b[1]-a[1]).map(([d,c]) => `
+      <div class="bar-row">
+        <div class="bar-label">${d}</div>
+        <div class="bar-track"><div class="bar-fill${d==='emotion'?' accent-fill':''}" style="width:${(c/maxCount*100).toFixed(1)}%"></div></div>
+        <div class="bar-count">${c}</div>
+      </div>
+    `).join('')}
+  </div>
+</div>
+`;
+
+// ---- Section 2: Personas ----
+html += `<div class="card"><div class="section-title"><span class="num">2</span> Personas</div>`;
+html += `<div class="toc">${personas.map(p => `<a href="#p-${p.id}">${p.name}</a>`).join('')}</div></div>`;
+
+personas.forEach(p => {
+  html += `
+  <div class="card" id="p-${p.id}">
+    <div class="persona-header">
+      <div class="persona-avatar" style="font-size:13px;font-weight:700;color:var(--ou-text-muted)">${p.age}</div>
+      <div class="persona-info">
+        <h3>${p.name} <span style="font-weight:400;font-size:13px;color:var(--ou-text-secondary)">${p.role}</span></h3>
+        <p>${p.traits}</p>
+      </div>
+    </div>
+    ${p.sentences.map((s, i) => `
+      <div class="sentence-entry${s.note && s.note.includes('모호') ? ' ambiguous' : ''}">
+        <div class="chat-bubble-wrap"><div class="chat-bubble">${escHtml(s.input)}</div></div>
+        ${renderOrbReaction(s.orb)}
+        <div class="domains-row">${s.domains.map(d => badge(d)).join('')}</div>
+        ${renderExtracted(s.data)}
+        ${renderFollowup(s.followup)}
+        ${s.note ? `<div class="note">${escHtml(s.note)}</div>` : ''}
+      </div>
+    `).join('')}
+  </div>`;
+});
+
+// ---- Section 3: Ambiguous Input Scenarios ----
+const ambCategories = [...new Set(ambiguousInputs.map(a => a.category))];
+const classifiableCounts = {가능:0, 불가능:0, 부분적:0};
+ambiguousInputs.forEach(a => { classifiableCounts[a.classifiable] = (classifiableCounts[a.classifiable]||0) + 1; });
+
+html += `
+<div class="card" id="ambiguous-scenarios">
+  <div class="section-title"><span class="num">3</span> Ambiguous Input Scenarios <span style="font-size:13px;font-weight:400;color:var(--ou-text-muted);margin-left:8px">${ambiguousInputs.length} cases</span></div>
+  <p style="font-size:13px;color:var(--ou-text-secondary);margin-bottom:16px;">
+    실제 사용자는 대부분 대충 말합니다. 이 섹션은 모호한 입력에 대한 Orb 대응 전략을 정의합니다.
+  </p>
+  <div class="stats-grid" style="margin-bottom:24px">
+    <div class="stat-card"><div class="stat-val">${classifiableCounts['가능']||0}</div><div class="stat-label">분류 가능</div></div>
+    <div class="stat-card"><div class="stat-val">${classifiableCounts['부분적']||0}</div><div class="stat-label">부분 분류</div></div>
+    <div class="stat-card"><div class="stat-val">${classifiableCounts['불가능']||0}</div><div class="stat-label">분류 불가</div></div>
+  </div>
+`;
+
+ambCategories.forEach(cat => {
+  const items = ambiguousInputs.filter(a => a.category === cat);
+  html += `
+  <div class="card-sm">
+    <div class="category-label">${escHtml(cat)}</div>
+    <span style="font-size:12px;color:var(--ou-text-muted);margin-left:8px">${items.length} cases</span>
+    ${items.map(a => `
+      <div class="sentence-entry" style="margin-top:12px">
+        <div class="chat-bubble-wrap"><div class="chat-bubble">${escHtml(a.input)}</div></div>
+        ${renderOrbReaction(a.orb)}
+        <div class="domains-row" style="margin:6px 0">
+          <span class="classifiable-badge ${a.classifiable === '가능' ? 'yes' : a.classifiable === '불가능' ? 'no' : 'partial'}">${a.classifiable}</span>
+          ${a.domains.map(d => badge(d)).join('')}
+        </div>
+        <div class="system-response"><strong>System:</strong> ${escHtml(a.systemResponse)}</div>
+        ${renderFollowup(a.followup)}
+      </div>
+    `).join('')}
+  </div>`;
+});
+
+html += `</div>`;
+
+// ---- Section 4: Domain Summary ----
+html += `<div class="card"><div class="section-title"><span class="num">4</span> Domain Summary</div>`;
+html += `<div class="domain-summary-grid">`;
+Object.entries(domainCounts).sort((a,b)=>b[1]-a[1]).forEach(([d, c]) => {
+  const samples = domainSentences[d].slice(0, 5);
+  html += `
+  <div class="card-sm">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      ${badge(d)}
+      <span style="font-size:13px;color:var(--ou-text-secondary);font-weight:600">${c} sentences</span>
+    </div>
+    <div style="font-size:11px;color:var(--ou-text-muted);margin-bottom:6px">${DOMAINS[d]}</div>
+    ${samples.map(s => `<div style="font-size:12px;color:var(--ou-text-body);margin-bottom:4px;padding-left:8px;border-left:2px solid var(--ou-border-subtle)">
+      <b>${s.persona}</b>: ${escHtml(s.input.length > 40 ? s.input.slice(0,40)+'...' : s.input)}
+      ${s.allDomains.length > 1 ? `<span style="color:var(--ou-text-muted)"> +${s.allDomains.filter(x=>x!==d).join(', ')}</span>` : ''}
+    </div>`).join('')}
+  </div>`;
+});
+html += `</div></div>`;
+
+// ---- Section 5: Ambiguous Cases Highlight ----
+const ambiguous = [];
+personas.forEach(p => {
+  p.sentences.forEach(s => {
+    const isAmb = (s.note && (s.note.includes('모호') || s.note.includes('경계') || s.note.includes('맥락 의존')))
+      || s.domains.length >= 4
+      || (s.domains.includes('emotion') && s.domains.includes('health') && s.domains.length === 2);
+    if (isAmb) ambiguous.push({persona: p.name, ...s});
+  });
+});
+
+html += `
+<div class="card">
+  <div class="section-title"><span class="num">5</span> Ambiguous Cases <span style="font-size:13px;font-weight:400;color:var(--ou-text-muted);margin-left:8px">${ambiguous.length} cases</span></div>
+  <p style="font-size:13px;color:var(--ou-text-secondary);margin-bottom:16px;">Classification boundary is unclear. Requires human review or additional context.</p>
+  ${ambiguous.map(s => `
+    <div class="sentence-entry ambiguous">
+      <div style="font-size:11px;color:var(--ou-text-muted);margin-bottom:4px">${escHtml(s.persona)}</div>
+      <div class="chat-bubble-wrap"><div class="chat-bubble">${escHtml(s.input)}</div></div>
+      ${renderOrbReaction(s.orb)}
+      <div class="domains-row">${s.domains.map(d => badge(d)).join('')}</div>
+      ${renderFollowup(s.followup)}
+      ${s.note ? `<div class="note" style="color:var(--ou-accent)">${escHtml(s.note)}</div>` : ''}
+    </div>
+  `).join('')}
+</div>
+`;
+
+// ---- Footer ----
+html += `
+<div style="text-align:center;padding:40px 0 20px;font-size:12px;color:var(--ou-text-disabled)">
+  <svg viewBox="0 0 193 92" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:40px;fill:var(--ou-text-disabled);margin-bottom:8px;display:block;margin-left:auto;margin-right:auto">
+    <circle cx="146.5" cy="39.66" r="11.5"/>
+    <path d="M92 7.79883V84.2012L84.2012 92H7.79883L0 84.2012V7.79883L7.79883 0H84.2012L92 7.79883ZM18 14C15.7909 14 14 15.7909 14 18V74C14 76.2091 15.7909 78 18 78H74C76.2091 78 78 76.2091 78 74V18C78 15.7909 76.2091 14 74 14H18Z"/>
+    <path d="M115 74C115 76.2091 116.791 78 119 78H175C177.209 78 179 76.2091 179 74V0H193V84.2012L185.201 92H108.799L101 84.2012V0H115V74Z"/>
+  </svg>
+  OU Orb Scenario Report v3 &middot; ${totalSentences} persona sentences + ${ambiguousInputs.length} ambiguous inputs &middot; ${personas.length} personas &middot; ${Object.keys(DOMAINS).length} domains &middot; base date: ${TODAY}
+</div>
+`;
+
+root.innerHTML = html;
+</script>
+</body>
+</html>

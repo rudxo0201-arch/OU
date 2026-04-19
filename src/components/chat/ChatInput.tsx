@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { useChatStore } from '@/stores/chatStore';
+import { NeuCard, NeuButton, NeuModal } from '@/components/ds';
 
 interface ChatInputProps {
   initialMessage?: string | null;
@@ -14,7 +15,10 @@ export interface ChatInputHandle {
 
 const LONG_TEXT_THRESHOLD = 300;
 
-export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function ChatInput({ initialMessage, onSent }: ChatInputProps = {}, ref) {
+export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function ChatInput(
+  { initialMessage, onSent }: ChatInputProps = {},
+  ref
+) {
   const [input, setInput] = useState('');
   const [rows, setRows] = useState(1);
   const [longTextCollapsed, setLongTextCollapsed] = useState(false);
@@ -33,7 +37,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
       if (!res.ok) return null;
       const data = await res.json();
       if (!data.nodes?.length) return null;
-
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const results = data.nodes.map((n: any) => ({
         char: n.domain_data.char,
         nodeId: n.id,
@@ -47,7 +51,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
         grade: n.domain_data.grade,
         composition: n.domain_data.composition,
       }));
-
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       results.sort((a: any, b: any) => text.indexOf(a.char) - text.indexOf(b.char));
       return results;
     } catch { return null; }
@@ -60,7 +64,6 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
     if (results) updateMessage(messageId, { hanjaResults: results });
   }, [fetchHanjaResults, updateMessage]);
 
-  // YouTube URL detection
   const YOUTUBE_REGEX = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/;
 
   // ---- Send text message ----
@@ -71,12 +74,11 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
     setInput('');
     setRows(1);
 
-    // 한자 검색 모드 판별
     const hanjaChars = Array.from(new Set(text.match(CJK_REGEX) || []));
     const textNoSpace = text.replace(/\s/g, '');
     const hanjaRatio = textNoSpace.length > 0 ? hanjaChars.length / textNoSpace.length : 0;
     const allMessages = useChatStore.getState().messages;
-    const prevUserMsg = [...allMessages].reverse().find(m => m.role === 'user');
+    const prevUserMsg = [...allMessages].reverse().find((m) => m.role === 'user');
     const isSearchMode = !!(prevUserMsg?.hanjaResults && prevUserMsg.hanjaResults.length > 0 && hanjaRatio >= 0.5);
 
     const userMsgId = `u-${Date.now()}`;
@@ -90,19 +92,16 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
     });
     setYtPreview(null);
 
-    // 검색 모드: LLM 스킵, 한자 카드만 표시
     if (isSearchMode && hanjaChars.length > 0) {
       const results = await fetchHanjaResults(text, hanjaChars);
       if (results) updateMessage(userMsgId, { hanjaResults: results });
       return;
     }
 
-    // 한자 감지 (비동기, 채팅 흐름 블로킹 안 함)
     if (hanjaChars.length > 0) {
       detectAndFetchHanja(text, userMsgId);
     }
 
-    // YouTube link detection — auto ingest
     const ytIngest = text.match(YOUTUBE_REGEX);
     if (ytIngest) {
       const assistantId = `a-${Date.now()}`;
@@ -116,7 +115,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
         });
         const data = await res.json();
         updateMessage(assistantId, {
-          content: data.summary || `영상을 구조화했어요.`,
+          content: data.summary || '영상을 구조화했어요.',
           streaming: false,
           nodeCreated: data.nodeId ? { domain: 'media', nodeId: data.nodeId } : undefined,
         });
@@ -129,21 +128,12 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
     }
 
     const assistantId = `a-${Date.now()}`;
-    addMessage({
-      id: assistantId,
-      role: 'assistant',
-      content: '',
-      createdAt: new Date(),
-      streaming: true,
-    });
-
+    addMessage({ id: assistantId, role: 'assistant', content: '', createdAt: new Date(), streaming: true });
     setStreaming(true);
 
     try {
-      const allMessages = useChatStore.getState().messages;
-      const apiMessages = allMessages
-        .filter(m => !m.streaming)
-        .map(m => ({ role: m.role, content: m.content }));
+      const msgs = useChatStore.getState().messages;
+      const apiMessages = msgs.filter((m) => !m.streaming).map((m) => ({ role: m.role, content: m.content }));
 
       const res = await fetch('/api/chat', {
         method: 'POST',
@@ -154,59 +144,40 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
       if (!res.ok) {
         const err = await res.json().catch(() => ({ error: 'Unknown error' }));
         updateMessage(assistantId, {
-          content: err.error === 'TOKEN_LIMIT_EXCEEDED'
-            ? '오늘 대화 한도에 도달했어요.'
-            : '죄송해요, 잠시 후 다시 시도해주세요.',
+          content: err.error === 'TOKEN_LIMIT_EXCEEDED' ? '오늘 대화 한도에 도달했어요.' : '죄송해요, 잠시 후 다시 시도해주세요.',
           streaming: false,
         });
         setStreaming(false);
         return;
       }
 
-      // SSE streaming
       const reader = res.body?.getReader();
       if (!reader) throw new Error('No reader');
 
       const decoder = new TextDecoder();
       let accumulated = '';
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let nodeInfo: any = null;
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-
         const chunk = decoder.decode(value);
-        const lines = chunk.split('\n');
-
-        for (const line of lines) {
+        for (const line of chunk.split('\n')) {
           if (!line.startsWith('data: ')) continue;
           try {
             const data = JSON.parse(line.slice(6));
-            if (data.text) {
-              accumulated += data.text;
-              updateMessage(assistantId, { content: accumulated });
-            }
-            if (data.done) {
-              nodeInfo = {
-                domain: data.domain,
-                nodeId: data.nodeId,
-                confidence: data.confidence,
-                domain_data: data.domain_data,
-                suggestions: data.suggestions,
-              };
-            }
+            if (data.text) { accumulated += data.text; updateMessage(assistantId, { content: accumulated }); }
+            if (data.done) { nodeInfo = { domain: data.domain, nodeId: data.nodeId, confidence: data.confidence, domain_data: data.domain_data, suggestions: data.suggestions }; }
           } catch { /* skip */ }
         }
       }
 
-      // 뷰 호출 태그 파싱: ```json:view {...}```
       const viewMatch = accumulated.match(/```json:view\s*([\s\S]*?)```/);
       if (viewMatch) {
         try {
           const viewData = JSON.parse(viewMatch[1].trim());
-          if (viewData.viewType) {
-            useChatStore.getState().setRequestedView(viewData);
-          }
+          if (viewData.viewType) useChatStore.getState().setRequestedView(viewData);
         } catch { /* skip */ }
       }
 
@@ -216,29 +187,23 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
         ...(nodeInfo?.domain ? { nodeCreated: nodeInfo } : {}),
       });
     } catch {
-      updateMessage(assistantId, {
-        content: '연결에 문제가 생겼어요. 다시 시도해주세요.',
-        streaming: false,
-      });
+      updateMessage(assistantId, { content: '연결에 문제가 생겼어요. 다시 시도해주세요.', streaming: false });
     } finally {
       setStreaming(false);
     }
   }, [input, isStreaming, addMessage, updateMessage, setStreaming]);
 
-  // ---- Handle file selection ----
   // Auto-send initial message (from Spotlight)
   useEffect(() => {
     if (initialMessage && !autoSentRef.current && !isStreaming) {
       autoSentRef.current = true;
       setInput(initialMessage);
-      // Defer to next tick so send() picks up the value
       setTimeout(() => {
         const el = textareaRef.current;
         if (el) {
           el.value = initialMessage;
           el.dispatchEvent(new Event('input', { bubbles: true }));
         }
-        // Directly trigger send
         sendWithText(initialMessage);
         onSent?.();
       }, 50);
@@ -259,8 +224,8 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
     setStreaming(true);
 
     try {
-      const allMessages = useChatStore.getState().messages;
-      const apiMessages = allMessages.filter(m => !m.streaming).map(m => ({ role: m.role, content: m.content }));
+      const msgs = useChatStore.getState().messages;
+      const apiMessages = msgs.filter((m) => !m.streaming).map((m) => ({ role: m.role, content: m.content }));
       const res = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages: apiMessages }) });
       if (!res.ok) {
         updateMessage(assistantId, { content: '잠시 후 다시 시도해주세요.', streaming: false });
@@ -271,12 +236,12 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
       if (!reader) throw new Error('No reader');
       const decoder = new TextDecoder();
       let accumulated = '';
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let nodeInfo: any = null;
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-        const chunk = decoder.decode(value);
-        for (const line of chunk.split('\n')) {
+        for (const line of decoder.decode(value).split('\n')) {
           if (!line.startsWith('data: ')) continue;
           try {
             const data = JSON.parse(line.slice(6));
@@ -285,10 +250,10 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
           } catch {}
         }
       }
-      const viewMatch2 = accumulated.match(/```json:view\s*([\s\S]*?)```/);
-      if (viewMatch2) {
+      const viewMatch = accumulated.match(/```json:view\s*([\s\S]*?)```/);
+      if (viewMatch) {
         try {
-          const viewData = JSON.parse(viewMatch2[1].trim());
+          const viewData = JSON.parse(viewMatch[1].trim());
           if (viewData.viewType) useChatStore.getState().setRequestedView(viewData);
         } catch { /* skip */ }
       }
@@ -304,47 +269,29 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
     }
   }, [isStreaming, addMessage, updateMessage, setStreaming]);
 
-  // Expose sendMessage to parent via ref
-  useImperativeHandle(ref, () => ({
-    sendMessage: (text: string) => sendWithText(text),
-  }), [sendWithText]);
+  useImperativeHandle(ref, () => ({ sendMessage: (text: string) => sendWithText(text) }), [sendWithText]);
 
   const handleFile = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    e.target.value = ''; // reset
+    e.target.value = '';
 
     const isImage = file.type.startsWith('image/');
     const isPDF = file.type === 'application/pdf';
-    const isYoutube = false; // youtube is text input, not file
 
     if (isImage) {
-      // Show preview + send to OCR
       const preview = URL.createObjectURL(file);
-      addMessage({
-        id: `u-${Date.now()}`,
-        role: 'user',
-        content: `[이미지: ${file.name}]`,
-        createdAt: new Date(),
-        imagePreview: preview,
-      });
-
+      addMessage({ id: `u-${Date.now()}`, role: 'user', content: `[이미지: ${file.name}]`, createdAt: new Date(), imagePreview: preview });
       const assistantId = `a-${Date.now()}`;
       addMessage({ id: assistantId, role: 'assistant', content: '이미지를 분석하고 있어요...', createdAt: new Date(), streaming: true });
       setStreaming(true);
-
       try {
         const formData = new FormData();
         formData.append('file', file);
         const res = await fetch('/api/ocr', { method: 'POST', body: formData });
         const data = await res.json();
-
         if (data.text) {
-          updateMessage(assistantId, {
-            content: data.text,
-            streaming: false,
-            ocrResult: { text: data.text, imageType: data.imageType || 'general' },
-          });
+          updateMessage(assistantId, { content: data.text, streaming: false, ocrResult: { text: data.text, imageType: data.imageType || 'general' } });
         } else {
           updateMessage(assistantId, { content: '이미지에서 텍스트를 추출하지 못했어요.', streaming: false });
         }
@@ -354,34 +301,19 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
         setStreaming(false);
       }
     } else if (isPDF || file.name.match(/\.(docx?|xlsx?|pptx?|hwp|hwpx|txt|md)$/i)) {
-      // File upload
-      addMessage({
-        id: `u-${Date.now()}`,
-        role: 'user',
-        content: `[파일: ${file.name}]`,
-        createdAt: new Date(),
-      });
-
+      addMessage({ id: `u-${Date.now()}`, role: 'user', content: `[파일: ${file.name}]`, createdAt: new Date() });
       const assistantId = `a-${Date.now()}`;
       addMessage({ id: assistantId, role: 'assistant', content: '파일을 분석하고 있어요...', createdAt: new Date(), streaming: true });
       setStreaming(true);
-
       try {
         const formData = new FormData();
         formData.append('file', file);
         const res = await fetch('/api/upload', { method: 'POST', body: formData });
         const data = await res.json();
-
         updateMessage(assistantId, {
           content: data.summary || `${file.name}을 구조화했어요.`,
           streaming: false,
-          fileResult: {
-            fileType: data.fileType || 'text',
-            fileName: file.name,
-            pageCount: data.pageCount,
-            textContent: data.textContent,
-            nodeId: data.nodeId,
-          },
+          fileResult: { fileType: data.fileType || 'text', fileName: file.name, pageCount: data.pageCount, textContent: data.textContent, nodeId: data.nodeId },
         });
       } catch {
         updateMessage(assistantId, { content: '파일 분석에 실패했어요.', streaming: false });
@@ -398,7 +330,6 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
     const val = e.target.value;
     setInput(val);
 
-    // 긴 텍스트 감지 (붙여넣기 등)
     if (val.length > LONG_TEXT_THRESHOLD && !longTextCollapsed) {
       setLongTextCollapsed(true);
     } else if (val.length <= LONG_TEXT_THRESHOLD && longTextCollapsed) {
@@ -408,7 +339,6 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
     const lineCount = Math.min(val.split('\n').length, 6);
     setRows(Math.max(1, lineCount));
 
-    // 실시간 유튜브 URL 감지
     const ytMatch = val.match(YOUTUBE_REGEX);
     if (ytMatch) {
       setYtPreview({ videoId: ytMatch[1], url: ytMatch[0] });
@@ -426,41 +356,29 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-      {/* YouTube preview (realtime) */}
+      {/* YouTube preview */}
       {ytPreview && (
-        <div style={{
-          marginBottom: 8, borderRadius: 'var(--ou-radius-md)', overflow: 'hidden',
-          background: 'var(--ou-bg)',
-          boxShadow: 'var(--ou-neu-raised-sm)',
-          animation: 'ou-fade-in 0.2s ease',
-        }}>
+        <NeuCard variant="raised" size="sm" style={{ marginBottom: 8, padding: 0, overflow: 'hidden', animation: 'ou-fade-in 0.2s ease' }}>
           <div style={{ position: 'relative', width: '100%', paddingTop: '56.25%' }}>
             <iframe
               src={`https://www.youtube.com/embed/${ytPreview.videoId}?rel=0`}
-              style={{
-                position: 'absolute', top: 0, left: 0,
-                width: '100%', height: '100%', border: 'none',
-              }}
+              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
             />
           </div>
-          <div style={{
-            padding: '8px 12px',
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          }}>
-            <span style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>
-              엔터를 누르면 영상을 분석합니다
-            </span>
-            <button
+          <div style={{ padding: '8px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>엔터를 누르면 영상을 분석합니다</span>
+            <NeuButton
+              variant="ghost"
+              size="sm"
               onClick={() => { setYtPreview(null); setInput(input.replace(YOUTUBE_REGEX, '').trim()); }}
-              style={{
-                fontSize: 11, color: 'var(--ou-text-disabled)',
-                cursor: 'pointer', padding: '2px 6px',
-              }}
-            >✕</button>
+              style={{ padding: '2px 6px', fontSize: 11 }}
+            >
+              ✕
+            </NeuButton>
           </div>
-        </div>
+        </NeuCard>
       )}
 
       {/* Hidden file input */}
@@ -472,34 +390,77 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
         style={{ display: 'none' }}
       />
 
-      {/* Input bar — neumorphism raised card */}
-      <div style={{
-        background: 'var(--ou-bg)',
-        borderRadius: 'var(--ou-radius-lg)',
-        boxShadow: 'var(--ou-neu-raised-md)',
-        padding: '16px 20px 12px',
-        display: 'flex', flexDirection: 'column',
-        transition: 'all var(--ou-transition)',
-      }}>
-        {/* Textarea or collapsed long text */}
+      {/* Long text editor modal */}
+      <NeuModal
+        open={longTextEditorOpen}
+        onClose={() => setLongTextEditorOpen(false)}
+        title={`입력 내용 수정 · ${input.length.toLocaleString()}자`}
+        maxWidth={600}
+      >
+        <textarea
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          style={{
+            width: '100%',
+            border: 'none',
+            outline: 'none',
+            background: 'var(--ou-bg)',
+            boxShadow: 'var(--ou-neu-pressed-sm)',
+            borderRadius: 'var(--ou-radius-sm)',
+            padding: 14,
+            color: 'var(--ou-text-strong)',
+            fontSize: 14,
+            lineHeight: 1.7,
+            resize: 'vertical',
+            fontFamily: 'inherit',
+            minHeight: 200,
+            boxSizing: 'border-box',
+          }}
+        />
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 12 }}>
+          <NeuButton
+            variant="ghost"
+            size="sm"
+            onClick={() => { setInput(''); setLongTextCollapsed(false); setLongTextEditorOpen(false); }}
+          >
+            삭제
+          </NeuButton>
+          <NeuButton variant="default" size="sm" onClick={() => setLongTextEditorOpen(false)}>
+            확인
+          </NeuButton>
+        </div>
+      </NeuModal>
+
+      {/* Input bar */}
+      <div
+        style={{
+          background: 'var(--ou-bg)',
+          borderRadius: 'var(--ou-radius-lg)',
+          boxShadow: 'var(--ou-neu-raised-md)',
+          padding: '16px 20px 12px',
+          display: 'flex',
+          flexDirection: 'column',
+          transition: 'all var(--ou-transition)',
+        }}
+      >
         {longTextCollapsed ? (
           <div
             onClick={() => setLongTextEditorOpen(true)}
-            style={{
-              width: '100%', minHeight: 40, cursor: 'pointer',
-              display: 'flex', alignItems: 'center', gap: 8,
-              padding: '4px 0',
-            }}
+            style={{ width: '100%', minHeight: 40, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0' }}
           >
-            <span style={{
-              padding: '6px 14px',
-              borderRadius: 'var(--ou-radius-sm)',
-              background: 'var(--ou-bg)',
-              boxShadow: 'var(--ou-neu-pressed-sm)',
-              fontSize: 13,
-              color: 'var(--ou-text-secondary)',
-              display: 'inline-flex', alignItems: 'center', gap: 6,
-            }}>
+            <span
+              style={{
+                padding: '6px 14px',
+                borderRadius: 'var(--ou-radius-sm)',
+                background: 'var(--ou-bg)',
+                boxShadow: 'var(--ou-neu-pressed-sm)',
+                fontSize: 13,
+                color: 'var(--ou-text-secondary)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+              }}
+            >
               <span style={{ fontSize: 14 }}>📄</span>
               문서가 입력되었습니다. {input.length.toLocaleString()}자
             </span>
@@ -515,117 +476,63 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
             placeholder="Just talk..."
             disabled={isStreaming}
             style={{
-              width: '100%', border: 'none', outline: 'none',
+              width: '100%',
+              border: 'none',
+              outline: 'none',
               background: 'transparent',
               color: 'var(--ou-text-strong)',
-              fontSize: 16, lineHeight: 1.6,
-              resize: 'none', fontFamily: 'inherit',
+              fontSize: 16,
+              lineHeight: 1.6,
+              resize: 'none',
+              fontFamily: 'inherit',
               minHeight: 40,
             }}
           />
         )}
 
-        {/* Long text editor modal */}
-        {longTextEditorOpen && (
-          <div style={{
-            position: 'fixed', inset: 0, zIndex: 9999,
-            background: 'rgba(0,0,0,0.3)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }} onClick={(e) => { if (e.target === e.currentTarget) setLongTextEditorOpen(false); }}>
-            <div style={{
-              width: '90%', maxWidth: 600, maxHeight: '70vh',
-              background: 'var(--ou-bg)',
-              borderRadius: 'var(--ou-radius-lg)',
-              boxShadow: 'var(--ou-neu-raised-lg)',
-              padding: 24,
-              display: 'flex', flexDirection: 'column',
-              resize: 'both', overflow: 'auto',
-              minWidth: 300, minHeight: 200,
-            }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ou-text-muted)', letterSpacing: 1 }}>
-                  입력 내용 수정 · {input.length.toLocaleString()}자
-                </span>
-                <button
-                  onClick={() => setLongTextEditorOpen(false)}
-                  style={{ fontSize: 18, color: 'var(--ou-text-muted)', cursor: 'pointer', lineHeight: 1 }}
-                >×</button>
-              </div>
-              <textarea
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                style={{
-                  flex: 1, width: '100%', border: 'none', outline: 'none',
-                  background: 'var(--ou-bg)',
-                  boxShadow: 'var(--ou-neu-pressed-sm)',
-                  borderRadius: 'var(--ou-radius-sm)',
-                  padding: 14,
-                  color: 'var(--ou-text-strong)',
-                  fontSize: 14, lineHeight: 1.7,
-                  resize: 'none', fontFamily: 'inherit',
-                  minHeight: 150,
-                }}
-              />
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 12 }}>
-                <button
-                  onClick={() => { setInput(''); setLongTextCollapsed(false); setLongTextEditorOpen(false); }}
-                  style={{
-                    padding: '8px 16px', borderRadius: 'var(--ou-radius-pill)',
-                    background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-raised-sm)',
-                    fontSize: 12, color: 'var(--ou-text-secondary)', cursor: 'pointer',
-                  }}
-                >삭제</button>
-                <button
-                  onClick={() => setLongTextEditorOpen(false)}
-                  style={{
-                    padding: '8px 16px', borderRadius: 'var(--ou-radius-pill)',
-                    background: 'linear-gradient(135deg, var(--ou-accent), var(--ou-accent-secondary, var(--ou-accent)))',
-                    boxShadow: 'var(--ou-neu-raised-sm)',
-                    fontSize: 12, color: '#fff', cursor: 'pointer',
-                  }}
-                >확인</button>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Bottom toolbar */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingTop: 10 }}>
-          {/* Attach button */}
           <button
             onClick={() => fileRef.current?.click()}
             disabled={isStreaming}
             style={{
-              width: 32, height: 32,
+              width: 32,
+              height: 32,
               borderRadius: '50%',
               background: 'var(--ou-bg)',
               boxShadow: 'var(--ou-neu-raised-sm)',
               border: 'none',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
               flexShrink: 0,
               opacity: isStreaming ? 0.3 : 1,
               cursor: isStreaming ? 'not-allowed' : 'pointer',
               transition: 'all var(--ou-transition)',
-              fontSize: 18, fontWeight: 300, color: 'var(--ou-text-secondary)',
+              fontSize: 18,
+              fontWeight: 300,
+              color: 'var(--ou-text-secondary)',
             }}
-          >+</button>
+          >
+            +
+          </button>
 
           <span style={{ flex: 1 }} />
 
-          {/* Send button */}
           <button
             onClick={send}
             disabled={!input.trim() || isStreaming}
             style={{
-              width: 36, height: 36,
+              width: 36,
+              height: 36,
               borderRadius: '50%',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
               background: input.trim() && !isStreaming
                 ? 'linear-gradient(135deg, var(--ou-accent), var(--ou-accent-secondary))'
                 : 'var(--ou-bg)',
-              boxShadow: input.trim() && !isStreaming
-                ? 'var(--ou-neu-raised-sm)'
-                : 'var(--ou-neu-raised-xs)',
+              boxShadow: input.trim() && !isStreaming ? 'var(--ou-neu-raised-sm)' : 'var(--ou-neu-raised-xs)',
               border: 'none',
               transition: 'all var(--ou-transition)',
               flexShrink: 0,
@@ -633,9 +540,13 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
             }}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-              <path d="M5 12h14M12 5l7 7-7 7"
+              <path
+                d="M5 12h14M12 5l7 7-7 7"
                 stroke={input.trim() && !isStreaming ? '#fff' : 'var(--ou-text-disabled)'}
-                strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
           </button>
         </div>

@@ -77,7 +77,7 @@ function DotSphere() {
         projected.sort((a, b) => a.z - b.z);
         for (const p of projected) {
           gfx.circle(p.sx, p.sy, p.size);
-          gfx.fill({ color: 0xaaaaaa, alpha: p.alpha });
+          gfx.fill({ color: 0x444444, alpha: p.alpha });
         }
         animId = requestAnimationFrame(animate);
       };
@@ -106,7 +106,7 @@ export function LandingDemo() {
     <div style={{
       height: '100dvh',
       overflow: 'hidden',
-      background: '#060810',
+      background: 'var(--ou-bg)',
       display: 'flex',
       flexDirection: 'row',
       fontFamily: "'Pretendard Variable', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
@@ -130,12 +130,12 @@ export function LandingDemo() {
       }}>
         {/* 로고 + 브랜딩 — 너비 통일 */}
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: 240 }}>
-          <span style={{ fontFamily: "var(--font-orbitron, 'Orbitron'), sans-serif", fontSize: 48, fontWeight: 700, color: 'var(--ou-text-bright)', textShadow: '0 0 40px rgba(255,255,255,0.15)' }}>OU</span>
+          <span style={{ fontFamily: "var(--font-orbitron, 'Orbitron'), sans-serif", fontSize: 48, fontWeight: 700, color: 'var(--ou-text-bright)' }}>OU</span>
           <div style={{
             fontFamily: "var(--font-orbitron, 'Orbitron'), sans-serif",
             fontSize: 9,
             fontWeight: 700,
-            color: 'rgba(255,255,255,0.35)',
+            color: 'var(--ou-text-muted)',
             letterSpacing: '6px',
             textTransform: 'uppercase' as const,
             marginTop: 12,
@@ -147,7 +147,7 @@ export function LandingDemo() {
         </div>
         <div style={{
           fontSize: 12,
-          color: 'rgba(255,255,255,0.3)',
+          color: 'var(--ou-text-muted)',
           letterSpacing: '2px',
           marginTop: 4,
           width: 240,
@@ -166,21 +166,21 @@ export function LandingDemo() {
             padding: '14px 48px',
             width: 240,
             borderRadius: 999,
-            border: '1px solid rgba(255,255,255,0.8)',
+            border: '1px solid var(--ou-text-strong)',
             background: 'transparent',
-            color: '#fff',
+            color: 'var(--ou-text-bright)',
             cursor: 'pointer',
             fontFamily: 'inherit',
-            boxShadow: '0 0 20px 4px rgba(255,255,255,0.08), 0 0 40px 8px rgba(255,255,255,0.04)',
+            boxShadow: 'var(--ou-neu-raised-sm)',
             transition: 'all 200ms',
           }}
           onMouseEnter={e => {
-            e.currentTarget.style.boxShadow = '0 0 24px 6px rgba(255,255,255,0.15), 0 0 48px 12px rgba(255,255,255,0.06)';
-            e.currentTarget.style.borderColor = '#fff';
+            e.currentTarget.style.boxShadow = 'var(--ou-neu-raised-md)';
+            e.currentTarget.style.borderColor = 'var(--ou-text-bright)';
           }}
           onMouseLeave={e => {
-            e.currentTarget.style.boxShadow = '0 0 20px 4px rgba(255,255,255,0.08), 0 0 40px 8px rgba(255,255,255,0.04)';
-            e.currentTarget.style.borderColor = 'rgba(255,255,255,0.8)';
+            e.currentTarget.style.boxShadow = 'var(--ou-neu-raised-sm)';
+            e.currentTarget.style.borderColor = 'var(--ou-text-strong)';
           }}
         >
           Try it
@@ -192,24 +192,24 @@ export function LandingDemo() {
             onClick={() => router.push('/login')}
             style={{
               background: 'none', border: 'none', cursor: 'pointer',
-              fontSize: 13, color: 'rgba(255,255,255,0.4)', fontFamily: 'inherit',
+              fontSize: 13, color: 'var(--ou-text-secondary)', fontFamily: 'inherit',
               padding: '4px 12px', transition: 'color 150ms',
             }}
-            onMouseEnter={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.8)'; }}
-            onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.4)'; }}
+            onMouseEnter={e => { e.currentTarget.style.color = 'var(--ou-text-strong)'; }}
+            onMouseLeave={e => { e.currentTarget.style.color = 'var(--ou-text-secondary)'; }}
           >
             Log in
           </button>
-          <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: 13 }}>|</span>
+          <span style={{ color: 'var(--ou-text-disabled)', fontSize: 13 }}>|</span>
           <button
             onClick={() => router.push('/login?signup=true')}
             style={{
               background: 'none', border: 'none', cursor: 'pointer',
-              fontSize: 13, color: 'rgba(255,255,255,0.4)', fontFamily: 'inherit',
+              fontSize: 13, color: 'var(--ou-text-secondary)', fontFamily: 'inherit',
               padding: '4px 12px', transition: 'color 150ms',
             }}
-            onMouseEnter={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.8)'; }}
-            onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.4)'; }}
+            onMouseEnter={e => { e.currentTarget.style.color = 'var(--ou-text-strong)'; }}
+            onMouseLeave={e => { e.currentTarget.style.color = 'var(--ou-text-secondary)'; }}
           >
             Sign up
           </button>
@@ -219,7 +219,7 @@ export function LandingDemo() {
       {/* 하단 ouuniverse.com */}
       <div style={{
         position: 'absolute', bottom: 16, left: '50%', transform: 'translateX(-50%)',
-        fontSize: 11, color: 'rgba(255,255,255,0.12)', letterSpacing: '1px',
+        fontSize: 11, color: 'var(--ou-text-disabled)', letterSpacing: '1px',
       }}>
         ouuniverse.com
       </div>

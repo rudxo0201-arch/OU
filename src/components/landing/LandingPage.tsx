@@ -48,13 +48,13 @@ export function LandingPage() {
           {/* 로고 + 브랜드 그룹 */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
             <img
-              src="/logo-ou-white.svg"
+              src="/logo-ou.svg"
               alt="OU"
-              style={{ height: 86, filter: 'drop-shadow(0 0 20px rgba(255,255,255,0.3)) drop-shadow(0 0 40px rgba(255,255,255,0.15))' }}
+              style={{ height: 60 }}
             />
             <span style={{
               fontFamily: "var(--font-orbitron, 'Orbitron')",
-              fontSize: 13, color: 'rgba(255,255,255,0.5)',
+              fontSize: 13, color: 'var(--ou-text-secondary)',
               letterSpacing: 5,
             }}>
               own universe
@@ -66,13 +66,13 @@ export function LandingPage() {
             <h1 style={{
               fontFamily: "var(--font-orbitron, 'Orbitron')",
               fontSize: 38, fontWeight: 600,
-              color: 'rgba(255,255,255,0.95)',
+              color: 'var(--ou-text-bright)',
               margin: 0,
             }}>
               Just talk.
             </h1>
             <p style={{
-              fontSize: 17, color: 'rgba(255,255,255,0.35)',
+              fontSize: 17, color: 'var(--ou-text-muted)',
               margin: 0,
             }}>
               대화로 만드는 나만의 우주
@@ -86,9 +86,9 @@ export function LandingPage() {
               style={{
                 fontFamily: "var(--font-orbitron, 'Orbitron')",
                 padding: '14px 43px', borderRadius: 999,
-                border: '1px solid rgba(255,255,255,0.25)',
+                border: '1px solid var(--ou-border-muted)',
                 background: 'transparent',
-                color: 'rgba(255,255,255,0.7)', fontSize: 17, fontWeight: 500,
+                color: 'var(--ou-text-body)', fontSize: 17, fontWeight: 500,
                 cursor: 'pointer',
               }}
             >
@@ -99,8 +99,8 @@ export function LandingPage() {
               style={{
                 fontFamily: "var(--font-orbitron, 'Orbitron')",
                 padding: '14px 43px', borderRadius: 999,
-                background: 'rgba(255,255,255,0.9)',
-                color: '#111', fontSize: 17, fontWeight: 500,
+                background: 'var(--ou-text-strong)',
+                color: 'var(--ou-bg)', fontSize: 17, fontWeight: 500,
                 cursor: 'pointer',
               }}
             >
@@ -114,16 +114,15 @@ export function LandingPage() {
       {loading && (
         <div style={{
           position: 'fixed', inset: 0, zIndex: 9999,
-          background: '#060810',
+          background: 'var(--ou-bg)',
           display: 'flex', flexDirection: 'column',
           alignItems: 'center', justifyContent: 'center', gap: 24,
         }}>
           <img
-            src="/logo-ou-white.svg"
+            src="/logo-ou.svg"
             alt="OU"
             style={{
               height: 48,
-              filter: 'drop-shadow(0 0 20px rgba(255,255,255,0.3))',
               animation: 'pulse 1.5s ease-in-out infinite',
             }}
           />

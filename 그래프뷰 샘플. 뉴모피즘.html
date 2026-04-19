@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>Sigma.js Gravity White Universe</title>
+  <style>
+    body { margin: 0; padding: 0; overflow: hidden; background-color: #f0f2f5; }
+    #sigma-container { width: 100vw; height: 100vh; }
+    .ui-header {
+      position: absolute; top: 20px; left: 20px; z-index: 10;
+      background: rgba(240, 242, 245, 0.8); padding: 10px 20px;
+      border-radius: 12px; box-shadow: 4px 4px 8px #d1d9e6, -4px -4px 8px #ffffff;
+      color: #64748b; font-family: sans-serif; font-size: 14px;
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/graphology/0.25.1/graphology.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sigma.js/2.4.0/sigma.min.js"></script>
+</head>
+<body>
+
+  <div class="ui-header">GRAVITY WHITE UNIVERSE (SIGMA.JS)</div>
+  <div id="sigma-container"></div>
+
+  <script>
+    const container = document.getElementById("sigma-container");
+    const graph = new graphology.Graph();
+
+    // 1. 대규모 노드 생성 (중력장 디자인)
+    const NODE_COUNT = 1000; // 우선 1000개로 테스트
+    for (let i = 0; i < NODE_COUNT; i++) {
+      graph.addNode(`n${i}`, {
+        x: Math.random() * 100,
+        y: Math.random() * 100,
+        size: Math.random() * 5 + 2,
+        label: `별 #${i}`,
+        // 배경색과 동일하게 (뉴모피즘의 기초)
+        color: "#f0f2f5",
+      });
+    }
+
+    // 2. 무작위 연결
+    for (let i = 0; i < 1500; i++) {
+      const s = `n${Math.floor(Math.random() * NODE_COUNT)}`;
+      const t = `n${Math.floor(Math.random() * NODE_COUNT)}`;
+      if (s !== t && !graph.hasEdge(s, t)) graph.addEdge(s, t);
+    }
+
+    // 3. 시그마 렌더러 설정
+    const renderer = new Sigma(graph, container, {
+      defaultEdgeColor: "rgba(0, 0, 0, 0.05)",
+      labelColor: { color: "#94a3b8" },
+      labelSize: 10,
+      renderLabels: false, // 성능을 위해 라벨 초기 해제
+    });
+
+    // 4. [중요] 중력 디자인 트릭
+    // Sigma WebGL 환경에서 '천을 누르는 느낌'을 시뮬레이션하기 위해 
+    // 노드 렌더링 시점에 미세한 그림자 효과가 적용된 것처럼 보이게 함
+    // (완전한 셰이더 구현 전 단계의 시각적 조정)
+    renderer.on("afterRender", () => {
+      // 여기에 추가적인 Canvas 오버레이 효과를 넣을 수 있으나 
+      // 노드 수가 많을 땐 WebGL 설정이 필수입니다.
+    });
+
+  </script>
+</body>
+</html>

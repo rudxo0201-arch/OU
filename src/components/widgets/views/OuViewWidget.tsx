@@ -10,7 +10,6 @@ export function OuViewWidget() {
     if (text) {
       useChatStore.getState().setPendingMessage(text);
     }
-    // 커스텀 이벤트로 /my에 알림 → OrbFullscreen 열기
     window.dispatchEvent(new CustomEvent('orb-expand'));
   }, []);
 
@@ -28,47 +27,45 @@ export function OuViewWidget() {
       width: '100%', height: '100%',
       display: 'flex', alignItems: 'center',
       justifyContent: 'center',
-      gap: 10,
-      padding: '0 4px',
+      padding: '0 16px',
     }}>
-      {/* OU Logo — inline left */}
-      <img src="/logo-ou-white.svg" alt="OU" style={{
-        height: 24,
-        filter: 'drop-shadow(0 0 6px rgba(255,255,255,0.08))',
-        opacity: 0.4,
-        flexShrink: 0,
-      }} />
-
-      {/* Orb input bar */}
-      <div
-        onClick={() => !input.trim() && openOrb()}
-        style={{
-          flex: 1,
-          display: 'flex', alignItems: 'center',
-          padding: '8px 16px',
-          borderRadius: 999,
-          border: '1.5px solid rgba(255,255,255,0.7)',
-          background: 'transparent',
-          boxShadow: '0 0 12px rgba(255,255,255,0.06)',
-          cursor: 'text',
-        }}
-      >
+      {/* Orb 입력 — pressed (안쪽으로 들어간 입력창) */}
+      <div style={{
+        width: '100%',
+        background: 'var(--ou-bg)',
+        borderRadius: 'var(--ou-radius-lg)',
+        boxShadow: 'var(--ou-neu-pressed-md)',
+        padding: '16px 20px 12px',
+        display: 'flex',
+        flexDirection: 'column',
+      }}>
         <input
           value={input}
           onChange={e => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="무엇이든 말해보세요"
+          placeholder="Just talk..."
           style={{
-            flex: 1, border: 'none', outline: 'none',
+            width: '100%', border: 'none', outline: 'none',
             background: 'transparent',
-            color: 'rgba(255,255,255,0.85)',
-            fontSize: 14, fontFamily: 'inherit',
+            color: 'var(--ou-text-strong)',
+            fontSize: 16, fontFamily: 'inherit',
           }}
         />
-        <span style={{
-          fontSize: 10, color: 'rgba(255,255,255,0.15)',
-          fontFamily: 'monospace', flexShrink: 0,
-        }}>⌘K</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, paddingTop: 10 }}>
+          <div style={{
+            width: 28, height: 28, borderRadius: '50%',
+            background: 'var(--ou-bg)',
+            boxShadow: 'var(--ou-neu-raised-xs)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 16, fontWeight: 300, color: 'var(--ou-text-secondary)',
+            cursor: 'pointer',
+          }}>+</div>
+          <span style={{ flex: 1 }} />
+          <span style={{
+            fontSize: 10, color: 'var(--ou-text-disabled)',
+            fontFamily: 'var(--ou-font-mono)',
+          }}>&#8984;K</span>
+        </div>
       </div>
     </div>
   );

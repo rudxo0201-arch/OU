@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="light" data-palette="sunrise">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OU Design System — Neumorphism v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css" rel="stylesheet">
+<style>
+/* ========================================================================
+   OU NEUMORPHISM DESIGN SYSTEM v2
+   ======================================================================== */
+
+/* --- Accent Palettes (6종) --- */
+[data-palette="sunrise"] { --palette-primary: #e8976b; --palette-secondary: #f5c16c; }
+[data-palette="arctic"]  { --palette-primary: #6b9de8; --palette-secondary: #6bcbdb; }
+[data-palette="blossom"] { --palette-primary: #d4849a; --palette-secondary: #e8a4b8; }
+[data-palette="forest"]  { --palette-primary: #6bc49a; --palette-secondary: #a4d4a8; }
+[data-palette="dusk"]    { --palette-primary: #8b7ec8; --palette-secondary: #b4a8e8; }
+[data-palette="stone"]   { --palette-primary: #9a9a9a; --palette-secondary: #b8b8b8; }
+
+/* --- Light Mode --- */
+:root, [data-theme="light"] {
+  --ou-bg: #e8ecf1;
+  --ou-bg-alt: #dde1e8;
+  --ou-shadow-dark: rgba(163,177,198,0.6);
+  --ou-shadow-light: rgba(255,255,255,0.6);
+  --ou-text-disabled: rgba(0,0,0,0.18);
+  --ou-text-muted: rgba(0,0,0,0.32);
+  --ou-text-secondary: rgba(0,0,0,0.48);
+  --ou-text-body: rgba(0,0,0,0.58);
+  --ou-text-strong: rgba(0,0,0,0.76);
+  --ou-text-heading: rgba(0,0,0,0.88);
+  --ou-border-subtle: rgba(0,0,0,0.05);
+  --ou-logo-fill: rgba(0,0,0,0.8);
+}
+
+/* --- Dark Mode --- */
+[data-theme="dark"] {
+  --ou-bg: #2a2d3e;
+  --ou-bg-alt: #232636;
+  --ou-shadow-dark: rgba(0,0,0,0.55);
+  --ou-shadow-light: rgba(255,255,255,0.04);
+  --ou-text-disabled: rgba(255,255,255,0.18);
+  --ou-text-muted: rgba(255,255,255,0.32);
+  --ou-text-secondary: rgba(255,255,255,0.52);
+  --ou-text-body: rgba(255,255,255,0.64);
+  --ou-text-strong: rgba(255,255,255,0.86);
+  --ou-text-heading: rgba(255,255,255,0.92);
+  --ou-border-subtle: rgba(255,255,255,0.05);
+  --ou-logo-fill: rgba(255,255,255,0.9);
+}
+
+/* --- Shadows --- */
+:root {
+  --ou-neu-raised-xs: 2px 2px 4px var(--ou-shadow-dark), -2px -2px 4px var(--ou-shadow-light);
+  --ou-neu-raised-sm: 3px 3px 6px var(--ou-shadow-dark), -3px -3px 6px var(--ou-shadow-light);
+  --ou-neu-raised-md: 6px 6px 12px var(--ou-shadow-dark), -6px -6px 12px var(--ou-shadow-light);
+  --ou-neu-raised-lg: 10px 10px 20px var(--ou-shadow-dark), -10px -10px 20px var(--ou-shadow-light);
+  --ou-neu-pressed-sm: inset 2px 2px 5px var(--ou-shadow-dark), inset -2px -2px 5px var(--ou-shadow-light);
+  --ou-neu-pressed-md: inset 4px 4px 8px var(--ou-shadow-dark), inset -4px -4px 8px var(--ou-shadow-light);
+  --ou-accent: var(--palette-primary, #e8976b);
+  --ou-accent2: var(--palette-secondary, #f5c16c);
+  --ou-radius-pill: 999px;
+  --ou-radius-lg: 20px;
+  --ou-radius-md: 12px;
+  --ou-radius-sm: 8px;
+  --ou-radius-xs: 4px;
+  --ou-t: 200ms ease;
+  --ou-font-logo: 'Orbitron', sans-serif;
+  --ou-font-display: 'DM Sans', sans-serif;
+  --ou-font-body: 'Pretendard Variable', 'DM Sans', -apple-system, system-ui, sans-serif;
+  --ou-font-mono: 'JetBrains Mono', monospace;
+}
+
+/* ======== RESET ======== */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--ou-font-body);background:var(--ou-bg);color:var(--ou-text-body);min-height:100vh;transition:background .4s,color .3s;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,textarea{font-family:inherit;color:inherit;background:transparent;outline:none;border:none}
+
+/* ======== LAYOUT ======== */
+.page{max-width:1200px;margin:0 auto;padding:0 32px 100px}
+.section{margin-bottom:72px}
+.section-title{font-size:10px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--ou-text-muted);margin-bottom:24px;display:flex;align-items:center;gap:12px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--ou-text-disabled)}
+.grid{display:grid;gap:20px}
+.g2{grid-template-columns:1fr 1fr}
+.g3{grid-template-columns:1fr 1fr 1fr}
+.g4{grid-template-columns:1fr 1fr 1fr 1fr}
+.g6{grid-template-columns:repeat(6,1fr)}
+@media(max-width:900px){.g2,.g3,.g4,.g6{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.g2,.g3,.g4,.g6{grid-template-columns:1fr}}
+
+/* ======== HEADER ======== */
+.header{text-align:center;padding:64px 24px 20px}
+.logo-svg{height:28px;margin-bottom:12px}
+.logo-svg path,.logo-svg circle{fill:var(--ou-logo-fill);transition:fill .3s}
+.header-sub{font-family:var(--ou-font-logo);font-size:10px;letter-spacing:6px;color:var(--ou-text-muted);text-transform:uppercase}
+
+/* ======== CONTROLS BAR ======== */
+.controls-bar{display:flex;justify-content:center;align-items:center;gap:24px;padding:24px;margin-bottom:48px;flex-wrap:wrap}
+.theme-btn{padding:8px 20px;border-radius:var(--ou-radius-pill);font-size:12px;font-weight:600;letter-spacing:1px;background:var(--ou-bg);box-shadow:var(--ou-neu-raised-sm);color:var(--ou-text-secondary);transition:all var(--ou-t)}
+.theme-btn:active,.theme-btn.on{box-shadow:var(--ou-neu-pressed-sm);color:var(--ou-accent)}
+.palette-dots{display:flex;gap:10px}
+.pdot{width:28px;height:28px;border-radius:50%;box-shadow:var(--ou-neu-raised-sm);transition:all var(--ou-t);position:relative}
+.pdot:active,.pdot.on{box-shadow:var(--ou-neu-pressed-sm);transform:scale(.88)}
+.pdot.on::after{content:'';position:absolute;inset:-3px;border-radius:50%;border:2px solid var(--ou-accent)}
+.pdot[data-p="sunrise"]{background:#e8976b}
+.pdot[data-p="arctic"]{background:#6b9de8}
+.pdot[data-p="blossom"]{background:#d4849a}
+.pdot[data-p="forest"]{background:#6bc49a}
+.pdot[data-p="dusk"]{background:#8b7ec8}
+.pdot[data-p="stone"]{background:#9a9a9a}
+
+/* ======== SHADOWS DEMO ======== */
+.shadow-box{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:36px 20px;border-radius:var(--ou-radius-md);background:var(--ou-bg);transition:all var(--ou-t)}
+.shadow-box .lbl{font-size:10px;font-weight:600;color:var(--ou-text-muted);letter-spacing:1px}
+.s-flat{box-shadow:none}
+.s-xs{box-shadow:var(--ou-neu-raised-xs)}
+.s-sm{box-shadow:var(--ou-neu-raised-sm)}
+.s-md{box-shadow:var(--ou-neu-raised-md)}
+.s-lg{box-shadow:var(--ou-neu-raised-lg)}
+.s-pi{box-shadow:var(--ou-neu-pressed-sm)}
+.s-pm{box-shadow:var(--ou-neu-pressed-md)}
+
+/* ======== BUTTONS ======== */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 28px;border-radius:var(--ou-radius-pill);font-size:13px;font-weight:600;background:var(--ou-bg);color:var(--ou-text-strong);box-shadow:var(--ou-neu-raised-md);transition:all var(--ou-t)}
+.btn:hover{box-shadow:var(--ou-neu-raised-lg)}
+.btn:active{box-shadow:var(--ou-neu-pressed-md)}
+.btn-accent{background:linear-gradient(135deg,var(--ou-accent),var(--ou-accent2));color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.15)}
+.btn-accent:hover{box-shadow:var(--ou-neu-raised-lg),0 0 20px 4px color-mix(in srgb,var(--ou-accent) 35%,transparent)}
+.btn-sm{padding:8px 18px;font-size:11px;box-shadow:var(--ou-neu-raised-sm)}
+.btn-sm:hover{box-shadow:var(--ou-neu-raised-md)}
+.btn-sm:active{box-shadow:var(--ou-neu-pressed-sm)}
+.btn-icon{width:44px;height:44px;padding:0;border-radius:50%;font-size:18px}
+.btn-ghost{box-shadow:none;color:var(--ou-text-secondary)}
+.btn-ghost:hover{box-shadow:var(--ou-neu-raised-sm)}
+.btn-disabled{opacity:.4;cursor:not-allowed;box-shadow:var(--ou-neu-raised-xs)}
+.btn-disabled:hover{box-shadow:var(--ou-neu-raised-xs)}
+.btn-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+
+/* ======== CARDS ======== */
+.card{background:var(--ou-bg);border-radius:var(--ou-radius-md);box-shadow:var(--ou-neu-raised-md);padding:24px;transition:all var(--ou-t)}
+.card:hover{box-shadow:var(--ou-neu-raised-lg)}
+.card-pressed{box-shadow:var(--ou-neu-pressed-md)}
+.card-pressed:hover{box-shadow:var(--ou-neu-pressed-md)}
+.card-glow:hover{box-shadow:var(--ou-neu-raised-lg),0 0 24px 6px color-mix(in srgb,var(--ou-accent) 22%,transparent)}
+.card-title{font-family:var(--ou-font-display);font-size:15px;font-weight:600;color:var(--ou-text-heading);margin-bottom:6px}
+.card-desc{font-size:13px;color:var(--ou-text-secondary);line-height:1.6}
+
+/* ======== INPUTS ======== */
+.input-label{font-size:11px;font-weight:600;color:var(--ou-text-muted);letter-spacing:.5px;margin-bottom:6px}
+.input{background:var(--ou-bg);border-radius:var(--ou-radius-sm);box-shadow:var(--ou-neu-pressed-md);padding:13px 16px;font-size:14px;color:var(--ou-text-strong);width:100%;transition:all var(--ou-t)}
+.input::placeholder{color:var(--ou-text-disabled)}
+.input:focus{box-shadow:var(--ou-neu-pressed-md),0 0 0 2px color-mix(in srgb,var(--ou-accent) 45%,transparent)}
+.search-bar{background:var(--ou-bg);border-radius:var(--ou-radius-pill);box-shadow:var(--ou-neu-raised-md);padding:14px 24px;display:flex;align-items:center;gap:12px;transition:all var(--ou-t)}
+.search-bar:focus-within{box-shadow:var(--ou-neu-raised-lg),0 0 24px 8px color-mix(in srgb,var(--ou-accent) 28%,transparent)}
+.search-bar input{flex:1;font-size:14px;color:var(--ou-text-strong)}
+.search-bar input::placeholder{color:var(--ou-text-disabled)}
+
+/* ======== TOGGLE ======== */
+.toggle-row{display:flex;align-items:center;gap:10px}
+.toggle{width:50px;height:26px;border-radius:var(--ou-radius-pill);background:var(--ou-bg);box-shadow:var(--ou-neu-pressed-sm);position:relative;transition:all .3s}
+.toggle-knob{width:20px;height:20px;border-radius:50%;background:var(--ou-bg);box-shadow:var(--ou-neu-raised-sm);position:absolute;top:3px;left:3px;transition:all .3s}
+.toggle.on{background:linear-gradient(135deg,var(--ou-accent),var(--ou-accent2));box-shadow:var(--ou-neu-pressed-sm),0 0 10px 2px color-mix(in srgb,var(--ou-accent) 25%,transparent)}
+.toggle.on .toggle-knob{left:27px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.toggle-lbl{font-size:12px;color:var(--ou-text-secondary)}
+
+/* ======== CHECKBOX ======== */
+.chk-row{display:flex;align-items:center;gap:10px;cursor:pointer;padding:4px 0}
+.chk{width:22px;height:22px;border-radius:var(--ou-radius-xs);background:var(--ou-bg);box-shadow:var(--ou-neu-pressed-sm);display:flex;align-items:center;justify-content:center;font-size:13px;color:transparent;transition:all var(--ou-t);flex-shrink:0}
+.chk.on{color:var(--ou-accent);box-shadow:var(--ou-neu-raised-sm)}
+.chk-lbl{font-size:13px;color:var(--ou-text-body)}
+.chk-lbl.done{text-decoration:line-through;color:var(--ou-text-muted)}
+
+/* ======== TABS ======== */
+.tabs{display:inline-flex;gap:3px;background:var(--ou-bg);box-shadow:var(--ou-neu-pressed-sm);border-radius:var(--ou-radius-pill);padding:3px}
+.tab{padding:8px 20px;border-radius:var(--ou-radius-pill);font-size:12px;font-weight:600;color:var(--ou-text-muted);transition:all var(--ou-t)}
+.tab:hover{color:var(--ou-text-strong)}
+.tab.on{background:var(--ou-bg);box-shadow:var(--ou-neu-raised-sm);color:var(--ou-accent)}
+
+/* ======== SLIDER ======== */
+.slider-track{width:100%;height:6px;border-radius:var(--ou-radius-pill);background:var(--ou-bg);box-shadow:var(--ou-neu-pressed-sm);position:relative}
+.slider-fill{height:100%;border-radius:var(--ou-radius-pill);background:linear-gradient(90deg,var(--ou-accent),var(--ou-accent2))}
+.slider-thumb{width:22px;height:22px;border-radius:50%;background:var(--ou-bg);box-shadow:var(--ou-neu-raised-md);position:absolute;top:50%;transform:translateY(-50%);cursor:grab}
+
+/* ======== PROGRESS ======== */
+.progress{width:100%;height:8px;border-radius:var(--ou-radius-pill);background:var(--ou-bg);box-shadow:var(--ou-neu-pressed-sm)}
+.progress-fill{height:100%;border-radius:var(--ou-radius-pill);background:linear-gradient(90deg,var(--ou-accent),var(--ou-accent2));transition:width .6s}
+
+/* ======== AVATAR ======== */
+.avatar{width:48px;height:48px;border-radius:50%;background:var(--ou-bg);box-shadow:var(--ou-neu-raised-md);display:flex;align-items:center;justify-content:center;font-family:var(--ou-font-display);font-size:18px;font-weight:700;color:var(--ou-accent)}
+
+/* ======== BADGE ======== */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:var(--ou-radius-pill);font-size:10px;font-weight:700;letter-spacing:.5px;background:var(--ou-bg);box-shadow:var(--ou-neu-raised-xs);color:var(--ou-text-secondary)}
+.badge-accent{color:var(--ou-accent)}
+
+/* ======== TOAST ======== */
+.toast{background:var(--ou-bg);box-shadow:var(--ou-neu-raised-md);border-radius:var(--ou-radius-sm);padding:14px 18px;display:flex;align-items:center;gap:10px;max-width:340px}
+.toast-dot{width:7px;height:7px;border-radius:50%;background:var(--ou-accent);flex-shrink:0}
+.toast-text{font-size:12px;color:var(--ou-text-strong);flex:1}
+.toast-time{font-size:10px;color:var(--ou-text-muted);flex-shrink:0}
+
+/* ======== NAV LIST ======== */
+.nav-list{display:flex;flex-direction:column;gap:4px;list-style:none}
+.nav-item{padding:10px 14px;border-radius:var(--ou-radius-sm);font-size:13px;color:var(--ou-text-secondary);cursor:pointer;transition:all var(--ou-t);display:flex;align-items:center;gap:10px}
+.nav-item:hover{box-shadow:var(--ou-neu-raised-sm);color:var(--ou-text-strong)}
+.nav-item.on{box-shadow:var(--ou-neu-pressed-sm);color:var(--ou-accent);font-weight:600}
+
+/* ======== CIRCLE DISPLAY ======== */
+.circle-display{width:160px;height:160px;border-radius:50%;background:var(--ou-bg);box-shadow:var(--ou-neu-raised-lg);display:flex;align-items:center;justify-content:center;flex-direction:column;position:relative;margin:0 auto}
+.circle-display::after{content:'';position:absolute;inset:-5px;border-radius:50%;background:conic-gradient(var(--ou-accent) 0deg,var(--ou-accent2) 110deg,transparent 110deg);z-index:-1;opacity:.45;filter:blur(8px)}
+.circle-val{font-family:var(--ou-font-display);font-size:40px;font-weight:300;color:var(--ou-text-heading);letter-spacing:-1px}
+.circle-unit{font-size:11px;color:var(--ou-text-muted);margin-top:2px}
+
+/* ======== TYPOGRAPHY ======== */
+.type-row{display:flex;align-items:baseline;gap:16px;padding:6px 0}
+.type-meta{width:72px;font-size:10px;color:var(--ou-text-muted);flex-shrink:0;text-align:right;font-family:var(--ou-font-mono)}
+.t-display{font-family:var(--ou-font-display);font-size:36px;font-weight:300;color:var(--ou-text-heading);letter-spacing:-.5px}
+.t-h1{font-family:var(--ou-font-display);font-size:24px;font-weight:700;color:var(--ou-text-heading)}
+.t-h2{font-family:var(--ou-font-display);font-size:20px;font-weight:600;color:var(--ou-text-heading)}
+.t-h3{font-size:16px;font-weight:600;color:var(--ou-text-strong)}
+.t-body{font-size:14px;color:var(--ou-text-body)}
+.t-caption{font-size:12px;color:var(--ou-text-secondary)}
+.t-tiny{font-size:10px;font-weight:700;color:var(--ou-text-muted);letter-spacing:2px;text-transform:uppercase}
+.t-mono{font-family:var(--ou-font-mono);font-size:13px;color:var(--ou-text-secondary)}
+
+/* ========================================================================
+   VIEWS — OU DataView 뉴모피즘 프리뷰
+   ======================================================================== */
+
+/* --- Chat View --- */
+.chat-area{display:flex;flex-direction:column;gap:10px;max-width:420px}
+.bubble{padding:12px 18px;border-radius:18px;font-size:13px;line-height:1.65;max-width:82%}
+.bubble-user{background:var(--ou-bg);box-shadow:var(--ou-neu-raised-md);color:var(--ou-text-strong);align-self:flex-end;border-bottom-right-radius:4px}
+.bubble-ai{background:var(--ou-bg);box-shadow:var(--ou-neu-pressed-md);color:var(--ou-text-body);align-self:flex-start;border-bottom-left-radius:4px}
+.chat-input-row{display:flex;gap:10px;align-items:center;margin-top:6px}
+.chat-input-row input{flex:1;background:var(--ou-bg);border-radius:var(--ou-radius-pill);box-shadow:var(--ou-neu-pressed-sm);padding:11px 18px;font-size:13px;color:var(--ou-text-strong)}
+.chat-send{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--ou-accent),var(--ou-accent2));color:#fff;box-shadow:var(--ou-neu-raised-sm);display:flex;align-items:center;justify-content:center;font-size:16px}
+
+/* --- Widget Dashboard --- */
+.widget-grid{display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(4,80px);gap:12px}
+.widget{background:var(--ou-bg);border-radius:var(--ou-radius-md);box-shadow:var(--ou-neu-raised-md);padding:20px;overflow:hidden;transition:all var(--ou-t);display:flex;flex-direction:column}
+.widget:hover{box-shadow:var(--ou-neu-raised-lg)}
+.widget-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.widget-name{font-size:11px;font-weight:700;color:var(--ou-text-muted);letter-spacing:1px;text-transform:uppercase}
+.widget-ico{width:28px;height:28px;border-radius:50%;background:var(--ou-bg);box-shadow:var(--ou-neu-raised-xs);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--ou-accent)}
+.widget-big{font-family:var(--ou-font-display);font-size:28px;font-weight:300;color:var(--ou-text-heading);margin-top:auto}
+.widget-sub{font-size:10px;color:var(--ou-text-muted);margin-top:2px}
+/* sizes */
+.w-mini{grid-column:span 2;grid-row:span 2}
+.w-horiz{grid-column:span 3;grid-row:span 2}
+.w-vert{grid-column:span 2;grid-row:span 3}
+.w-large{grid-column:span 3;grid-row:span 3}
+.w-wide{grid-column:span 4;grid-row:span 2}
+.w-full{grid-column:span 6;grid-row:span 2}
+
+/* --- OU View (Spotlight) --- */
+.ou-view-bar{background:var(--ou-bg);border-radius:var(--ou-radius-pill);box-shadow:var(--ou-neu-raised-lg);padding:16px 28px;display:flex;align-items:center;gap:16px;max-width:480px;margin:0 auto;transition:all var(--ou-t)}
+.ou-view-bar:focus-within{box-shadow:var(--ou-neu-raised-lg),0 0 32px 10px color-mix(in srgb,var(--ou-accent) 25%,transparent)}
+.ou-view-logo{height:18px;opacity:.5}
+.ou-view-logo path,.ou-view-logo circle{fill:var(--ou-logo-fill)}
+.ou-view-bar input{flex:1;font-size:15px;font-weight:400;color:var(--ou-text-strong)}
+.ou-view-bar input::placeholder{color:var(--ou-text-disabled)}
+.ou-view-kbd{font-family:var(--ou-font-mono);font-size:10px;color:var(--ou-text-muted);background:var(--ou-bg);box-shadow:var(--ou-neu-raised-xs);padding:3px 8px;border-radius:4px}
+
+/* --- Todo View --- */
+.todo-list{display:flex;flex-direction:column;gap:2px}
+.todo-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--ou-radius-sm);transition:all var(--ou-t);cursor:pointer}
+.todo-item:hover{box-shadow:var(--ou-neu-raised-xs)}
+
+/* --- Calendar View --- */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
+.cal-head{font-size:10px;font-weight:700;color:var(--ou-text-muted);padding:6px 0;letter-spacing:1px}
+.cal-day{font-size:12px;color:var(--ou-text-secondary);padding:10px 4px;border-radius:var(--ou-radius-sm);transition:all var(--ou-t);cursor:pointer}
+.cal-day:hover{box-shadow:var(--ou-neu-raised-xs)}
+.cal-today{box-shadow:var(--ou-neu-pressed-sm);color:var(--ou-accent);font-weight:700}
+.cal-today::after{content:'';display:block;width:4px;height:4px;border-radius:50%;background:var(--ou-accent);margin:2px auto 0}
+.cal-empty{color:var(--ou-text-disabled)}
+.cal-has-event{position:relative}
+.cal-has-event::after{content:'';display:block;width:3px;height:3px;border-radius:50%;background:var(--ou-accent2);margin:2px auto 0}
+
+/* --- Table View --- */
+.table-wrap{border-radius:var(--ou-radius-md);overflow:hidden;box-shadow:var(--ou-neu-pressed-md);background:var(--ou-bg)}
+.table-row{display:grid;grid-template-columns:2fr 1.5fr 1fr 80px;padding:10px 16px;font-size:12px;align-items:center;transition:all var(--ou-t)}
+.table-row:hover{background:color-mix(in srgb,var(--ou-bg) 95%,var(--ou-accent));box-shadow:var(--ou-neu-raised-xs)}
+.table-header{font-weight:700;color:var(--ou-text-muted);letter-spacing:.5px;font-size:10px;text-transform:uppercase;border-bottom:1px solid var(--ou-border-subtle)}
+.table-header:hover{background:transparent;box-shadow:none}
+.table-cell{color:var(--ou-text-body)}
+.table-cell-strong{color:var(--ou-text-strong);font-weight:500}
+
+/* --- Dictionary View --- */
+.dict-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+.dict-card{background:var(--ou-bg);border-radius:var(--ou-radius-md);box-shadow:var(--ou-neu-raised-md);padding:20px;transition:all var(--ou-t)}
+.dict-card:hover{box-shadow:var(--ou-neu-raised-lg),0 0 16px 3px color-mix(in srgb,var(--ou-accent) 18%,transparent)}
+.dict-title{font-family:var(--ou-font-display);font-size:18px;font-weight:700;color:var(--ou-text-heading);margin-bottom:4px}
+.dict-reading{font-size:12px;color:var(--ou-accent);margin-bottom:8px}
+.dict-desc{font-size:12px;color:var(--ou-text-secondary);line-height:1.5}
+.dict-tags{display:flex;gap:4px;margin-top:10px;flex-wrap:wrap}
+
+/* --- Flashcard View --- */
+.flashcard{background:var(--ou-bg);border-radius:var(--ou-radius-lg);box-shadow:var(--ou-neu-raised-lg);padding:48px 40px;text-align:center;max-width:360px;margin:0 auto;transition:all .3s;cursor:pointer;min-height:240px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.flashcard:hover{transform:translateY(-2px);box-shadow:12px 12px 24px var(--ou-shadow-dark),-12px -12px 24px var(--ou-shadow-light)}
+.flashcard-q{font-family:var(--ou-font-display);font-size:28px;font-weight:300;color:var(--ou-text-heading);margin-bottom:8px}
+.flashcard-q b,.flashcard-q strong{font-weight:700}
+.flashcard-hint{font-size:12px;color:var(--ou-text-muted)}
+.flashcard-controls{display:flex;gap:12px;justify-content:center;margin-top:20px}
+
+/* --- Flashcard Swipe --- */
+.swipe-area{position:relative;width:360px;height:280px;margin:0 auto}
+.swipe-card{position:absolute;inset:0;background:var(--ou-bg);border-radius:var(--ou-radius-lg);box-shadow:var(--ou-neu-raised-lg);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:grab;user-select:none;touch-action:none;transition:transform .4s cubic-bezier(.34,1.56,.64,1),opacity .3s,box-shadow .2s}
+.swipe-card:active{cursor:grabbing}
+.swipe-card .flashcard-q{pointer-events:none}
+.swipe-card .flashcard-hint{pointer-events:none}
+.swipe-stamp{position:absolute;top:24px;font-size:20px;font-weight:900;letter-spacing:2px;padding:6px 16px;border-radius:8px;border:3px solid;opacity:0;transform:rotate(-15deg);transition:opacity .15s;pointer-events:none}
+.swipe-stamp-know{right:20px;color:#4caf88;border-color:#4caf88;transform:rotate(15deg)}
+.swipe-stamp-skip{left:20px;color:#e06060;border-color:#e06060}
+.swipe-stamp-maybe{top:auto;bottom:24px;left:50%;transform:translateX(-50%) rotate(0);color:var(--ou-accent);border-color:var(--ou-accent)}
+.swipe-indicator{display:flex;justify-content:center;gap:32px;margin-top:16px;font-size:11px;color:var(--ou-text-muted)}
+.swipe-indicator span{display:flex;align-items:center;gap:4px}
+.swipe-counter{text-align:center;font-size:12px;color:var(--ou-text-muted);margin-bottom:12px}
+.swipe-bg-card{position:absolute;inset:8px;background:var(--ou-bg);border-radius:var(--ou-radius-lg);box-shadow:var(--ou-neu-raised-sm);display:flex;align-items:center;justify-content:center;flex-direction:column}
+
+/* --- Timeline View --- */
+.timeline{position:relative;padding-left:24px}
+.timeline::before{content:'';position:absolute;left:8px;top:0;bottom:0;width:2px;background:var(--ou-bg);box-shadow:var(--ou-neu-pressed-sm);border-radius:1px}
+.tl-item{position:relative;margin-bottom:20px}
+.tl-dot{width:12px;height:12px;border-radius:50%;background:var(--ou-bg);box-shadow:var(--ou-neu-raised-sm);position:absolute;left:-20px;top:14px}
+.tl-dot.accent{background:var(--ou-accent);box-shadow:0 0 8px 2px color-mix(in srgb,var(--ou-accent) 30%,transparent)}
+.tl-card{background:var(--ou-bg);border-radius:var(--ou-radius-sm);box-shadow:var(--ou-neu-raised-md);padding:14px 18px}
+.tl-date{font-size:10px;font-weight:700;color:var(--ou-text-muted);letter-spacing:1px;margin-bottom:4px}
+.tl-title{font-size:13px;font-weight:600;color:var(--ou-text-strong)}
+.tl-desc{font-size:12px;color:var(--ou-text-secondary);margin-top:4px}
+
+/* --- Inline View --- */
+.inline-view{border-radius:var(--ou-radius-sm);box-shadow:var(--ou-neu-pressed-sm);padding:12px 16px;max-height:200px;overflow-y:auto;scrollbar-width:none;background:var(--ou-bg)}
+.inline-view::-webkit-scrollbar{display:none}
+
+/* --- DataNode toggle preview --- */
+.dn-preview.dn-open{max-height:120px !important}
+.dn-open ~ .dn-arrow, .dn-preview.dn-open + .dn-arrow{transform:rotate(180deg)}
+
+/* ======== FOOTER ======== */
+.footer{text-align:center;padding:48px 24px;color:var(--ou-text-muted);font-size:10px;letter-spacing:3px;font-weight:600}
+</style>
+</head>
+<body>
+
+<!-- ======== HEADER ======== -->
+<div class="header">
+  <svg class="logo-svg" viewBox="0 0 193 92" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="146.5" cy="39.66" r="11.5"/>
+    <path d="M92 7.79883V84.2012L84.2012 92H7.79883L0 84.2012V7.79883L7.79883 0H84.2012L92 7.79883ZM18 14C15.7909 14 14 15.7909 14 18V74C14 76.2091 15.7909 78 18 78H74C76.2091 78 78 76.2091 78 74V18C78 15.7909 76.2091 14 74 14H18Z"/>
+    <path d="M115 74C115 76.2091 116.791 78 119 78H175C177.209 78 179 76.2091 179 74V0H193V84.2012L185.201 92H108.799L101 84.2012V0H115V74Z"/>
+  </svg>
+  <div class="header-sub">neumorphism design system</div>
+</div>
+
+<!-- ======== CONTROLS ======== -->
+<div class="controls-bar">
+  <button class="theme-btn on" onclick="setTheme('light',this)">Light</button>
+  <button class="theme-btn" onclick="setTheme('dark',this)">Dark</button>
+  <div style="width:1px;height:20px;background:var(--ou-text-disabled)"></div>
+  <div class="palette-dots">
+    <button class="pdot on" data-p="sunrise" onclick="setPalette('sunrise')"></button>
+    <button class="pdot" data-p="arctic" onclick="setPalette('arctic')"></button>
+    <button class="pdot" data-p="blossom" onclick="setPalette('blossom')"></button>
+    <button class="pdot" data-p="forest" onclick="setPalette('forest')"></button>
+    <button class="pdot" data-p="dusk" onclick="setPalette('dusk')"></button>
+    <button class="pdot" data-p="stone" onclick="setPalette('stone')"></button>
+  </div>
+</div>
+
+<div class="page">
+
+<!-- ======== SHADOWS ======== -->
+<div class="section">
+  <div class="section-title">Shadows</div>
+  <div class="grid" style="grid-template-columns:repeat(7,1fr)">
+    <div class="shadow-box s-flat"><span class="lbl">Flat</span></div>
+    <div class="shadow-box s-xs"><span class="lbl">XS</span></div>
+    <div class="shadow-box s-sm"><span class="lbl">SM</span></div>
+    <div class="shadow-box s-md"><span class="lbl">MD</span></div>
+    <div class="shadow-box s-lg"><span class="lbl">LG</span></div>
+    <div class="shadow-box s-pi"><span class="lbl">Pressed SM</span></div>
+    <div class="shadow-box s-pm"><span class="lbl">Pressed MD</span></div>
+  </div>
+</div>
+
+<!-- ======== BUTTONS ======== -->
+<div class="section">
+  <div class="section-title">Buttons</div>
+  <div class="btn-row" style="margin-bottom:14px">
+    <button class="btn">Default</button>
+    <button class="btn btn-accent">Accent</button>
+    <button class="btn btn-sm">Small</button>
+    <button class="btn btn-icon">+</button>
+    <button class="btn btn-ghost">Ghost</button>
+    <button class="btn btn-disabled">Disabled</button>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-sm">Cancel</button>
+    <button class="btn btn-accent btn-sm">Save</button>
+    <button class="btn btn-icon btn-sm" style="width:32px;height:32px;font-size:14px">&#9733;</button>
+  </div>
+</div>
+
+<!-- ======== CARDS ======== -->
+<div class="section">
+  <div class="section-title">Cards</div>
+  <div class="grid g3">
+    <div class="card"><div class="card-title">Raised</div><div class="card-desc">기본 카드. 호버 시 깊어집니다.</div></div>
+    <div class="card card-pressed"><div class="card-title">Pressed</div><div class="card-desc">오목. 인풋 영역, 활성 패널.</div></div>
+    <div class="card card-glow"><div class="card-title">Accent Glow</div><div class="card-desc">호버 시 악센트 글로우.</div></div>
+  </div>
+</div>
+
+<!-- ======== INPUTS ======== -->
+<div class="section">
+  <div class="section-title">Inputs</div>
+  <div class="grid g2" style="margin-bottom:20px">
+    <div><div class="input-label">Text Input</div><input class="input" placeholder="입력하세요..."></div>
+    <div><div class="input-label">Focused</div><input class="input" placeholder="클릭해보세요"></div>
+  </div>
+  <div class="input-label" style="margin-bottom:8px">Search Bar (OU-Chat 스타일)</div>
+  <div class="search-bar" style="max-width:400px">
+    <span style="color:var(--ou-text-muted);font-size:16px">&#128269;</span>
+    <input placeholder="Search anything...">
+    <span style="font-family:var(--ou-font-mono);font-size:10px;color:var(--ou-text-muted);background:var(--ou-bg);box-shadow:var(--ou-neu-raised-xs);padding:2px 6px;border-radius:3px">&#8984;K</span>
+  </div>
+</div>
+
+<!-- ======== TOGGLE & CHECKBOX ======== -->
+<div class="section">
+  <div class="section-title">Toggle & Checkbox</div>
+  <div class="grid g2">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="toggle-row"><button class="toggle" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></button><span class="toggle-lbl">Dark Mode</span></div>
+      <div class="toggle-row"><button class="toggle on" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></button><span class="toggle-lbl">알림</span></div>
+      <div class="toggle-row"><button class="toggle on" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></button><span class="toggle-lbl">자동 DataNode 생성</span></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div class="chk-row" onclick="toggleChk(this)"><div class="chk on">&#10003;</div><span class="chk-lbl done">트리플 추출</span></div>
+      <div class="chk-row" onclick="toggleChk(this)"><div class="chk on">&#10003;</div><span class="chk-lbl done">임베딩 생성</span></div>
+      <div class="chk-row" onclick="toggleChk(this)"><div class="chk">&#10003;</div><span class="chk-lbl">벡터 인덱싱</span></div>
+      <div class="chk-row" onclick="toggleChk(this)"><div class="chk">&#10003;</div><span class="chk-lbl">온톨로지 정렬</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== TABS / SLIDER / PROGRESS ======== -->
+<div class="section">
+  <div class="section-title">Tabs & Slider & Progress</div>
+  <div style="margin-bottom:24px">
+    <div class="tabs">
+      <button class="tab on" onclick="activateTab(this)">All</button>
+      <button class="tab" onclick="activateTab(this)">내 데이터</button>
+      <button class="tab" onclick="activateTab(this)">최근</button>
+      <button class="tab" onclick="activateTab(this)">Views</button>
+    </div>
+  </div>
+  <div class="grid g2">
+    <div>
+      <div class="input-label" style="margin-bottom:10px">Slider</div>
+      <div class="slider-track"><div class="slider-fill" style="width:65%"></div><div class="slider-thumb" style="left:63%"></div></div>
+    </div>
+    <div>
+      <div class="input-label" style="margin-bottom:10px">Progress 78%</div>
+      <div class="progress"><div class="progress-fill" style="width:78%"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== NAVIGATION & BADGES ======== -->
+<div class="section">
+  <div class="section-title">Navigation & Badges</div>
+  <div class="grid g2">
+    <div class="card" style="padding:14px">
+      <ul class="nav-list">
+        <li class="nav-item on">&#9679;&nbsp; OU-Chat</li>
+        <li class="nav-item">&#9733;&nbsp; My Universe</li>
+        <li class="nav-item">&#9881;&nbsp; Settings</li>
+        <li class="nav-item">&#9783;&nbsp; Admin</li>
+      </ul>
+    </div>
+    <div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px">
+        <span class="badge">DataNode</span>
+        <span class="badge badge-accent">Active</span>
+        <span class="badge">한의학</span>
+        <span class="badge badge-accent">New</span>
+      </div>
+      <div style="display:flex;gap:14px;margin-bottom:20px">
+        <div class="avatar">K</div>
+        <div class="avatar" style="background:linear-gradient(135deg,var(--ou-accent),var(--ou-accent2));color:#fff;font-size:14px">OU</div>
+        <div class="avatar">&#9733;</div>
+      </div>
+      <div class="toast"><div class="toast-dot"></div><div class="toast-text">DataNode가 생성되었습니다</div><div class="toast-time">방금</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== CIRCLE DISPLAY ======== -->
+<div class="section">
+  <div class="section-title">Circle Display</div>
+  <div class="grid g3">
+    <div><div class="circle-display"><span class="circle-val">42</span><span class="circle-unit">내 데이터</span></div></div>
+    <div><div class="circle-display"><span class="circle-val">87</span><span class="circle-unit">정확도 %</span></div></div>
+    <div><div class="circle-display"><span class="circle-val">7</span><span class="circle-unit">도메인</span></div></div>
+  </div>
+</div>
+
+<!-- ======== TYPOGRAPHY ======== -->
+<div class="section">
+  <div class="section-title">Typography</div>
+  <div class="card" style="padding:28px">
+    <div class="type-row"><span class="type-meta">Display</span><span class="t-display">Just talk.</span></div>
+    <div class="type-row"><span class="type-meta">H1 24</span><span class="t-h1">OWN UNIVERSE</span></div>
+    <div class="type-row"><span class="type-meta">H2 20</span><span class="t-h2">데이터뷰 설정</span></div>
+    <div class="type-row"><span class="type-meta">H3 16</span><span class="t-h3">DataNode 상세</span></div>
+    <div class="type-row"><span class="type-meta">Body 14</span><span class="t-body">대화를 통해 데이터가 자동으로 구조화됩니다.</span></div>
+    <div class="type-row"><span class="type-meta">Caption</span><span class="t-caption">2024.01.15 | 트리플 12개</span></div>
+    <div class="type-row"><span class="type-meta">Tiny</span><span class="t-tiny">SECTION LABEL</span></div>
+    <div class="type-row"><span class="type-meta">Mono</span><span class="t-mono">const node = await createDataNode()</span></div>
+  </div>
+</div>
+
+<!-- ================================================================
+     VIEWS — OU DataView Neumorphism Previews
+     ================================================================ -->
+
+<div style="margin-top:40px;margin-bottom:48px;text-align:center">
+  <div style="font-family:var(--ou-font-logo);font-size:14px;letter-spacing:4px;color:var(--ou-text-muted)">VIEWS</div>
+  <div style="font-family:var(--ou-font-display);font-size:24px;font-weight:300;color:var(--ou-text-heading);margin-top:6px">DataView Neumorphism</div>
+</div>
+
+<!-- ======== Orb (AI 대화) ======== -->
+<div class="section">
+  <div class="section-title">Orb — Entry Point (위젯 배경 투명, 편집 시만 테두리)</div>
+  <div style="display:flex;flex-direction:column;gap:20px;align-items:center">
+    <!-- 일반 모드: 배경 투명, Orb 바만 보임 -->
+    <div style="width:100%;max-width:560px;padding:32px 0">
+      <div class="ou-view-bar" style="max-width:none">
+        <svg class="ou-view-logo" viewBox="0 0 193 92" xmlns="http://www.w3.org/2000/svg"><circle cx="146.5" cy="39.66" r="11.5"/><path d="M92 7.79883V84.2012L84.2012 92H7.79883L0 84.2012V7.79883L7.79883 0H84.2012L92 7.79883ZM18 14C15.7909 14 14 15.7909 14 18V74C14 76.2091 15.7909 78 18 78H74C76.2091 78 78 76.2091 78 74V18C78 15.7909 76.2091 14 74 14H18Z"/><path d="M115 74C115 76.2091 116.791 78 119 78H175C177.209 78 179 76.2091 179 74V0H193V84.2012L185.201 92H108.799L101 84.2012V0H115V74Z"/></svg>
+        <input placeholder="Just talk...">
+        <span class="ou-view-kbd">&#8984;K</span>
+      </div>
+    </div>
+    <div style="font-size:10px;color:var(--ou-text-muted);display:flex;gap:24px">
+      <span>&#9650; 일반 모드 — 배경 투명</span>
+      <span>&#9660; 편집 모드 — 테두리 표시</span>
+    </div>
+    <!-- 편집 모드: dashed 테두리로 영역 표시 -->
+    <div style="width:100%;max-width:560px;padding:32px 24px;border:1px dashed var(--ou-text-disabled);border-radius:var(--ou-radius-md);position:relative">
+      <div style="position:absolute;top:6px;right:10px;font-size:8px;color:var(--ou-text-disabled);letter-spacing:1px">EDIT MODE</div>
+      <div class="ou-view-bar" style="max-width:none">
+        <svg class="ou-view-logo" viewBox="0 0 193 92" xmlns="http://www.w3.org/2000/svg"><circle cx="146.5" cy="39.66" r="11.5"/><path d="M92 7.79883V84.2012L84.2012 92H7.79883L0 84.2012V7.79883L7.79883 0H84.2012L92 7.79883ZM18 14C15.7909 14 14 15.7909 14 18V74C14 76.2091 15.7909 78 18 78H74C76.2091 78 78 76.2091 78 74V18C78 15.7909 76.2091 14 74 14H18Z"/><path d="M115 74C115 76.2091 116.791 78 119 78H175C177.209 78 179 76.2091 179 74V0H193V84.2012L185.201 92H108.799L101 84.2012V0H115V74Z"/></svg>
+        <input placeholder="Just talk...">
+        <span class="ou-view-kbd">&#8984;K</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== Orb — Conversation (Full Desktop Mockup) ======== -->
+</div><!-- close .page temporarily -->
+<div style="margin:0 0 72px;padding:0 32px">
+  <div class="section-title" style="max-width:1100px;margin:0 auto 24px">Orb — Desktop View</div>
+  <!-- Desktop app frame -->
+  <div style="border-radius:var(--ou-radius-lg);box-shadow:var(--ou-neu-raised-lg);overflow:hidden;background:var(--ou-bg);margin:0 auto;aspect-ratio:16/10;max-height:80vh;display:flex;flex-direction:column">
+    <!-- Title bar -->
+    <div style="padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--ou-border-subtle);flex-shrink:0">
+      <div style="display:flex;gap:6px"><span style="width:10px;height:10px;border-radius:50%;background:var(--ou-bg);box-shadow:var(--ou-neu-raised-xs)"></span><span style="width:10px;height:10px;border-radius:50%;background:var(--ou-bg);box-shadow:var(--ou-neu-raised-xs)"></span><span style="width:10px;height:10px;border-radius:50%;background:var(--ou-bg);box-shadow:var(--ou-neu-raised-xs)"></span></div>
+      <span style="flex:1"></span>
+      <svg style="height:14px;opacity:.4" viewBox="0 0 193 92" xmlns="http://www.w3.org/2000/svg"><circle cx="146.5" cy="39.66" r="11.5" fill="var(--ou-logo-fill)"/><path d="M92 7.79883V84.2012L84.2012 92H7.79883L0 84.2012V7.79883L7.79883 0H84.2012L92 7.79883ZM18 14C15.7909 14 14 15.7909 14 18V74C14 76.2091 15.7909 78 18 78H74C76.2091 78 78 76.2091 78 74V18C78 15.7909 76.2091 14 74 14H18Z" fill="var(--ou-logo-fill)"/><path d="M115 74C115 76.2091 116.791 78 119 78H175C177.209 78 179 76.2091 179 74V0H193V84.2012L185.201 92H108.799L101 84.2012V0H115V74Z" fill="var(--ou-logo-fill)"/></svg>
+      <span style="flex:1"></span>
+    </div>
+    <!-- 3-column layout -->
+    <div style="flex:1;display:flex;min-height:0">
+
+    <!-- ===== LEFT: 자동 생성 데이터뷰 ===== -->
+    <div style="width:240px;flex-shrink:0;display:flex;flex-direction:column;gap:12px;overflow-y:auto;padding:8px 0">
+      <div style="font-size:9px;font-weight:700;letter-spacing:2px;color:var(--ou-text-muted);text-transform:uppercase;padding:4px 0 8px;border-bottom:1px solid var(--ou-border-subtle)">자동 생성 뷰</div>
+
+      <!-- Turn 1에서 자동 생성 -->
+      <div style="background:var(--ou-bg);border-radius:var(--ou-radius-sm);box-shadow:var(--ou-neu-raised-sm);padding:12px;font-size:11px">
+        <div style="display:flex;align-items:center;gap:5px;margin-bottom:8px">
+          <span style="font-size:8px;font-weight:700;color:var(--ou-accent);letter-spacing:1px">기록됨</span>
+          <span class="badge" style="font-size:7px">자동</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:5px">
+          <div style="padding:7px 9px;border-radius:var(--ou-radius-xs);background:var(--ou-bg);box-shadow:var(--ou-neu-raised-xs)">
+            <div style="font-weight:700;color:var(--ou-text-heading);font-size:12px">임진왜란</div>
+            <div style="color:var(--ou-text-muted);font-size:9px">1592~1598 &middot; 역사</div>
+          </div>
+          <div style="padding:7px 9px;border-radius:var(--ou-radius-xs);background:var(--ou-bg);box-shadow:var(--ou-neu-raised-xs)">
+            <div style="font-weight:700;color:var(--ou-text-heading);font-size:12px">이순신</div>
+            <div style="color:var(--ou-text-muted);font-size:9px">조선 수군 지휘관</div>
+          </div>
+          <div style="padding:7px 9px;border-radius:var(--ou-radius-xs);background:var(--ou-bg);box-shadow:var(--ou-neu-raised-xs)">
+            <div style="font-weight:700;color:var(--ou-text-heading);font-size:12px">도요토미 히데요시</div>
+            <div style="color:var(--ou-text-muted);font-size:9px">일본 전국시대 통일자</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Turn 2에서 자동 생성/연결 -->
+      <div style="background:var(--ou-bg);border-radius:var(--ou-radius-sm);box-shadow:var(--ou-neu-raised-sm);padding:12px;font-size:11px">
+        <div style="display:flex;align-items:center;gap:5px;margin-bottom:8px">
+          <span style="font-size:8px;font-weight:700;color:var(--ou-accent);letter-spacing:1px">기록됨</span>
+          <span class="badge" style="font-size:7px">노드 연결</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:5px">
+          <div style="padding:7px 9px;border-radius:var(--ou-radius-xs);background:var(--ou-bg);box-shadow:var(--ou-neu-raised-xs)">
+            <div style="font-weight:700;color:var(--ou-text-heading);font-size:12px">학익진</div>
+            <div style="color:var(--ou-text-muted);font-size:9px">학 날개 포위 진형</div>
+          </div>
+          <div style="padding:7px 9px;border-radius:var(--ou-radius-xs);background:var(--ou-bg);box-shadow:var(--ou-neu-raised-xs);border-left:2px solid var(--ou-accent)">
+            <div style="font-weight:700;color:var(--ou-text-heading);font-size:12px">&#8599; 이순신</div>
+            <div style="color:var(--ou-text-muted);font-size:9px">트리플 추가됨</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 누적 요약 -->
+      <div style="margin-top:auto;padding:10px;border-radius:var(--ou-radius-sm);background:var(--ou-bg);box-shadow:var(--ou-neu-pressed-sm);text-align:center">
+        <div style="font-size:9px;color:var(--ou-text-muted);font-weight:600;letter-spacing:1px;margin-bottom:4px">이 대화에서</div>
+        <div style="font-family:var(--ou-font-display);font-size:20px;font-weight:300;color:var(--ou-text-heading)">4<span style="font-size:10px;color:var(--ou-text-muted)">개 기록됨</span></div>
+      </div>
+    </div>
+
+    <!-- ===== CENTER: 대화 ===== -->
+    <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+      <div style="flex:1;display:flex;flex-direction:column;gap:16px;padding:16px 4px;overflow-y:auto">
+
+        <!-- Turn 1 -->
+        <div class="bubble bubble-user" style="align-self:flex-end">임진왜란에 대해 자세히 알고 싶어. 왜 일어났고, 어떻게 전개됐는지 알려줘</div>
+        <div class="bubble bubble-ai" style="align-self:flex-start;max-width:92%">
+          임진왜란(1592~1598)은 일본의 도요토미 히데요시가 조선을 침략한 전쟁입니다.<br><br>
+          <b style="color:var(--ou-text-strong)">배경</b><br>
+          도요토미 히데요시는 일본 전국시대를 통일한 뒤, 내부 무사 세력의 불만을 외부로 돌리고 명나라 정복이라는 야망을 실현하기 위해 조선 침략을 결정했습니다. 조선에 '정명가도(征明假道)'를 요구했으나 거절당하자 전쟁을 일으켰습니다.<br><br>
+          <b style="color:var(--ou-text-strong)">전개</b><br>
+          &#8226; <b>초반 (1592.4~5)</b> — 부산 상륙 후 20일 만에 한양 함락<br>
+          &#8226; <b>전환점</b> — 이순신의 해전 승리로 해상 보급로 차단. 의병 봉기<br>
+          &#8226; <b>명나라 참전 (1593)</b> — 평양성 탈환, 강화 교섭<br>
+          &#8226; <b>정유재란 (1597)</b> — 재침략. 명량해전 승리<br>
+          &#8226; <b>종전 (1598)</b> — 히데요시 사망, 일본군 철수. 노량해전에서 이순신 전사
+        </div>
+
+        <!-- Turn 2 -->
+        <div class="bubble bubble-user" style="align-self:flex-end">이순신이 해전에서 쓴 전략이 뭐야?</div>
+        <div class="bubble bubble-ai" style="align-self:flex-start;max-width:92%">
+          <b style="color:var(--ou-text-strong)">학익진(鶴翼陣)</b>은 이순신이 한산도 해전에서 사용한 대표 전술입니다. 학이 날개를 펼친 모양으로 함선을 배치해 적을 포위하는 진형입니다.<br><br>
+          &#8226; 일본 수군의 백병전을 포위 사격으로 차단<br>
+          &#8226; 조선 판옥선의 화포 우위를 극대화<br>
+          &#8226; 거북선이 선봉에서 적진 돌파<br><br>
+          한산도 해전에서 왜선 47척을 격파, 제해권을 장악했습니다.
+        </div>
+
+        <!-- Turn 3: 추출 명령 → 오른쪽 -->
+        <div class="bubble bubble-user" style="align-self:flex-end">내일 시험인데 이 내용 플래시카드로 만들어줘</div>
+        <div class="bubble bubble-ai" style="align-self:flex-start;max-width:92%">
+          대화에서 추출된 DataNode 기반으로 플래시카드 8장을 생성했어요. &#8594;
+        </div>
+
+        <!-- Turn 4: 추출 명령 → 오른쪽 -->
+        <div class="bubble bubble-user" style="align-self:flex-end">타임라인으로도 정리해줘</div>
+        <div class="bubble bubble-ai" style="align-self:flex-start;max-width:92%">
+          임진왜란 주요 사건을 타임라인 뷰로 정리했습니다. &#8594;
+        </div>
+
+        <!-- Turn 5: 일반 대화 계속 -->
+        <div class="bubble bubble-user" style="align-self:flex-end">조선이 초반에 왜 이렇게 빨리 무너졌어?</div>
+        <div class="bubble bubble-ai" style="align-self:flex-start;max-width:92%">
+          조선 초반 패배의 원인은 복합적입니다:<br><br>
+          &#8226; <b>200년 평화</b> — 조선은 오래 전쟁이 없어 군사력이 약화<br>
+          &#8226; <b>조총</b> — 일본은 포르투갈에서 도입한 조총으로 무장. 조선군 궁시(弓矢)와 큰 격차<br>
+          &#8226; <b>정보 실패</b> — 통신사 황윤길·김성일의 상반된 보고로 대비 부족<br>
+          &#8226; <b>지휘 체계</b> — 신립이 탄금대에서 기병으로 조총 부대에 돌격하는 전술적 오판<br><br>
+          하지만 이순신의 해전 승리, 각지 의병, 명나라 참전이 맞물리면서 반격에 성공했습니다.
+        </div>
+
+      </div>
+
+      <!-- 입력 영역 — LLM 표준 스타일 (ChatGPT/Claude/Gemini 참고) -->
+      <div style="padding:12px 0">
+        <div style="background:var(--ou-bg);border-radius:var(--ou-radius-lg);box-shadow:var(--ou-neu-raised-md);padding:16px 20px 12px;display:flex;flex-direction:column;gap:0">
+          <!-- 텍스트 입력 (상단, 멀티라인) -->
+          <textarea placeholder="Just talk..." rows="3" style="width:100%;background:transparent;border:none;font-family:var(--ou-font-body);font-size:15px;color:var(--ou-text-strong);resize:none;outline:none;min-height:60px;line-height:1.6"></textarea>
+          <!-- 하단 툴바 -->
+          <div style="display:flex;align-items:center;gap:6px;padding-top:10px">
+            <button style="background:var(--ou-bg);box-shadow:var(--ou-neu-raised-sm);border:none;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:300;color:var(--ou-text-secondary);cursor:pointer;transition:all var(--ou-t)">+</button>
+            <span style="flex:1"></span>
+            <button class="chat-send" style="width:38px;height:38px;flex-shrink:0;font-size:16px">&#8593;</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== RIGHT: 호출 아티팩트 (최신이 아래로 쌓임) ===== -->
+    <div style="width:300px;flex-shrink:0;display:flex;flex-direction:column;gap:14px;overflow-y:auto;padding:8px 0">
+      <div style="font-size:9px;font-weight:700;letter-spacing:2px;color:var(--ou-text-muted);text-transform:uppercase;padding:4px 0 8px;border-bottom:1px solid var(--ou-border-subtle)">호출된 뷰</div>
+
+      <!-- Artifact 1: 플래시카드 (Turn 3 — 먼저 호출됨, 위에) -->
+      <div style="background:var(--ou-bg);border-radius:var(--ou-radius-sm);box-shadow:var(--ou-neu-raised-md);padding:14px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <span style="font-size:12px;font-weight:700;color:var(--ou-text-heading)">플래시카드</span>
+          <span class="badge badge-accent" style="font-size:7px">8장</span>
+        </div>
+        <div style="display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px">
+          <div style="flex-shrink:0;width:72px;height:48px;border-radius:var(--ou-radius-xs);background:var(--ou-bg);box-shadow:var(--ou-neu-raised-xs);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:var(--ou-text-strong)">임진왜란</div>
+          <div style="flex-shrink:0;width:72px;height:48px;border-radius:var(--ou-radius-xs);background:var(--ou-bg);box-shadow:var(--ou-neu-raised-xs);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:var(--ou-text-strong)">학익진</div>
+          <div style="flex-shrink:0;width:72px;height:48px;border-radius:var(--ou-radius-xs);background:var(--ou-bg);box-shadow:var(--ou-neu-raised-xs);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:var(--ou-text-strong)">정명가도</div>
+          <div style="flex-shrink:0;width:72px;height:48px;border-radius:var(--ou-radius-xs);background:var(--ou-bg);box-shadow:var(--ou-neu-raised-xs);display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--ou-text-muted)">+5</div>
+        </div>
+        <button class="btn btn-accent btn-sm" style="width:100%;margin-top:10px;padding:7px;font-size:10px">학습 시작</button>
+      </div>
+
+      <!-- Artifact 2: 타임라인 (Turn 4 — 나중에 호출됨, 아래) -->
+      <div style="background:var(--ou-bg);border-radius:var(--ou-radius-sm);box-shadow:var(--ou-neu-raised-md);padding:14px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <span style="font-size:12px;font-weight:700;color:var(--ou-text-heading)">타임라인</span>
+          <span class="badge" style="font-size:7px">5 events</span>
+        </div>
+        <div style="position:relative;padding-left:16px;font-size:10px;line-height:2">
+          <div style="position:absolute;left:4px;top:6px;bottom:6px;width:1.5px;background:var(--ou-bg);box-shadow:var(--ou-neu-pressed-sm);border-radius:1px"></div>
+          <div style="position:relative"><span style="position:absolute;left:-14px;top:5px;width:6px;height:6px;border-radius:50%;background:var(--ou-accent)"></span><b style="color:var(--ou-text-strong)">1592.4</b> <span style="color:var(--ou-text-secondary)">부산 상륙</span></div>
+          <div style="position:relative"><span style="position:absolute;left:-14px;top:5px;width:6px;height:6px;border-radius:50%;background:var(--ou-accent)"></span><b style="color:var(--ou-text-strong)">1592.7</b> <span style="color:var(--ou-text-secondary)">한산도 해전</span></div>
+          <div style="position:relative"><span style="position:absolute;left:-14px;top:5px;width:6px;height:6px;border-radius:50%;background:var(--ou-bg);box-shadow:var(--ou-neu-raised-xs)"></span><b style="color:var(--ou-text-strong)">1593.1</b> <span style="color:var(--ou-text-secondary)">평양성 탈환</span></div>
+          <div style="position:relative"><span style="position:absolute;left:-14px;top:5px;width:6px;height:6px;border-radius:50%;background:var(--ou-bg);box-shadow:var(--ou-neu-raised-xs)"></span><b style="color:var(--ou-text-strong)">1597.9</b> <span style="color:var(--ou-text-secondary)">명량해전</span></div>
+          <div style="position:relative"><span style="position:absolute;left:-14px;top:5px;width:6px;height:6px;border-radius:50%;background:var(--ou-bg);box-shadow:var(--ou-neu-raised-xs)"></span><b style="color:var(--ou-text-strong)">1598.11</b> <span style="color:var(--ou-text-secondary)">종전</span></div>
+        </div>
+        <button class="btn btn-sm" style="width:100%;margin-top:10px;padding:7px;font-size:10px">뷰에서 보기</button>
+      </div>
+
+      <!-- 빈 슬롯 (최하단) -->
+      <div style="border:1px dashed var(--ou-text-disabled);border-radius:var(--ou-radius-sm);padding:18px;text-align:center;color:var(--ou-text-disabled);font-size:10px;line-height:1.6">
+        &ldquo;표로 정리해줘&rdquo;<br>&ldquo;마인드맵으로 보여줘&rdquo;<br>등 명령으로 뷰 추가
+      </div>
+    </div>
+
+  </div><!-- /3-column -->
+  </div><!-- /desktop frame -->
+</div><!-- /orb mockup wrapper -->
+<div class="page"><!-- reopen .page -->
+
+<!-- ======== Chat View (OU 채팅 — 회원 간 메시징) ======== -->
+<div class="section">
+  <div class="section-title">Chat View (OU 채팅 — /messages)</div>
+  <div style="display:flex;gap:20px">
+    <!-- 채팅 목록 -->
+    <div class="card" style="padding:0;overflow:hidden;width:320px;flex-shrink:0">
+      <div style="padding:14px 16px;border-bottom:1px solid var(--ou-border-subtle)">
+        <div class="input-label" style="margin:0">메시지</div>
+      </div>
+      <div style="display:flex;flex-direction:column">
+        <!-- 선택된/읽은 방: pressed -->
+        <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;box-shadow:var(--ou-neu-pressed-sm);cursor:pointer">
+          <div class="avatar" style="width:36px;height:36px;font-size:13px;flex-shrink:0">J</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;font-weight:600;color:var(--ou-text-strong)">한의학 스터디</div>
+            <div style="font-size:11px;color:var(--ou-text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">민수: 당귀 정리 자료 공유합니다</div>
+          </div>
+          <div style="font-size:9px;color:var(--ou-text-muted);flex-shrink:0">2분 전</div>
+        </div>
+        <!-- 안 읽은 방: raised + 뱃지 -->
+        <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;box-shadow:var(--ou-neu-raised-sm);cursor:pointer;transition:all var(--ou-t)">
+          <div class="avatar" style="width:36px;height:36px;font-size:13px;flex-shrink:0">S</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;font-weight:700;color:var(--ou-text-heading)">서연</div>
+            <div style="font-size:11px;color:var(--ou-text-body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500">네~ 내일 같이 정리해요</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0">
+            <div style="font-size:9px;color:var(--ou-text-muted)">어제</div>
+            <div style="background:var(--ou-accent);color:#fff;font-size:9px;font-weight:700;min-width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;padding:0 4px">3</div>
+          </div>
+        </div>
+        <!-- 읽은 방: flat -->
+        <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;transition:all var(--ou-t)">
+          <div class="avatar" style="width:36px;height:36px;font-size:13px;flex-shrink:0">M</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;font-weight:600;color:var(--ou-text-strong)">민수</div>
+            <div style="font-size:11px;color:var(--ou-text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">황기 DataNode 공유했어요</div>
+          </div>
+          <div style="font-size:9px;color:var(--ou-text-muted);flex-shrink:0">2일 전</div>
+        </div>
+      </div>
+    </div>
+    <!-- 채팅 대화 -->
+    <div class="card" style="padding:0;overflow:hidden;display:flex;flex-direction:column">
+      <div style="padding:12px 16px;border-bottom:1px solid var(--ou-border-subtle);display:flex;align-items:center;gap:10px">
+        <div class="avatar" style="width:28px;height:28px;font-size:11px;flex-shrink:0">J</div>
+        <div style="font-size:13px;font-weight:600;color:var(--ou-text-strong)">한의학 스터디</div>
+        <span class="badge" style="font-size:8px;margin-left:auto">3명</span>
+      </div>
+      <div style="padding:18px 20px;flex:1;display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;gap:8px;align-items:flex-start">
+          <div class="avatar" style="width:24px;height:24px;font-size:9px;flex-shrink:0">M</div>
+          <div>
+            <div style="font-size:10px;color:var(--ou-text-muted);margin-bottom:2px">민수</div>
+            <div class="bubble bubble-ai" style="max-width:none;align-self:auto;font-size:12px;padding:10px 14px;border-radius:12px;border-bottom-left-radius:4px">당귀 정리 자료 공유합니다</div>
+            <!-- 첨부 DataNode — 접이식 토글 -->
+            <div style="margin-top:6px;max-width:240px" onclick="this.querySelector('.dn-preview').classList.toggle('dn-open')">
+              <div style="padding:10px 12px;border-radius:var(--ou-radius-sm);background:var(--ou-bg);box-shadow:var(--ou-neu-raised-xs);cursor:pointer">
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div style="width:28px;height:28px;border-radius:var(--ou-radius-xs);background:var(--ou-bg);box-shadow:var(--ou-neu-pressed-sm);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--ou-accent);flex-shrink:0">D</div>
+                  <div style="flex:1;min-width:0">
+                    <div style="font-size:11px;font-weight:600;color:var(--ou-text-strong)">당귀 정리 자료</div>
+                    <div style="font-size:9px;color:var(--ou-text-muted)">한의학</div>
+                  </div>
+                  <span style="font-size:10px;color:var(--ou-text-disabled);transition:transform .2s" class="dn-arrow">&#9660;</span>
+                </div>
+                <!-- 펼침 미리보기 -->
+                <div class="dn-preview" style="max-height:0;overflow:hidden;transition:max-height .3s ease">
+                  <div style="padding-top:10px;margin-top:8px;border-top:1px solid var(--ou-border-subtle);font-size:10px;color:var(--ou-text-secondary);line-height:1.6">
+                    보혈(補血)의 대표 약재. 혈허로 인한 두통, 어지러움, 월경불순에 사용. 미나리과에 속하는 다년생 초본.
+                  </div>
+                  <button class="btn btn-sm btn-accent" style="width:100%;margin-top:8px;padding:5px;font-size:9px" onclick="event.stopPropagation()">내 데이터에 참조 추가</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:flex-start;flex-direction:row-reverse">
+          <div>
+            <div class="bubble bubble-user" style="max-width:none;align-self:auto;font-size:12px;padding:10px 14px;border-radius:12px;border-bottom-right-radius:4px">고마워! 내 DataNode에 참조 추가할게</div>
+          </div>
+        </div>
+      </div>
+      <div style="padding:12px 16px;border-top:1px solid var(--ou-border-subtle)">
+        <div style="display:flex;align-items:center;gap:10px">
+          <button style="background:var(--ou-bg);box-shadow:var(--ou-neu-raised-sm);border:none;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:300;color:var(--ou-text-secondary);cursor:pointer;flex-shrink:0">+</button>
+          <input placeholder="메시지 입력..." style="flex:1;background:var(--ou-bg);border-radius:var(--ou-radius-pill);box-shadow:var(--ou-neu-pressed-sm);padding:11px 18px;font-size:13px;color:var(--ou-text-strong)">
+          <button class="chat-send" style="width:34px;height:34px;font-size:14px;flex-shrink:0">&#8593;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== Widget Dashboard ======== -->
+<div class="section">
+  <div class="section-title">Widget Dashboard (6-Column Grid)</div>
+  <div class="widget-grid">
+    <!-- Orb — wide (배경 투명, 편집 모드 테두리) -->
+    <div class="widget w-wide" style="background:transparent;box-shadow:none;border:1px dashed var(--ou-text-disabled);padding:12px;position:relative">
+      <div style="position:absolute;top:4px;right:8px;font-size:8px;color:var(--ou-text-disabled);letter-spacing:1px">EDIT MODE</div>
+      <div style="background:var(--ou-bg);border-radius:var(--ou-radius-md);box-shadow:var(--ou-neu-raised-md);padding:16px 20px;width:100%;display:flex;flex-direction:column;gap:0">
+        <textarea placeholder="Just talk..." rows="2" style="width:100%;background:transparent;border:none;font-family:var(--ou-font-body);font-size:13px;color:var(--ou-text-strong);resize:none;outline:none;min-height:36px;line-height:1.5"></textarea>
+        <div style="display:flex;align-items:center;gap:6px;padding-top:8px">
+          <button style="background:var(--ou-bg);box-shadow:var(--ou-neu-raised-xs);border:none;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:300;color:var(--ou-text-secondary);cursor:pointer">+</button>
+          <span style="flex:1"></span>
+          <button class="chat-send" style="width:28px;height:28px;font-size:12px">&#8593;</button>
+        </div>
+      </div>
+    </div>
+    <!-- Clock — mini -->
+    <div class="widget w-mini" style="justify-content:center;align-items:center">
+      <div style="font-family:var(--ou-font-display);font-size:32px;font-weight:300;color:var(--ou-text-heading)" id="clock">14:32</div>
+      <div style="font-size:10px;color:var(--ou-text-muted);margin-top:2px">Friday</div>
+    </div>
+    <!-- Stats — mini -->
+    <div class="widget w-mini">
+      <div class="widget-head"><span class="widget-name">내 데이터</span><span class="widget-ico">&#9679;</span></div>
+      <div class="widget-big">1,247</div>
+      <div class="widget-sub">+23 this week</div>
+    </div>
+    <!-- Today Summary — horizontal -->
+    <div class="widget w-horiz">
+      <div class="widget-head"><span class="widget-name">Today</span><span class="widget-ico">&#9733;</span></div>
+      <div style="font-size:12px;color:var(--ou-text-body);line-height:1.6">
+        DataNode 3개 생성 &middot; 트리플 12개 추출<br>
+        정확도 +2.1% &middot; 대화 8턴
+      </div>
+    </div>
+    <!-- Quick Memo — vertical -->
+    <div class="widget w-vert">
+      <div class="widget-head"><span class="widget-name">Memo</span><span class="widget-ico">&#9998;</span></div>
+      <div style="font-size:12px;color:var(--ou-text-secondary);line-height:1.7;flex:1">
+        뉴모피즘 디자인 시스템 정리<br><br>
+        - 색상 팔레트 6종<br>
+        - 라이트/다크 모드<br>
+        - 뷰 컴포넌트 디자인<br>
+        - 접근성 WCAG AA
+      </div>
+    </div>
+    <!-- Accuracy — mini -->
+    <div class="widget w-mini">
+      <div class="widget-head"><span class="widget-name">Accuracy</span><span class="widget-ico">&#10003;</span></div>
+      <div class="widget-big">94%</div>
+      <div class="widget-sub">+2.1% improved</div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== Todo View ======== -->
+<div class="section">
+  <div class="section-title">Todo View</div>
+  <div class="card" style="max-width:400px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <span class="card-title" style="margin:0">My Tasks</span>
+      <span class="badge badge-accent">4/7</span>
+    </div>
+    <div class="todo-list">
+      <div class="todo-item" onclick="toggleChk(this)"><div class="chk on">&#10003;</div><span class="chk-lbl done">디자인 시스템 토큰 정의</span></div>
+      <div class="todo-item" onclick="toggleChk(this)"><div class="chk on">&#10003;</div><span class="chk-lbl done">색상 팔레트 리서치</span></div>
+      <div class="todo-item" onclick="toggleChk(this)"><div class="chk on">&#10003;</div><span class="chk-lbl done">뉴모피즘 그림자 레벨</span></div>
+      <div class="todo-item" onclick="toggleChk(this)"><div class="chk on">&#10003;</div><span class="chk-lbl done">HTML 프리뷰 v1</span></div>
+      <div class="todo-item" onclick="toggleChk(this)"><div class="chk">&#10003;</div><span class="chk-lbl">컴포넌트별 적용</span></div>
+      <div class="todo-item" onclick="toggleChk(this)"><div class="chk">&#10003;</div><span class="chk-lbl">다크 모드 미세 조정</span></div>
+      <div class="todo-item" onclick="toggleChk(this)"><div class="chk">&#10003;</div><span class="chk-lbl">접근성 검증</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== Calendar View ======== -->
+<div class="section">
+  <div class="section-title">Calendar View</div>
+  <div class="card" style="max-width:420px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <button class="btn btn-icon btn-sm" style="width:28px;height:28px;font-size:12px">&#8249;</button>
+      <span class="card-title" style="margin:0;font-size:14px">April 2026</span>
+      <button class="btn btn-icon btn-sm" style="width:28px;height:28px;font-size:12px">&#8250;</button>
+    </div>
+    <div class="cal-grid">
+      <div class="cal-head">SUN</div><div class="cal-head">MON</div><div class="cal-head">TUE</div><div class="cal-head">WED</div><div class="cal-head">THU</div><div class="cal-head">FRI</div><div class="cal-head">SAT</div>
+      <div class="cal-day cal-empty"></div><div class="cal-day cal-empty"></div><div class="cal-day cal-empty"></div><div class="cal-day">1</div><div class="cal-day">2</div><div class="cal-day cal-has-event">3</div><div class="cal-day">4</div>
+      <div class="cal-day">5</div><div class="cal-day cal-has-event">6</div><div class="cal-day">7</div><div class="cal-day">8</div><div class="cal-day">9</div><div class="cal-day cal-has-event">10</div><div class="cal-day">11</div>
+      <div class="cal-day">12</div><div class="cal-day">13</div><div class="cal-day cal-has-event">14</div><div class="cal-day">15</div><div class="cal-day">16</div><div class="cal-day">17</div><div class="cal-day cal-today">18</div>
+      <div class="cal-day">19</div><div class="cal-day">20</div><div class="cal-day">21</div><div class="cal-day cal-has-event">22</div><div class="cal-day">23</div><div class="cal-day">24</div><div class="cal-day">25</div>
+      <div class="cal-day">26</div><div class="cal-day">27</div><div class="cal-day">28</div><div class="cal-day">29</div><div class="cal-day">30</div><div class="cal-day cal-empty"></div><div class="cal-day cal-empty"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== Table View ======== -->
+<div class="section">
+  <div class="section-title">Table View</div>
+  <div class="table-wrap" style="max-width:600px">
+    <div class="table-row table-header"><span>이름</span><span>도메인</span><span>요약</span><span>상태</span></div>
+    <div class="table-row"><span class="table-cell-strong">당귀</span><span class="table-cell">한의학</span><span class="table-cell">보혈의 대표 약재</span><span class="badge badge-accent" style="font-size:9px">Active</span></div>
+    <div class="table-row"><span class="table-cell-strong">황기</span><span class="table-cell">한의학</span><span class="table-cell">보기의 대표 약재</span><span class="badge badge-accent" style="font-size:9px">Active</span></div>
+    <div class="table-row"><span class="table-cell-strong">React Hooks</span><span class="table-cell">개발</span><span class="table-cell">상태 관리 패턴</span><span class="badge" style="font-size:9px">Draft</span></div>
+    <div class="table-row"><span class="table-cell-strong">SWOT 분석</span><span class="table-cell">경영</span><span class="table-cell">전략 분석 프레임워크</span><span class="badge" style="font-size:9px">Draft</span></div>
+  </div>
+</div>
+
+<!-- ======== Dictionary View ======== -->
+<div class="section">
+  <div class="section-title">Dictionary View</div>
+  <div class="dict-grid" style="max-width:700px">
+    <div class="dict-card">
+      <div class="dict-title">當歸</div>
+      <div class="dict-reading">당귀 &middot; Angelica sinensis</div>
+      <div class="dict-desc">보혈(補血)의 대표 약재. 혈허(血虛)로 인한 두통, 어지러움에 사용.</div>
+      <div class="dict-tags"><span class="badge">보혈</span><span class="badge">한의학</span></div>
+    </div>
+    <div class="dict-card">
+      <div class="dict-title">黃芪</div>
+      <div class="dict-reading">황기 &middot; Astragalus</div>
+      <div class="dict-desc">보기(補氣)의 대표 약재. 기허(氣虛)로 인한 피로, 자한에 사용.</div>
+      <div class="dict-tags"><span class="badge">보기</span><span class="badge">한의학</span></div>
+    </div>
+    <div class="dict-card">
+      <div class="dict-title">甘草</div>
+      <div class="dict-reading">감초 &middot; Glycyrrhiza</div>
+      <div class="dict-desc">조화(調和) 약재. 대부분의 처방에 포함되어 약성을 조화.</div>
+      <div class="dict-tags"><span class="badge">조화</span><span class="badge">한의학</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== Flashcard View ======== -->
+<div class="section">
+  <div class="section-title">Flashcard View</div>
+  <div class="grid g2" style="align-items:start">
+    <!-- A: 버튼 모드 (데스크톱) -->
+    <div>
+      <div class="input-label" style="margin-bottom:12px;text-align:center">A. 버튼 모드 (데스크톱)</div>
+      <div class="flashcard" onclick="flipCard(this)" style="margin-bottom:0">
+        <div class="flashcard-q" data-front="當歸" data-back="&lt;b&gt;보혈&lt;/b&gt;의 대표 약재&lt;br&gt;&lt;b&gt;혈허&lt;/b&gt;로 인한 두통에 사용">當歸</div>
+        <div class="flashcard-hint">탭하여 뒤집기</div>
+      </div>
+      <div class="flashcard-controls" style="margin-top:16px">
+        <button class="btn btn-sm" style="color:#e06060">&#10007; 모름</button>
+        <button class="btn btn-sm">&#8764; 애매</button>
+        <button class="btn btn-sm btn-accent">&#10003; 알고 있음</button>
+      </div>
+      <div style="text-align:center;margin-top:10px;font-size:10px;color:var(--ou-text-muted)">키보드: 1(모름) 2(애매) 3(알고 있음) Space(뒤집기)</div>
+    </div>
+    <!-- B: 스와이프 모드 (모바일) -->
+    <div>
+      <div class="input-label" style="margin-bottom:12px;text-align:center">B. 스와이프 모드 (모바일)</div>
+      <div class="swipe-counter"><span id="swipe-count">1</span> / 5</div>
+      <div class="swipe-area" id="swipeArea">
+        <div class="swipe-bg-card">
+          <div class="flashcard-q" style="font-size:22px;opacity:.4">黃芪</div>
+          <div class="flashcard-hint">다음 카드</div>
+        </div>
+        <div class="swipe-card" id="swipeCard" onclick="flipCard(this)">
+          <div class="swipe-stamp swipe-stamp-skip">SKIP</div>
+          <div class="swipe-stamp swipe-stamp-know">KNOW</div>
+          <div class="swipe-stamp swipe-stamp-maybe">MAYBE</div>
+          <div class="flashcard-q" data-front="當歸" data-back="&lt;b&gt;보혈&lt;/b&gt;의 대표 약재&lt;br&gt;&lt;b&gt;혈허&lt;/b&gt;로 인한 두통에 사용">當歸</div>
+          <div class="flashcard-hint">탭: 뒤집기 | 드래그: 스와이프</div>
+        </div>
+      </div>
+      <div class="swipe-indicator">
+        <span style="color:#e06060">&#8592; 모름</span>
+        <span style="color:var(--ou-accent)">&#8593; 애매</span>
+        <span style="color:#4caf88">알고 있음 &#8594;</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== Timeline View ======== -->
+<div class="section">
+  <div class="section-title">Timeline View</div>
+  <div class="timeline" style="max-width:500px">
+    <div class="tl-item">
+      <div class="tl-dot accent"></div>
+      <div class="tl-card">
+        <div class="tl-date">2026.04.18</div>
+        <div class="tl-title">뉴모피즘 디자인 시스템 시작</div>
+        <div class="tl-desc">토큰 설계, HTML 프리뷰 v1 완성</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot accent"></div>
+      <div class="tl-card">
+        <div class="tl-date">2026.04.17</div>
+        <div class="tl-title">로그인 리다이렉트 수정</div>
+        <div class="tl-desc">/?code= → /auth/callback으로 변경</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-card">
+        <div class="tl-date">2026.04.16</div>
+        <div class="tl-title">대화 자동 기록 기능</div>
+        <div class="tl-desc">MCP 연동, 이전 대화 임포트 스크립트</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-card">
+        <div class="tl-date">2026.04.15</div>
+        <div class="tl-title">ou-web 독립 프로젝트 완성</div>
+        <div class="tl-desc">OU_Real에서 분리, 파일 이전 완료</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== Inline View (compact) ======== -->
+<div class="section">
+  <div class="section-title">Inline View (Compact, max-height 제한)</div>
+  <div class="grid g2">
+    <div>
+      <div class="input-label" style="margin-bottom:8px">인라인 Todo</div>
+      <div class="inline-view">
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:12px"><div class="chk on" style="width:16px;height:16px;font-size:9px;border-radius:3px">&#10003;</div><span style="color:var(--ou-text-muted);text-decoration:line-through">토큰 정의</span></div>
+          <div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:12px"><div class="chk on" style="width:16px;height:16px;font-size:9px;border-radius:3px">&#10003;</div><span style="color:var(--ou-text-muted);text-decoration:line-through">팔레트 설계</span></div>
+          <div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:12px"><div class="chk" style="width:16px;height:16px;font-size:9px;border-radius:3px">&#10003;</div><span style="color:var(--ou-text-body)">컴포넌트 적용</span></div>
+          <div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:12px"><div class="chk" style="width:16px;height:16px;font-size:9px;border-radius:3px">&#10003;</div><span style="color:var(--ou-text-body)">다크 모드</span></div>
+          <div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:12px"><div class="chk" style="width:16px;height:16px;font-size:9px;border-radius:3px">&#10003;</div><span style="color:var(--ou-text-body)">접근성 검증</span></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="input-label" style="margin-bottom:8px">인라인 Dictionary</div>
+      <div class="inline-view">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--ou-border-subtle)">
+            <span style="font-size:13px;font-weight:600;color:var(--ou-text-strong)">當歸</span>
+            <span class="badge" style="font-size:8px">보혈</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--ou-border-subtle)">
+            <span style="font-size:13px;font-weight:600;color:var(--ou-text-strong)">黃芪</span>
+            <span class="badge" style="font-size:8px">보기</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--ou-border-subtle)">
+            <span style="font-size:13px;font-weight:600;color:var(--ou-text-strong)">甘草</span>
+            <span class="badge" style="font-size:8px">조화</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0">
+            <span style="font-size:13px;font-weight:600;color:var(--ou-text-strong)">人蔘</span>
+            <span class="badge" style="font-size:8px">보기</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== Widget Size Comparison ======== -->
+<div class="section">
+  <div class="section-title">Widget Sizes (6종)</div>
+  <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:start">
+    <!-- Mini 2x2 -->
+    <div class="card" style="width:140px;height:140px;display:flex;flex-direction:column;padding:16px">
+      <div style="font-size:8px;font-weight:700;color:var(--ou-text-muted);letter-spacing:1px">MINI 2x2</div>
+      <div style="margin-top:auto;font-family:var(--ou-font-display);font-size:24px;font-weight:300;color:var(--ou-text-heading)">42</div>
+      <div style="font-size:9px;color:var(--ou-text-muted)">내 데이터</div>
+    </div>
+    <!-- Horizontal 3x2 -->
+    <div class="card" style="width:220px;height:140px;display:flex;flex-direction:column;padding:16px">
+      <div style="font-size:8px;font-weight:700;color:var(--ou-text-muted);letter-spacing:1px">HORIZ 3x2</div>
+      <div style="font-size:11px;color:var(--ou-text-body);line-height:1.6;margin-top:auto">오늘 대화 3건<br>정확도 +2.1%</div>
+    </div>
+    <!-- Vertical 2x3 -->
+    <div class="card" style="width:140px;height:220px;display:flex;flex-direction:column;padding:16px">
+      <div style="font-size:8px;font-weight:700;color:var(--ou-text-muted);letter-spacing:1px">VERT 2x3</div>
+      <div style="font-size:10px;color:var(--ou-text-secondary);line-height:1.7;margin-top:auto">메모<br><br>- 색상 6종<br>- 라이트/다크<br>- 뷰 디자인</div>
+    </div>
+    <!-- Large 3x3 -->
+    <div class="card" style="width:220px;height:220px;display:flex;flex-direction:column;padding:16px">
+      <div style="font-size:8px;font-weight:700;color:var(--ou-text-muted);letter-spacing:1px">LARGE 3x3</div>
+      <div style="flex:1;display:flex;align-items:center;justify-content:center">
+        <div class="circle-display" style="width:110px;height:110px;box-shadow:var(--ou-neu-raised-md)">
+          <span class="circle-val" style="font-size:26px">87%</span>
+        </div>
+      </div>
+    </div>
+    <!-- Wide 4x2 -->
+    <div class="card" style="width:300px;height:140px;display:flex;flex-direction:column;padding:16px">
+      <div style="font-size:8px;font-weight:700;color:var(--ou-text-muted);letter-spacing:1px">WIDE 4x2</div>
+      <div style="display:flex;gap:12px;margin-top:auto;align-items:flex-end">
+        <div><div style="font-family:var(--ou-font-display);font-size:22px;font-weight:300;color:var(--ou-text-heading)">1,247</div><div style="font-size:9px;color:var(--ou-text-muted)">내 데이터</div></div>
+        <div><div style="font-family:var(--ou-font-display);font-size:22px;font-weight:300;color:var(--ou-text-heading)">94%</div><div style="font-size:9px;color:var(--ou-text-muted)">정확도</div></div>
+        <div><div style="font-family:var(--ou-font-display);font-size:22px;font-weight:300;color:var(--ou-text-heading)">7</div><div style="font-size:9px;color:var(--ou-text-muted)">도메인</div></div>
+      </div>
+    </div>
+    <!-- Full Wide 6x2 -->
+    <div class="card" style="width:100%;height:140px;display:flex;flex-direction:column;padding:16px">
+      <div style="font-size:8px;font-weight:700;color:var(--ou-text-muted);letter-spacing:1px">FULL WIDE 6x2</div>
+      <div style="display:flex;gap:16px;margin-top:auto;align-items:center">
+        <div style="flex:1"><div class="progress" style="height:6px"><div class="progress-fill" style="width:72%"></div></div><div style="font-size:9px;color:var(--ou-text-muted);margin-top:4px">이번 주 목표 72%</div></div>
+        <div style="display:flex;gap:8px">
+          <div style="text-align:center"><div style="font-family:var(--ou-font-display);font-size:18px;font-weight:300;color:var(--ou-text-heading)">23</div><div style="font-size:8px;color:var(--ou-text-muted)">오늘</div></div>
+          <div style="text-align:center"><div style="font-family:var(--ou-font-display);font-size:18px;font-weight:300;color:var(--ou-text-heading)">142</div><div style="font-size:8px;color:var(--ou-text-muted)">이번 주</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /page -->
+
+<div class="footer">OU &mdash; OWN UNIVERSE &middot; NEUMORPHISM DESIGN SYSTEM v2</div>
+
+<script>
+// Flashcard flip (supports HTML in back)
+function flipCard(el){
+  const q=el.querySelector('.flashcard-q');
+  if(!q)return;
+  const front=q.getAttribute('data-front')||'';
+  const back=q.getAttribute('data-back')||'';
+  if(!back||!front)return;
+  const isFront=q.textContent===front||q.innerHTML===front;
+  if(isFront){q.innerHTML=back;autoSizeFlashcard(q)}
+  else{q.innerHTML=front;q.style.fontSize=''}
+}
+function autoSizeFlashcard(el){
+  const len=el.textContent.length;
+  if(len>40)el.style.fontSize='18px';
+  else if(len>20)el.style.fontSize='22px';
+  else el.style.fontSize='';
+}
+
+// Swipe card
+(function(){
+  const card=document.getElementById('swipeCard');
+  if(!card)return;
+  let startX=0,startY=0,dx=0,dy=0,dragging=false,moved=false;
+  const threshold=80;
+
+  function onStart(e){
+    dragging=true;moved=false;
+    const p=e.touches?e.touches[0]:e;
+    startX=p.clientX;startY=p.clientY;
+    card.style.transition='none';
+  }
+  function onMove(e){
+    if(!dragging)return;
+    const p=e.touches?e.touches[0]:e;
+    dx=p.clientX-startX;dy=p.clientY-startY;
+    if(Math.abs(dx)>5||Math.abs(dy)>5)moved=true;
+    const rot=dx*0.08;
+    card.style.transform=`translate(${dx}px,${dy}px) rotate(${rot}deg)`;
+    // stamps
+    const skipStamp=card.querySelector('.swipe-stamp-skip');
+    const knowStamp=card.querySelector('.swipe-stamp-know');
+    const maybeStamp=card.querySelector('.swipe-stamp-maybe');
+    skipStamp.style.opacity=dx<-30?Math.min(1,(-dx-30)/50):0;
+    knowStamp.style.opacity=dx>30?Math.min(1,(dx-30)/50):0;
+    maybeStamp.style.opacity=dy<-30?Math.min(1,(-dy-30)/50):0;
+  }
+  function onEnd(){
+    if(!dragging)return;
+    dragging=false;
+    card.style.transition='transform .4s cubic-bezier(.34,1.56,.64,1),opacity .3s';
+    if(!moved){return}// click handled by onclick
+    if(dx>threshold){flyOut(800,0,'know')}
+    else if(dx<-threshold){flyOut(-800,0,'skip')}
+    else if(dy<-threshold){flyOut(0,-600,'maybe')}
+    else{resetCard()}
+  }
+  function flyOut(tx,ty,type){
+    card.style.transition='transform .35s ease-out,opacity .35s';
+    card.style.transform=`translate(${tx}px,${ty}px) rotate(${tx*0.05}deg)`;
+    card.style.opacity='0';
+    setTimeout(()=>{
+      const cnt=document.getElementById('swipe-count');
+      if(cnt){const n=parseInt(cnt.textContent);cnt.textContent=Math.min(n+1,5)}
+      resetCard();
+      card.style.transition='none';
+      card.style.transform='scale(.9)';
+      card.style.opacity='0';
+      requestAnimationFrame(()=>{
+        card.style.transition='transform .3s cubic-bezier(.34,1.56,.64,1),opacity .2s';
+        card.style.transform='';
+        card.style.opacity='1';
+      });
+    },350);
+  }
+  function resetCard(){
+    card.style.transform='';card.style.opacity='1';dx=0;dy=0;
+    card.querySelectorAll('.swipe-stamp').forEach(s=>s.style.opacity=0);
+  }
+  card.addEventListener('mousedown',onStart);
+  card.addEventListener('touchstart',onStart,{passive:true});
+  window.addEventListener('mousemove',onMove);
+  window.addEventListener('touchmove',onMove,{passive:true});
+  window.addEventListener('mouseup',onEnd);
+  window.addEventListener('touchend',onEnd);
+})();
+
+function setTheme(t,el){
+  document.documentElement.setAttribute('data-theme',t);
+  document.querySelectorAll('.theme-btn').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+}
+function setPalette(n){
+  document.documentElement.setAttribute('data-palette',n);
+  document.querySelectorAll('.pdot').forEach(d=>d.classList.remove('on'));
+  document.querySelector(`[data-p="${n}"]`).classList.add('on');
+}
+function activateTab(el){
+  el.parentElement.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+}
+function toggleChk(row){
+  const c=row.querySelector('.chk');
+  const l=row.querySelector('.chk-lbl');
+  c.classList.toggle('on');
+  if(l)l.classList.toggle('done');
+}
+// clock
+function updateClock(){
+  const d=new Date();
+  const h=String(d.getHours()).padStart(2,'0');
+  const m=String(d.getMinutes()).padStart(2,'0');
+  const el=document.getElementById('clock');
+  if(el)el.textContent=h+':'+m;
+}
+updateClock();setInterval(updateClock,30000);
+</script>
+</body>
+</html>

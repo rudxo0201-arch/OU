@@ -462,7 +462,7 @@ export function CinematicHero({ onComplete }: { onComplete?: () => void }) {
       const t = (timestamp - startRef.current) / 1000;
 
       gl.viewport(0, 0, canvas!.width, canvas!.height);
-      gl.clearColor(0.024, 0.031, 0.063, 1.0); // #060810
+      gl.clearColor(0.91, 0.925, 0.945, 1.0); // #e8ecf1 (--ou-bg)
       gl.clear(gl.COLOR_BUFFER_BIT);
       gl.enable(gl.BLEND);
       gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
@@ -633,8 +633,7 @@ export function CinematicHero({ onComplete }: { onComplete?: () => void }) {
               fontFamily: "var(--font-orbitron, 'Orbitron')",
               fontSize: phase >= 2 ? 80 : 140,
               fontWeight: 800,
-              color: '#fff',
-              textShadow: '0 0 80px rgba(255,255,255,0.3), 0 0 160px rgba(255,255,255,0.1)',
+              color: 'var(--ou-text-bright)',
               transition: 'all 2s cubic-bezier(0.4,0,0.2,1)',
               transform: phase >= 2 ? 'translateY(-80px)' : 'none',
               opacity: phase >= 3.5 ? 0 : 1,
@@ -648,14 +647,14 @@ export function CinematicHero({ onComplete }: { onComplete?: () => void }) {
             marginTop: 24,
             padding: '20px 40px',
             borderRadius: 999,
-            border: '0.5px solid rgba(255,255,255,0.12)',
-            background: 'rgba(255,255,255,0.015)',
+            border: '0.5px solid var(--ou-border-subtle)',
+            background: 'var(--ou-bg)',
             backdropFilter: 'blur(12px)',
             minWidth: 380,
             fontSize: 20,
-            color: 'rgba(255,255,255,0.45)',
+            color: 'var(--ou-text-secondary)',
             animation: 'ou-fade-in 0.5s ease',
-            boxShadow: '0 0 40px rgba(255,255,255,0.03)',
+            boxShadow: 'var(--ou-neu-raised-sm)',
             opacity: phase >= 3.5 ? 0 : 1,
             transition: 'opacity 0.5s ease',
           }}>
@@ -676,7 +675,7 @@ export function CinematicHero({ onComplete }: { onComplete?: () => void }) {
             style={{
               fontSize: 80,
               fontWeight: 600,
-              color: 'rgba(255,255,255,0.9)',
+              color: 'var(--ou-text-bright)',
               letterSpacing: 6,
               opacity: phase >= 4.5 ? 0 : 1,
               transition: 'opacity 0.8s ease',
@@ -694,7 +693,7 @@ export function CinematicHero({ onComplete }: { onComplete?: () => void }) {
               style={{
                 fontSize: 56,
                 fontWeight: 600,
-                color: 'rgba(255,255,255,0.7)',
+                color: 'var(--ou-text-body)',
                 letterSpacing: 3,
               }}
             />
@@ -711,7 +710,7 @@ export function CinematicHero({ onComplete }: { onComplete?: () => void }) {
               style={{
                 fontSize: 46,
                 fontWeight: 600,
-                color: 'rgba(255,255,255,0.5)',
+                color: 'var(--ou-text-secondary)',
                 letterSpacing: 2,
               }}
             />
@@ -727,7 +726,7 @@ export function CinematicHero({ onComplete }: { onComplete?: () => void }) {
           }}>
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none"
               style={{ animation: 'float 2s ease-in-out infinite' }}>
-              <path d="M12 5v14M5 12l7 7 7-7" stroke="rgba(255,255,255,0.2)"
+              <path d="M12 5v14M5 12l7 7 7-7" stroke="var(--ou-text-disabled)"
                 strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
@@ -772,10 +771,9 @@ function BlinkCursor() {
   return (
     <span style={{
       display: 'inline-block', width: 3, height: '0.7em',
-      background: '#fff', marginLeft: 4,
+      background: 'var(--ou-text-strong)', marginLeft: 4,
       animation: 'blink 0.7s step-end infinite',
       verticalAlign: 'text-bottom',
-      boxShadow: '0 0 15px 4px rgba(255,255,255,0.5)',
       borderRadius: 1,
     }} />
   );

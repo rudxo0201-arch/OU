@@ -44,7 +44,7 @@ export function ViewWidget({ widgetId }: { widgetId: string }) {
   if (loading) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-        <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'rgba(255,255,255,0.4)', animation: 'blink 1s ease-in-out infinite' }} />
+        <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--ou-text-dimmed)', animation: 'blink 1s ease-in-out infinite' }} />
       </div>
     );
   }

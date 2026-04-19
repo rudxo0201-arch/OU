@@ -62,7 +62,7 @@ export default function ViewPage() {
   if (loading) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'rgba(255,255,255,0.6)', animation: 'blink 1s ease-in-out infinite' }} />
+        <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--ou-text-body)', animation: 'blink 1s ease-in-out infinite' }} />
       </div>
     );
   }
@@ -74,7 +74,7 @@ export default function ViewPage() {
         height: 48, flexShrink: 0,
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: '0 16px',
-        borderBottom: '1px solid var(--ou-border-subtle, rgba(255,255,255,0.06))',
+        borderBottom: '1px solid var(--ou-border-subtle)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <button
@@ -111,7 +111,7 @@ export default function ViewPage() {
               position: 'absolute', top: 40, right: 0,
               width: 180, borderRadius: 10,
               border: '1px solid var(--ou-border-subtle)',
-              background: 'rgba(20,20,25,0.95)',
+              background: 'var(--ou-bg)',
               backdropFilter: 'blur(12px)',
               padding: 4, zIndex: 100,
               animation: 'ou-fade-in 0.15s ease',
@@ -202,8 +202,8 @@ function InstallGuide({ viewLabel, viewIcon, onClose }: {
         onClick={e => e.stopPropagation()}
         style={{
           width: 320, borderRadius: 16,
-          background: 'rgba(25,25,30,0.95)',
-          border: '1px solid rgba(255,255,255,0.1)',
+          background: 'var(--ou-bg)',
+          border: '1px solid var(--ou-border-subtle)',
           padding: 24,
           animation: 'ou-fade-in 0.2s ease',
         }}
@@ -212,8 +212,8 @@ function InstallGuide({ viewLabel, viewIcon, onClose }: {
         <div style={{ textAlign: 'center', marginBottom: 20 }}>
           <div style={{
             width: 56, height: 56, borderRadius: 12,
-            background: 'rgba(255,255,255,0.06)',
-            border: '1px solid rgba(255,255,255,0.1)',
+            background: 'var(--ou-border-faint)',
+            border: '1px solid var(--ou-border-subtle)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: 28, margin: '0 auto 10px',
           }}>
@@ -230,8 +230,8 @@ function InstallGuide({ viewLabel, viewIcon, onClose }: {
         {/* Instructions */}
         <div style={{
           padding: 16, borderRadius: 10,
-          background: 'rgba(255,255,255,0.03)',
-          border: '1px solid rgba(255,255,255,0.06)',
+          background: 'var(--ou-border-faint)',
+          border: '1px solid var(--ou-border-faint)',
         }}>
           {isIOS ? (
             <div style={{ fontSize: 13, color: 'var(--ou-text-secondary)', lineHeight: 1.8 }}>

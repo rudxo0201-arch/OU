@@ -59,6 +59,15 @@ export function DotSphere() {
         points.push({ baseX: Math.cos(theta) * r * RADIUS, baseY: y * RADIUS, baseZ: Math.sin(theta) * r * RADIUS });
       }
 
+      // 테마 악센트 색상 가져오기
+      const accentHex = (() => {
+        const style = getComputedStyle(document.documentElement);
+        const raw = style.getPropertyValue('--ou-accent').trim() || '#e8976b';
+        // hex to 0x number
+        const hex = raw.replace('#', '');
+        return parseInt(hex, 16);
+      })();
+
       const gfx = new PIXI.Graphics();
       app.stage.addChild(gfx);
       let autoRotY = 0;
@@ -97,7 +106,7 @@ export function DotSphere() {
           const sx = CENTER_X + x1 * scale;
           const sy = CENTER_Y + y2 * scale;
           const nz = (z2 + RADIUS) / (2 * RADIUS);
-          const dotSize = 0.8 + nz * 2.5;
+          const dotSize = (0.8 + nz * 2.5) * 1.5;
           let alpha = 0.25 + nz * 0.7;
           if (nz > 0.6) alpha += Math.sin(frameCount * 0.02 + i * 0.1) * 0.15 * nz;
           projected.push({ sx, sy, z: z2, size: dotSize, alpha: Math.max(0.05, Math.min(1, alpha)) });
@@ -107,12 +116,12 @@ export function DotSphere() {
           // 소프트 글로우 (다중 레이어)
           if (p.alpha > 0.3) {
             gfx.circle(p.sx, p.sy, p.size * 4);
-            gfx.fill({ color: 0xffffff, alpha: p.alpha * 0.03 });
+            gfx.fill({ color: accentHex, alpha: p.alpha * 0.04 });
             gfx.circle(p.sx, p.sy, p.size * 2.5);
-            gfx.fill({ color: 0xffffff, alpha: p.alpha * 0.06 });
+            gfx.fill({ color: accentHex, alpha: p.alpha * 0.08 });
           }
           gfx.circle(p.sx, p.sy, p.size);
-          gfx.fill({ color: 0xeeeeff, alpha: p.alpha });
+          gfx.fill({ color: 0x2a2d3e, alpha: p.alpha * 0.7 });
         }
         animId = requestAnimationFrame(animate);
       };

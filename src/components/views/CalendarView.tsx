@@ -159,14 +159,14 @@ export function CalendarView({ nodes, inline }: ViewProps & { inline?: boolean }
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <button
           onClick={() => setCurrentMonth(m => m.subtract(1, 'month'))}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, display: 'flex', alignItems: 'center', color: 'inherit' }}
+          style={{ background: 'var(--ou-bg)', border: 'none', cursor: 'pointer', padding: 6, display: 'flex', alignItems: 'center', color: 'inherit', borderRadius: 8, boxShadow: 'var(--ou-neu-raised-sm)' }}
         >
           <CaretLeft size={16} />
         </button>
         <span style={{ fontWeight: 600 }}>{currentMonth.format('YYYY년 M월')}</span>
         <button
           onClick={() => setCurrentMonth(m => m.add(1, 'month'))}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, display: 'flex', alignItems: 'center', color: 'inherit' }}
+          style={{ background: 'var(--ou-bg)', border: 'none', cursor: 'pointer', padding: 6, display: 'flex', alignItems: 'center', color: 'inherit', borderRadius: 8, boxShadow: 'var(--ou-neu-raised-sm)' }}
         >
           <CaretRight size={16} />
         </button>
@@ -190,11 +190,10 @@ export function CalendarView({ nodes, inline }: ViewProps & { inline?: boolean }
               style={{
                 padding: 4,
                 minHeight: 60,
-                border: isToday
-                  ? '1px solid var(--ou-border, #333)'
-                  : '0.5px solid var(--ou-border, #333)',
-                borderRadius: 4,
-                boxShadow: isToday ? '0 0 0 1px var(--ou-border, #333)' : undefined,
+                border: 'none',
+                borderRadius: 6,
+                background: isToday ? 'var(--ou-bg)' : undefined,
+                boxShadow: isToday ? 'var(--ou-neu-pressed-sm)' : 'var(--ou-neu-raised-sm)',
               }}
             >
               <span style={{ fontSize: 11, fontWeight: isToday ? 700 : 400 }}>
@@ -209,7 +208,8 @@ export function CalendarView({ nodes, inline }: ViewProps & { inline?: boolean }
                       maxWidth: '100%',
                       padding: '1px 6px',
                       borderRadius: 4,
-                      border: '0.5px solid var(--ou-border, #333)',
+                      border: 'none',
+                      boxShadow: 'var(--ou-neu-raised-sm)',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
                       whiteSpace: 'nowrap',

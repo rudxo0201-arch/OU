@@ -307,51 +307,38 @@ export async function POST(req: NextRequest) {
                 saveError = true;
               }
 
-              // LLM 메타 파싱: 도메인 + needsText
+              // LLM 메타 파싱: 도메인 + suggestions
               const metaMatch = fullText.match(/```json:meta\s*\n?([\s\S]*?)```/);
               let llmDomain: string | undefined;
-              let llmNeedsText: boolean | undefined;
+              let llmSuggestions: string[] | undefined;
               if (metaMatch) {
                 try {
                   const meta = JSON.parse(metaMatch[1].trim());
                   llmDomain = meta.domain;
-                  llmNeedsText = meta.needsText;
+                  if (Array.isArray(meta.suggestions) && meta.suggestions.length > 0) {
+                    llmSuggestions = meta.suggestions.slice(0, 3);
+                  }
                 } catch { /* skip */ }
               }
 
-              // 도메인 불일치 로그 + needsText 로그
+              // 도메인 불일치 로그
               const userInput = messages[messages.length - 1]?.content ?? '';
-              const cleanText = fullText.replace(/```json:meta\s*\n?[\s\S]*?```/, '').trim();
-              const regexNeedsText = cleanText.length > 30;
-
-              if (llmDomain || llmNeedsText !== undefined) {
-                // 불일치가 하나라도 있으면 로깅
-                const domainMismatch = llmDomain && savedData.domain && llmDomain !== savedData.domain;
-                const needsTextMismatch = llmNeedsText !== undefined && llmNeedsText !== regexNeedsText;
-
-                if (domainMismatch || needsTextMismatch) {
-                  Promise.resolve(
-                    supabase.from('domain_classification_log').insert({
-                      user_id: user?.id,
-                      input_text: userInput.slice(0, 200),
-                      regex_domain: savedData.domain ?? 'unknown',
-                      llm_domain: llmDomain ?? savedData.domain ?? 'unknown',
-                      adopted: llmDomain ?? savedData.domain ?? 'unknown',
-                    })
-                  ).catch(() => {});
-                }
-              }
-
-              // LLM 분류 우선 채택
               if (llmDomain && savedData.domain && llmDomain !== savedData.domain) {
+                Promise.resolve(
+                  supabase.from('domain_classification_log').insert({
+                    user_id: user?.id,
+                    input_text: userInput.slice(0, 200),
+                    regex_domain: savedData.domain ?? 'unknown',
+                    llm_domain: llmDomain,
+                    adopted: llmDomain,
+                  })
+                ).catch(() => {});
+                // LLM 분류 우선 채택
                 savedData.domain = llmDomain;
               }
 
-              // needsText를 done 이벤트에 포함
-              const needsText = llmNeedsText ?? regexNeedsText;
-
               controller.enqueue(encoder.encode(
-                `data: ${JSON.stringify({ done: true, fullText, provider, needsText, ...savedData, ...(saveError ? { saveError: true } : {}) })}\n\n`
+                `data: ${JSON.stringify({ done: true, fullText, provider, suggestions: llmSuggestions, ...savedData, ...(saveError ? { saveError: true } : {}) })}\n\n`
               ));
               controller.close();
             },

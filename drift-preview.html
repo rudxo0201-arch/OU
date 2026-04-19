@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="light" data-palette="sunrise">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Drift — OU Social Threads</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css" rel="stylesheet">
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+<style>
+/* ========================================================================
+   OU NEUMORPHISM DESIGN SYSTEM — Drift Preview
+   ======================================================================== */
+
+/* --- Accent Palettes --- */
+[data-palette="sunrise"] { --palette-primary: #e8976b; --palette-secondary: #f5c16c; }
+[data-palette="arctic"]  { --palette-primary: #6b9de8; --palette-secondary: #6bcbdb; }
+[data-palette="blossom"] { --palette-primary: #d4849a; --palette-secondary: #e8a4b8; }
+[data-palette="forest"]  { --palette-primary: #6bc49a; --palette-secondary: #a4d4a8; }
+[data-palette="dusk"]    { --palette-primary: #8b7ec8; --palette-secondary: #b4a8e8; }
+[data-palette="stone"]   { --palette-primary: #9a9a9a; --palette-secondary: #b8b8b8; }
+
+/* --- Light Mode --- */
+:root, [data-theme="light"] {
+  --ou-bg: #e8ecf1;
+  --ou-bg-alt: #dde1e8;
+  --ou-shadow-dark: rgba(163,177,198,0.6);
+  --ou-shadow-light: rgba(255,255,255,0.6);
+  --ou-text-disabled: rgba(0,0,0,0.18);
+  --ou-text-muted: rgba(0,0,0,0.32);
+  --ou-text-dimmed: rgba(0,0,0,0.40);
+  --ou-text-secondary: rgba(0,0,0,0.48);
+  --ou-text-body: rgba(0,0,0,0.58);
+  --ou-text-strong: rgba(0,0,0,0.76);
+  --ou-text-bright: rgba(0,0,0,0.82);
+  --ou-text-heading: rgba(0,0,0,0.88);
+  --ou-border-subtle: rgba(0,0,0,0.05);
+  --ou-logo-fill: rgba(0,0,0,0.8);
+}
+
+/* --- Dark Mode --- */
+[data-theme="dark"] {
+  --ou-bg: #2a2d3e;
+  --ou-bg-alt: #232636;
+  --ou-shadow-dark: rgba(0,0,0,0.55);
+  --ou-shadow-light: rgba(255,255,255,0.04);
+  --ou-text-disabled: rgba(255,255,255,0.18);
+  --ou-text-muted: rgba(255,255,255,0.32);
+  --ou-text-dimmed: rgba(255,255,255,0.40);
+  --ou-text-secondary: rgba(255,255,255,0.52);
+  --ou-text-body: rgba(255,255,255,0.64);
+  --ou-text-strong: rgba(255,255,255,0.86);
+  --ou-text-bright: rgba(255,255,255,0.90);
+  --ou-text-heading: rgba(255,255,255,0.92);
+  --ou-border-subtle: rgba(255,255,255,0.05);
+  --ou-logo-fill: rgba(255,255,255,0.9);
+}
+
+/* --- Shadows & Tokens --- */
+:root {
+  --ou-neu-raised-xs: 2px 2px 4px var(--ou-shadow-dark), -2px -2px 4px var(--ou-shadow-light);
+  --ou-neu-raised-sm: 3px 3px 6px var(--ou-shadow-dark), -3px -3px 6px var(--ou-shadow-light);
+  --ou-neu-raised-md: 6px 6px 12px var(--ou-shadow-dark), -6px -6px 12px var(--ou-shadow-light);
+  --ou-neu-raised-lg: 10px 10px 20px var(--ou-shadow-dark), -10px -10px 20px var(--ou-shadow-light);
+  --ou-neu-pressed-sm: inset 2px 2px 5px var(--ou-shadow-dark), inset -2px -2px 5px var(--ou-shadow-light);
+  --ou-neu-pressed-md: inset 4px 4px 8px var(--ou-shadow-dark), inset -4px -4px 8px var(--ou-shadow-light);
+  --ou-neu-pressed-lg: inset 6px 6px 12px var(--ou-shadow-dark), inset -6px -6px 12px var(--ou-shadow-light);
+  --ou-accent: var(--palette-primary, #e8976b);
+  --ou-accent2: var(--palette-secondary, #f5c16c);
+  --ou-radius-pill: 999px;
+  --ou-radius-lg: 20px;
+  --ou-radius-card: 16px;
+  --ou-radius-chat: 18px;
+  --ou-radius-md: 12px;
+  --ou-radius-sm: 8px;
+  --ou-radius-xs: 4px;
+  --ou-t: 200ms ease;
+  --ou-font-logo: 'Orbitron', sans-serif;
+  --ou-font-display: 'DM Sans', sans-serif;
+  --ou-font-body: 'Pretendard Variable', 'DM Sans', -apple-system, system-ui, sans-serif;
+  --ou-font-mono: 'JetBrains Mono', monospace;
+}
+
+/* ======== RESET ======== */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--ou-font-body);background:var(--ou-bg);color:var(--ou-text-body);min-height:100vh;transition:background .4s,color .3s;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,textarea{font-family:inherit;color:inherit;background:transparent;outline:none;border:none;resize:none}
+
+/* ======== CONTROLS BAR ======== */
+.controls-bar{display:flex;justify-content:center;align-items:center;gap:24px;padding:24px 32px;flex-wrap:wrap}
+.theme-btn{padding:8px 20px;border-radius:var(--ou-radius-pill);font-size:12px;font-weight:600;letter-spacing:1px;background:var(--ou-bg);box-shadow:var(--ou-neu-raised-sm);color:var(--ou-text-secondary);transition:all var(--ou-t)}
+.theme-btn:active,.theme-btn.on{box-shadow:var(--ou-neu-pressed-sm);color:var(--ou-accent)}
+.palette-dots{display:flex;gap:10px}
+.pdot{width:28px;height:28px;border-radius:50%;box-shadow:var(--ou-neu-raised-sm);transition:all var(--ou-t);position:relative;cursor:pointer}
+.pdot:active,.pdot.on{box-shadow:var(--ou-neu-pressed-sm);transform:scale(.88)}
+.pdot.on::after{content:'';position:absolute;inset:-3px;border-radius:50%;border:2px solid var(--ou-accent)}
+.pdot[data-p="sunrise"]{background:#e8976b}
+.pdot[data-p="arctic"]{background:#6b9de8}
+.pdot[data-p="blossom"]{background:#d4849a}
+.pdot[data-p="forest"]{background:#6bc49a}
+.pdot[data-p="dusk"]{background:#8b7ec8}
+.pdot[data-p="stone"]{background:#9a9a9a}
+
+/* ======== PAGE HEADER ======== */
+.page-header{text-align:center;padding:40px 24px 8px}
+.page-title{font-family:var(--ou-font-logo);font-size:28px;font-weight:700;color:var(--ou-text-heading);letter-spacing:3px}
+.page-sub{font-size:12px;color:var(--ou-text-muted);margin-top:6px;letter-spacing:1px}
+
+/* ======== LAYOUT ======== */
+.drift-container{max-width:640px;margin:32px auto;padding:0 24px}
+
+/* ======== TOP BAR ======== */
+.drift-top{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+.search-orb{flex:1;background:var(--ou-bg);border-radius:var(--ou-radius-pill);box-shadow:var(--ou-neu-pressed-md);padding:12px 18px;display:flex;align-items:center;gap:10px}
+.search-orb i{font-size:18px;color:var(--ou-text-muted)}
+.search-orb input{flex:1;font-size:13px;color:var(--ou-text-strong)}
+.search-orb input::placeholder{color:var(--ou-text-disabled)}
+.create-btn{display:flex;align-items:center;gap:8px;padding:12px 22px;border-radius:var(--ou-radius-pill);background:linear-gradient(135deg,var(--ou-accent),var(--ou-accent2));color:#fff;font-size:13px;font-weight:600;box-shadow:var(--ou-neu-raised-md);transition:all var(--ou-t);white-space:nowrap}
+.create-btn:hover{box-shadow:var(--ou-neu-raised-lg),0 0 20px 4px color-mix(in srgb,var(--ou-accent) 35%,transparent)}
+.create-btn:active{box-shadow:var(--ou-neu-pressed-sm)}
+
+/* ======== TABS ======== */
+.drift-tabs{display:inline-flex;gap:3px;background:var(--ou-bg);box-shadow:var(--ou-neu-pressed-sm);border-radius:var(--ou-radius-pill);padding:3px;margin-bottom:24px}
+.drift-tab{padding:8px 20px;border-radius:var(--ou-radius-pill);font-size:12px;font-weight:600;color:var(--ou-text-muted);transition:all var(--ou-t);cursor:pointer}
+.drift-tab:hover{color:var(--ou-text-strong)}
+.drift-tab.on{background:var(--ou-bg);box-shadow:var(--ou-neu-raised-sm);color:var(--ou-accent)}
+
+/* ======== THREAD CARD ======== */
+.thread-card{background:var(--ou-bg);border-radius:var(--ou-radius-lg);box-shadow:var(--ou-neu-raised-md);padding:20px 22px;margin-bottom:20px;transition:all var(--ou-t);cursor:pointer}
+.thread-card:hover{box-shadow:var(--ou-neu-raised-lg)}
+
+.thread-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.thread-avatar{width:40px;height:40px;border-radius:50%;background:var(--ou-bg);box-shadow:var(--ou-neu-raised-sm);display:flex;align-items:center;justify-content:center;font-family:var(--ou-font-display);font-size:15px;font-weight:700;color:var(--ou-accent);flex-shrink:0}
+.thread-author{font-size:14px;font-weight:600;color:var(--ou-text-strong)}
+.thread-time{font-size:11px;color:var(--ou-text-muted);margin-left:auto}
+.thread-more{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--ou-text-muted);transition:all var(--ou-t)}
+.thread-more:hover{box-shadow:var(--ou-neu-raised-xs);color:var(--ou-text-secondary)}
+
+.thread-text{font-size:14px;line-height:1.7;color:var(--ou-text-body);margin-bottom:14px}
+
+/* Inline DataNode */
+.inline-data-card{background:var(--ou-bg);box-shadow:var(--ou-neu-raised-sm);border-radius:var(--ou-radius-md);padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;gap:12px;transition:all var(--ou-t)}
+.inline-data-card:hover{box-shadow:var(--ou-neu-raised-md)}
+.data-card-icon{width:34px;height:34px;border-radius:var(--ou-radius-sm);background:var(--ou-bg);box-shadow:var(--ou-neu-pressed-sm);display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--ou-accent);flex-shrink:0}
+.data-card-info{flex:1;min-width:0}
+.data-card-title{font-size:13px;font-weight:600;color:var(--ou-text-strong);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.data-card-domain{font-size:10px;color:var(--ou-text-muted);margin-top:2px;display:flex;align-items:center;gap:4px}
+.data-card-arrow{font-size:18px;color:var(--ou-text-muted);flex-shrink:0}
+
+/* Actions Row */
+.thread-actions{display:flex;align-items:center;gap:20px;padding-top:12px;border-top:1px solid var(--ou-border-subtle)}
+.action-item{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--ou-text-secondary);transition:all var(--ou-t);cursor:pointer}
+.action-item i{font-size:18px}
+.action-item:hover{color:var(--ou-accent)}
+.action-item.active{color:var(--ou-accent)}
+
+/* ======== THREAD DETAIL (expanded) ======== */
+.thread-detail{background:var(--ou-bg);border-radius:var(--ou-radius-lg);box-shadow:var(--ou-neu-raised-lg);padding:0;margin-bottom:20px;overflow:hidden}
+.thread-detail-main{padding:24px 22px 16px}
+.thread-detail-divider{height:1px;background:var(--ou-border-subtle);margin:0 22px}
+
+/* Replies */
+.replies-section{padding:0 22px}
+.reply-item{display:flex;gap:10px;padding:16px 0;border-bottom:1px solid var(--ou-border-subtle)}
+.reply-item:last-child{border-bottom:none}
+.reply-avatar{width:32px;height:32px;border-radius:50%;background:var(--ou-bg);box-shadow:var(--ou-neu-raised-xs);display:flex;align-items:center;justify-content:center;font-family:var(--ou-font-display);font-size:11px;font-weight:700;color:var(--ou-accent);flex-shrink:0}
+.reply-content{flex:1}
+.reply-header{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.reply-name{font-size:13px;font-weight:600;color:var(--ou-text-strong)}
+.reply-time{font-size:10px;color:var(--ou-text-muted)}
+.reply-text{font-size:13px;color:var(--ou-text-body);line-height:1.6}
+.reply-actions{display:flex;align-items:center;gap:14px;margin-top:6px}
+.reply-action{display:flex;align-items:center;gap:3px;font-size:11px;color:var(--ou-text-muted);cursor:pointer;transition:all var(--ou-t)}
+.reply-action i{font-size:15px}
+.reply-action:hover{color:var(--ou-accent)}
+
+/* Comment Orb */
+.comment-orb{padding:16px 22px;display:flex;align-items:center;gap:10px;border-top:1px solid var(--ou-border-subtle)}
+.comment-avatar{width:32px;height:32px;border-radius:50%;background:var(--ou-bg);box-shadow:var(--ou-neu-raised-xs);display:flex;align-items:center;justify-content:center;font-family:var(--ou-font-display);font-size:11px;font-weight:700;color:var(--ou-accent);flex-shrink:0}
+.comment-input{flex:1;background:var(--ou-bg);border-radius:var(--ou-radius-pill);box-shadow:var(--ou-neu-pressed-sm);padding:10px 16px;font-size:13px;color:var(--ou-text-strong)}
+.comment-input::placeholder{color:var(--ou-text-disabled)}
+.comment-send{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--ou-accent),var(--ou-accent2));box-shadow:var(--ou-neu-raised-sm);display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;transition:all var(--ou-t);flex-shrink:0}
+.comment-send:hover{box-shadow:var(--ou-neu-raised-md),0 0 12px 3px color-mix(in srgb,var(--ou-accent) 30%,transparent)}
+
+/* ======== FOOTER LABEL ======== */
+.footer-label{text-align:center;padding:32px 24px;font-size:10px;color:var(--ou-text-disabled);letter-spacing:2px;font-weight:600;text-transform:uppercase}
+</style>
+</head>
+<body>
+
+<!-- ======== CONTROLS ======== -->
+<div class="controls-bar">
+  <button class="theme-btn on" onclick="setTheme('light',this)">LIGHT</button>
+  <button class="theme-btn" onclick="setTheme('dark',this)">DARK</button>
+  <div class="palette-dots">
+    <div class="pdot on" data-p="sunrise" onclick="setPalette('sunrise')"></div>
+    <div class="pdot" data-p="arctic" onclick="setPalette('arctic')"></div>
+    <div class="pdot" data-p="blossom" onclick="setPalette('blossom')"></div>
+    <div class="pdot" data-p="forest" onclick="setPalette('forest')"></div>
+    <div class="pdot" data-p="dusk" onclick="setPalette('dusk')"></div>
+    <div class="pdot" data-p="stone" onclick="setPalette('stone')"></div>
+  </div>
+</div>
+
+<!-- ======== PAGE HEADER ======== -->
+<div class="page-header">
+  <div class="page-title">Drift</div>
+  <div class="page-sub">OU Social Threads</div>
+</div>
+
+<!-- ======== MAIN CONTENT ======== -->
+<div class="drift-container">
+
+  <!-- Top Bar -->
+  <div class="drift-top">
+    <div class="search-orb">
+      <i class="ph-light ph-magnifying-glass"></i>
+      <input type="text" placeholder="검색...">
+    </div>
+    <button class="create-btn">
+      <i class="ph-light ph-pencil-simple-line" style="font-size:16px"></i>
+      새 글
+    </button>
+  </div>
+
+  <!-- Tabs -->
+  <div class="drift-tabs">
+    <div class="drift-tab on" onclick="activateTab(this)">추천</div>
+    <div class="drift-tab" onclick="activateTab(this)">팔로잉</div>
+    <div class="drift-tab" onclick="activateTab(this)">최신</div>
+  </div>
+
+  <!-- ======== THREAD 1 ======== -->
+  <div class="thread-card">
+    <div class="thread-header">
+      <div class="thread-avatar">S</div>
+      <div>
+        <div class="thread-author">서연</div>
+      </div>
+      <div class="thread-time">2시간 전</div>
+      <button class="thread-more"><i class="ph-light ph-dots-three"></i></button>
+    </div>
+    <div class="thread-text">
+      임진왜란 타임라인 정리 완료! 이순신 장군의 전략이 정말 대단하다. 명량해전에서 13척으로 133척을 상대한 기록은 세계 해전사에서도 유례가 없다.
+    </div>
+    <!-- Inline DataNode -->
+    <div class="inline-data-card" onclick="event.stopPropagation()">
+      <div class="data-card-icon"><i class="ph-light ph-clock-counter-clockwise"></i></div>
+      <div class="data-card-info">
+        <div class="data-card-title">임진왜란 타임라인</div>
+        <div class="data-card-domain"><i class="ph-light ph-circles-three-plus" style="font-size:10px"></i> 역사</div>
+      </div>
+      <i class="ph-light ph-arrow-right data-card-arrow"></i>
+    </div>
+    <div class="thread-actions">
+      <div class="action-item"><i class="ph-light ph-chat-circle"></i> 4</div>
+      <div class="action-item"><i class="ph-light ph-link-simple"></i> 12</div>
+      <div class="action-item"><i class="ph-light ph-share-network"></i></div>
+      <div class="action-item" style="margin-left:auto"><i class="ph-light ph-bookmark-simple"></i></div>
+    </div>
+  </div>
+
+  <!-- ======== THREAD 2 ======== -->
+  <div class="thread-card">
+    <div class="thread-header">
+      <div class="thread-avatar">M</div>
+      <div>
+        <div class="thread-author">민수</div>
+      </div>
+      <div class="thread-time">5시간 전</div>
+      <button class="thread-more"><i class="ph-light ph-dots-three"></i></button>
+    </div>
+    <div class="thread-text">
+      당귀 정리 자료 올립니다. 참조 자유롭게 추가하세요. 보혈 작용과 활혈 작용을 중심으로 정리했어요.
+    </div>
+    <!-- Inline DataNode -->
+    <div class="inline-data-card" onclick="event.stopPropagation()">
+      <div class="data-card-icon"><i class="ph-light ph-file-text"></i></div>
+      <div class="data-card-info">
+        <div class="data-card-title">당귀 정리 자료</div>
+        <div class="data-card-domain"><i class="ph-light ph-circles-three-plus" style="font-size:10px"></i> 한의학</div>
+      </div>
+      <i class="ph-light ph-arrow-right data-card-arrow"></i>
+    </div>
+    <div class="thread-actions">
+      <div class="action-item"><i class="ph-light ph-chat-circle"></i> 7</div>
+      <div class="action-item active"><i class="ph-light ph-link-simple"></i> 23</div>
+      <div class="action-item"><i class="ph-light ph-share-network"></i></div>
+      <div class="action-item" style="margin-left:auto"><i class="ph-light ph-bookmark-simple"></i></div>
+    </div>
+  </div>
+
+  <!-- ======== THREAD 3 (no DataNode) ======== -->
+  <div class="thread-card">
+    <div class="thread-header">
+      <div class="thread-avatar">K</div>
+      <div>
+        <div class="thread-author">김태</div>
+      </div>
+      <div class="thread-time">어제</div>
+      <button class="thread-more"><i class="ph-light ph-dots-three"></i></button>
+    </div>
+    <div class="thread-text">
+      React Hooks 패턴 정리했습니다. useCallback vs useMemo 차이점 핵심 &mdash; useCallback은 함수 자체를 메모이제이션하고, useMemo는 계산 결과를 메모이제이션합니다. 의존성 배열이 동일하면 이전 값을 재사용하는 건 같지만, 용도가 다릅니다.
+    </div>
+    <div class="thread-actions">
+      <div class="action-item"><i class="ph-light ph-chat-circle"></i> 11</div>
+      <div class="action-item"><i class="ph-light ph-link-simple"></i> 8</div>
+      <div class="action-item"><i class="ph-light ph-share-network"></i></div>
+      <div class="action-item" style="margin-left:auto"><i class="ph-light ph-bookmark-simple"></i></div>
+    </div>
+  </div>
+
+  <!-- ======== THREAD DETAIL (expanded thread with replies) ======== -->
+  <div style="margin-top:40px;margin-bottom:8px">
+    <div style="font-size:10px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--ou-text-muted);display:flex;align-items:center;gap:12px">
+      <span>Thread Detail</span>
+      <span style="flex:1;height:1px;background:var(--ou-text-disabled)"></span>
+    </div>
+  </div>
+
+  <div class="thread-detail">
+    <!-- Original post -->
+    <div class="thread-detail-main">
+      <div class="thread-header">
+        <div class="thread-avatar">S</div>
+        <div>
+          <div class="thread-author">서연</div>
+        </div>
+        <div class="thread-time">2시간 전</div>
+        <button class="thread-more"><i class="ph-light ph-dots-three"></i></button>
+      </div>
+      <div class="thread-text">
+        임진왜란 타임라인 정리 완료! 이순신 장군의 전략이 정말 대단하다. 명량해전에서 13척으로 133척을 상대한 기록은 세계 해전사에서도 유례가 없다.
+      </div>
+      <div class="inline-data-card">
+        <div class="data-card-icon"><i class="ph-light ph-clock-counter-clockwise"></i></div>
+        <div class="data-card-info">
+          <div class="data-card-title">임진왜란 타임라인</div>
+          <div class="data-card-domain"><i class="ph-light ph-circles-three-plus" style="font-size:10px"></i> 역사</div>
+        </div>
+        <i class="ph-light ph-arrow-right data-card-arrow"></i>
+      </div>
+      <div class="thread-actions">
+        <div class="action-item"><i class="ph-light ph-chat-circle"></i> 4</div>
+        <div class="action-item"><i class="ph-light ph-link-simple"></i> 12</div>
+        <div class="action-item"><i class="ph-light ph-share-network"></i></div>
+        <div class="action-item" style="margin-left:auto"><i class="ph-light ph-bookmark-simple"></i></div>
+      </div>
+    </div>
+
+    <div class="thread-detail-divider"></div>
+
+    <!-- Replies -->
+    <div class="replies-section">
+
+      <div class="reply-item">
+        <div class="reply-avatar">M</div>
+        <div class="reply-content">
+          <div class="reply-header">
+            <span class="reply-name">민수</span>
+            <span class="reply-time">1시간 전</span>
+          </div>
+          <div class="reply-text">명량해전 부분 자료가 정말 잘 정리되어 있네요. 참조 추가했습니다!</div>
+          <div class="reply-actions">
+            <div class="reply-action"><i class="ph-light ph-heart"></i> 3</div>
+            <div class="reply-action"><i class="ph-light ph-chat-circle"></i></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="reply-item">
+        <div class="reply-avatar">K</div>
+        <div class="reply-content">
+          <div class="reply-header">
+            <span class="reply-name">김태</span>
+            <span class="reply-time">45분 전</span>
+          </div>
+          <div class="reply-text">한산도 대첩 부분도 추가해주시면 좋겠어요. 학익진 전법이 핵심이죠.</div>
+          <div class="reply-actions">
+            <div class="reply-action"><i class="ph-light ph-heart"></i> 1</div>
+            <div class="reply-action"><i class="ph-light ph-chat-circle"></i></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="reply-item">
+        <div class="reply-avatar">J</div>
+        <div class="reply-content">
+          <div class="reply-header">
+            <span class="reply-name">지영</span>
+            <span class="reply-time">30분 전</span>
+          </div>
+          <div class="reply-text">이 자료 수업에서 활용해도 될까요? 학생들한테 보여주고 싶어요.</div>
+          <div class="reply-actions">
+            <div class="reply-action"><i class="ph-light ph-heart"></i> 5</div>
+            <div class="reply-action"><i class="ph-light ph-chat-circle"></i></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="reply-item">
+        <div class="reply-avatar">S</div>
+        <div class="reply-content">
+          <div class="reply-header">
+            <span class="reply-name">서연</span>
+            <span class="reply-time">20분 전</span>
+          </div>
+          <div class="reply-text">네 당연하죠! 참조 추가해서 쓰시면 됩니다. 한산도 대첩도 곧 추가할게요.</div>
+          <div class="reply-actions">
+            <div class="reply-action"><i class="ph-light ph-heart"></i> 2</div>
+            <div class="reply-action"><i class="ph-light ph-chat-circle"></i></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Comment Orb -->
+    <div class="comment-orb">
+      <div class="comment-avatar">N</div>
+      <input class="comment-input" type="text" placeholder="댓글 작성...">
+      <button class="comment-send"><i class="ph-light ph-paper-plane-tilt"></i></button>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer-label">Drift &mdash; OU Social Threads</div>
+
+<script>
+function setTheme(t,el){
+  document.documentElement.setAttribute('data-theme',t);
+  document.querySelectorAll('.theme-btn').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+}
+function setPalette(n){
+  document.documentElement.setAttribute('data-palette',n);
+  document.querySelectorAll('.pdot').forEach(d=>d.classList.remove('on'));
+  document.querySelector('[data-p="'+n+'"]').classList.add('on');
+}
+function activateTab(el){
+  el.parentElement.querySelectorAll('.drift-tab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+}
+</script>
+</body>
+</html>

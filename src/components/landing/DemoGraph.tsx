@@ -37,7 +37,7 @@ export function DemoGraph({ nodes, edges }: Props) {
       // Central "me" node
       const me = new PIXI.Graphics();
       me.circle(0, 0, 8);
-      me.fill({ color: 0xffffff, alpha: 0.85 });
+      me.fill({ color: 0x000000, alpha: 0.76 });
       me.x = el.clientWidth / 2;
       me.y = el.clientHeight / 2;
       app.stage.addChild(me);
@@ -75,7 +75,7 @@ export function DemoGraph({ nodes, edges }: Props) {
             const line = new PIXI.Graphics();
             line.moveTo(other.x, other.y);
             line.lineTo(cx + (node.x - 200), cy + (node.y - 200));
-            line.stroke({ color: 0xffffff, alpha: 0.06, width: 0.5 });
+            line.stroke({ color: 0x000000, alpha: 0.06, width: 0.5 });
             app.stage.addChildAt(line, 0);
           }
         }
@@ -83,7 +83,7 @@ export function DemoGraph({ nodes, edges }: Props) {
         // Node dot
         const gfx = new PIXI.Graphics();
         gfx.circle(0, 0, 5);
-        gfx.fill({ color: 0xffffff, alpha: 0.6 });
+        gfx.fill({ color: 0x000000, alpha: 0.48 });
         gfx.x = cx + (node.x - 200);
         gfx.y = cy + (node.y - 200);
         gfx.scale.set(0);
@@ -92,7 +92,7 @@ export function DemoGraph({ nodes, edges }: Props) {
 
         // Label
         const label = new PIXI.Text({ text: node.label, style: {
-          fontSize: 10, fill: 'rgba(255,255,255,0.4)',
+          fontSize: 10, fill: 'rgba(0,0,0,0.42)',
           fontFamily: "'Pretendard Variable', sans-serif",
         }});
         label.anchor.set(0.5, 0);

@@ -37,15 +37,15 @@ class ViewErrorBoundary extends Component<
     if (this.state.hasError) {
       return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', minHeight: 200, gap: 8, padding: 24 }}>
-          <WarningCircle size={32} color="var(--mantine-color-red-5)" />
-          <span style={{ fontSize: 'var(--mantine-font-size-sm)', color: 'var(--mantine-color-dimmed)', textAlign: 'center' }}>뷰를 표시할 수 없습니다</span>
+          <WarningCircle size={32} color="var(--ou-text-error, #e03131)" />
+          <span style={{ fontSize: '13px', color: 'var(--ou-text-dimmed)', textAlign: 'center' }}>뷰를 표시할 수 없습니다</span>
           {process.env.NODE_ENV === 'development' && this.state.error && (
-            <span style={{ fontSize: 10, color: 'var(--mantine-color-red-5)', textAlign: 'center', maxWidth: 400, fontFamily: 'monospace' }}>
+            <span style={{ fontSize: 10, color: 'var(--ou-text-error, #e03131)', textAlign: 'center', maxWidth: 400, fontFamily: 'monospace' }}>
               {this.state.error}
             </span>
           )}
           <button
-            style={{ padding: '4px 12px', fontSize: 'var(--mantine-font-size-xs)', background: 'transparent', border: '0.5px solid var(--mantine-color-default-border)', borderRadius: 'var(--mantine-radius-md)', cursor: 'pointer', color: 'inherit' }}
+            style={{ padding: '4px 12px', fontSize: '12px', background: 'transparent', border: '0.5px solid var(--ou-border-subtle)', borderRadius: '8px', cursor: 'pointer', color: 'inherit' }}
             onClick={() => this.setState({ hasError: false, error: null })}
           >
             다시 시도
@@ -76,7 +76,7 @@ export function ViewRenderer({ viewType, nodes, filters, onSave, inline, layoutC
     <ViewErrorBoundary viewType={resolvedType}>
       <div
         style={inline ? {
-          border: '0.5px solid var(--mantine-color-default-border)',
+          border: '0.5px solid var(--ou-border-subtle)',
           borderRadius: 8,
           overflow: 'hidden',
           maxHeight: 400,

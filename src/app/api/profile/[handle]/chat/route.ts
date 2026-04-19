@@ -31,6 +31,15 @@ export async function POST(
   try {
     const supabase = await createClient();
 
+    // 인증: 로그인한 회원만 프로필 채팅 가능
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
     // Look up user by handle
     const { data: profile, error: profileError } = await supabase
       .from('profiles')

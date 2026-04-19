@@ -93,16 +93,17 @@ export function TodoView({ nodes, inline }: ViewProps) {
     return (
       <div style={{
         padding: '10px 14px',
-        border: '0.5px solid var(--ou-border-subtle)',
+        border: 'none',
         borderRadius: 'var(--ou-radius-md, 8px)',
+        boxShadow: 'var(--ou-neu-raised-sm)',
         display: 'flex', flexDirection: 'column', gap: 6,
       }}>
-        <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', letterSpacing: 1 }}>TODO</span>
+        <span style={{ fontSize: 11, color: 'var(--ou-text-muted)', letterSpacing: 1 }}>TODO</span>
         {items.map(item => (
           <TodoRow key={item.id} item={item} isDone={getIsDone(item)} onToggle={() => toggle(item.id)} compact />
         ))}
         {allTodos.length > 5 && (
-          <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)' }}>+{allTodos.length - 5}개 더</span>
+          <span style={{ fontSize: 10, color: 'var(--ou-text-muted)' }}>+{allTodos.length - 5}개 더</span>
         )}
       </div>
     );
@@ -153,7 +154,9 @@ export function TodoView({ nodes, inline }: ViewProps) {
             style={{
               fontSize: 12, color: 'var(--ou-text-dimmed, #888)',
               cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
-              marginBottom: 8,
+              marginBottom: 8, border: 'none', background: 'none',
+              padding: '6px 12px', borderRadius: 8,
+              boxShadow: doneVisible ? 'var(--ou-neu-pressed-sm)' : 'var(--ou-neu-raised-sm)',
             }}
           >
             <span style={{ fontSize: 10 }}>{doneVisible ? '▼' : '▶'}</span>
@@ -183,17 +186,19 @@ function TodoRow({ item, isDone, onToggle, compact }: {
     ? 'rgba(255,120,100,0.8)'
     : item.priority === 2
     ? 'rgba(255,200,100,0.8)'
-    : 'rgba(255,255,255,0.2)';
+    : 'var(--ou-border-muted)';
 
   return (
     <div
       onClick={onToggle}
       style={{
         display: 'flex', alignItems: 'center', gap: compact ? 8 : 10,
-        padding: compact ? '3px 0' : '8px 4px',
+        padding: compact ? '3px 4px' : '8px 10px',
         cursor: 'pointer',
-        borderRadius: 6,
+        borderRadius: 8,
         transition: '150ms ease',
+        boxShadow: isDone ? 'var(--ou-neu-pressed-sm)' : 'var(--ou-neu-raised-sm)',
+        marginBottom: compact ? 0 : 2,
       }}
     >
       {/* Checkbox */}

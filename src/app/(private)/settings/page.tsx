@@ -30,8 +30,8 @@ export default function SettingsPage() {
   if (isLoading) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
-        <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'rgba(255,255,255,0.6)', animation: 'blink 1s ease-in-out infinite' }} />
-        {timedOut && <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>로그인 페이지로 이동 중...</span>}
+        <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--ou-text-body)', animation: 'blink 1s ease-in-out infinite' }} />
+        {timedOut && <span style={{ fontSize: 12, color: 'var(--ou-text-dimmed)' }}>로그인 페이지로 이동 중...</span>}
       </div>
     );
   }
@@ -65,7 +65,9 @@ export default function SettingsPage() {
             onClick={() => router.push('/my')}
             style={{
               width: 36, height: 36, borderRadius: '50%',
-              border: '1px solid var(--ou-border-muted)',
+              border: 'none',
+              background: 'var(--ou-bg)',
+              boxShadow: 'var(--ou-neu-raised-xs)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               cursor: 'pointer',
             }}
@@ -85,10 +87,10 @@ export default function SettingsPage() {
             style={{
               padding: '16px 20px', fontSize: 16, fontWeight: 500,
               borderRadius: 12, cursor: 'pointer', textAlign: 'left',
-              border: activeTab === tab.key ? '1px solid var(--ou-border-medium)' : '1px solid transparent',
-              background: activeTab === tab.key ? 'rgba(255,255,255,0.05)' : 'transparent',
+              border: 'none',
+              background: activeTab === tab.key ? 'var(--ou-bg)' : 'transparent',
               color: activeTab === tab.key ? 'var(--ou-text-bright)' : 'var(--ou-text-secondary)',
-              boxShadow: activeTab === tab.key ? 'var(--ou-glow-xs)' : 'none',
+              boxShadow: activeTab === tab.key ? 'var(--ou-neu-raised-sm)' : 'none',
               transition: 'var(--ou-transition)',
             }}
           >
@@ -328,8 +330,9 @@ function ApiKeySection() {
       {newPlainKey && (
         <div style={{
           padding: 12, borderRadius: 8, marginBottom: 12,
-          border: '1px solid rgba(255,255,255,0.15)',
-          background: 'rgba(255,255,255,0.05)',
+          border: 'none',
+          background: 'var(--ou-bg)',
+          boxShadow: 'var(--ou-neu-raised-sm)',
         }}>
           <div style={{ fontSize: 11, color: 'var(--ou-text-dimmed)', marginBottom: 6 }}>
             키가 생성되었습니다. 이 키는 다시 표시되지 않으니 지금 복사하세요.
@@ -337,7 +340,7 @@ function ApiKeySection() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <code style={{
               flex: 1, fontSize: 11, padding: '6px 8px', borderRadius: 4,
-              background: 'rgba(0,0,0,0.3)', color: 'var(--ou-text-strong)',
+              background: 'var(--ou-surface-faint)', color: 'var(--ou-text-strong)',
               wordBreak: 'break-all',
             }}>
               {newPlainKey}
@@ -390,24 +393,56 @@ function ApiKeySection() {
 // ============================================================
 // 디스플레이 탭
 // ============================================================
+const PALETTES = [
+  { key: 'sunrise', label: 'Sunrise', color: '#e8976b' },
+  { key: 'arctic', label: 'Arctic', color: '#6b9de8' },
+  { key: 'blossom', label: 'Blossom', color: '#d4849a' },
+  { key: 'forest', label: 'Forest', color: '#6bc49a' },
+  { key: 'dusk', label: 'Dusk', color: '#8b7ec8' },
+  { key: 'stone', label: 'Stone', color: '#9a9a9a' },
+];
+
 function DisplayTab() {
   const store = useWidgetStore();
   const [gridCols, setGridCols] = useState(store.gridCols || 6);
   const [gridRows, setGridRows] = useState(store.gridRows || 4);
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    if (typeof document !== 'undefined') {
+      return (document.documentElement.getAttribute('data-theme') as 'dark' | 'light') || 'light';
+    }
+    return 'light';
+  });
+  const [palette, setPalette] = useState(() => {
+    if (typeof document !== 'undefined') {
+      return document.documentElement.getAttribute('data-palette') || 'sunrise';
+    }
+    return 'sunrise';
+  });
+
+  const applyTheme = (t: 'dark' | 'light') => {
+    setTheme(t);
+    document.documentElement.setAttribute('data-theme', t);
+    localStorage.setItem('ou-theme', t);
+  };
+
+  const applyPalette = (p: string) => {
+    setPalette(p);
+    document.documentElement.setAttribute('data-palette', p);
+    localStorage.setItem('ou-palette', p);
+  };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
       <Section title="홈 화면 그리드">
         <p style={{ fontSize: 13, color: 'var(--ou-text-secondary)', lineHeight: 1.8, marginBottom: 12 }}>
-          위젯 배치 그리드의 크기를 조절합니다. 크게 보기는 그리드 수가 줄어들고, 작게 보기는 늘어납니다.
+          위젯 배치 그리드의 크기를 조절합니다.
         </p>
         <SliderField label="가로 칸 수" value={gridCols} min={4} max={12} onChange={setGridCols} />
         <SliderField label="세로 칸 수" value={gridRows} min={3} max={8} onChange={setGridRows} />
         <div style={{
           marginTop: 12, padding: 16, borderRadius: 10,
-          border: '1px solid var(--ou-border-subtle)',
-          background: 'rgba(255,255,255,0.02)',
+          background: 'var(--ou-bg)',
+          boxShadow: 'var(--ou-neu-pressed-sm)',
         }}>
           <div style={{ fontSize: 11, color: 'var(--ou-text-dimmed)', marginBottom: 8 }}>미리보기</div>
           <div style={{
@@ -419,8 +454,8 @@ function DisplayTab() {
             {Array.from({ length: gridCols * gridRows }).map((_, i) => (
               <div key={i} style={{
                 borderRadius: 3,
-                border: '0.5px solid rgba(255,255,255,0.06)',
-                background: 'rgba(255,255,255,0.02)',
+                border: '0.5px solid var(--ou-border-faint)',
+                background: 'var(--ou-surface-faint)',
               }} />
             ))}
           </div>
@@ -429,21 +464,64 @@ function DisplayTab() {
       </Section>
 
       <Section title="테마">
-        <div style={{ display: 'flex', gap: 12 }}>
-          {(['dark', 'light'] as const).map(t => (
+        <div style={{ display: 'flex', gap: 12, marginBottom: 8 }}>
+          {(['light', 'dark'] as const).map(t => (
             <button
               key={t}
-              onClick={() => setTheme(t)}
+              onClick={() => applyTheme(t)}
               style={{
                 padding: '10px 24px', borderRadius: 10,
-                border: theme === t ? '1px solid rgba(255,255,255,0.3)' : '1px solid var(--ou-border-subtle)',
-                background: theme === t ? 'rgba(255,255,255,0.05)' : 'transparent',
-                color: theme === t ? 'var(--ou-text-strong)' : 'var(--ou-text-dimmed)',
-                fontSize: 13, cursor: 'pointer',
-                transition: 'var(--ou-transition)',
+                border: 'none',
+                background: 'var(--ou-bg)',
+                boxShadow: theme === t ? 'var(--ou-neu-pressed-sm)' : 'var(--ou-neu-raised-sm)',
+                color: theme === t ? 'var(--ou-accent)' : 'var(--ou-text-dimmed)',
+                fontSize: 13, fontWeight: theme === t ? 600 : 400,
+                cursor: 'pointer',
+                transition: 'all var(--ou-transition)',
               }}
             >
-              {t === 'dark' ? '다크' : '라이트'}
+              {t === 'light' ? '라이트' : '다크'}
+            </button>
+          ))}
+        </div>
+      </Section>
+
+      <Section title="악센트 컬러">
+        <p style={{ fontSize: 13, color: 'var(--ou-text-secondary)', lineHeight: 1.8, marginBottom: 16 }}>
+          버튼, 글로우, 강조 등에 사용되는 테마 색상을 선택합니다.
+        </p>
+        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+          {PALETTES.map(p => (
+            <button
+              key={p.key}
+              onClick={() => applyPalette(p.key)}
+              style={{
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
+                padding: 12, borderRadius: 12,
+                border: 'none',
+                background: 'var(--ou-bg)',
+                boxShadow: palette === p.key ? 'var(--ou-neu-pressed-sm)' : 'var(--ou-neu-raised-sm)',
+                cursor: 'pointer',
+                transition: 'all var(--ou-transition)',
+                minWidth: 72,
+              }}
+            >
+              <div style={{
+                width: 36, height: 36, borderRadius: '50%',
+                background: p.color,
+                boxShadow: palette === p.key
+                  ? `0 0 12px 4px ${p.color}40`
+                  : 'var(--ou-neu-raised-xs)',
+                transition: 'all var(--ou-transition)',
+                transform: palette === p.key ? 'scale(1.1)' : 'scale(1)',
+              }} />
+              <span style={{
+                fontSize: 11,
+                color: palette === p.key ? 'var(--ou-text-strong)' : 'var(--ou-text-muted)',
+                fontWeight: palette === p.key ? 600 : 400,
+              }}>
+                {p.label}
+              </span>
             </button>
           ))}
         </div>
@@ -484,7 +562,7 @@ function ViewsTab() {
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               padding: '10px 0', width: '100%', textAlign: 'left',
               borderBottom: '1px solid var(--ou-border-subtle)',
-              background: selected?.id === v.id ? 'rgba(255,255,255,0.03)' : 'transparent',
+              background: selected?.id === v.id ? 'var(--ou-surface-faint)' : 'transparent',
               cursor: 'pointer',
             }}
           >
@@ -525,7 +603,7 @@ function ViewEditor({ view, onUpdate }: { view: any; onUpdate: (v: any) => void 
   };
 
   return (
-    <div style={{ padding: 16, borderRadius: 10, border: '1px solid var(--ou-border-subtle)', background: 'rgba(255,255,255,0.02)' }}>
+    <div style={{ padding: 16, borderRadius: 10, border: 'none', background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-raised-sm)' }}>
       <h4 style={{ fontSize: 13, fontWeight: 600, color: 'var(--ou-text-strong)', marginBottom: 16 }}>
         {view.name} 편집
       </h4>
@@ -764,7 +842,7 @@ function SliderField({ label, value, min, max, onChange }: { label: string; valu
       <input
         type="range" min={min} max={max} value={value}
         onChange={e => onChange(Number(e.target.value))}
-        style={{ flex: 1, accentColor: 'rgba(255,255,255,0.5)' }}
+        style={{ flex: 1, accentColor: 'var(--ou-text-secondary)' }}
       />
       <span style={{ fontSize: 12, color: 'var(--ou-text-secondary)', width: 28, textAlign: 'right' }}>{value}</span>
     </div>
@@ -774,22 +852,27 @@ function SliderField({ label, value, min, max, onChange }: { label: string; valu
 // ---- Styles ----
 const inputStyle: React.CSSProperties = {
   padding: '12px 16px', borderRadius: 10,
-  border: '1px solid var(--ou-border-muted)',
-  background: 'rgba(255,255,255,0.04)',
+  border: 'none',
+  background: 'var(--ou-bg)',
+  boxShadow: 'var(--ou-neu-pressed-sm)',
   color: 'var(--ou-text-body)',
   fontSize: 15, outline: 'none', width: '100%',
 };
 
 const btnStyle: React.CSSProperties = {
   padding: '12px 28px', borderRadius: 999,
-  border: '1px solid var(--ou-border-muted)',
+  border: 'none',
+  background: 'var(--ou-bg)',
+  boxShadow: 'var(--ou-neu-raised-sm)',
   fontSize: 15, color: 'var(--ou-text-body)',
   cursor: 'pointer', transition: 'var(--ou-transition)',
 };
 
 const btnSmall: React.CSSProperties = {
   padding: '8px 16px', borderRadius: 999,
-  border: '1px solid var(--ou-border-muted)',
+  border: 'none',
+  background: 'var(--ou-bg)',
+  boxShadow: 'var(--ou-neu-raised-xs)',
   fontSize: 13, color: 'var(--ou-text-secondary)',
   cursor: 'pointer',
 };

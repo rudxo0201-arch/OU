@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
   const authHeader = req.headers.get('authorization');
   const supabase = await createClient();
 
-  if (CRON_SECRET && authHeader !== `Bearer ${CRON_SECRET}`) {
+  if (!CRON_SECRET || authHeader !== `Bearer ${CRON_SECRET}`) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

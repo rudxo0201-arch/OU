@@ -17,13 +17,23 @@ const SPHERE_DURATION = 600;
 const WIDGET_ENTER_DURATION = 600;
 
 export default function MyPage() {
-  const { user, isLoading, signOut } = useAuth();
+  const { user, isLoading, signOut, isAdmin } = useAuth();
   const router = useRouter();
   const [mode, setMode] = useState<Mode>('dashboard');
   const [orbExpanded, setOrbExpanded] = useState(false);
   const hasOuWidget = useWidgetStore(s => (s.pages[s.currentPageIndex]?.widgets ?? []).some(w => w.type === 'ou-view'));
-  const { currentPageIndex, pages, setCurrentPage } = useWidgetStore();
+  const currentPageIndex = useWidgetStore(s => s.currentPageIndex);
+  const pages = useWidgetStore(s => s.pages);
+  const setCurrentPage = useWidgetStore(s => s.setCurrentPage);
+  const initAdminLayout = useWidgetStore(s => s.initAdminLayout);
   const timerRef = useRef<NodeJS.Timeout>();
+
+  // Admin layout 초기화 (admin 계정 최초 진입 시 한 번만)
+  useEffect(() => {
+    if (isAdmin && !isLoading) {
+      initAdminLayout();
+    }
+  }, [isAdmin, isLoading, initAdminLayout]);
 
   // ⌘+K shortcut + Orb expand event
   useEffect(() => {
@@ -66,7 +76,7 @@ export default function MyPage() {
   if (isLoading) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'rgba(255,255,255,0.6)', animation: 'blink 1s ease-in-out infinite' }} />
+        <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--ou-text-secondary)', animation: 'blink 1s ease-in-out infinite' }} />
       </div>
     );
   }
@@ -131,7 +141,7 @@ export default function MyPage() {
                 width: currentPageIndex === i ? 20 : 8,
                 height: 8,
                 borderRadius: 999,
-                background: currentPageIndex === i ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.15)',
+                background: currentPageIndex === i ? 'var(--ou-text-secondary)' : 'var(--ou-text-disabled)',
                 transition: 'all 300ms cubic-bezier(0.34, 1.56, 0.64, 1)',
               }}
             />
@@ -151,7 +161,14 @@ export default function MyPage() {
         pointerEvents: 'none',
       }}>
         <div style={{ pointerEvents: 'auto' }}>
-          <DockBar onUniverse={toggleUniverse} universeActive={universeActive} />
+          <DockBar
+            onUniverse={toggleUniverse}
+            universeActive={universeActive}
+            onDictionary={isAdmin ? () => setCurrentPage(0) : undefined}
+            dictionaryActive={isAdmin && currentPageIndex === 0}
+            onBoncho={isAdmin ? () => setCurrentPage(1) : undefined}
+            bonchoActive={isAdmin && currentPageIndex === 1}
+          />
         </div>
       </div>
     </div>
@@ -159,26 +176,10 @@ export default function MyPage() {
 }
 
 // ---- Spotlight Widget (sits on desktop, activates chat on Enter) ----
-// ---- macOS-style Menu Bar ----
+// ---- Menu Bar (로고 좌상단, 설정+프로필 우상단, 시계 제거) ----
 function MenuBar({ showLogo, email, onSettings, onLogout }: {
   showLogo: boolean; email?: string; onSettings: () => void; onLogout: () => void;
 }) {
-  const [time, setTime] = useState('');
-
-  useEffect(() => {
-    const update = () => {
-      const now = new Date();
-      const h = now.getHours();
-      const m = now.getMinutes().toString().padStart(2, '0');
-      const period = h >= 12 ? '오후' : '오전';
-      const h12 = h > 12 ? h - 12 : h === 0 ? 12 : h;
-      setTime(`${period} ${h12}:${m}`);
-    };
-    update();
-    const iv = setInterval(update, 30000);
-    return () => clearInterval(iv);
-  }, []);
-
   return (
     <div style={{
       position: 'absolute',
@@ -190,39 +191,31 @@ function MenuBar({ showLogo, email, onSettings, onLogout }: {
       padding: '0 24px',
       zIndex: 10,
     }}>
-      {/* Left: Logo — white, glowing */}
+      {/* Left: Logo */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        {showLogo ? (
-          <img
-            src="/logo-ou-white.svg"
-            alt="OU"
-            style={{
-              height: 22,
-              opacity: 1,
-              filter: 'drop-shadow(0 0 8px rgba(255,255,255,0.4)) drop-shadow(0 0 20px rgba(255,255,255,0.15))',
-            }}
-          />
-        ) : (
-          <div style={{ width: 36 }} />
-        )}
+        <img
+          src="/logo-ou.svg"
+          alt="OU"
+          style={{
+            height: 20,
+            opacity: 0.6,
+          }}
+        />
       </div>
 
-      {/* Right: Time + Settings + Profile */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-        <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', fontVariantNumeric: 'tabular-nums' }}>
-          {time}
-        </span>
+      {/* Right: Settings + Profile */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
         <button
           onClick={onSettings}
           className="ou-pressable"
-          style={{ color: 'rgba(255,255,255,0.7)', padding: '4px 10px', borderRadius: 6 }}
+          style={{ color: 'var(--ou-text-body)', padding: '4px 10px', borderRadius: 6 }}
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
             <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" strokeWidth="1.5" />
             <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z" stroke="currentColor" strokeWidth="1.5" />
           </svg>
         </button>
-        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>{email?.split('@')[0]}</span>
+        <span style={{ fontSize: 12, color: 'var(--ou-text-muted)' }}>{email?.split('@')[0]}</span>
       </div>
     </div>
   );
@@ -243,8 +236,8 @@ function ExpandingSphere({ expanding }: { expanding: boolean }) {
         width: 48,
         height: 48,
         borderRadius: '50%',
-        background: 'radial-gradient(circle at 35% 35%, rgba(255,255,255,0.2), rgba(255,255,255,0.03) 70%)',
-        boxShadow: '0 0 40px 10px rgba(255,255,255,0.08)',
+        background: 'radial-gradient(circle at 35% 35%, var(--ou-text-muted), var(--ou-border-faint) 70%)',
+        boxShadow: '0 0 40px 10px var(--ou-border-faint)',
         animation: expanding
           ? 'sphere-expand 600ms cubic-bezier(0, 0, 0.2, 1) forwards'
           : 'sphere-collapse 600ms cubic-bezier(0.4, 0, 1, 1) forwards',

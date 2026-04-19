@@ -178,8 +178,8 @@ function ViewGrid({ views, onOpen }: {
             transition: '150ms ease',
           }}
           onMouseEnter={e => {
-            e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
-            e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)';
+            e.currentTarget.style.background = 'var(--ou-border-faint)';
+            e.currentTarget.style.borderColor = 'var(--ou-border-faint)';
           }}
           onMouseLeave={e => {
             e.currentTarget.style.background = 'transparent';
@@ -188,8 +188,8 @@ function ViewGrid({ views, onOpen }: {
         >
           <div style={{
             width: 52, height: 52, borderRadius: 12,
-            background: 'rgba(255,255,255,0.05)',
-            border: '1px solid rgba(255,255,255,0.08)',
+            background: 'var(--ou-border-faint)',
+            border: '1px solid var(--ou-border-faint)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: 24,
           }}>

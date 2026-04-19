@@ -63,8 +63,8 @@ export default function ChatFullBoardPage() {
           width: '25%', minWidth: 300, maxWidth: 400,
           flexShrink: 0,
           borderRadius: 16,
-          background: 'rgba(255,255,255,0.02)',
-          border: '1px solid rgba(255,255,255,0.08)',
+          background: 'var(--ou-surface-faint)',
+          border: '1px solid var(--ou-border-faint)',
           backdropFilter: 'blur(12px)',
           display: 'flex',
           flexDirection: 'column',
@@ -89,8 +89,8 @@ export default function ChatFullBoardPage() {
             width: '25%', minWidth: 280, maxWidth: 360,
             flexShrink: 0,
             borderRadius: 16,
-            background: 'rgba(255,255,255,0.02)',
-            border: '1px solid rgba(255,255,255,0.08)',
+            background: 'var(--ou-surface-faint)',
+            border: '1px solid var(--ou-border-faint)',
             backdropFilter: 'blur(12px)',
             padding: 20,
             overflowY: 'auto',
@@ -115,7 +115,7 @@ export default function ChatFullBoardPage() {
                 onClick={() => setRightPanel(null)}
                 style={{
                   width: 24, height: 24, borderRadius: '50%',
-                  background: 'rgba(255,255,255,0.05)',
+                  background: 'var(--ou-surface-faint)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   cursor: 'pointer', fontSize: 14, color: 'var(--ou-text-dimmed)',
                 }}
