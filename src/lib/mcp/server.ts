@@ -11,7 +11,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { ingestConversation } from '@/lib/pipeline/ingest-conversation';
 import { searchUserData } from '@/lib/search/inline';
 
-export function createOUMcpServer() {
+export function createOUMcpServer(userId: string) {
   const server = new McpServer({
     name: 'ou-universe',
     version: '1.0.0',
@@ -28,12 +28,7 @@ export function createOUMcpServer() {
       source: z.string().optional().describe('Client name: claude_code, claude_ai, chatgpt, etc.'),
       session_id: z.string().optional().describe('Session ID to group related messages'),
     },
-    async ({ user_message, assistant_message, source, session_id }, extra) => {
-      const userId = (extra as any).authInfo?.extra?.userId;
-      if (!userId) {
-        return { content: [{ type: 'text' as const, text: 'Authentication required' }], isError: true };
-      }
-
+    async ({ user_message, assistant_message, source, session_id }) => {
       try {
         const supabase = createAdminClient();
 
@@ -92,12 +87,7 @@ export function createOUMcpServer() {
       source: z.string().optional().describe('Source client name'),
       session_id: z.string().optional().describe('Session ID'),
     },
-    async ({ messages, source, session_id }, extra) => {
-      const userId = (extra as any).authInfo?.extra?.userId;
-      if (!userId) {
-        return { content: [{ type: 'text' as const, text: 'Authentication required' }], isError: true };
-      }
-
+    async ({ messages, source, session_id }) => {
       try {
         const supabase = createAdminClient();
 
@@ -164,12 +154,7 @@ export function createOUMcpServer() {
       query: z.string().describe('Search query'),
       limit: z.number().optional().describe('Max results (default 5)'),
     },
-    async ({ query, limit }, extra) => {
-      const userId = (extra as any).authInfo?.extra?.userId;
-      if (!userId) {
-        return { content: [{ type: 'text' as const, text: 'Authentication required' }], isError: true };
-      }
-
+    async ({ query, limit }) => {
       try {
         const supabase = createAdminClient();
         const results = await searchUserData(supabase, userId, query, limit ?? 5);
@@ -206,12 +191,7 @@ export function createOUMcpServer() {
       topic: z.string().describe('Topic to get context for'),
       max_nodes: z.number().optional().describe('Max nodes to return (default 3)'),
     },
-    async ({ topic, max_nodes }, extra) => {
-      const userId = (extra as any).authInfo?.extra?.userId;
-      if (!userId) {
-        return { content: [{ type: 'text' as const, text: 'Authentication required' }], isError: true };
-      }
-
+    async ({ topic, max_nodes }) => {
       try {
         const supabase = createAdminClient();
         const nodes = await searchUserData(supabase, userId, topic, max_nodes ?? 3);
