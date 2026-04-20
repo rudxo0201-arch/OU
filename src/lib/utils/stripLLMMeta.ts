@@ -7,8 +7,10 @@
  *   ```json:view {...} ```  — 뷰 호출 지시
  */
 const META_PATTERNS: RegExp[] = [
-  /```json:meta[\s\S]*?```/g,
-  /```json:view[\s\S]*?```/g,
+  /```json:meta[\s\S]*?```/g,  // 닫힌 블록
+  /```json:view[\s\S]*?```/g,  // 닫힌 블록
+  /```json:meta[\s\S]*/g,      // 미완성 블록 (끝까지)
+  /```json:view[\s\S]*/g,      // 미완성 블록 (끝까지)
 ];
 
 export function stripLLMMeta(text: string): string {
