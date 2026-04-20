@@ -64,7 +64,7 @@ function TopNavBarInner({ userInitial }: TopNavBarProps) {
         background: 'var(--ou-bg)',
         display: 'flex',
         alignItems: 'center',
-        padding: '0 80px',
+        padding: '0 40px',
         gap: 24,
       }}
     >
