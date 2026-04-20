@@ -38,6 +38,7 @@ export const VIEW_REGISTRY: Record<string, ComponentType<ViewProps>> = {
   profile:    dynamic(() => import('./ProfileView').then(m => m.ProfileView), { ssr: false }),
 
   // ── Wave 4: 학습/수집 ──
+  shanghanlun: dynamic(() => import('./ShanghanlunView').then(m => m.ShanghanlunView), { ssr: false }),
   boncho:     dynamic(() => import('./BonchoView').then(m => m.BonchoView), { ssr: false }),
   idea:       dynamic(() => import('./IdeaView').then(m => m.IdeaView), { ssr: false }),
   curriculum: dynamic(() => import('./CurriculumView').then(m => m.CurriculumView), { ssr: false }),
@@ -111,6 +112,7 @@ export const VIEW_META: Record<string, ViewMeta> = {
   idea:       { previewOnClick: false },
   curriculum: { previewOnClick: false },
   lecture:    { previewOnClick: false },
+  shanghanlun: { previewOnClick: false },
   boncho:     { previewOnClick: false },
   scrap:      { previewOnClick: true },
   youtube:    { previewOnClick: false },
@@ -186,6 +188,7 @@ export const VIEW_LABELS: Record<string, string> = {
   idea:       '아이디어 보드',
   curriculum: '커리큘럼',
   lecture:    '강의',
+  shanghanlun: '상한론',
   boncho:     '본초학',
   scrap:      '스크랩',
   youtube:    'YouTube',

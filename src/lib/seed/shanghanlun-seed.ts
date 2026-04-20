@@ -72,21 +72,72 @@ function buildSections(article: ShanghanlunArticle): Array<{ heading: string; te
  */
 async function buildFormulaNodeMap(
   supabaseAdmin: SupabaseClient,
-  adminUserId: string,
 ): Promise<Map<string, string>> {
-  const { data: formulaNodes } = await supabaseAdmin
-    .from('data_nodes')
-    .select('id, domain_data')
-    .eq('user_id', adminUserId)
-    .eq('domain', 'knowledge')
-    .eq('is_admin_node', true);
-
   const map = new Map<string, string>();
-  for (const node of formulaNodes ?? []) {
-    const d = (node as any).domain_data;
-    if (d?.formula_id) map.set(d.formula_id, node.id);
+  let from = 0;
+  const PAGE = 1000;
+
+  while (true) {
+    const { data: formulaNodes } = await supabaseAdmin
+      .from('data_nodes')
+      .select('id, domain_data')
+      .eq('is_admin_node', true)
+      .not('domain_data->>formula_id', 'is', null)
+      .range(from, from + PAGE - 1);
+
+    if (!formulaNodes || formulaNodes.length === 0) break;
+
+    for (const node of formulaNodes) {
+      const d = (node as any).domain_data;
+      if (d?.formula_id) map.set(d.formula_id, node.id);
+    }
+
+    if (formulaNodes.length < PAGE) break;
+    from += PAGE;
+  }
+
+  return map;
+}
+
+/**
+ * 한자 char → DataNode UUID 룩업맵 구축
+ * original_text에서 추출될 한자들을 배치로 룩업
+ */
+async function buildHanjaNodeMap(
+  supabaseAdmin: SupabaseClient,
+  chars: string[],
+): Promise<Map<string, string>> {
+  const map = new Map<string, string>();
+  if (chars.length === 0) return map;
+
+  // 1000자씩 배치 조회
+  const BATCH = 1000;
+  for (let i = 0; i < chars.length; i += BATCH) {
+    const batch = chars.slice(i, i + BATCH);
+    const { data } = await supabaseAdmin
+      .from('data_nodes')
+      .select('id, domain_data')
+      .eq('is_admin_node', true)
+      .in('domain_data->>char', batch);
+
+    for (const node of data ?? []) {
+      const ch = (node as any).domain_data?.char;
+      if (ch) map.set(ch, node.id);
+    }
   }
   return map;
+}
+
+/**
+ * 한문 텍스트에서 고유 한자만 추출
+ */
+function extractHanjaChars(text: string): string[] {
+  const chars = new Set<string>();
+  for (const ch of text) {
+    if (ch >= '\u4E00' && ch <= '\u9FFF') chars.add(ch);  // CJK 기본
+    if (ch >= '\u3400' && ch <= '\u4DBF') chars.add(ch);  // CJK 확장 A
+  }
+  return Array.from(chars);
 }
 
 /**
@@ -140,7 +191,15 @@ export async function seedShanghanlunData(
   console.log(`[ShanghanlunSeed] 삽입: ${newArticles.length}개, 스킵: ${existingIds.size}개`);
 
   // 3. bangje formula_id → DataNode UUID 맵 구축
-  const formulaNodeMap = await buildFormulaNodeMap(supabaseAdmin, adminUserId);
+  const formulaNodeMap = await buildFormulaNodeMap(supabaseAdmin);
+
+  // 3b. 한자 → DataNode UUID 맵 구축 (전체 원문에서 한자 추출 후 배치 룩업)
+  const allHanjaChars = Array.from(
+    new Set(newArticles.flatMap(a => extractHanjaChars(a.original_text)))
+  );
+  console.log(`[ShanghanlunSeed] 고유 한자 ${allHanjaChars.length}자 룩업 중...`);
+  const hanjaNodeMap = await buildHanjaNodeMap(supabaseAdmin, allHanjaChars);
+  console.log(`[ShanghanlunSeed] 한자 매핑 ${hanjaNodeMap.size}자`);
 
   // 4. DataNode 일괄 삽입 (배치 50개씩)
   const BATCH_SIZE = 50;
@@ -242,15 +301,38 @@ export async function seedShanghanlunData(
         target_node_id: targetNodeId,
         relation_type: 'involves',
         weight: 1.5,
-        source: 'seed',
-        metadata: { role: '주치', formula_id: formulaId },
+        source: 'sql',
       }).then(({ error }) => {
         if (!error) relationCount++;
       });
     }
   }
 
-  console.log(`[ShanghanlunSeed] node_relations ${relationCount}개 생성`);
+  console.log(`[ShanghanlunSeed] node_relations(방제) ${relationCount}개 생성`);
+
+  // 6b. node_relations 생성 (조문 → 한자 엣지)
+  let hanjaRelationCount = 0;
+  for (const { id: nodeId, article } of allInserted) {
+    const chars = extractHanjaChars(article.original_text);
+    const hanjaRelations = chars
+      .map(ch => hanjaNodeMap.get(ch))
+      .filter((id): id is string => !!id)
+      .map(targetNodeId => ({
+        source_node_id: nodeId,
+        target_node_id: targetNodeId,
+        relation_type: 'involves',
+        weight: 1.0,
+        source: 'sql',
+      }));
+
+    if (hanjaRelations.length > 0) {
+      const { error } = await supabaseAdmin
+        .from('node_relations')
+        .insert(hanjaRelations);
+      if (!error) hanjaRelationCount += hanjaRelations.length;
+    }
+  }
+  console.log(`[ShanghanlunSeed] node_relations(한자) ${hanjaRelationCount}개 생성`);
 
   // 7. Layer 3 비동기 트리거 (임베딩 + 트리플)
   import('../pipeline/layer3').then(({ embedPendingSentences, extractTriples }) => {

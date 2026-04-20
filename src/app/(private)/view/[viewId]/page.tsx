@@ -28,7 +28,15 @@ export default function ViewPage() {
     if (viewId.startsWith('builtin-')) {
       const vt = viewId.replace('builtin-', '');
       setViewData({ view_type: vt, name: VIEW_LABELS[vt] || vt });
-      fetch(`/api/nodes?limit=200`)
+
+      // admin 노드 뷰는 전용 API 사용
+      const ADMIN_VIEW_APIS: Record<string, string> = {
+        boncho: '/api/boncho',
+        shanghanlun: '/api/shanghanlun',
+      };
+      const apiUrl = ADMIN_VIEW_APIS[vt] || `/api/nodes?limit=200`;
+
+      fetch(apiUrl)
         .then(r => r.json())
         .then(data => { if (data?.nodes) setNodes(data.nodes); })
         .catch(() => {})
