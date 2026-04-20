@@ -12,6 +12,7 @@ export function OuViewWidget() {
 
   return (
     <div
+      data-tutorial-target="ou-view-input"
       onClick={handleClick}
       style={{
         width: '100%', height: '100%',

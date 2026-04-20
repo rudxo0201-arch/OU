@@ -70,7 +70,7 @@ function MyPage() {
   const tutorialPhase = useTutorialStore(s => s.phase);
   const tutorialStepIndex = useTutorialStore(s => s.stepIndex);
   const startTutorial = useTutorialStore(s => s.startTutorial);
-  const skipAll = useTutorialStore(s => s.skipAll);
+  const skipStep = useTutorialStore(s => s.skipStep);
   const celebrated = useTutorialStore(s => s.celebrated);
   const markCelebrated = useTutorialStore(s => s.markCelebrated);
   const [showTutorialComplete, setShowTutorialComplete] = useState(false);
@@ -420,7 +420,9 @@ function MyPage() {
           />
           {/* SpeechBubble — 타겟 아래, 센터 정렬 */}
           <SpeechBubble
-            message="뭐라고 칠지 모르겠으면 엔터만 눌러보세요!"
+            message={tutorialStepIndex === 0
+              ? 'Orb를 눌러서 시작해보세요!'
+              : '잘했어요! 다음도 해볼까요?'}
             tail="top"
             style={{
               position: 'fixed',
@@ -429,7 +431,7 @@ function MyPage() {
               transform: 'translateX(-50%)',
               zIndex: 100,
             }}
-            onSkip={skipAll}
+            onSkip={skipStep}
           />
         </>
       )}
@@ -468,8 +470,6 @@ function MyPage() {
       }}>
         <div style={{ pointerEvents: 'auto' }}>
           <DockBar
-            onUniverse={toggleUniverse}
-            universeActive={universeActive}
             onAddWidget={() => setShowViewPicker(v => !v)}
           />
         </div>
