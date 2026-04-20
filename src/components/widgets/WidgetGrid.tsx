@@ -44,15 +44,33 @@ export function WidgetGrid({ transition = 'idle' }: Props) {
   const [gridWidth, setGridWidth] = useState(0);
   const [mounted, setMounted] = useState(false);
   const [editMode, setEditMode] = useState(false);
-  const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const longPressStart = useRef<{ x: number; y: number } | null>(null);
 
-  // Context menu (right-click → edit mode)
-  const handleContextMenu = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    if (!editMode) {
-      setContextMenu({ x: e.clientX, y: e.clientY });
-    }
+  // 롱프레스 → 편집 모드 진입 (800ms, 5px 이내 이동)
+  const handlePointerDown = useCallback((e: React.PointerEvent) => {
+    if (editMode) return;
+    longPressStart.current = { x: e.clientX, y: e.clientY };
+    longPressTimer.current = setTimeout(() => {
+      setEditMode(true);
+      longPressStart.current = null;
+    }, 800);
   }, [editMode]);
+
+  const cancelLongPress = useCallback(() => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+    longPressStart.current = null;
+  }, []);
+
+  const handlePointerMove = useCallback((e: React.PointerEvent) => {
+    if (!longPressStart.current) return;
+    const dx = e.clientX - longPressStart.current.x;
+    const dy = e.clientY - longPressStart.current.y;
+    if (Math.sqrt(dx * dx + dy * dy) > 5) cancelLongPress();
+  }, [cancelLongPress]);
 
   // Broadcast edit mode changes
   useEffect(() => {
@@ -75,13 +93,6 @@ export function WidgetGrid({ transition = 'idle' }: Props) {
     return () => window.removeEventListener('widget-edit-mode-enter', handler);
   }, []);
 
-  // Close context menu on click anywhere
-  useEffect(() => {
-    if (!contextMenu) return;
-    const close = () => setContextMenu(null);
-    window.addEventListener('click', close);
-    return () => window.removeEventListener('click', close);
-  }, [contextMenu]);
 
   const calcDimensions = useCallback(() => {
     if (!containerRef.current) return;
@@ -144,33 +155,14 @@ export function WidgetGrid({ transition = 'idle' }: Props) {
   const isAnimating = transition === 'exiting' || transition === 'entering';
 
   return (
-    <div ref={containerRef} className={styles.gridWrapper} onContextMenu={handleContextMenu}>
-      {/* Context menu */}
-      {contextMenu && (
-        <div style={{
-          position: 'fixed', left: contextMenu.x, top: contextMenu.y, zIndex: 100,
-          padding: '4px 0', borderRadius: 10,
-          background: 'rgba(30,32,40,0.95)',
-          backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
-          border: '0.5px solid rgba(255,255,255,0.12)',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
-          minWidth: 160,
-          animation: 'ou-scale-in 0.15s ease',
-        }}>
-          <button
-            onClick={() => { setEditMode(true); setContextMenu(null); }}
-            style={{
-              width: '100%', padding: '8px 16px', textAlign: 'left',
-              fontSize: 13, color: 'rgba(255,255,255,0.8)',
-              borderRadius: 6, transition: '100ms ease',
-            }}
-            onMouseEnter={e => { (e.target as HTMLElement).style.background = 'rgba(255,255,255,0.08)'; }}
-            onMouseLeave={e => { (e.target as HTMLElement).style.background = 'transparent'; }}
-          >
-            편집하기
-          </button>
-        </div>
-      )}
+    <div
+      ref={containerRef}
+      className={styles.gridWrapper}
+      onPointerDown={handlePointerDown}
+      onPointerUp={cancelLongPress}
+      onPointerMove={handlePointerMove}
+      onPointerCancel={cancelLongPress}
+    >
 
       {/* Edit mode "완료" button */}
       {editMode && (

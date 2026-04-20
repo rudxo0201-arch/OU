@@ -54,12 +54,8 @@ function MyPage() {
   const currentPageIndex = useWidgetStore(s => s.currentPageIndex);
   const pages = useWidgetStore(s => s.pages);
   const setCurrentPage = useWidgetStore(s => s.setCurrentPage);
-  const renamePage = useWidgetStore(s => s.renamePage);
   const initAdminLayout = useWidgetStore(s => s.initAdminLayout);
   const setWidgets = useWidgetStore(s => s.setWidgets);
-  const [dashboardEditMode, setDashboardEditMode] = useState(false);
-  const [editingTitle, setEditingTitle] = useState(false);
-  const titleInputRef = useRef<HTMLInputElement>(null);
   const timerRef = useRef<NodeJS.Timeout>();
 
   const tutorialPhase = useTutorialStore(s => s.phase);
@@ -183,16 +179,6 @@ function MyPage() {
     return () => { cancelled = true; window.removeEventListener('resize', onResize); };
   }, [tutorialPhase, tutorialStepIndex]);
 
-  // Listen for widget edit mode changes
-  useEffect(() => {
-    const handler = (e: Event) => {
-      const detail = (e as CustomEvent).detail;
-      setDashboardEditMode(detail.editMode);
-      if (!detail.editMode) setEditingTitle(false);
-    };
-    window.addEventListener('widget-edit-mode-change', handler);
-    return () => window.removeEventListener('widget-edit-mode-change', handler);
-  }, []);
 
   useEffect(() => {
     if (isAdmin && !isLoading) {
@@ -245,21 +231,6 @@ function MyPage() {
   if (mode === 'to-universe') gridTransition = 'exiting';
   if (mode === 'to-dashboard') gridTransition = 'entering';
 
-  const currentPageName = pages[currentPageIndex]?.name ?? '';
-  const hasTitle = currentPageName.length > 0;
-
-  const handleTitleClick = () => {
-    if (dashboardEditMode) {
-      setEditingTitle(true);
-      setTimeout(() => titleInputRef.current?.focus(), 0);
-    }
-  };
-
-  const handleTitleSubmit = (value: string) => {
-    renamePage(currentPageIndex, value.trim());
-    setEditingTitle(false);
-  };
-
   return (
     <div style={{ position: 'relative', height: '100dvh', overflow: 'hidden', background: 'var(--ou-bg)' }}>
       {/* Full-bleed content area */}
@@ -294,60 +265,9 @@ function MyPage() {
           </div>
         )}
 
-        {/* Dashboard title — shown when title exists or in edit mode */}
-        {showWidgets && (hasTitle || dashboardEditMode) && (
-          <div style={{
-            position: 'absolute',
-            top: 248, left: 116, right: 40,
-            height: 48,
-            display: 'flex', alignItems: 'center',
-            zIndex: 5,
-          }}>
-            {editingTitle ? (
-              <input
-                ref={titleInputRef}
-                defaultValue={currentPageName}
-                placeholder="제목 입력 (비우면 숨김)"
-                onBlur={e => handleTitleSubmit(e.target.value)}
-                onKeyDown={e => {
-                  if (e.key === 'Enter') handleTitleSubmit((e.target as HTMLInputElement).value);
-                  if (e.key === 'Escape') setEditingTitle(false);
-                }}
-                style={{
-                  fontSize: 20, fontWeight: 700,
-                  color: 'var(--ou-text-bright)',
-                  background: 'transparent', border: 'none', outline: 'none',
-                  borderBottom: '1.5px solid var(--ou-text-muted)',
-                  padding: '2px 0', width: 200,
-                }}
-              />
-            ) : (
-              <h2
-                onClick={handleTitleClick}
-                style={{
-                  fontSize: 20, fontWeight: 700,
-                  color: 'var(--ou-text-bright)',
-                  margin: 0,
-                  cursor: dashboardEditMode ? 'text' : 'default',
-                  opacity: dashboardEditMode ? 0.7 : 1,
-                  transition: 'opacity 0.15s',
-                }}
-              >
-                {currentPageName || (dashboardEditMode ? '제목 없음' : '')}
-                {dashboardEditMode && (
-                  <span style={{ fontSize: 12, color: 'var(--ou-text-disabled)', marginLeft: 8, fontWeight: 400 }}>
-                    클릭하여 편집
-                  </span>
-                )}
-              </h2>
-            )}
-          </div>
-        )}
-
         <div style={{
           position: 'absolute',
-          top: (hasTitle || dashboardEditMode) ? 296 : 248, bottom: 228, left: 116, right: 40,
-          transition: 'top 0.3s ease',
+          top: 248, bottom: 228, left: 116, right: 40,
           visibility: showWidgets ? 'visible' : 'hidden',
           pointerEvents: mode === 'dashboard' ? 'auto' : 'none',
         }}>
