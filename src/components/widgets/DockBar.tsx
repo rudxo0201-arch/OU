@@ -137,7 +137,7 @@ export function DockBar({ onUniverse, universeActive, onOrbExpand, onAddWidget }
         display: 'inline-flex',
         alignItems: 'flex-end',
         gap: 6,
-        padding: '10px 20px 12px',
+        padding: '8px 20px 10px',
         borderRadius: 'var(--ou-radius-lg)',
         background: 'var(--ou-bg)',
         boxShadow: 'var(--ou-neu-raised-lg)',
@@ -202,7 +202,7 @@ export function DockBar({ onUniverse, universeActive, onOrbExpand, onAddWidget }
             <span style={{
               fontSize: 10,
               color: item.id === 'orb' ? 'var(--ou-text-muted)' : 'var(--ou-text-disabled)',
-              marginTop: 4,
+              marginTop: 3,
               letterSpacing: '0.5px',
             }}>
               {item.label}

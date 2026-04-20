@@ -1,31 +1,56 @@
 'use client';
 
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { Suspense, useState, useEffect } from 'react';
 
 const NAV_ITEMS = [
-  { label: 'Orb', href: '/chat' },
-  { label: 'Universe', href: '/universe' },
-  { label: 'Orbit', href: '/orbit' },
-  { label: 'View Studio', href: '/settings?tab=views' },
+  { label: 'Orb', href: '/chat', tab: null },
+  { label: 'Universe', href: '/universe', tab: null },
+  { label: 'Orbit', href: '/orbit', tab: null },
+  { label: 'View Studio', href: '/settings', tab: 'views' },
 ];
 
-function getDateLabel() {
+function getTimeLabel() {
   const now = new Date();
-  const month = now.getMonth() + 1;
-  const day = now.getDate();
-  const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
-  const weekday = weekdays[now.getDay()];
-  return `${month}/${day} · ${weekday}`;
+  const h = String(now.getHours()).padStart(2, '0');
+  const m = String(now.getMinutes()).padStart(2, '0');
+  return `${h}:${m}`;
 }
 
 interface TopNavBarProps {
   userInitial?: string;
 }
 
-export function TopNavBar({ userInitial }: TopNavBarProps) {
+function TopNavBarInner({ userInitial }: TopNavBarProps) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const router = useRouter();
-  const dateLabel = getDateLabel();
+  const [timeLabel, setTimeLabel] = useState(getTimeLabel());
+  const currentTab = searchParams.get('tab');
+
+  useEffect(() => {
+    const tick = () => setTimeLabel(getTimeLabel());
+    const id = setInterval(tick, 60000);
+    return () => clearInterval(id);
+  }, []);
+
+  function isActive(item: typeof NAV_ITEMS[number]) {
+    if (pathname !== item.href) return false;
+    if (item.tab !== null) {
+      // View Studio: /settings?tab=views
+      return currentTab === item.tab;
+    }
+    // Setting: /settings 단독 (tab 파라미터 없거나 views 아닌 경우)
+    if (item.href === '/settings') {
+      return currentTab === null || currentTab === '' || (currentTab !== 'views');
+    }
+    return true;
+  }
+
+  function getHref(item: typeof NAV_ITEMS[number]) {
+    if (item.tab) return `${item.href}?tab=${item.tab}`;
+    return item.href;
+  }
 
   return (
     <div
@@ -34,13 +59,13 @@ export function TopNavBar({ userInitial }: TopNavBarProps) {
         top: 0,
         left: 0,
         right: 0,
-        height: 56,
+        height: 52,
         zIndex: 50,
         background: 'var(--ou-bg)',
         display: 'flex',
         alignItems: 'center',
-        padding: '0 32px',
-        gap: 32,
+        padding: '0 40px',
+        gap: 24,
       }}
     >
       {/* OU 로고 → /my */}
@@ -63,23 +88,23 @@ export function TopNavBar({ userInitial }: TopNavBarProps) {
       {/* 탭 네비게이션 */}
       <nav style={{ display: 'flex', alignItems: 'center', gap: 4, flex: 1 }}>
         {NAV_ITEMS.map((item) => {
-          const isActive = pathname === item.href || pathname.startsWith(item.href.split('?')[0]);
+          const active = isActive(item);
           return (
             <button
-              key={item.href}
-              onClick={() => router.push(item.href)}
+              key={item.label}
+              onClick={() => router.push(getHref(item))}
               style={{
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
-                padding: '6px 12px',
+                padding: '6px 16px',
                 borderRadius: 8,
                 fontSize: 14,
-                fontWeight: isActive ? 600 : 400,
-                color: isActive ? 'var(--ou-text-bright)' : 'var(--ou-text-secondary)',
+                fontWeight: active ? 600 : 400,
+                color: active ? 'var(--ou-text-bright)' : 'var(--ou-text-secondary)',
                 fontFamily: 'inherit',
                 transition: 'color 0.15s',
-                letterSpacing: isActive ? '-0.01em' : 0,
+                letterSpacing: active ? '-0.01em' : 0,
               }}
             >
               {item.label}
@@ -90,8 +115,8 @@ export function TopNavBar({ userInitial }: TopNavBarProps) {
 
       {/* 우측: 날짜 + 아바타 */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexShrink: 0 }}>
-        <span style={{ fontSize: 13, color: 'var(--ou-text-muted)', letterSpacing: '0.5px' }}>
-          {dateLabel}
+        <span style={{ fontSize: 13, color: 'var(--ou-text-muted)', letterSpacing: '1px', fontVariantNumeric: 'tabular-nums' }}>
+          {timeLabel}
         </span>
         {userInitial && (
           <div
@@ -115,5 +140,14 @@ export function TopNavBar({ userInitial }: TopNavBarProps) {
         )}
       </div>
     </div>
+  );
+}
+
+// useSearchParams는 Suspense 경계 필요
+export function TopNavBar({ userInitial }: TopNavBarProps) {
+  return (
+    <Suspense fallback={null}>
+      <TopNavBarInner userInitial={userInitial} />
+    </Suspense>
   );
 }

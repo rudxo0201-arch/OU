@@ -250,9 +250,11 @@ function MyPage() {
         {showWidgets && (
           <div style={{
             position: 'absolute',
-            top: 56, left: 80, right: 80,
-            height: 92,
+            top: 52, left: 0, right: 0,
             display: 'flex', flexDirection: 'column', justifyContent: 'center',
+            padding: '20px 80px',
+            background: 'var(--ou-surface-faint)',
+            borderBottom: '1px solid var(--ou-border-faint)',
             zIndex: 5,
             pointerEvents: 'none',
           }}>
@@ -260,7 +262,7 @@ function MyPage() {
               fontSize: 12, letterSpacing: '2px',
               color: 'var(--ou-text-muted)',
               fontFamily: 'var(--ou-font-logo)',
-              marginBottom: 6,
+              marginBottom: 8,
             }}>
               {getGreetingDate()}
             </div>
@@ -327,7 +329,7 @@ function MyPage() {
 
         <div style={{
           position: 'absolute',
-          top: (hasTitle || dashboardEditMode) ? 196 : 148, bottom: 96, left: 80, right: 80,
+          top: (hasTitle || dashboardEditMode) ? 196 : 148, bottom: 120, left: 80, right: 80,
           transition: 'top 0.3s ease',
           visibility: showWidgets ? 'visible' : 'hidden',
           pointerEvents: mode === 'dashboard' ? 'auto' : 'none',
@@ -353,7 +355,7 @@ function MyPage() {
       {/* Page indicator dots */}
       {mode === 'dashboard' && pages.length > 1 && (
         <div style={{
-          position: 'absolute', bottom: 100, left: 0, right: 0,
+          position: 'absolute', bottom: 124, left: 0, right: 0,
           display: 'flex', justifyContent: 'center', gap: 8,
           zIndex: 10, pointerEvents: 'auto',
         }}>
@@ -375,7 +377,7 @@ function MyPage() {
 
       {/* Dock bar */}
       <div style={{
-        position: 'absolute', bottom: 0, left: 0, right: 0, height: 96,
+        position: 'absolute', bottom: 0, left: 0, right: 0, height: 88,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         zIndex: 10, pointerEvents: 'none',
       }}>
