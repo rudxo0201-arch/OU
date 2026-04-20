@@ -91,6 +91,20 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <div style={{
+        padding: '20px 24px',
+        display: 'flex', justifyContent: 'center', gap: 24,
+        borderTop: '1px solid var(--ou-border-faint)',
+      }}>
+        <Link href="/privacy" style={{ fontSize: 12, color: 'var(--ou-text-disabled)', textDecoration: 'none' }}>
+          개인정보처리방침
+        </Link>
+        <Link href="/terms" style={{ fontSize: 12, color: 'var(--ou-text-disabled)', textDecoration: 'none' }}>
+          이용약관
+        </Link>
+      </div>
     </div>
   );
 }

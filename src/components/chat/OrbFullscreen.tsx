@@ -114,7 +114,7 @@ export function OrbFullscreen({ open, onClose }: Props) {
         </NeuButton>
       </div>
 
-      {/* 3-panel layout */}
+      {/* 2-panel layout */}
       <div
         style={{
           flex: 1,
@@ -127,43 +127,7 @@ export function OrbFullscreen({ open, onClose }: Props) {
           transition: 'opacity 300ms ease 150ms, transform 300ms ease 150ms',
         }}
       >
-        {/* 좌: 자동 뷰 모음 */}
-        <NeuCard
-          variant="raised"
-          size="sm"
-          style={{
-            flex: 1,
-            minWidth: 280,
-            overflow: 'auto',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 10,
-          }}
-        >
-          <span
-            style={{
-              fontSize: 13,
-              fontWeight: 700,
-              letterSpacing: 2,
-              color: 'var(--ou-text-muted)',
-              textTransform: 'uppercase',
-            }}
-          >
-            생성된 데이터
-          </span>
-
-          {createdViews.length === 0 ? (
-            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', paddingTop: 32 }}>
-              <span style={{ fontSize: 15, color: 'var(--ou-text-disabled)', textAlign: 'center', lineHeight: 1.6 }}>
-                대화하면<br />여기에 쌓여요
-              </span>
-            </div>
-          ) : (
-            createdViews.map((msg) => <CreatedViewCard key={msg.id} message={msg} />)
-          )}
-        </NeuCard>
-
-        {/* 중: Orb 대화 */}
+        {/* 좌: Orb 대화 */}
         <div
           style={{
             flex: 1.2,
@@ -233,8 +197,8 @@ export function OrbFullscreen({ open, onClose }: Props) {
           </div>
         </div>
 
-        {/* 우: View 패널 (A/B 뷰 통합) */}
-        <ViewPanel />
+        {/* 우: View 패널 (생성된 뷰 + 호출된 뷰 통합) */}
+        <ViewPanel createdViews={createdViews} />
       </div>
     </div>
   );
@@ -334,11 +298,11 @@ const VIEW_DOMAIN_MAP: Record<string, string> = {
   idea: 'idea',
 };
 
-// ── View 패널 — A/B 뷰 통합 (회원이 선택한 뷰 쌓임) ──
-function ViewPanel() {
+// ── View 패널 — 생성된 뷰 + 호출된 뷰 통합 ──
+function ViewPanel({ createdViews }: { createdViews: ChatMessage[] }) {
   const { requestedViews, clearRequestedViews } = useChatStore();
   const [nodesByView, setNodesByView] = useState<Record<number, any[]>>({});
-  const hasViews = requestedViews.length > 0;
+  const hasContent = createdViews.length > 0 || requestedViews.length > 0;
 
   useEffect(() => {
     requestedViews.forEach((rv, idx) => {
@@ -378,14 +342,14 @@ function ViewPanel() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          borderBottom: hasViews ? '1px solid var(--ou-border-subtle)' : 'none',
+          borderBottom: hasContent ? '1px solid var(--ou-border-subtle)' : 'none',
           flexShrink: 0,
         }}
       >
         <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: 2, color: 'var(--ou-text-muted)', textTransform: 'uppercase' }}>
           View
         </span>
-        {hasViews && (
+        {requestedViews.length > 0 && (
           <NeuButton variant="ghost" size="sm" onClick={clearRequestedViews} style={{ padding: '3px 6px', minWidth: 0, fontSize: 11 }}>
             지우기
           </NeuButton>
@@ -393,8 +357,13 @@ function ViewPanel() {
       </div>
 
       {/* Content */}
-      {hasViews ? (
+      {hasContent ? (
         <div style={{ flex: 1, overflow: 'auto', padding: 12, display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {/* 생성된 인라인뷰 */}
+          {createdViews.map((msg) => (
+            <CreatedViewCard key={msg.id} message={msg} />
+          ))}
+          {/* 호출된 뷰 */}
           {requestedViews.map((rv, idx) => {
             const ViewComponent = VIEW_REGISTRY[rv.viewType];
             const viewLabel = VIEW_LABELS[rv.viewType] || rv.viewType;
@@ -423,7 +392,7 @@ function ViewPanel() {
       ) : (
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
           <span style={{ fontSize: 15, color: 'var(--ou-text-disabled)', textAlign: 'center', lineHeight: 1.8 }}>
-            데이터를 입력하거나<br />조회하면 여기에 표시돼요
+            대화하면<br />여기에 쌓여요
           </span>
         </div>
       )}
