@@ -7,6 +7,7 @@ type TutorialPhase = 'idle' | 'active' | 'edit-mode' | 'completed' | 'skipped';
 interface TutorialStore {
   phase: TutorialPhase;
   stepIndex: number; // 0-based, 0~6
+  celebrated: boolean; // TutorialComplete 모달이 한 번이라도 표시됐는지
 
   // 편집 모드 진입 전 pending 위젯 (AddToHomeButton에서 설정)
   pendingWidget: { type: string; id: string } | null;
@@ -19,6 +20,7 @@ interface TutorialStore {
   enterEditMode: (widget: { type: string; id: string }) => void;
   exitEditMode: () => void; // 편집 완료 → 튜토리얼 중이면 Orb 확장 트리거
   completeTutorial: () => void;
+  markCelebrated: () => void;
   reset: () => void;
 
   // Computed
@@ -37,6 +39,7 @@ export const useTutorialStore = create<TutorialStore>()(
     (set, get) => ({
       phase: 'idle',
       stepIndex: 0,
+      celebrated: false,
       pendingWidget: null,
 
       startTutorial: () => set({ phase: 'active', stepIndex: 0 }),
@@ -87,7 +90,9 @@ export const useTutorialStore = create<TutorialStore>()(
         recordTutorialComplete();
       },
 
-      reset: () => set({ phase: 'idle', stepIndex: 0, pendingWidget: null }),
+      markCelebrated: () => set({ celebrated: true }),
+
+      reset: () => set({ phase: 'idle', stepIndex: 0, celebrated: false, pendingWidget: null }),
 
       isActive: () => {
         const { phase } = get();
@@ -111,14 +116,14 @@ export const useTutorialStore = create<TutorialStore>()(
     }),
     {
       name: 'ou-tutorial',
-      version: 2,
+      version: 3,
       migrate: (persisted: unknown) => {
-        const s = persisted as { phase?: string; stepIndex?: number };
+        const s = persisted as { phase?: string; stepIndex?: number; celebrated?: boolean };
         // 완료/스킵된 경우는 유지, 중간 진행 중이면 리셋 (스텝 수 변경)
         if (s?.phase === 'completed' || s?.phase === 'skipped') {
-          return { phase: s.phase, stepIndex: 0, pendingWidget: null };
+          return { phase: s.phase, stepIndex: 0, celebrated: s.celebrated ?? false, pendingWidget: null };
         }
-        return { phase: 'idle', stepIndex: 0, pendingWidget: null };
+        return { phase: 'idle', stepIndex: 0, celebrated: false, pendingWidget: null };
       },
     }
   )

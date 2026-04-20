@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useChatStore, type ChatMessage } from '@/stores/chatStore';
 import { useTutorialStore } from '@/stores/tutorialStore';
 import { TUTORIAL_STEPS, TUTORIAL_STEP_COUNT } from '@/data/tutorial';
@@ -12,10 +13,30 @@ export default function OrbPage() {
   const tutorialPhase = useTutorialStore(s => s.phase);
   const tutorialStepIndex = useTutorialStore(s => s.stepIndex);
   const skipStep = useTutorialStore(s => s.skipStep);
+  const router = useRouter();
 
   const currentGuideMessage = tutorialPhase === 'active'
     ? TUTORIAL_STEPS[tutorialStepIndex]?.guideMessage
     : undefined;
+
+  // Fix 1: /orb 이탈 시 fallback — nodeCreated 생성됐으면 스텝 자동 완료
+  useEffect(() => {
+    if (tutorialPhase !== 'active') return;
+    const snapshot = useChatStore.getState().messages.filter(
+      m => m.role === 'assistant' && m.nodeCreated && !m.streaming
+    ).length;
+    return () => {
+      const phase = useTutorialStore.getState().phase;
+      if (phase !== 'active') return;
+      const current = useChatStore.getState().messages.filter(
+        m => m.role === 'assistant' && m.nodeCreated && !m.streaming
+      ).length;
+      if (current > snapshot) {
+        useTutorialStore.getState().completeStep();
+      }
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tutorialPhase]);
 
   // 현재 세션에서 생성된 인라인 뷰 (nodeCreated, hanja, youtube)
   const createdViews = messages.filter(
@@ -133,7 +154,7 @@ export default function OrbPage() {
               }}>
                 <span>{currentGuideMessage}</span>
                 <button
-                  onClick={() => skipStep()}
+                  onClick={() => { skipStep(); router.push('/home'); }}
                   style={{
                     fontSize: 11, color: 'var(--ou-text-muted)',
                     background: 'none', border: 'none', cursor: 'pointer',
