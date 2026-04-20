@@ -6,6 +6,7 @@ import { useChatStore, type ChatMessage } from '@/stores/chatStore';
 import { useTutorialStore } from '@/stores/tutorialStore';
 import { TUTORIAL_STEPS, TUTORIAL_STEP_COUNT } from '@/data/tutorial';
 import { ChatPanel, InlineView } from '@/components/chat/ChatPanel';
+import { stripLLMMeta } from '@/lib/utils/stripLLMMeta';
 import { VIEW_REGISTRY, VIEW_LABELS } from '@/components/views/registry';
 
 export default function OrbPage() {
@@ -16,12 +17,11 @@ export default function OrbPage() {
     fetch('/api/chat/history')
       .then(r => r.json())
       .then(({ messages: dbMsgs }: { messages: Array<{ id: string; role: string; raw: string; created_at: string }> }) => {
-        if (dbMsgs && dbMsgs.length > 0) {
-          useChatStore.getState().reset();
+        if (dbMsgs && dbMsgs.length > 0 && useChatStore.getState().messages.length === 0) {
           dbMsgs.forEach(m => useChatStore.getState().addMessage({
             id: m.id,
             role: m.role as 'user' | 'assistant',
-            content: m.raw,
+            content: m.role === 'assistant' ? stripLLMMeta(m.raw) : m.raw,
             createdAt: new Date(m.created_at),
           }));
         } else {
