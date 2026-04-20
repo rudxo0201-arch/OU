@@ -242,8 +242,7 @@ export async function POST(req: NextRequest) {
           let savedData: { domain?: string; nodeId?: string; confidence?: string; domain_data?: Record<string, any>; additionalNodes?: Array<{ id: string; domain: string; domain_data: Record<string, any> }> } = {};
 
           // 처리 시작 즉시 상태 메시지 전송 (Vercel 연결 유지 + UX)
-          const startTime = Date.now();
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ status: '잠시만 기다려 주세요' })}\n\n`));
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ status: '...' })}\n\n`));
 
           // 실시간 토큰 스트리밍 상태
           let inMetaBlock = false; // 메타블록 시작 감지 시 true
@@ -263,9 +262,7 @@ export async function POST(req: NextRequest) {
                 // 메타블록 진입 후: heartbeat만 전송
                 const now = Date.now();
                 if (now - lastHeartbeat > 2000) {
-                  const elapsed = now - startTime;
-                  const msg = elapsed > 5000 ? '곧 끝나요' : '잠시만 기다려 주세요';
-                  controller.enqueue(encoder.encode(`data: ${JSON.stringify({ status: msg })}\n\n`));
+                  controller.enqueue(encoder.encode(`data: ${JSON.stringify({ status: '...' })}\n\n`));
                   lastHeartbeat = now;
                 }
                 return;
