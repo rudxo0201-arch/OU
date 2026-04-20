@@ -46,14 +46,14 @@ export function ChatPanel({ onNodeSelect, autoSendOnOpen }: ChatPanelProps) {
   }, [autoSendOnOpen]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', paddingTop: 20 }}>
       <div
         ref={scrollRef}
         className="ou-scroll"
         style={{
           flex: 1,
           overflowY: 'auto',
-          padding: '24px 20px',
+          padding: '4px 20px 24px',
           display: 'flex',
           flexDirection: 'column',
           gap: 16,
