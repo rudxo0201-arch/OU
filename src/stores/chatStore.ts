@@ -15,6 +15,7 @@ export interface ChatMessage {
     nodeId?: string;
     confidence?: string;
     domain_data?: Record<string, any>;
+    viewType?: string;
     additionalNodes?: Array<{ id: string; domain: string; domain_data: Record<string, any> }>;
   };
   /** 이미지 업로드 시 미리보기 URL */

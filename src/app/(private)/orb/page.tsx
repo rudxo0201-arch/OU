@@ -193,6 +193,7 @@ function CreatedViewCard({ message }: { message: ChatMessage }) {
           domain={message.nodeCreated.domain}
           data={message.nodeCreated.domain_data as Record<string, unknown> | undefined}
           content={message.content}
+          viewType={message.nodeCreated.viewType}
         />
       </div>
     );

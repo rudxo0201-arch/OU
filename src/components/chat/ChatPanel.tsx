@@ -7,6 +7,7 @@ import { NeuButton, NeuBadge, NeuModal } from '@/components/ds';
 import { AddToHomeButton } from './AddToHomeButton';
 import { stripLLMMeta } from '@/lib/utils/stripLLMMeta';
 import { ViewOptionsChips } from './ViewOptionsChips';
+import { VIEW_REGISTRY, DOMAIN_VIEW_MAP } from '@/components/views/registry';
 
 export interface NodeSelectPayload {
   nodeId: string;
@@ -265,12 +266,12 @@ function MessageBubble({
 
         {/* Inline view — primary node */}
         {message.nodeCreated && !message.streaming && (
-          <InlineView domain={message.nodeCreated.domain} data={message.nodeCreated.domain_data} content={message.content} />
+          <InlineView domain={message.nodeCreated.domain} data={message.nodeCreated.domain_data} content={message.content} viewType={message.nodeCreated.viewType} />
         )}
 
         {/* Inline views — additional nodes */}
         {message.nodeCreated?.additionalNodes && !message.streaming && message.nodeCreated.additionalNodes.map((n) => (
-          <InlineView key={n.id} domain={n.domain} data={n.domain_data} content={message.content} />
+          <InlineView key={n.id} domain={n.domain} data={n.domain_data} content={message.content} viewType={DOMAIN_VIEW_MAP[n.domain]} />
         ))}
 
         {/* 홈 화면에 추가하기 */}
@@ -354,104 +355,16 @@ function getDomainLabel(domain: string): string {
 }
 
 // ---- Inline view for created data ----
-export function InlineView({ domain, data, content }: { domain: string; data?: Record<string, unknown>; content: string }) {
-  const safeContent = stripLLMMeta(content);
-  if (domain === 'schedule') {
-    const date = (data?.date || data?.when || data?.datetime || '') as string;
-    const title = (data?.title || data?.what || safeContent.slice(0, 40)) as string;
-    const time = (data?.time || data?.start_time || '') as string;
-    const location = (data?.location || data?.place || '') as string;
-    const participants = (data?.participants || data?.with || '') as string;
+export function InlineView({ domain, data, content, viewType }: { domain: string; data?: Record<string, unknown>; content: string; viewType?: string }) {
+  // viewType이 있으면 VIEW_REGISTRY 컴포넌트 사용, 없으면 도메인 기본값
+  const typeToUse = viewType || DOMAIN_VIEW_MAP[domain];
+  const ViewComponent = typeToUse ? VIEW_REGISTRY[typeToUse] : undefined;
 
-    let displayDate = date;
-    try {
-      if (date) {
-        const d = new Date(date);
-        if (!isNaN(d.getTime())) {
-          displayDate = d.toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', weekday: 'short' });
-        }
-      }
-    } catch { /* skip */ }
-
+  if (ViewComponent) {
+    const fakeNode = { id: 'inline-preview', domain, domain_data: data ?? {}, raw: stripLLMMeta(content) };
     return (
-      <div style={{ marginTop: 12, padding: '10px 14px', borderRadius: 'var(--ou-radius-sm)', background: 'var(--ou-surface-faint)', border: '1px solid var(--ou-border-faint)', animation: 'ou-fade-in 0.4s ease' }}>
-        <div style={{ fontSize: 10, color: 'var(--ou-text-muted)', letterSpacing: 1, marginBottom: 10 }}>SCHEDULE</div>
-        {displayDate && <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ou-text-secondary)', marginBottom: 6 }}>{displayDate}</div>}
-        {time && <div style={{ fontSize: 22, fontWeight: 300, color: 'var(--ou-text-strong)', marginBottom: 4, letterSpacing: -0.5 }}>{time}</div>}
-        <div style={{ fontSize: 15, fontWeight: 500, color: 'var(--ou-text-strong)', marginBottom: 4 }}>{title}</div>
-        {location && <div style={{ fontSize: 12, color: 'var(--ou-text-secondary)', marginTop: 2 }}>{location}</div>}
-        {participants && <div style={{ fontSize: 12, color: 'var(--ou-text-secondary)', marginTop: 2 }}>{participants as string}</div>}
-      </div>
-    );
-  }
-
-  if (domain === 'finance') {
-    const amount = data?.amount || '';
-    const category = (data?.category || '') as string;
-    const memo = (data?.memo || data?.title || '') as string;
-    return (
-      <div style={{ marginTop: 12, padding: '10px 14px', borderRadius: 'var(--ou-radius-sm)', background: 'var(--ou-surface-faint)', border: '1px solid var(--ou-border-faint)', animation: 'ou-fade-in 0.4s ease' }}>
-        <div style={{ fontSize: 10, color: 'var(--ou-text-muted)', letterSpacing: 1, marginBottom: 10 }}>FINANCE</div>
-        {amount && (
-          <div style={{ fontSize: 22, fontWeight: 300, color: 'var(--ou-text-strong)', letterSpacing: -0.5 }}>
-            {typeof amount === 'number' ? amount.toLocaleString() + '원' : String(amount)}
-          </div>
-        )}
-        {(category || memo) && (
-          <div style={{ fontSize: 12, color: 'var(--ou-text-secondary)', marginTop: 6 }}>
-            {[category, memo].filter(Boolean).join(' · ')}
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  if (domain === 'relation') {
-    const name = (data?.name || data?.person || '') as string;
-    const relationship = (data?.relationship || '') as string;
-    const type = (data?.type || '') as string;
-    const contact = (data?.contact || data?.phone || '') as string;
-    const birthday = (data?.birthday || '') as string;
-    const mbti = (data?.mbti || '') as string;
-    const job = (data?.job || '') as string;
-    const likes = (data?.likes || '') as string;
-    const typeLabel: Record<string, string> = { family: '가족', friend: '친구', work: '직장', school: '학교', romantic: '연인', other: '지인' };
-    const meta = [relationship || typeLabel[type] || '', birthday ? `🎂 ${birthday}` : '', mbti, job].filter(Boolean).join(' · ');
-    return (
-      <div style={{ marginTop: 12, padding: '10px 14px', borderRadius: 'var(--ou-radius-sm)', background: 'var(--ou-surface-faint)', border: '1px solid var(--ou-border-faint)', animation: 'ou-fade-in 0.4s ease' }}>
-        <div style={{ fontSize: 10, color: 'var(--ou-text-muted)', letterSpacing: 1, marginBottom: 10 }}>PERSON</div>
-        {name && <div style={{ fontSize: 15, fontWeight: 500, color: 'var(--ou-text-strong)' }}>{name}</div>}
-        {meta && <div style={{ fontSize: 12, color: 'var(--ou-text-secondary)', marginTop: 4 }}>{meta}</div>}
-        {contact && <div style={{ fontSize: 12, color: 'var(--ou-text-muted)', marginTop: 2 }}>{contact}</div>}
-        {likes && <div style={{ fontSize: 11, color: 'var(--ou-text-muted)', marginTop: 6 }}>좋아하는 것: {likes}</div>}
-      </div>
-    );
-  }
-
-  if (domain === 'task') {
-    const title = (data?.title || data?.what || safeContent.slice(0, 40)) as string;
-    const deadline = (data?.deadline || data?.due || '') as string;
-    return (
-      <div style={{ marginTop: 12, padding: '10px 14px', borderRadius: 'var(--ou-radius-sm)', background: 'var(--ou-surface-faint)', border: '1px solid var(--ou-border-faint)', animation: 'ou-fade-in 0.4s ease' }}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-          <div style={{ width: 16, height: 16, borderRadius: 4, flexShrink: 0, marginTop: 2, border: '1.5px solid var(--ou-text-muted)' }} />
-          <div>
-            <div style={{ fontSize: 14, color: 'var(--ou-text-strong)' }}>{title}</div>
-            {deadline && <div style={{ fontSize: 11, color: 'var(--ou-text-secondary)', marginTop: 3 }}>{deadline}</div>}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (domain === 'idea' || domain === 'knowledge') {
-    const title = (data?.title || safeContent.slice(0, 60)) as string;
-    return (
-      <div style={{ marginTop: 12, padding: '10px 14px', borderRadius: 'var(--ou-radius-sm)', background: 'var(--ou-surface-faint)', border: '1px solid var(--ou-border-faint)', animation: 'ou-fade-in 0.4s ease' }}>
-        <div style={{ fontSize: 10, color: 'var(--ou-text-muted)', letterSpacing: 1, marginBottom: 10 }}>
-          {domain.toUpperCase()}
-        </div>
-        <div style={{ fontSize: 14, color: 'var(--ou-text-body)', lineHeight: 1.6 }}>{title}</div>
+      <div style={{ marginTop: 12, animation: 'ou-fade-in 0.4s ease' }}>
+        <ViewComponent nodes={[fakeNode]} inline={true} />
       </div>
     );
   }

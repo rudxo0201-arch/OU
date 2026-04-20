@@ -170,7 +170,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
             const data = JSON.parse(line.slice(6));
             if (data.text) { accumulated += data.text; updateMessage(assistantId, { content: accumulated }); }
             if (data.done) {
-              nodeInfo = { domain: data.domain, nodeId: data.nodeId, confidence: data.confidence, domain_data: data.domain_data, suggestions: data.suggestions, additionalNodes: data.additionalNodes };
+              nodeInfo = { domain: data.domain, nodeId: data.nodeId, confidence: data.confidence, domain_data: data.domain_data, suggestions: data.suggestions, additionalNodes: data.additionalNodes, viewType: data.viewData?.viewOptions?.[0] };
               // 뷰 선택지: done 이벤트의 viewData에서 추출
               if (data.viewData?.viewOptions?.length > 0) {
                 setPendingViewOptions({
@@ -264,7 +264,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
             const data = JSON.parse(line.slice(6));
             if (data.text) { accumulated += data.text; updateMessage(assistantId, { content: accumulated }); }
             if (data.done) {
-              nodeInfo = { domain: data.domain, nodeId: data.nodeId, confidence: data.confidence, domain_data: data.domain_data, suggestions: data.suggestions, additionalNodes: data.additionalNodes };
+              nodeInfo = { domain: data.domain, nodeId: data.nodeId, confidence: data.confidence, domain_data: data.domain_data, suggestions: data.suggestions, additionalNodes: data.additionalNodes, viewType: data.viewData?.viewOptions?.[0] };
               if (data.viewData?.viewOptions?.length > 0) {
                 setPendingViewOptions({
                   options: data.viewData.viewOptions,
