@@ -102,11 +102,24 @@ export function ViewStudio({ view, onBack }: Props) {
       {/* 좌우 분할 */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, alignItems: 'start' }}>
         {/* 좌: 컴포저 */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <DataSourceSection />
-          <FilterSection />
-          <GroupSortSection />
-          <RenderTypeSection />
+        <div style={{
+          display: 'flex', flexDirection: 'column', gap: 0,
+          background: 'var(--ou-bg)', borderRadius: 16,
+          boxShadow: 'var(--ou-neu-raised-sm)', overflow: 'hidden',
+        }}>
+          {[
+            <DataSourceSection key="ds" />,
+            <FilterSection key="fl" />,
+            <GroupSortSection key="gs" />,
+            <RenderTypeSection key="rt" />,
+          ].map((section, i) => (
+            <div key={i} style={{
+              padding: '16px 18px',
+              borderTop: i > 0 ? '0.5px solid var(--ou-border-subtle)' : 'none',
+            }}>
+              {section}
+            </div>
+          ))}
         </div>
 
         {/* 우: 라이브 프리뷰 */}

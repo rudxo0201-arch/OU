@@ -7,6 +7,10 @@ import { QuickMemoWidget } from './QuickMemoWidget';
 import { ViewWidget } from './ViewWidget';
 import { DictionaryWidget } from './DictionaryWidget';
 import { BonchoWidget } from './BonchoWidget';
+import { StreakWidget } from './StreakWidget';
+import { TodayScheduleWidget } from './TodayScheduleWidget';
+import { ChatHeatmapWidget } from './ChatHeatmapWidget';
+import { ApiTokenWidget } from './ApiTokenWidget';
 
 registerWidget({
   type: 'ou-view',
@@ -160,4 +164,48 @@ registerWidget({
   defaultSize: [4, 3],
   removable: true,
   needsCard: true,
+});
+
+registerWidget({
+  type: 'streak',
+  label: '연속 대화',
+  component: StreakWidget,
+  scrollable: 'none',
+  minSize: [1, 2],
+  defaultSize: [1, 2],
+  removable: true,
+  needsCard: false,
+});
+
+registerWidget({
+  type: 'today-schedule',
+  label: '오늘 일정',
+  component: TodayScheduleWidget,
+  scrollable: 'vertical',
+  minSize: [2, 1],
+  defaultSize: [3, 2],
+  removable: true,
+  needsCard: false,
+});
+
+registerWidget({
+  type: 'chat-heatmap',
+  label: '대화 히트맵',
+  component: ChatHeatmapWidget,
+  scrollable: 'none',
+  minSize: [2, 1],
+  defaultSize: [3, 1],
+  removable: true,
+  needsCard: false,
+});
+
+registerWidget({
+  type: 'api-token',
+  label: 'API 토큰',
+  component: ApiTokenWidget,
+  scrollable: 'none',
+  minSize: [2, 1],
+  defaultSize: [2, 2],
+  removable: true,
+  needsCard: false,
 });

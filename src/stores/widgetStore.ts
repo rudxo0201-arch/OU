@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { WidgetInstance } from '@/components/widgets/types';
 import { GRID_COLS, GRID_ROWS } from '@/components/widgets/types';
-import { DEFAULT_LAYOUT, ADMIN_LAYOUT, ADMIN_PAGE2_LAYOUT } from '@/components/widgets/presets';
+import { DEFAULT_LAYOUT, DEFAULT_PAGE2_LAYOUT, ADMIN_LAYOUT, ADMIN_PAGE2_LAYOUT } from '@/components/widgets/presets';
 
 const LAYOUT_VERSION = 7;
 
@@ -49,7 +49,7 @@ function clampToGrid(widgets: WidgetInstance[], cols: number = GRID_COLS, rows: 
 
 const DEFAULT_PAGES: WidgetPage[] = [
   { id: 'main', name: '안녕하세요. OU에 오신 것을 환영합니다', widgets: DEFAULT_LAYOUT },
-  { id: 'page2', name: '페이지 2', widgets: [] },
+  { id: 'page2', name: '기억 · 활동', widgets: DEFAULT_PAGE2_LAYOUT },
   { id: 'page3', name: '페이지 3', widgets: [] },
 ];
 
