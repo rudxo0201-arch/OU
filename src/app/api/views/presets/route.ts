@@ -1,33 +1,43 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
 
 /**
  * GET /api/views/presets
- * 활성 뷰 프리셋 목록 조회 (전체 또는 도메인 필터)
+ * 활성 뷰 프리셋 목록 조회 — 공개 데이터, 인증 불필요
  */
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const domain = searchParams.get('domain');
-    const category = searchParams.get('category'); // inline | full | cross
+    const category = searchParams.get('category');
 
-    const supabase = await createClient();
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-    let query = supabase
-      .from('view_presets')
-      .select('*')
-      .eq('is_active', true)
-      .order('domain')
-      .order('sort_order');
+    const params = new URLSearchParams({
+      select: '*',
+      is_active: 'eq.true',
+      order: 'domain.asc,sort_order.asc',
+    });
+    if (domain) params.set('domain', `eq.${domain}`);
+    if (category) params.set('category', `eq.${category}`);
 
-    if (domain) query = query.eq('domain', domain);
-    if (category) query = query.eq('category', category);
+    const res = await fetch(`${supabaseUrl}/rest/v1/view_presets?${params}`, {
+      headers: {
+        apikey: anonKey,
+        Authorization: `Bearer ${anonKey}`,
+      },
+      cache: 'no-store',
+    });
 
-    const { data, error } = await query;
-    if (error) throw error;
+    if (!res.ok) {
+      const text = await res.text();
+      return NextResponse.json({ presets: [], error: text }, { status: 500 });
+    }
 
+    const data = await res.json();
     return NextResponse.json({ presets: data || [] });
   } catch (e) {
-    return NextResponse.json({ presets: [], error: String(e) }, { status: 500 });
+    const msg = e instanceof Error ? e.message : JSON.stringify(e);
+    return NextResponse.json({ presets: [], error: msg }, { status: 500 });
   }
 }
