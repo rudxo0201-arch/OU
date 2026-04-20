@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
-const PUBLIC_ROUTES = ['/', '/login', '/auth/confirm', '/auth/callback', '/ds', '/invite'];
+const PUBLIC_ROUTES = ['/', '/login', '/signup', '/forgot-password', '/auth/confirm', '/auth/callback', '/ds', '/invite'];
 const GUEST_ALLOWED: string[] = [];
 const ADMIN_ROUTES = ['/admin'];
 
@@ -38,8 +38,8 @@ export async function middleware(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   const path = request.nextUrl.pathname;
 
-  // 로그인 상태로 /login 접근 → /home
-  if (user && path === '/login') {
+  // 로그인 상태로 /login, /signup, / 접근 → /home
+  if (user && (path === '/login' || path === '/signup' || path === '/')) {
     return NextResponse.redirect(new URL('/home', request.url));
   }
 
