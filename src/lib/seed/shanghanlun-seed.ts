@@ -1,6 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { readFileSync } from 'fs';
-import { join } from 'path';
+import { makeAdminInternalDomainData } from './admin-seed';
+import shanghanlunRaw from '@/data/shanghanlun-raw.json';
 
 const ADMIN_EMAIL = 'rudxo0201@gmail.com';
 
@@ -13,14 +13,80 @@ interface ShanghanlunArticle {
   chapter: string;
   section: string;
   related_formulas: string[];
+  formula_names?: string[];
   key_concepts: string[];
   syndrome: string;
+  generation_method?: string;
 }
 
-function loadShanghanlunData(): ShanghanlunArticle[] {
-  const filePath = join(process.cwd(), 'src/data/shanghanlun-raw.json');
-  const raw = readFileSync(filePath, 'utf-8');
-  return JSON.parse(raw);
+/**
+ * 상한론 조문 DataNode raw 텍스트 생성
+ */
+function buildRawText(article: ShanghanlunArticle): string {
+  const parts: string[] = [
+    `[상한론 제${article.article_number}조] ${article.section}`,
+    `원문: ${article.original_text}`,
+    `해석: ${article.translation}`,
+  ];
+  if (article.syndrome) {
+    parts.push(`증후: ${article.syndrome}`);
+  }
+  if (article.key_concepts.length > 0) {
+    parts.push(`핵심 개념: ${article.key_concepts.join(', ')}`);
+  }
+  return parts.join('\n');
+}
+
+/**
+ * 섹션별 텍스트 빌드 (섹션당 임베딩 분리)
+ */
+function buildSections(article: ShanghanlunArticle): Array<{ heading: string; text: string }> {
+  const sections: Array<{ heading: string; text: string }> = [];
+
+  // 섹션 1: 원문
+  const originalLines = [article.original_text];
+  if (article.korean_text) originalLines.push(`(${article.korean_text})`);
+  sections.push({ heading: '원문', text: originalLines.join(' ') });
+
+  // 섹션 2: 해석
+  sections.push({ heading: '해석', text: article.translation });
+
+  // 섹션 3: 증후/개념 (있는 경우만)
+  const conceptParts: string[] = [];
+  if (article.syndrome) conceptParts.push(`증후: ${article.syndrome}`);
+  if (article.key_concepts.length > 0) {
+    conceptParts.push(`핵심개념: ${article.key_concepts.join(', ')}`);
+  }
+  if (article.formula_names && article.formula_names.length > 0) {
+    conceptParts.push(`관련처방: ${article.formula_names.join(', ')}`);
+  }
+  if (conceptParts.length > 0) {
+    sections.push({ heading: '증후/개념', text: conceptParts.join('. ') });
+  }
+
+  return sections;
+}
+
+/**
+ * bangje formula_id → DataNode UUID 룩업맵 구축
+ */
+async function buildFormulaNodeMap(
+  supabaseAdmin: SupabaseClient,
+  adminUserId: string,
+): Promise<Map<string, string>> {
+  const { data: formulaNodes } = await supabaseAdmin
+    .from('data_nodes')
+    .select('id, domain_data')
+    .eq('user_id', adminUserId)
+    .eq('domain', 'knowledge')
+    .eq('is_admin_node', true);
+
+  const map = new Map<string, string>();
+  for (const node of formulaNodes ?? []) {
+    const d = (node as any).domain_data;
+    if (d?.formula_id) map.set(d.formula_id, node.id);
+  }
+  return map;
 }
 
 /**
@@ -28,7 +94,7 @@ function loadShanghanlunData(): ShanghanlunArticle[] {
  */
 export async function seedShanghanlunData(
   supabaseAdmin: SupabaseClient,
-): Promise<{ created: number; skipped: number; adminUserId: string }> {
+): Promise<{ created: number; skipped: number; adminUserId: string; nodes: { id: string; raw: string }[] }> {
   // 1. 관리자 유저 조회
   const { data: adminUsers } = await supabaseAdmin
     .from('profiles')
@@ -48,12 +114,9 @@ export async function seedShanghanlunData(
     throw new Error(`Admin user not found for email: ${ADMIN_EMAIL}`);
   }
 
-  // 2. 데이터 로드
-  console.log('[ShanghanlunSeed] Loading shanghanlun-raw.json...');
-  const articles = loadShanghanlunData();
-  console.log(`[ShanghanlunSeed] Loaded: ${articles.length} articles`);
+  const articles = shanghanlunRaw as ShanghanlunArticle[];
 
-  // 3. 기존 중복 체크 (article_id 기준)
+  // 2. 기존 중복 체크 (article_id 기준)
   const { data: existingNodes } = await supabaseAdmin
     .from('data_nodes')
     .select('domain_data')
@@ -70,14 +133,18 @@ export async function seedShanghanlunData(
   const newArticles = articles.filter(a => !existingIds.has(a.id));
 
   if (newArticles.length === 0) {
-    return { created: 0, skipped: articles.length, adminUserId };
+    console.log('[ShanghanlunSeed] 모든 조문 이미 존재. 건너뜀.');
+    return { created: 0, skipped: articles.length, adminUserId, nodes: [] };
   }
 
-  console.log(`[ShanghanlunSeed] To insert: ${newArticles.length}, to skip: ${existingIds.size}`);
+  console.log(`[ShanghanlunSeed] 삽입: ${newArticles.length}개, 스킵: ${existingIds.size}개`);
 
-  // 4. DataNode 삽입 (배치 50개씩)
+  // 3. bangje formula_id → DataNode UUID 맵 구축
+  const formulaNodeMap = await buildFormulaNodeMap(supabaseAdmin, adminUserId);
+
+  // 4. DataNode 일괄 삽입 (배치 50개씩)
   const BATCH_SIZE = 50;
-  let created = 0;
+  const allInserted: { id: string; raw: string; article: ShanghanlunArticle }[] = [];
 
   for (let i = 0; i < newArticles.length; i += BATCH_SIZE) {
     const batch = newArticles.slice(i, i + BATCH_SIZE);
@@ -86,7 +153,7 @@ export async function seedShanghanlunData(
       user_id: adminUserId,
       domain: 'knowledge',
       raw: buildRawText(article),
-      domain_data: {
+      domain_data: makeAdminInternalDomainData({
         type: 'shanghanlun',
         article_id: article.id,
         article_number: article.article_number,
@@ -96,9 +163,11 @@ export async function seedShanghanlunData(
         chapter: article.chapter,
         section: article.section,
         related_formulas: article.related_formulas,
+        formula_names: article.formula_names ?? [],
         key_concepts: article.key_concepts,
         syndrome: article.syndrome,
-      },
+        generation_method: article.generation_method ?? 'manual',
+      }),
       visibility: 'public' as const,
       confidence: 'high' as const,
       source_type: 'manual',
@@ -107,36 +176,96 @@ export async function seedShanghanlunData(
       is_admin_node: true,
     }));
 
-    const { error } = await supabaseAdmin
+    const { data: inserted, error } = await supabaseAdmin
       .from('data_nodes')
-      .insert(insertPayload);
+      .insert(insertPayload)
+      .select('id, raw');
 
     if (error) {
-      throw new Error(`[ShanghanlunSeed] Batch ${Math.floor(i / BATCH_SIZE) + 1} failed: ${error.message}`);
+      throw new Error(`[ShanghanlunSeed] 배치 ${Math.floor(i / BATCH_SIZE) + 1} 실패: ${error.message}`);
     }
 
-    created += batch.length;
+    const insertedWithArticle = (inserted ?? []).map((node, idx) => ({
+      ...node,
+      article: batch[idx],
+    }));
+    allInserted.push(...insertedWithArticle);
   }
 
-  console.log(`[ShanghanlunSeed] Done. Created: ${created}, Skipped: ${existingIds.size}`);
+  // 5. 각 노드에 sections + sentences 생성
+  for (const { id: nodeId, article } of allInserted) {
+    const sectionDefs = buildSections(article);
 
-  return { created, skipped: existingIds.size, adminUserId };
-}
+    for (let sIdx = 0; sIdx < sectionDefs.length; sIdx++) {
+      const { heading, text } = sectionDefs[sIdx];
 
-function buildRawText(article: ShanghanlunArticle): string {
-  const parts: string[] = [];
+      const { data: section } = await supabaseAdmin
+        .from('sections')
+        .insert({ node_id: nodeId, heading, order_idx: sIdx })
+        .select('id')
+        .single();
 
-  parts.push(`[상한론 제${article.article_number}조] ${article.chapter} ${article.section}`);
-  parts.push(`원문: ${article.original_text}`);
-  parts.push(`해석: ${article.translation}`);
+      if (!section) continue;
 
-  if (article.syndrome) {
-    parts.push(`증후: ${article.syndrome}`);
+      // 문장 분리 (문장 종결 기준)
+      const rawSentences = text
+        .split(/(?<=[.다])\s+/)
+        .map(s => s.trim())
+        .filter(s => s.length > 0);
+
+      const sentences = rawSentences.length > 0 ? rawSentences : [text];
+
+      for (let j = 0; j < sentences.length; j++) {
+        await supabaseAdmin.from('sentences').insert({
+          section_id: section.id,
+          node_id: nodeId,
+          text: sentences[j],
+          order_idx: j,
+          embed_status: 'pending',
+          embed_tier: 'hot',
+        });
+      }
+    }
   }
 
-  if (article.key_concepts.length > 0) {
-    parts.push(`핵심 개념: ${article.key_concepts.join(', ')}`);
+  console.log(`[ShanghanlunSeed] sections/sentences 생성 완료`);
+
+  // 6. node_relations 생성 (조문 → 방제 엣지)
+  let relationCount = 0;
+  for (const { id: nodeId, article } of allInserted) {
+    for (const formulaId of article.related_formulas) {
+      const targetNodeId = formulaNodeMap.get(formulaId);
+      if (!targetNodeId) continue;
+
+      await supabaseAdmin.from('node_relations').insert({
+        source_node_id: nodeId,
+        target_node_id: targetNodeId,
+        relation_type: 'involves',
+        weight: 1.5,
+        source: 'seed',
+        metadata: { role: '주치', formula_id: formulaId },
+      }).then(({ error }) => {
+        if (!error) relationCount++;
+      });
+    }
   }
 
-  return parts.join('\n');
+  console.log(`[ShanghanlunSeed] node_relations ${relationCount}개 생성`);
+
+  // 7. Layer 3 비동기 트리거 (임베딩 + 트리플)
+  import('../pipeline/layer3').then(({ embedPendingSentences, extractTriples }) => {
+    for (const { id: nodeId, article } of allInserted) {
+      embedPendingSentences(nodeId).catch(e =>
+        console.error(`[ShanghanlunSeed] embed 실패 (조문 ${article.article_number}):`, e),
+      );
+      extractTriples(nodeId).catch(e =>
+        console.error(`[ShanghanlunSeed] triple 실패 (조문 ${article.article_number}):`, e),
+      );
+    }
+  }).catch(() => {});
+
+  const nodes = allInserted.map(({ id, raw }) => ({ id, raw }));
+  console.log(`[ShanghanlunSeed] 완료. 생성: ${nodes.length}개, 스킵: ${existingIds.size}개`);
+
+  return { created: nodes.length, skipped: existingIds.size, adminUserId, nodes };
 }

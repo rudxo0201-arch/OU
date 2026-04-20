@@ -43,10 +43,16 @@ export default function MyPageWrapper() {
   );
 }
 
+const GREETING_STORAGE_KEY = 'ou-custom-greeting';
+
 function MyPage() {
   const { user, isLoading, isAdmin } = useAuth();
   const router = useRouter();
   const [displayName, setDisplayName] = useState('');
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [greetingText, setGreetingText] = useState('');
+  const [editingGreeting, setEditingGreeting] = useState(false);
+  const greetingInputRef = useRef<HTMLInputElement>(null);
   const searchParams = useSearchParams();
   const isReplay = searchParams.get('tutorial') === 'replay';
   const inviteToken = searchParams.get('invite');
@@ -105,9 +111,31 @@ function MyPage() {
     if (!user?.id) return;
     import('@/lib/supabase/client').then(({ createClient }) => {
       createClient().from('profiles').select('display_name').eq('id', user.id).single()
-        .then(({ data }) => { if (data?.display_name) setDisplayName(data.display_name); });
+        .then(({ data }) => {
+          const name = data?.display_name ?? user?.email?.split('@')[0] ?? '회원';
+          if (data?.display_name) setDisplayName(data.display_name);
+          // 커스텀 인사 없으면 기본값 설정
+          const saved = localStorage.getItem(GREETING_STORAGE_KEY);
+          setGreetingText(saved ?? `안녕하세요, ${name}님.`);
+        });
     });
   }, [user?.id]);
+
+  // 편집 모드 이벤트 구독
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const { editMode } = (e as CustomEvent).detail;
+      setIsEditMode(editMode);
+      if (!editMode) setEditingGreeting(false);
+    };
+    window.addEventListener('widget-edit-mode-change', handler);
+    return () => window.removeEventListener('widget-edit-mode-change', handler);
+  }, []);
+
+  // 편집 모드 진입 시 인풋 포커스
+  useEffect(() => {
+    if (editingGreeting) greetingInputRef.current?.focus();
+  }, [editingGreeting]);
 
   // 초대 토큰 처리: 가입 직후 A가 공유한 팩트 정보를 B의 프로필에 자동 등록 + A에게 유니 보상
   useEffect(() => {
@@ -244,7 +272,7 @@ function MyPage() {
             display: 'flex', flexDirection: 'column',
             padding: 0,
             zIndex: 5,
-            pointerEvents: 'none',
+            pointerEvents: isEditMode ? 'auto' : 'none',
           }}>
             <div style={{
               fontSize: 12, letterSpacing: '2px',
@@ -254,14 +282,55 @@ function MyPage() {
             }}>
               {getGreetingDate()}
             </div>
-            <div style={{
-              fontSize: 30, fontWeight: 700,
-              color: 'var(--ou-text-bright)',
-              letterSpacing: '-0.02em',
-              lineHeight: 1.2,
-            }}>
-              안녕하세요, {displayName || user?.email?.split('@')[0] || '회원'}님.
-            </div>
+
+            {editingGreeting ? (
+              <input
+                ref={greetingInputRef}
+                value={greetingText}
+                onChange={e => setGreetingText(e.target.value)}
+                onBlur={() => {
+                  localStorage.setItem(GREETING_STORAGE_KEY, greetingText);
+                  setEditingGreeting(false);
+                }}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === 'Escape') {
+                    localStorage.setItem(GREETING_STORAGE_KEY, greetingText);
+                    setEditingGreeting(false);
+                  }
+                }}
+                style={{
+                  fontSize: 30, fontWeight: 700,
+                  color: 'var(--ou-text-bright)',
+                  letterSpacing: '-0.02em',
+                  lineHeight: 1.2,
+                  background: 'transparent',
+                  border: 'none',
+                  borderBottom: '1.5px solid var(--ou-border-subtle)',
+                  outline: 'none',
+                  width: '100%',
+                  padding: '2px 0',
+                  fontFamily: 'inherit',
+                }}
+              />
+            ) : (
+              <div
+                onClick={() => isEditMode && setEditingGreeting(true)}
+                style={{
+                  fontSize: 30, fontWeight: 700,
+                  color: 'var(--ou-text-bright)',
+                  letterSpacing: '-0.02em',
+                  lineHeight: 1.2,
+                  cursor: isEditMode ? 'text' : 'default',
+                  borderRadius: 6,
+                  padding: isEditMode ? '2px 6px' : 0,
+                  marginLeft: isEditMode ? -6 : 0,
+                  outline: isEditMode ? '1.5px dashed var(--ou-border-subtle)' : 'none',
+                  transition: 'outline 150ms, padding 150ms',
+                }}
+              >
+                {greetingText || `안녕하세요, ${displayName || user?.email?.split('@')[0] || '회원'}님.`}
+              </div>
+            )}
           </div>
         )}
 

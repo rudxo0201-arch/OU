@@ -1,0 +1,580 @@
+[
+  {
+    "id": "SHL-001",
+    "article_number": 1,
+    "original_text": "太陽病 脈浮 頭項强痛而惡寒",
+    "korean_text": "",
+    "translation": "태양병은 맥이 부하고 머리와 뒷목이 강직되며 아프고 오한이 나는 것이다.",
+    "chapter": "태양병",
+    "section": "태양병 상편",
+    "related_formulas": [],
+    "formula_names": [],
+    "key_concepts": [
+      "맥부",
+      "두항강통",
+      "오한"
+    ],
+    "syndrome": "태양병제강",
+    "generation_method": "manual"
+  },
+  {
+    "id": "SHL-002",
+    "article_number": 2,
+    "original_text": "太陽病 發熱 汗出 惡風 脈緩者 名爲中風",
+    "korean_text": "",
+    "translation": "태양병에 열이 나고 땀이 나며 바람을 싫어하고 맥이 완만한 것을 이름하여 중풍이라 한다.",
+    "chapter": "태양병",
+    "section": "태양병 상편",
+    "related_formulas": [],
+    "formula_names": [],
+    "key_concepts": [
+      "발열",
+      "한출",
+      "악풍",
+      "맥완"
+    ],
+    "syndrome": "태양중풍(표허)",
+    "generation_method": "manual"
+  },
+  {
+    "id": "SHL-003",
+    "article_number": 3,
+    "original_text": "太陽病 或已發熱 或未發熱 必惡寒 體痛 嘔逆 脈陰陽俱緊者 名爲傷寒",
+    "korean_text": "",
+    "translation": "태양병에 이미 열이 났거나 아직 나지 않았어도 반드시 오한이 있고 몸이 아프며 구역질이 나고 맥의 음양이 모두 긴한 것을 이름하여 상한이라 한다.",
+    "chapter": "태양병",
+    "section": "태양병 상편",
+    "related_formulas": [],
+    "formula_names": [],
+    "key_concepts": [
+      "발열여부",
+      "필악한",
+      "체통",
+      "구역",
+      "맥緊"
+    ],
+    "syndrome": "태양상한(표실)",
+    "generation_method": "manual"
+  },
+  {
+    "id": "SHL-004",
+    "article_number": 4,
+    "original_text": "傷寒一日 太陽受之 脈若靜者 爲不傳 頗欲吐 若躁煩 脈數急者 爲傳也",
+    "korean_text": "",
+    "translation": "상한 하루째에 태양경이 이를 받는데 맥이 정온하면 병이 전해지지 않은 것이고 구토하려 하거나 조번하며 맥이 삭급하면 병이 전해진 것이다.",
+    "chapter": "태양병",
+    "section": "태양병 상편",
+    "related_formulas": [],
+    "formula_names": [],
+    "key_concepts": [
+      "맥정",
+      "욕토",
+      "조번",
+      "맥삭급"
+    ],
+    "syndrome": "병정전변",
+    "generation_method": "manual"
+  },
+  {
+    "id": "SHL-005",
+    "article_number": 5,
+    "original_text": "傷寒二三日 陽明少陽證不見者 爲不傳也",
+    "korean_text": "",
+    "translation": "상한 2~3일에 양명병이나 소양병의 증후가 나타나지 않으면 병이 전해지지 않은 것이다.",
+    "chapter": "태양병",
+    "section": "태양병 상편",
+    "related_formulas": [],
+    "formula_names": [],
+    "key_concepts": [
+      "양명소양증부재"
+    ],
+    "syndrome": "병정전변",
+    "generation_method": "manual"
+  },
+  {
+    "id": "SHL-006",
+    "article_number": 6,
+    "original_text": "太陽病 發熱而渴 不惡寒者 爲溫病",
+    "korean_text": "",
+    "translation": "태양병에 열이 나면서 갈증이 있고 오한이 없는 것은 온병이라 한다.",
+    "chapter": "태양병",
+    "section": "태양병 상편",
+    "related_formulas": [],
+    "formula_names": [],
+    "key_concepts": [
+      "발열",
+      "갈증",
+      "불악한"
+    ],
+    "syndrome": "온병",
+    "generation_method": "manual"
+  },
+  {
+    "id": "SHL-007",
+    "article_number": 7,
+    "original_text": "病有發熱惡寒者 發於陽也 無熱惡寒者 發於陰也",
+    "korean_text": "",
+    "translation": "병에 발열과 오한이 함께 있는 것은 양에서 발한 것이고 열 없이 오한만 있는 것은 음에서 발한 것이다.",
+    "chapter": "태양병",
+    "section": "태양병 상편",
+    "related_formulas": [],
+    "formula_names": [],
+    "key_concepts": [
+      "발열악한",
+      "무열악한"
+    ],
+    "syndrome": "발병음양",
+    "generation_method": "manual"
+  },
+  {
+    "id": "SHL-008",
+    "article_number": 8,
+    "original_text": "太陽病 頭痛至七日以上自愈者 以行其經盡故也 若欲作再經者 針足陽明 使經不傳則愈",
+    "korean_text": "",
+    "translation": "태양병 두통이 7일 이상 지나 스스로 낫는 것은 그 경락을 다 돌았기 때문이다. 만약 다시 다른 경락으로 전해지려 하면 족양명경에 침을 놓아 전해지지 않게 하면 낫는다.",
+    "chapter": "태양병",
+    "section": "태양병 상편",
+    "related_formulas": [],
+    "formula_names": [],
+    "key_concepts": [
+      "두통",
+      "7일경과"
+    ],
+    "syndrome": "전경방치",
+    "generation_method": "manual"
+  },
+  {
+    "id": "SHL-009",
+    "article_number": 9,
+    "original_text": "太陽病 欲解時 從巳至未上",
+    "korean_text": "",
+    "translation": "태양병이 풀리려 하는 시간은 사시(09시)부터 미시(15시)까지이다.",
+    "chapter": "태양병",
+    "section": "태양병 상편",
+    "related_formulas": [],
+    "formula_names": [],
+    "key_concepts": [
+      "욕해시",
+      "사~미"
+    ],
+    "syndrome": "해어시",
+    "generation_method": "manual"
+  },
+  {
+    "id": "SHL-010",
+    "article_number": 10,
+    "original_text": "風家 表解而不了了者 12日愈",
+    "korean_text": "",
+    "translation": "중풍 환자가 표증이 풀렸는데도 시원하지 않은 증상은 12일이 지나면 낫는다.",
+    "chapter": "태양병",
+    "section": "태양병 상편",
+    "related_formulas": [],
+    "formula_names": [],
+    "key_concepts": [
+      "표해",
+      "부료료"
+    ],
+    "syndrome": "예후",
+    "generation_method": "manual"
+  },
+  {
+    "id": "SHL-011",
+    "article_number": 11,
+    "original_text": "病人身疼 脈沈而遲者 此君門之病也",
+    "korean_text": "",
+    "translation": "환자가 몸이 아픈데 맥이 침하고 지한 것은 이 병이 이미 안(裏)으로 들어간 것이다.",
+    "chapter": "태양병",
+    "section": "태양병 상편",
+    "related_formulas": [],
+    "formula_names": [],
+    "key_concepts": [
+      "신통",
+      "맥침지"
+    ],
+    "syndrome": "리증전입",
+    "generation_method": "manual"
+  },
+  {
+    "id": "SHL-012",
+    "article_number": 12,
+    "original_text": "太陽中風 陽浮而陰弱 陽浮者 熱自發 陰弱者 汗自出 嗇嗇惡寒 淅淅惡風 翕翕發熱 鼻鳴乾嘔者 桂枝湯主之",
+    "korean_text": "",
+    "translation": "태양중풍에 양맥은 부하고 음맥은 약하니 양부한 것은 열이 스스로 나는 것이고 음약한 것은 땀이 스스로 나는 것이다. 오슬오슬 춥고 바람을 싫어하며 열이 나고 코를 훌쩍이며 헛구역질을 하면 계지탕으로 다스린다.",
+    "chapter": "태양병",
+    "section": "태양병 상편",
+    "related_formulas": [
+      "BJ-01-002"
+    ],
+    "formula_names": [
+      "계지탕"
+    ],
+    "key_concepts": [
+      "맥부약",
+      "발열",
+      "한출",
+      "악한",
+      "악풍",
+      "비명",
+      "건구"
+    ],
+    "syndrome": "계지탕정법",
+    "generation_method": "manual"
+  },
+  {
+    "id": "SHL-013",
+    "article_number": 13,
+    "original_text": "太陽病 頭痛發熱 汗出惡風者 桂枝湯主之",
+    "korean_text": "",
+    "translation": "태양병에 머리가 아프고 열이 나며 땀이 나고 바람을 싫어하면 계지탕으로 다스린다.",
+    "chapter": "태양병",
+    "section": "태양병 상편",
+    "related_formulas": [
+      "BJ-01-002"
+    ],
+    "formula_names": [
+      "계지탕"
+    ],
+    "key_concepts": [
+      "두통",
+      "발열",
+      "한출",
+      "악풍"
+    ],
+    "syndrome": "계지탕간략",
+    "generation_method": "manual"
+  },
+  {
+    "id": "SHL-014",
+    "article_number": 14,
+    "original_text": "太陽病 項背强几几 反汗出惡風者 桂枝加葛根湯主之",
+    "korean_text": "",
+    "translation": "태양병에 목과 등이 뻣뻣한데 도리어 땀이 나고 바람을 싫어하면 계지탕에 갈근을 더하여 다스린다.",
+    "chapter": "태양병",
+    "section": "태양병 상편",
+    "related_formulas": [
+      "BJ-01-026"
+    ],
+    "formula_names": [
+      "계지가갈근탕"
+    ],
+    "key_concepts": [
+      "항배강",
+      "한출",
+      "악풍"
+    ],
+    "syndrome": "태양중풍겸증",
+    "generation_method": "manual"
+  },
+  {
+    "id": "SHL-015",
+    "article_number": 15,
+    "original_text": "太陽病 下之後 其氣上衝者 可與桂枝湯 方用前法 若不上衝者 不得與之",
+    "korean_text": "",
+    "translation": "태양병을 하법으로 치료한 후 기가 위로 치받는 것은 계지탕을 줄 수 있으니 앞의 복법을 따른다. 만약 위로 치받지 않으면 주어서는 안 된다.",
+    "chapter": "태양병",
+    "section": "태양병 상편",
+    "related_formulas": [
+      "BJ-01-002"
+    ],
+    "formula_names": [
+      "계지탕"
+    ],
+    "key_concepts": [
+      "하후",
+      "기상충"
+    ],
+    "syndrome": "오하후대처",
+    "generation_method": "manual"
+  },
+  {
+    "id": "SHL-016",
+    "article_number": 16,
+    "original_text": "太陽病 三日 已發汗 若吐 若下 若溫針 仍不解者 此爲壞病 桂枝不中與之也",
+    "korean_text": "",
+    "translation": "태양병 3일에 이미 땀을 냈거나 토하거나 설사시키거나 온침을 썼음에도 풀리지 않는 것은 괴병이 된 것이니 계지탕을 주어서는 안 된다.",
+    "chapter": "태양병",
+    "section": "태양병 상편",
+    "related_formulas": [],
+    "formula_names": [],
+    "key_concepts": [
+      "발한",
+      "토",
+      "하",
+      "온침",
+      "불해"
+    ],
+    "syndrome": "괴병(壞病)",
+    "generation_method": "manual"
+  },
+  {
+    "id": "SHL-017",
+    "article_number": 17,
+    "original_text": "若欲知何臟腑病 隨其證候而取之",
+    "korean_text": "",
+    "translation": "어느 장부의 병인지 알고자 하면 그 증후를 따라 진단하여 취한다.",
+    "chapter": "태양병",
+    "section": "태양병 상편",
+    "related_formulas": [],
+    "formula_names": [],
+    "key_concepts": [
+      "증후관찰"
+    ],
+    "syndrome": "진단원칙",
+    "generation_method": "manual"
+  },
+  {
+    "id": "SHL-018",
+    "article_number": 18,
+    "original_text": "桂枝本爲解肌 若其人脈浮緊 發熱汗不出者 不可與也 常須識此 勿令誤也",
+    "korean_text": "",
+    "translation": "계지탕은 본래 해근(解肌)하는 약이다. 만약 맥이 부긴하고 열이 나며 땀이 나지 않는 사람에게는 주어서는 안 되니 항상 이를 기억하여 그르치지 않게 하라.,맥부긴,무한,,계지탕금기",
+    "chapter": "태양병",
+    "section": "태양병 상편",
+    "related_formulas": [],
+    "formula_names": [],
+    "key_concepts": [],
+    "syndrome": "",
+    "generation_method": "manual"
+  },
+  {
+    "id": "SHL-019",
+    "article_number": 19,
+    "original_text": "若酒客病 不可與桂枝湯 得湯則嘔 以酒客不喜甘故也",
+    "korean_text": "",
+    "translation": "평소 술을 즐기는 자의 병에는 계지탕을 주어서는 안 된다. 약을 복용하면 구토하게 되니 이는 술꾼이 단맛을 좋아하지 않기 때문이다.",
+    "chapter": "태양병",
+    "section": "태양병 상편",
+    "related_formulas": [],
+    "formula_names": [],
+    "key_concepts": [
+      "주객"
+    ],
+    "syndrome": "계지탕금기",
+    "generation_method": "manual"
+  },
+  {
+    "id": "SHL-020",
+    "article_number": 20,
+    "original_text": "太陽病 發汗 遂漏不止 其人惡風 小便難 四肢微急 難以屈伸者 桂枝加附子湯主之",
+    "korean_text": "",
+    "translation": "태양병에 땀을 냈는데 땀이 그치지 않고 새어 나오며 바람을 싫어하고 소변이 보기 어려우며 사지가 약간 당겨 굽히고 펴기 힘든 자는 계지가부자탕으로 다스린다.",
+    "chapter": "태양병",
+    "section": "태양병 상편",
+    "related_formulas": [
+      "BJ-01-027"
+    ],
+    "formula_names": [
+      "계지가부자탕"
+    ],
+    "key_concepts": [
+      "루한부지",
+      "악풍",
+      "소변난",
+      "사지급"
+    ],
+    "syndrome": "망양증",
+    "generation_method": "manual"
+  },
+  {
+    "id": "SHL-021",
+    "article_number": 21,
+    "original_text": "太陽病 下之後 脈促胸滿者 桂枝去芍藥湯主之",
+    "korean_text": "",
+    "translation": "태양병을 하법으로 치료한 후 맥이 촉하고 가슴이 답답한 자는 계지탕에서 작약을 빼고 다스린다.",
+    "chapter": "태양병",
+    "section": "태양병 상편",
+    "related_formulas": [],
+    "formula_names": [
+      "계지거작약탕"
+    ],
+    "key_concepts": [
+      "하후",
+      "맥촉",
+      "흉만"
+    ],
+    "syndrome": "오하후흉만",
+    "generation_method": "manual"
+  },
+  {
+    "id": "SHL-022",
+    "article_number": 22,
+    "original_text": "若微惡寒者 桂枝去芍藥加附子湯主之",
+    "korean_text": "",
+    "translation": "만약 약간 오한이 있는 자는 계지탕에서 작약을 빼고 부자를 더하여 다스린다.",
+    "chapter": "태양병",
+    "section": "태양병 상편",
+    "related_formulas": [],
+    "formula_names": [
+      "계지거작약가부자탕"
+    ],
+    "key_concepts": [
+      "미악한"
+    ],
+    "syndrome": "오하후양허",
+    "generation_method": "manual"
+  },
+  {
+    "id": "SHL-023",
+    "article_number": 23,
+    "original_text": "太陽病 得之八九日 如瘧狀 發熱惡寒 熱多寒少 其人不嘔 淸便自可 一日二三度發 脈微緩者 爲欲解也",
+    "korean_text": "",
+    "translation": "태양병 8~9일에 학질처럼 발열과 오한이 교대로 나타나는데 열이 많고 추위가 적으며 구토하지 않고 대변이 정상이고 얼굴이 도리어 붉으면 소량의 땀을 내기 위해 계지마황각반탕으로 다스린다.",
+    "chapter": "태양병",
+    "section": "태양병 상편",
+    "related_formulas": [],
+    "formula_names": [
+      "계지마황각반탕"
+    ],
+    "key_concepts": [
+      "여학상",
+      "열다한소",
+      "면적",
+      "신양"
+    ],
+    "syndrome": "소발한법",
+    "generation_method": "manual"
+  },
+  {
+    "id": "SHL-024",
+    "article_number": 24,
+    "original_text": "太陽病 初服桂枝湯 反煩不解者 先刺風池風府 却與桂枝湯則愈",
+    "korean_text": "",
+    "translation": "태양병에 처음 계지탕을 복용했는데 도리어 번조하고 풀리지 않으면 먼저 풍지와 풍부혈에 침을 놓고 다시 계지탕을 주면 낫는다.",
+    "chapter": "태양병",
+    "section": "태양병 상편",
+    "related_formulas": [
+      "BJ-01-002"
+    ],
+    "formula_names": [
+      "초복계지탕",
+      "계지탕"
+    ],
+    "key_concepts": [
+      "반번불해"
+    ],
+    "syndrome": "침약병행",
+    "generation_method": "manual"
+  },
+  {
+    "id": "SHL-025",
+    "article_number": 25,
+    "original_text": "服桂枝湯 大汗出 脈洪大者 與桂枝湯如前法 若形如瘧 日再發者 宜桂枝二麻黃一湯",
+    "korean_text": "",
+    "translation": "계지탕을 복용하고 땀이 너무 많이 나며 맥이 홍대해진 자는 앞의 법대로 계지탕을 주고 만약 모양이 학질 같아 하루에 두 번 발작하면 계지이마황일탕이 적당하다.",
+    "chapter": "태양병",
+    "section": "태양병 상편",
+    "related_formulas": [],
+    "formula_names": [
+      "계지이마황일탕"
+    ],
+    "key_concepts": [
+      "대한출",
+      "맥홍대",
+      "여학상"
+    ],
+    "syndrome": "소발한법",
+    "generation_method": "manual"
+  },
+  {
+    "id": "SHL-026",
+    "article_number": 26,
+    "original_text": "服桂枝湯 大汗出後 大煩渴不解 脈洪大者 白虎加人參湯主之",
+    "korean_text": "",
+    "translation": "계지탕을 복용하고 크게 땀을 낸 후 심한 번갈이 풀리지 않고 맥이 홍대한 자는 백호가인삼탕으로 다스린다.",
+    "chapter": "태양병",
+    "section": "태양병 상편",
+    "related_formulas": [
+      "BJ-04-002"
+    ],
+    "formula_names": [
+      "백호가인삼탕"
+    ],
+    "key_concepts": [
+      "대한출",
+      "대번갈",
+      "맥홍대"
+    ],
+    "syndrome": "태양전양명",
+    "generation_method": "manual"
+  },
+  {
+    "id": "SHL-027",
+    "article_number": 27,
+    "original_text": "太陽病 發熱惡寒 熱多寒少 脈微弱者 宜桂枝二越婢一湯",
+    "korean_text": "",
+    "translation": "태양병에 발열 오한이 있고 열이 많고 추위가 적으며 맥이 미약한 자는 계지이월비일탕이 적당하다.",
+    "chapter": "태양병",
+    "section": "태양병 상편",
+    "related_formulas": [],
+    "formula_names": [
+      "계지이월비일탕"
+    ],
+    "key_concepts": [
+      "열다한소",
+      "맥미약"
+    ],
+    "syndrome": "표울경증",
+    "generation_method": "manual"
+  },
+  {
+    "id": "SHL-028",
+    "article_number": 28,
+    "original_text": "服桂枝湯 或下之 頭項强痛 翕翕發熱 無汗 心下滿 微痛 小便不利者 桂枝去桂加茯苓白朮湯主之",
+    "korean_text": "",
+    "translation": "계지탕을 복용했거나 하법을 쓴 후 머리와 뒷목이 당기고 미열이 있으며 땀은 없는데 명치 아래가 그득하고 약간 아프며 소변이 잘 나오지 않는 자는 계지거계가복령백출탕으로 다스린다.",
+    "chapter": "태양병",
+    "section": "태양병 상편",
+    "related_formulas": [],
+    "formula_names": [
+      "계지거계가복령백출탕"
+    ],
+    "key_concepts": [
+      "두항강통",
+      "무한",
+      "심하만",
+      "소변불리"
+    ],
+    "syndrome": "수기내정",
+    "generation_method": "manual"
+  },
+  {
+    "id": "SHL-029",
+    "article_number": 29,
+    "original_text": "傷寒脈浮 自汗出 小便數 心煩 微惡寒 腳攣急 反與桂枝 欲攻表 此誤也 得之便厥 宜甘草乾薑湯",
+    "korean_text": "",
+    "translation": "상한에 맥이 부하고 자한이 나며 소변이 잦고 심번 미악한 다리 경련이 있는 자에게 표를 공격하는 것은 오치이니 감초건강탕으로 양기를 회복하고 증에 따라 작약감초탕 조위승기탕 사역탕을 쓴다.",
+    "chapter": "태양병",
+    "section": "태양병 상편",
+    "related_formulas": [],
+    "formula_names": [
+      "감초건강탕"
+    ],
+    "key_concepts": [
+      "맥부",
+      "자한",
+      "소변삭",
+      "각련급"
+    ],
+    "syndrome": "오치후변증구제",
+    "generation_method": "manual"
+  },
+  {
+    "id": "SHL-030",
+    "article_number": 30,
+    "original_text": "問曰 證象陽旦 按法治之 而增劇 厥逆 咽中乾 鼻燥 漱水不欲咽 師曰 夜半愈",
+    "korean_text": "",
+    "translation": "문하기를 증상이 양단(계지탕증) 같아 법대로 치료했는데 증상이 심해졌을 때의 문답이다. 스승이 답하기를 한밤중이면 나을 것이니 기가 통하면 낫는다.",
+    "chapter": "태양병",
+    "section": "태양병 상편",
+    "related_formulas": [],
+    "formula_names": [],
+    "key_concepts": [
+      "증상양단",
+      "궐역",
+      "인건",
+      "비조"
+    ],
+    "syndrome": "예후판단",
+    "generation_method": "manual"
+  }
+]

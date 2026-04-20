@@ -134,7 +134,7 @@ export function DockBar({ onUniverse, universeActive, onAddWidget }: Props) {
       onMouseLeave={() => setMouseIndex(-1)}
       style={{
         display: 'inline-flex',
-        alignItems: 'flex-end',
+        alignItems: 'center',
         gap: 6,
         padding: '8px 20px 10px',
         borderRadius: 'var(--ou-radius-lg)',
