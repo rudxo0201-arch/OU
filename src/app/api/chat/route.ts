@@ -1,4 +1,6 @@
 import { NextRequest } from 'next/server';
+
+export const maxDuration = 60; // Vercel Pro 최대 60초
 import { createClient } from '@/lib/supabase/server';
 import { chatWithFallback } from '@/lib/llm/router';
 import type { LLMMessage } from '@/lib/llm/types';

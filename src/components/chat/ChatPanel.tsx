@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, Component, type ReactNode } from 'react';
 import { useChatStore, type ChatMessage } from '@/stores/chatStore';
 import { ChatInput, type ChatInputHandle } from './ChatInput';
 import { NeuButton, NeuBadge, NeuModal } from '@/components/ds';
@@ -352,6 +352,13 @@ function getDomainLabel(domain: string): string {
   return labels[domain] || '데이터';
 }
 
+// ---- Error boundary for inline views ----
+class ViewErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
+  constructor(props: { children: ReactNode }) { super(props); this.state = { hasError: false }; }
+  static getDerivedStateFromError() { return { hasError: true }; }
+  render() { return this.state.hasError ? null : this.props.children; }
+}
+
 // ---- Inline view for created data ----
 export function InlineView({ domain, data, content, viewType }: { domain: string; data?: Record<string, unknown>; content: string; viewType?: string }) {
   // viewType이 있으면 VIEW_REGISTRY 컴포넌트 사용, 없으면 도메인 기본값
@@ -361,9 +368,11 @@ export function InlineView({ domain, data, content, viewType }: { domain: string
   if (ViewComponent) {
     const fakeNode = { id: 'inline-preview', domain, domain_data: data ?? {}, raw: stripLLMMeta(content) };
     return (
-      <div style={{ marginTop: 12, animation: 'ou-fade-in 0.4s ease' }}>
-        <ViewComponent nodes={[fakeNode]} inline={true} />
-      </div>
+      <ViewErrorBoundary>
+        <div style={{ marginTop: 12, animation: 'ou-fade-in 0.4s ease' }}>
+          <ViewComponent nodes={[fakeNode]} inline={true} />
+        </div>
+      </ViewErrorBoundary>
     );
   }
 
