@@ -83,7 +83,7 @@ function TopNavBarInner({ userInitial }: TopNavBarProps) {
         }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/logo-ou.svg" alt="OU" style={{ height: 20, opacity: pathname === '/home' ? 1 : 0.5 }} />
+        <img src="/logo-ou.svg" alt="OU" style={{ width: 36, height: 'auto', opacity: pathname === '/home' ? 1 : 0.5 }} />
       </button>
 
       {/* 탭 네비게이션 */}

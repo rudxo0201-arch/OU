@@ -66,7 +66,8 @@ function MyPage() {
   const tutorialStepIndex = useTutorialStore(s => s.stepIndex);
   const startTutorial = useTutorialStore(s => s.startTutorial);
   const skipAll = useTutorialStore(s => s.skipAll);
-  const prevPhaseRef = useRef(tutorialPhase);
+  const celebrated = useTutorialStore(s => s.celebrated);
+  const markCelebrated = useTutorialStore(s => s.markCelebrated);
   const [showTutorialComplete, setShowTutorialComplete] = useState(false);
   const [targetRect, setTargetRect] = useState<{ top: number; left: number; width: number; height: number } | null>(null);
 
@@ -152,32 +153,34 @@ function MyPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inviteToken, user]);
 
-  // 튜토리얼 phase 전환 감지
+  // 튜토리얼 완료/스킵 → 축하 모달 (celebrated 플래그로 중복 방지)
   useEffect(() => {
-    const prev = prevPhaseRef.current;
-    // 편집 완료 후 Orb로 이동
-    if (prev === 'edit-mode' && tutorialPhase === 'active') {
-      router.push('/orb');
-    }
-    // 튜토리얼 완료 → 축하 모달
-    if (prev !== 'completed' && tutorialPhase === 'completed') {
+    if ((tutorialPhase === 'completed' || tutorialPhase === 'skipped') && !celebrated) {
       setShowTutorialComplete(true);
     }
-    prevPhaseRef.current = tutorialPhase;
-  }, [tutorialPhase, router]);
+  }, [tutorialPhase, celebrated]);
 
-  // 스포트라이트 + SpeechBubble 위치 추적
+  // 스포트라이트 + SpeechBubble 위치 추적 (rAF 재시도 — 페이지 네비 후 안정적)
   useEffect(() => {
     if (tutorialPhase !== 'active') { setTargetRect(null); return; }
-    const updateRect = () => {
+    let cancelled = false;
+    let retries = 0;
+    const tryUpdate = () => {
+      if (cancelled) return;
       const el = document.querySelector('[data-tutorial-target="ou-view-input"]');
-      if (!el) { setTargetRect(null); return; }
-      const r = el.getBoundingClientRect();
-      setTargetRect({ top: r.top, left: r.left, width: r.width, height: r.height });
+      if (el) {
+        const r = el.getBoundingClientRect();
+        if (r.width > 0 && r.height > 0) {
+          setTargetRect({ top: r.top, left: r.left, width: r.width, height: r.height });
+          return;
+        }
+      }
+      if (retries++ < 30) requestAnimationFrame(tryUpdate);
     };
-    const timer = setTimeout(updateRect, 200);
-    window.addEventListener('resize', updateRect);
-    return () => { clearTimeout(timer); window.removeEventListener('resize', updateRect); };
+    requestAnimationFrame(tryUpdate);
+    const onResize = () => { retries = 0; tryUpdate(); };
+    window.addEventListener('resize', onResize);
+    return () => { cancelled = true; window.removeEventListener('resize', onResize); };
   }, [tutorialPhase, tutorialStepIndex]);
 
   // Listen for widget edit mode changes
@@ -264,9 +267,9 @@ function MyPage() {
         {showWidgets && (
           <div style={{
             position: 'absolute',
-            top: 52, left: 100, right: 40,
-            display: 'flex', flexDirection: 'column', justifyContent: 'center',
-            padding: '40px 0 20px',
+            top: 92, left: 100, right: 40,
+            display: 'flex', flexDirection: 'column',
+            padding: 0,
             zIndex: 5,
             pointerEvents: 'none',
           }}>
@@ -358,7 +361,7 @@ function MyPage() {
 
       {/* 튜토리얼 완료 모달 */}
       {showTutorialComplete && (
-        <TutorialComplete onClose={() => setShowTutorialComplete(false)} />
+        <TutorialComplete onClose={() => { setShowTutorialComplete(false); markCelebrated(); }} />
       )}
 
       {/* 튜토리얼 스포트라이트 + SpeechBubble */}
