@@ -379,6 +379,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
+      if ((e.nativeEvent as KeyboardEvent).isComposing) return; // 한국어 IME 조합 중 Enter 무시
       e.preventDefault();
       send();
     }
@@ -504,7 +505,6 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
             onKeyDown={handleKeyDown}
             rows={rows}
             placeholder="Just talk..."
-            disabled={isStreaming}
             style={{
               width: '100%',
               border: 'none',
@@ -516,6 +516,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
               resize: 'none',
               fontFamily: 'inherit',
               minHeight: 40,
+              opacity: isStreaming ? 0.5 : 1,
             }}
           />
         )}
@@ -523,8 +524,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
         {/* Bottom toolbar */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingTop: 10 }}>
           <button
-            onClick={() => fileRef.current?.click()}
-            disabled={isStreaming}
+            onClick={() => !isStreaming && fileRef.current?.click()}
             style={{
               width: 32,
               height: 32,
@@ -536,7 +536,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
               justifyContent: 'center',
               flexShrink: 0,
               opacity: isStreaming ? 0.3 : 1,
-              cursor: isStreaming ? 'not-allowed' : 'pointer',
+              cursor: isStreaming ? 'default' : 'pointer',
               transition: 'all var(--ou-transition)',
               fontSize: 18,
               fontWeight: 300,

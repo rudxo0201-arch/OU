@@ -19,10 +19,11 @@ export function OuViewWidget() {
     router.push('/orb');
   }, [router]);
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
+      if (e.nativeEvent.isComposing) return; // 한국어 IME 조합 중 Enter 무시
       e.preventDefault();
-      const text = input.trim();
+      const text = (e.currentTarget.value || input).trim();
       setInput('');
       openOrb(text || undefined);
     }
