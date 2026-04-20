@@ -4,7 +4,18 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { VIEW_LABELS } from '@/components/views/registry';
 import { NeuPageLayout } from '@/components/ds';
-import { MagnifyingGlass } from '@phosphor-icons/react';
+import {
+  MagnifyingGlass, CheckSquare, CalendarBlank, Table, Book, Stack,
+  ChartBar, GridFour, NotePencil, UserCircle, Lightbulb, ListBullets,
+  VideoCamera, BookBookmark, YoutubeLogo, MapPin, Clock, Calendar,
+  Sun, SunHorizon, CalendarDots, CreditCard, Wallet, ChartPieSlice,
+  TrendUp, ArrowsLeftRight, Tag, Alarm, CheckCircle, WarningCircle,
+  User, PersonSimpleRun, Fire, FileText, FilmStrip, Star, Code,
+  Timer, Pill, Thermometer, Plant, TextAa, BookOpen, ClipboardText, Circle,
+} from '@phosphor-icons/react';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type PhosphorIcon = React.ComponentType<any>;
 
 // ── 뷰 타입 → 도메인 매핑 ────────────────────────────────
 const VIEW_TYPE_TO_DOMAIN: Record<string, string> = {
@@ -33,24 +44,32 @@ const VIEW_TYPE_TO_DOMAIN: Record<string, string> = {
   'dict-char': 'knowledge', 'edu-lesson': 'education', 'edu-assignment': 'education',
 };
 
-// ── 아이콘 맵 ────────────────────────────────────────────
-const VIEW_ICONS: Record<string, string> = {
-  todo: '☑', calendar: '▥', table: '▦', task: '▦', dictionary: '本',
-  flashcard: '卡', timeline: '─', chart: '₩', heatmap: '▣',
-  journal: '◐', profile: '◎', idea: '◈', curriculum: '≡',
-  lecture: '▶', scrap: '◉', youtube: '▶', map: '📍',
-  'schedule-time': '🕐', 'schedule-date': '📅', 'schedule-range': '📆',
-  'schedule-today': '☀️', 'schedule-tomorrow': '🌅', 'schedule-week': '📋',
-  'schedule-around': '🗓', 'finance-amount': '💳', 'finance-balance': '💰',
-  'finance-today': '📊', 'finance-week': '📈', 'finance-compare': '↔',
-  'finance-category': '🏷', 'task-check': '☐', 'task-deadline': '⏰',
-  'task-today': '✅', 'task-overdue': '🚨', 'task-week': '📅',
-  'idea-card': '💡', 'relation-card': '👤', 'habit-log': '🏃',
-  'habit-streak': '🔥', 'knowledge-note': '📄', 'media-card': '🎬',
-  'media-rating': '⭐', 'dev-note': '💻', 'location-pin': '📍',
-  'youtube-card': '▶', 'youtube-timestamp': '⏱', 'health-log': '💊',
-  'health-symptom': '🤒', 'health-med': '💊', 'boncho-herb': '🌿',
-  'dict-char': '字', 'edu-lesson': '📚', 'edu-assignment': '📝',
+// ── 아이콘 맵 (Phosphor Icons only) ──────────────────────
+const VIEW_ICONS: Record<string, PhosphorIcon> = {
+  // 풀뷰
+  todo: CheckSquare, calendar: CalendarBlank, table: Table, task: CheckSquare,
+  dictionary: Book, flashcard: Stack, timeline: ArrowsLeftRight, chart: ChartBar,
+  heatmap: GridFour, journal: NotePencil, profile: UserCircle, idea: Lightbulb,
+  curriculum: ListBullets, lecture: VideoCamera, scrap: BookBookmark,
+  youtube: YoutubeLogo, map: MapPin,
+  // 인라인 — 일정
+  'schedule-time': Clock, 'schedule-date': Calendar, 'schedule-range': CalendarBlank,
+  'schedule-today': Sun, 'schedule-tomorrow': SunHorizon, 'schedule-week': CalendarDots,
+  'schedule-around': CalendarDots,
+  // 인라인 — 가계부
+  'finance-amount': CreditCard, 'finance-balance': Wallet, 'finance-today': ChartPieSlice,
+  'finance-week': TrendUp, 'finance-compare': ArrowsLeftRight, 'finance-category': Tag,
+  // 인라인 — 할 일
+  'task-check': CheckSquare, 'task-deadline': Alarm, 'task-today': CheckCircle,
+  'task-overdue': WarningCircle, 'task-week': CalendarBlank, 'task-check-simple': CheckSquare,
+  // 인라인 — 기타
+  'idea-card': Lightbulb, 'relation-card': User, 'habit-log': PersonSimpleRun,
+  'habit-streak': Fire, 'knowledge-note': FileText, 'media-card': FilmStrip,
+  'media-rating': Star, 'dev-note': Code, 'location-pin': MapPin,
+  'youtube-card': YoutubeLogo, 'youtube-timestamp': Timer,
+  'health-log': Pill, 'health-symptom': Thermometer, 'health-med': Pill,
+  'boncho-herb': Plant, 'dict-char': TextAa, 'edu-lesson': BookOpen,
+  'edu-assignment': ClipboardText,
 };
 
 const DOMAIN_LABELS: Record<string, string> = {
@@ -134,7 +153,7 @@ export default function OrbitPage() {
   }, []);
 
   const BUILTIN_VIEWS = Object.entries(VIEW_LABELS).map(([key, label]) => ({
-    id: `builtin-${key}`, viewType: key, name: label, icon: VIEW_ICONS[key] || '◉',
+    id: `builtin-${key}`, viewType: key, name: label,
     domain: VIEW_TYPE_TO_DOMAIN[key] || 'knowledge',
   }));
 
@@ -283,7 +302,7 @@ export default function OrbitPage() {
               /* 필터/검색 결과 — 그리드 */
               <div style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(168px, 1fr))',
                 gap: 14,
               }}>
                 {filteredBuiltin.map(v => (
@@ -353,13 +372,13 @@ export default function OrbitPage() {
           ) : (
             <div style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 160px))',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(168px, 188px))',
               justifyContent: 'center', gap: 16,
             }}>
               {myViews.map(v => (
                 <ViewCard
                   key={v.id}
-                  view={{ id: v.id, name: v.name, icon: VIEW_ICONS[v.view_type] || v.icon || '◉', viewType: v.view_type }}
+                  view={{ id: v.id, name: v.name, viewType: v.view_type }}
                   onOpen={() => router.push(`/view/${v.id}`)}
                 />
               ))}
@@ -371,7 +390,7 @@ export default function OrbitPage() {
         {tab === 'builtin' && (
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 160px))',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(168px, 188px))',
             justifyContent: 'center', gap: 16,
           }}>
             {BUILTIN_VIEWS.map(v => (
@@ -417,7 +436,7 @@ function SectionHeader({ title, onShowAll }: { title: string; onShowAll?: () => 
 // ── 빌트인 도메인 섹션 (가로 스크롤) ────────────────────────
 function BuiltinDomainSection({ domain, items, onOpen, onShowAll }: {
   domain: string;
-  items: { id: string; viewType: string; name: string; icon: string; domain: string }[];
+  items: { id: string; viewType: string; name: string; domain: string }[];
   onOpen: (viewType: string) => void;
   onShowAll: () => void;
 }) {
@@ -434,7 +453,7 @@ function BuiltinDomainSection({ domain, items, onOpen, onShowAll }: {
         }}
       >
         {items.map(v => (
-          <div key={v.id} style={{ flexShrink: 0, width: 140 }}>
+          <div key={v.id} style={{ flexShrink: 0, width: 168 }}>
             <ViewCard view={v} onOpen={() => onOpen(v.viewType)} />
           </div>
         ))}
@@ -491,7 +510,7 @@ function FeaturedCard({ preset, installed, installing, onInstall, onOpen }: {
   onOpen: () => void;
 }) {
   const [hovered, setHovered] = useState(false);
-  const icon = VIEW_ICONS[preset.view_type] || preset.icon || '◉';
+  const IconComp = VIEW_ICONS[preset.view_type] || Circle;
 
   return (
     <div
@@ -514,8 +533,9 @@ function FeaturedCard({ preset, installed, installing, onInstall, onOpen }: {
         boxShadow: 'inset 4px 4px 10px rgba(163,177,198,0.4), inset -4px -4px 10px rgba(255,255,255,0.7)',
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
         gap: 8, position: 'relative',
+        color: 'var(--ou-text-body)',
       }}>
-        <span style={{ fontSize: 52, lineHeight: 1 }}>{icon}</span>
+        <IconComp size={52} weight="light" />
         <div style={{
           position: 'absolute', bottom: 12, left: 12,
           fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase',
@@ -568,7 +588,7 @@ function PresetCard({ preset, installed, installing, onInstall, onOpen }: {
   onOpen: () => void;
 }) {
   const [hovered, setHovered] = useState(false);
-  const icon = VIEW_ICONS[preset.view_type] || preset.icon || '◉';
+  const IconComp = VIEW_ICONS[preset.view_type] || Circle;
   const categoryLabel = preset.category === 'inline' ? '인라인' : preset.category === 'cross' ? '복합' : '풀뷰';
 
   return (
@@ -591,8 +611,9 @@ function PresetCard({ preset, installed, installing, onInstall, onOpen }: {
         background: 'var(--ou-bg)',
         boxShadow: 'inset 3px 3px 8px rgba(163,177,198,0.35), inset -3px -3px 8px rgba(255,255,255,0.65)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
+        color: 'var(--ou-text-body)',
       }}>
-        <span style={{ fontSize: 36 }}>{icon}</span>
+        <IconComp size={36} weight="light" />
       </div>
 
       {/* 정보 */}
@@ -635,10 +656,11 @@ function PresetCard({ preset, installed, installing, onInstall, onOpen }: {
 
 // ── 기존 뷰 카드 (내 뷰 / 기본 내장 탭) ──────────────────
 function ViewCard({ view, onOpen }: {
-  view: { id: string; name: string; icon: string; viewType?: string };
+  view: { id: string; name: string; viewType?: string };
   onOpen: () => void;
 }) {
   const [hovered, setHovered] = useState(false);
+  const IconComp = (view.viewType && VIEW_ICONS[view.viewType]) || Circle;
   return (
     <button
       onClick={onOpen}
@@ -646,20 +668,21 @@ function ViewCard({ view, onOpen }: {
       onMouseLeave={() => setHovered(false)}
       style={{
         display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12,
-        padding: '24px 16px 20px', background: 'var(--ou-bg)',
+        padding: '28px 20px 24px', background: 'var(--ou-bg)',
         boxShadow: hovered ? 'var(--ou-neu-raised-lg)' : 'var(--ou-neu-raised-sm)',
         borderRadius: 16, border: 'none', cursor: 'pointer', fontFamily: 'inherit',
         transform: hovered ? 'translateY(-2px)' : 'translateY(0)',
         transition: 'box-shadow 200ms ease, transform 200ms ease',
+        width: '100%',
       }}
     >
       <div style={{
-        width: 56, height: 56, borderRadius: 14,
+        width: 64, height: 64, borderRadius: 16,
         background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-pressed-sm)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: 24, color: 'var(--ou-text-body)',
+        color: 'var(--ou-text-body)',
       }}>
-        {view.icon}
+        <IconComp size={28} weight="light" />
       </div>
       <span style={{
         fontSize: 13, color: 'var(--ou-text-strong)', textAlign: 'center', lineHeight: 1.3,

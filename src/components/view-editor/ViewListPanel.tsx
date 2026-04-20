@@ -41,7 +41,7 @@ export function ViewListPanel({ onCreate, onEdit }: Props) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       {/* 헤더 */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
         <span style={{ fontSize: 14, color: 'var(--ou-text-muted)' }}>
           {views.length}개의 뷰
         </span>
