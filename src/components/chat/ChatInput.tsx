@@ -10,7 +10,7 @@ interface ChatInputProps {
 }
 
 export interface ChatInputHandle {
-  sendMessage: (text: string) => void;
+  sendMessage: (text: string, linkedNodeId?: string) => void;
 }
 
 const LONG_TEXT_THRESHOLD = 300;
@@ -25,7 +25,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
   const [longTextEditorOpen, setLongTextEditorOpen] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
-  const { addMessage, updateMessage, isStreaming, setStreaming } = useChatStore();
+  const { addMessage, updateMessage, isStreaming, setStreaming, setLastCreatedNodeId } = useChatStore();
   const autoSentRef = useRef(false);
 
   // ---- Hanja detection ----
@@ -177,7 +177,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
       if (viewMatch) {
         try {
           const viewData = JSON.parse(viewMatch[1].trim());
-          if (viewData.viewType) useChatStore.getState().setRequestedView(viewData);
+          if (viewData.viewType) useChatStore.getState().addRequestedView(viewData);
         } catch { /* skip */ }
       }
 
@@ -186,12 +186,13 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
         suggestions: nodeInfo?.suggestions,
         ...(nodeInfo?.domain ? { nodeCreated: nodeInfo } : {}),
       });
+      if (nodeInfo?.nodeId) setLastCreatedNodeId(nodeInfo.nodeId);
     } catch {
       updateMessage(assistantId, { content: '연결에 문제가 생겼어요. 다시 시도해주세요.', streaming: false });
     } finally {
       setStreaming(false);
     }
-  }, [input, isStreaming, addMessage, updateMessage, setStreaming]);
+  }, [input, isStreaming, addMessage, updateMessage, setStreaming, setLastCreatedNodeId]);
 
   // Auto-send initial message (from Spotlight)
   useEffect(() => {
@@ -210,8 +211,8 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
     }
   }, [initialMessage, isStreaming, onSent]);
 
-  // Send with explicit text (for auto-send)
-  const sendWithText = useCallback(async (text: string) => {
+  // Send with explicit text (for auto-send / suggestion clicks)
+  const sendWithText = useCallback(async (text: string, linkedNodeId?: string) => {
     if (!text.trim() || isStreaming) return;
     setInput('');
     setRows(1);
@@ -226,7 +227,11 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
     try {
       const msgs = useChatStore.getState().messages;
       const apiMessages = msgs.filter((m) => !m.streaming).map((m) => ({ role: m.role, content: m.content }));
-      const res = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages: apiMessages }) });
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: apiMessages, ...(linkedNodeId ? { linkedNodeId } : {}) }),
+      });
       if (!res.ok) {
         updateMessage(assistantId, { content: '잠시 후 다시 시도해주세요.', streaming: false });
         setStreaming(false);
@@ -254,7 +259,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
       if (viewMatch) {
         try {
           const viewData = JSON.parse(viewMatch[1].trim());
-          if (viewData.viewType) useChatStore.getState().setRequestedView(viewData);
+          if (viewData.viewType) useChatStore.getState().addRequestedView(viewData);
         } catch { /* skip */ }
       }
       updateMessage(assistantId, {
@@ -262,14 +267,15 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
         suggestions: nodeInfo?.suggestions,
         ...(nodeInfo?.domain ? { nodeCreated: nodeInfo } : {}),
       });
+      if (nodeInfo?.nodeId) setLastCreatedNodeId(nodeInfo.nodeId);
     } catch {
       updateMessage(assistantId, { content: '연결에 문제가 생겼어요.', streaming: false });
     } finally {
       setStreaming(false);
     }
-  }, [isStreaming, addMessage, updateMessage, setStreaming]);
+  }, [isStreaming, addMessage, updateMessage, setStreaming, setLastCreatedNodeId]);
 
-  useImperativeHandle(ref, () => ({ sendMessage: (text: string) => sendWithText(text) }), [sendWithText]);
+  useImperativeHandle(ref, () => ({ sendMessage: (text: string, linkedNodeId?: string) => sendWithText(text, linkedNodeId) }), [sendWithText]);
 
   const handleFile = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
