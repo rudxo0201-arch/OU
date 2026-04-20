@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useChatStore } from '@/stores/chatStore';
 import { useTutorialStore } from '@/stores/tutorialStore';
-import { ArrowUpRight } from '@phosphor-icons/react';
+
 
 export function OuViewWidget() {
   const [input, setInput] = useState('');
@@ -23,11 +23,11 @@ export function OuViewWidget() {
     if (e.key === 'Enter' && !e.shiftKey) {
       if (e.nativeEvent.isComposing) return;
       e.preventDefault();
-      const text = (e.currentTarget.value || input).trim();
+      const text = (e.currentTarget.value || input).trim() || ghostText || undefined;
       setInput('');
-      openOrb(text || undefined);
+      openOrb(text);
     }
-  }, [input, openOrb]);
+  }, [input, ghostText, openOrb]);
 
   const showGhost = !input && !!ghostText;
   const showChip = tutorialPhase === 'active' && !!ghostText && !input;
@@ -87,26 +87,13 @@ export function OuViewWidget() {
         />
 
         {showChip && (
-          <button
-            className="widget-no-drag"
-            onClick={() => openOrb(ghostText!)}
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: 4,
-              marginTop: 8, marginBottom: 2,
-              padding: '3px 10px',
-              borderRadius: 999,
-              background: 'var(--ou-bg)',
-              boxShadow: 'var(--ou-neu-raised-xs)',
-              border: 'none', cursor: 'pointer',
-              fontSize: 11, color: 'var(--ou-text-muted)',
-              fontFamily: 'inherit',
-              maxWidth: '100%', overflow: 'hidden',
-              textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-            }}
-          >
-            <ArrowUpRight size={11} weight="bold" />
-            {ghostText}
-          </button>
+          <div style={{
+            marginTop: 8, marginBottom: 2,
+            fontSize: 11, color: 'var(--ou-text-disabled)',
+            fontFamily: 'inherit',
+          }}>
+            Enter를 눌러보세요
+          </div>
         )}
 
         <div className="widget-no-drag" style={{ display: 'flex', alignItems: 'center', gap: 6, paddingTop: 10 }}>
