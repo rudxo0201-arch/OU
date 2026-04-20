@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { createClient } from '@/lib/supabase/client';
 import { useWidgetStore } from '@/stores/widgetStore';
-import { NeuButton, NeuInput, NeuCard, NeuSelect, NeuTable, type NeuTableColumn } from '@/components/ds';
+import { NeuButton, NeuInput, NeuSelect, NeuTable, type NeuTableColumn } from '@/components/ds';
 import { GRID_PRESETS, type GridPreset } from '@/components/widgets/types';
 import { ViewEditorPanel } from '@/components/view-editor/ViewEditorPanel';
 
@@ -65,8 +65,8 @@ export default function SettingsPage() {
           <button
             onClick={() => router.push('/my')}
             style={{
-              width: 36, height: 36, borderRadius: '50%', border: 'none',
-              background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-raised-xs)',
+              width: 36, height: 36, borderRadius: '50%',
+              background: 'transparent', border: '1px solid var(--ou-border-subtle)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               cursor: 'pointer', color: 'var(--ou-text-secondary)',
             }}
@@ -86,9 +86,9 @@ export default function SettingsPage() {
               padding: '14px 18px',
               fontSize: 15, fontWeight: activeTab === tab.key ? 600 : 500,
               borderRadius: 12, cursor: 'pointer', textAlign: 'left',
-              border: 'none', fontFamily: 'inherit',
-              background: activeTab === tab.key ? 'var(--ou-bg)' : 'transparent',
-              boxShadow: activeTab === tab.key ? 'var(--ou-neu-raised-sm)' : 'none',
+              fontFamily: 'inherit',
+              background: activeTab === tab.key ? 'var(--ou-surface-faint)' : 'transparent',
+              border: activeTab === tab.key ? '1px solid var(--ou-border-subtle)' : '1px solid transparent',
               color: activeTab === tab.key ? 'var(--ou-text-bright)' : 'var(--ou-text-secondary)',
               display: 'flex', alignItems: 'center', gap: 12,
               ...(tab.adminOnly ? { marginTop: 'auto', fontSize: 13, color: activeTab === tab.key ? 'var(--ou-text-bright)' : 'var(--ou-text-dimmed)' } : {}),
@@ -186,8 +186,8 @@ function GeneralTab({ user }: { user: { id: string; email?: string; created_at?:
             onChange={e => setProfile(p => ({ ...p, bio: e.target.value }))}
             placeholder="나에 대한 짧은 설명..."
             style={{
-              width: '100%', padding: '12px 16px', borderRadius: 12, border: 'none',
-              background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-pressed-sm)',
+              width: '100%', padding: '12px 16px', borderRadius: 12,
+              background: 'var(--ou-surface-faint)', border: '1px solid var(--ou-border-subtle)',
               fontSize: 14, color: 'var(--ou-text-strong)', outline: 'none',
               resize: 'vertical', minHeight: 72, fontFamily: 'inherit', lineHeight: 1.6,
             }}
@@ -215,7 +215,7 @@ function GeneralTab({ user }: { user: { id: string; email?: string; created_at?:
       <Section title="내 API 키" sub="· BYOK — 내 키로 고급 모델 사용">
         <div style={{
           padding: '12px 16px', borderRadius: 12,
-          background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-pressed-sm)',
+          background: 'var(--ou-surface-faint)', border: '1px solid var(--ou-border-faint)',
           fontSize: 12, lineHeight: 1.7, color: 'var(--ou-text-dimmed)',
           display: 'flex', gap: 10, alignItems: 'flex-start',
         }}>
@@ -321,15 +321,15 @@ function ApiKeySection() {
         Claude Code, MCP 등 외부 도구에서 OU 데이터에 접근할 때 사용합니다.
       </p>
       {newPlainKey && (
-        <NeuCard variant="raised" style={{ padding: 12, marginBottom: 12 }}>
+        <div style={{ padding: 12, marginBottom: 12, borderRadius: 10, border: '1px solid var(--ou-border-subtle)', background: 'var(--ou-surface-faint)' }}>
           <div style={{ fontSize: 11, color: 'var(--ou-text-muted)', marginBottom: 6 }}>키가 생성되었습니다. 이 키는 다시 표시되지 않습니다.</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <code style={{ flex: 1, fontSize: 11, padding: '6px 8px', borderRadius: 4, background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-pressed-sm)', color: 'var(--ou-text-body)', wordBreak: 'break-all' }}>
+            <code style={{ flex: 1, fontSize: 11, padding: '6px 8px', borderRadius: 4, background: 'transparent', border: '1px solid var(--ou-border-faint)', color: 'var(--ou-text-body)', wordBreak: 'break-all' }}>
               {newPlainKey}
             </code>
             <NeuButton variant="default" size="sm" onClick={copyKey}>{copied ? '복사됨' : '복사'}</NeuButton>
           </div>
-        </NeuCard>
+        </div>
       )}
       {keys.map(k => (
         <div key={k.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--ou-border-subtle)' }}>
@@ -407,10 +407,11 @@ function DisplayTab() {
               onClick={() => applyTheme(t.key)}
               style={{
                 flex: 1, padding: '14px 18px', borderRadius: 14, cursor: 'pointer',
-                background: 'var(--ou-bg)', border: 'none', textAlign: 'left',
-                boxShadow: theme === t.key ? 'var(--ou-neu-pressed-sm)' : 'var(--ou-neu-raised-xs)',
+                background: theme === t.key ? 'var(--ou-surface-faint)' : 'transparent',
+                border: theme === t.key ? '1.5px solid var(--ou-border-medium)' : '1px solid var(--ou-border-subtle)',
+                textAlign: 'left',
                 display: 'flex', alignItems: 'center', gap: 12,
-                transition: 'box-shadow 0.15s',
+                transition: 'all 0.15s',
               }}
             >
               <div style={{
@@ -434,9 +435,11 @@ function DisplayTab() {
               key={p.key}
               onClick={() => applyPalette(p.key)}
               style={{
-                padding: '16px 10px 14px', borderRadius: 14, border: 'none', cursor: 'pointer',
-                background: 'var(--ou-bg)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10,
-                boxShadow: palette === p.key ? 'var(--ou-neu-pressed-sm)' : 'var(--ou-neu-raised-xs)',
+                padding: '16px 10px 14px', borderRadius: 14, cursor: 'pointer',
+                background: palette === p.key ? 'var(--ou-surface-faint)' : 'transparent',
+                border: palette === p.key ? '1.5px solid var(--ou-border-medium)' : '1px solid var(--ou-border-subtle)',
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10,
+                transition: 'all 0.15s',
               }}
             >
               <div style={{
@@ -467,10 +470,11 @@ function DisplayTab() {
                 onClick={() => store.setGridSize(preset.cols, preset.rows)}
                 style={{
                   flex: 1, padding: '14px 18px', borderRadius: 14, cursor: 'pointer',
-                  background: 'var(--ou-bg)', border: 'none', textAlign: 'left',
-                  boxShadow: isActive ? 'var(--ou-neu-pressed-sm)' : 'var(--ou-neu-raised-xs)',
+                  background: isActive ? 'var(--ou-surface-faint)' : 'transparent',
+                  border: isActive ? '1.5px solid var(--ou-border-medium)' : '1px solid var(--ou-border-subtle)',
+                  textAlign: 'left',
                   display: 'flex', alignItems: 'center', gap: 12,
-                  transition: 'box-shadow 0.15s',
+                  transition: 'all 0.15s',
                 }}
               >
                 <div style={{
@@ -494,14 +498,14 @@ function DisplayTab() {
             );
           })}
         </div>
-        <NeuCard variant="pressed" style={{ marginTop: 12, padding: 16 }}>
+        <div style={{ marginTop: 12, padding: 16, borderRadius: 12, border: '1px solid var(--ou-border-subtle)' }}>
           <div style={{ fontSize: 11, color: 'var(--ou-text-disabled)', marginBottom: 8 }}>미리보기</div>
           <div style={{ display: 'grid', gridTemplateColumns: `repeat(${store.gridCols}, 1fr)`, gridTemplateRows: `repeat(${store.gridRows}, 1fr)`, gap: 3, aspectRatio: '16/10' }}>
             {Array.from({ length: store.gridCols * store.gridRows }).map((_, i) => (
-              <div key={i} style={{ borderRadius: 3, background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-raised-xs)' }} />
+              <div key={i} style={{ borderRadius: 3, background: 'var(--ou-border-faint)', border: '1px solid var(--ou-border-faint)' }} />
             ))}
           </div>
-        </NeuCard>
+        </div>
       </Section>
     </div>
   );
@@ -659,15 +663,13 @@ function TutorialSection() {
 // ============================================================
 function Section({ title, children, sub }: { title: string; children: React.ReactNode; sub?: string }) {
   return (
-    <div style={{
-      background: 'var(--ou-bg)', borderRadius: 20, padding: '28px 32px',
-      boxShadow: 'var(--ou-neu-pressed-sm)',
-      display: 'flex', flexDirection: 'column', gap: 18,
-    }}>
-      <h2 style={{ margin: 0, fontSize: 15, fontWeight: 600, color: 'var(--ou-text-bright)', letterSpacing: '0.2px' }}>
-        {title}
-        {sub && <span style={{ fontSize: 12, color: 'var(--ou-text-dimmed)', fontWeight: 400, marginLeft: 10, letterSpacing: 0 }}>{sub}</span>}
-      </h2>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+        <h2 style={{ margin: 0, fontSize: 13, fontWeight: 600, color: 'var(--ou-text-muted)', letterSpacing: '1px', textTransform: 'uppercase' }}>
+          {title}
+        </h2>
+        {sub && <span style={{ fontSize: 11, color: 'var(--ou-text-disabled)', fontWeight: 400 }}>{sub}</span>}
+      </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>{children}</div>
     </div>
   );
