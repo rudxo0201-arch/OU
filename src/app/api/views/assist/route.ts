@@ -95,7 +95,8 @@ export async function POST(req: NextRequest) {
       explanation: parsed.explanation ?? '',
     });
   } catch (e) {
-    console.error('[Views/Assist] Error:', e);
-    return NextResponse.json({ message: COPY.error.generic }, { status: 500 });
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error('[Views/Assist] Error:', msg);
+    return NextResponse.json({ message: `AI 오류: ${msg.slice(0, 100)}` }, { status: 500 });
   }
 }

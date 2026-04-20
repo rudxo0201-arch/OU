@@ -50,7 +50,7 @@ export default function SettingsPage() {
   const visibleTabs = tabs.filter(t => !t.adminOnly || isAdmin);
 
   return (
-    <div style={{ minHeight: '100dvh', display: 'flex', background: 'var(--ou-bg)', padding: '0 116px' }}>
+    <div style={{ minHeight: '100dvh', display: 'flex', background: 'var(--ou-bg)', padding: '0 clamp(24px, 8vw, 116px)' }}>
       {/* Sidebar */}
       <aside style={{
         width: 260, minHeight: '100dvh', flexShrink: 0,
@@ -194,29 +194,15 @@ function GeneralTab({ user }: { user: { id: string; email?: string; created_at?:
       </Section>
 
       <Section title="계정">
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: '0.5px solid var(--ou-border-subtle)', gap: 16 }}>
-          <span style={{ fontSize: 14, color: 'var(--ou-text-secondary)' }}>이메일</span>
-          <span style={{ fontSize: 12, color: 'var(--ou-text-dimmed)', fontFamily: 'var(--ou-font-mono, monospace)' }}>{user?.email || '-'}</span>
-        </div>
+        <Row label="이메일" value={user?.email || '-'} />
         <Row label="가입일" value={user?.created_at ? new Date(user.created_at).toLocaleDateString('ko-KR') : '-'} />
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: '0.5px solid var(--ou-border-subtle)', gap: 16 }}>
-          <span style={{ fontSize: 14, color: 'var(--ou-text-secondary)' }}>구독 플랜</span>
-          <span style={{ fontSize: 14, color: 'var(--ou-text-strong)', fontWeight: 500 }}>
-            Free · <a href="#" style={{ color: 'var(--ou-accent)', textDecoration: 'none', fontWeight: 600 }}>업그레이드</a>
-          </span>
-        </div>
+        <Row label="구독 플랜" value="Free" />
       </Section>
 
       <Section title="내 API 키" sub="· BYOK — 내 키로 고급 모델 사용">
-        <div style={{
-          padding: '12px 16px', borderRadius: 12,
-          background: 'var(--ou-surface-faint)', border: '1px solid var(--ou-border-faint)',
-          fontSize: 12, lineHeight: 1.7, color: 'var(--ou-text-dimmed)',
-          display: 'flex', gap: 10, alignItems: 'flex-start',
-        }}>
-          <div style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--ou-accent)', marginTop: 7, flexShrink: 0 }} />
-          <div>자신의 API 키를 등록하면 Claude Opus, GPT-5 등 상위 모델을 직접 사용할 수 있어요. 키는 AES-256으로 암호화되어 서버에 저장돼요.</div>
-        </div>
+        <p style={{ fontSize: 12, lineHeight: 1.7, color: 'var(--ou-text-dimmed)', margin: 0 }}>
+          자신의 API 키를 등록하면 Claude Opus, GPT-5 등 상위 모델을 직접 사용할 수 있어요. 키는 AES-256으로 암호화되어 서버에 저장돼요.
+        </p>
         <div>
           {(['anthropic', 'openai', 'google'] as const).map(provider => {
             const meta = PROVIDER_META[provider];
@@ -228,7 +214,7 @@ function GeneralTab({ user }: { user: { id: string; email?: string; created_at?:
                 </div>
                 {llmKeys[provider] ? (
                   <>
-                    <span style={{ flex: 1, fontSize: 12, color: '#3a8b63' }}>● 등록됨</span>
+                    <span style={{ flex: 1, fontSize: 12, color: 'var(--ou-text-muted)' }}>등록됨</span>
                     <NeuButton variant="ghost" size="sm" onClick={() => deleteLlmKey(provider)} style={{ color: 'var(--ou-accent)' }}>삭제</NeuButton>
                   </>
                 ) : (
@@ -258,15 +244,15 @@ function GeneralTab({ user }: { user: { id: string; email?: string; created_at?:
       <Section title="내 데이터">
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: '0.5px solid var(--ou-border-subtle)', gap: 16 }}>
           <span style={{ fontSize: 14, color: 'var(--ou-text-secondary)' }}>데이터 내보내기</span>
-          <NeuButton variant="default" size="sm">JSON으로 받기</NeuButton>
+          <NeuButton variant="default" size="sm" style={{ color: 'var(--ou-text-disabled)', cursor: 'not-allowed', pointerEvents: 'none' }}>준비 중</NeuButton>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: '0.5px solid var(--ou-border-subtle)', gap: 16 }}>
           <span style={{ fontSize: 14, color: 'var(--ou-text-secondary)' }}>모든 기억 초기화</span>
-          <NeuButton variant="ghost" size="sm" style={{ color: 'var(--ou-accent)' }}>초기화</NeuButton>
+          <NeuButton variant="ghost" size="sm" style={{ color: 'var(--ou-text-disabled)', cursor: 'not-allowed', pointerEvents: 'none' }}>준비 중</NeuButton>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', gap: 16 }}>
           <span style={{ fontSize: 14, color: 'var(--ou-text-secondary)' }}>계정 삭제</span>
-          <NeuButton variant="ghost" size="sm" style={{ color: 'var(--ou-accent)' }}>계정 영구 삭제</NeuButton>
+          <NeuButton variant="ghost" size="sm" style={{ color: 'var(--ou-text-disabled)', cursor: 'not-allowed', pointerEvents: 'none' }}>준비 중</NeuButton>
         </div>
       </Section>
     </div>
@@ -316,10 +302,10 @@ function ApiKeySection() {
         Claude Code, MCP 등 외부 도구에서 OU 데이터에 접근할 때 사용합니다.
       </p>
       {newPlainKey && (
-        <div style={{ padding: 12, marginBottom: 12, borderRadius: 10, border: '1px solid var(--ou-border-subtle)', background: 'var(--ou-surface-faint)' }}>
+        <div style={{ marginBottom: 12 }}>
           <div style={{ fontSize: 11, color: 'var(--ou-text-muted)', marginBottom: 6 }}>키가 생성되었습니다. 이 키는 다시 표시되지 않습니다.</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <code style={{ flex: 1, fontSize: 11, padding: '6px 8px', borderRadius: 4, background: 'transparent', border: '1px solid var(--ou-border-faint)', color: 'var(--ou-text-body)', wordBreak: 'break-all' }}>
+            <code style={{ flex: 1, fontSize: 11, padding: '6px 0', color: 'var(--ou-text-body)', wordBreak: 'break-all', borderBottom: '1px solid var(--ou-border-subtle)' }}>
               {newPlainKey}
             </code>
             <NeuButton variant="default" size="sm" onClick={copyKey}>{copied ? '복사됨' : '복사'}</NeuButton>
@@ -412,7 +398,6 @@ function DisplayTab() {
               <div style={{
                 width: 44, height: 44, borderRadius: 10, flexShrink: 0,
                 background: t.previewBg,
-                boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.06)',
               }} />
               <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <b style={{ fontSize: 13, color: 'var(--ou-text-bright)', fontWeight: 600 }}>{t.label}</b>
@@ -440,7 +425,6 @@ function DisplayTab() {
               <div style={{
                 width: 36, height: 36, borderRadius: '50%',
                 background: p.gradient,
-                boxShadow: '0 2px 8px rgba(0,0,0,0.1), inset 0 -4px 6px rgba(0,0,0,0.05)',
               }} />
               <span style={{
                 fontSize: 11, textTransform: 'uppercase' as const, letterSpacing: '0.8px',
@@ -478,8 +462,7 @@ function DisplayTab() {
                   gridTemplateColumns: `repeat(${preset.cols}, 1fr)`,
                   gridTemplateRows: `repeat(${preset.rows}, 1fr)`,
                   gap: 1, padding: 4,
-                  background: 'var(--ou-bg)',
-                  boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.06)',
+                  background: 'var(--ou-surface-faint)',
                 }}>
                   {Array.from({ length: preset.cols * preset.rows }).map((_, i) => (
                     <div key={i} style={{ borderRadius: 1, background: 'var(--ou-text-disabled)', opacity: 0.3 }} />
@@ -493,11 +476,11 @@ function DisplayTab() {
             );
           })}
         </div>
-        <div style={{ marginTop: 12, padding: 16, borderRadius: 12, border: '1px solid var(--ou-border-subtle)' }}>
+        <div style={{ marginTop: 12 }}>
           <div style={{ fontSize: 11, color: 'var(--ou-text-disabled)', marginBottom: 8 }}>미리보기</div>
           <div style={{ display: 'grid', gridTemplateColumns: `repeat(${store.gridCols}, 1fr)`, gridTemplateRows: `repeat(${store.gridRows}, 1fr)`, gap: 3, aspectRatio: '16/10' }}>
             {Array.from({ length: store.gridCols * store.gridRows }).map((_, i) => (
-              <div key={i} style={{ borderRadius: 3, background: 'var(--ou-border-faint)', border: '1px solid var(--ou-border-faint)' }} />
+              <div key={i} style={{ borderRadius: 3, background: 'var(--ou-border-faint)' }} />
             ))}
           </div>
         </div>
@@ -677,16 +660,6 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
     <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
       <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--ou-text-secondary)', letterSpacing: '0.2px' }}>{label}</label>
       {children}
-    </div>
-  );
-}
-
-function SliderField({ label, value, min, max, onChange }: { label: string; value: number; min: number; max: number; onChange: (v: number) => void }) {
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '6px 0' }}>
-      <span style={{ fontSize: 13, color: 'var(--ou-text-body)', width: 110, flexShrink: 0 }}>{label}</span>
-      <input type="range" min={min} max={max} value={value} onChange={e => onChange(Number(e.target.value))} style={{ flex: 1, accentColor: 'var(--ou-accent)' }} />
-      <span style={{ fontSize: 12, color: 'var(--ou-text-muted)', width: 28, textAlign: 'right' }}>{value}</span>
     </div>
   );
 }

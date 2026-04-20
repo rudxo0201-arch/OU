@@ -33,8 +33,8 @@ export interface WidgetInstance {
   h: number;
 }
 
-export const GRID_COLS = 6;
-export const GRID_ROWS = 4;
+export const GRID_COLS = 10;
+export const GRID_ROWS = 6;
 
 export type GridPreset = 'fine' | 'medium' | 'coarse';
 

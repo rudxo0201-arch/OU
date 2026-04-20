@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { VIEW_LABELS, VIEW_REGISTRY } from '@/components/views/registry';
+import { getSampleNodes, NO_THUMBNAIL_TYPES } from '@/lib/utils/sampleNodes';
 import { NeuPageLayout, NeuModal } from '@/components/ds';
 import { useWidgetStore } from '@/stores/widgetStore';
 import { getWidgetTypeForView, getWidgetDefaultSize } from '@/lib/utils/viewToWidget';
@@ -638,15 +639,21 @@ function FeaturedCard({ preset, installed, installing, onInstall, onOpen }: {
       <div style={{
         height: 160, background: 'var(--ou-bg)',
         boxShadow: 'inset 4px 4px 10px rgba(163,177,198,0.4), inset -4px -4px 10px rgba(255,255,255,0.7)',
-        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-        gap: 8, position: 'relative',
-        color: 'var(--ou-text-body)',
+        position: 'relative', overflow: 'hidden',
       }}>
-        <IconComp size={52} weight="light" />
+        <ViewThumbnail
+          viewType={preset.view_type}
+          domain={preset.domain}
+          height={160}
+          scale={0.5}
+          IconComp={IconComp}
+        />
         <div style={{
-          position: 'absolute', bottom: 12, left: 12,
+          position: 'absolute', bottom: 10, left: 12,
           fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase',
           color: 'var(--ou-text-dimmed)', fontFamily: 'var(--ou-font-logo)',
+          background: 'rgba(var(--ou-bg-rgb, 235,235,235), 0.8)',
+          padding: '2px 8px', borderRadius: 6,
         }}>
           {DOMAIN_LABELS[preset.domain] || preset.domain}
         </div>
@@ -713,13 +720,17 @@ function PresetCard({ preset, installed, installing, onInstall, onOpen }: {
     >
       {/* Preview */}
       <div style={{
-        height: 100,
-        background: 'var(--ou-bg)',
+        height: 100, background: 'var(--ou-bg)',
         boxShadow: 'inset 3px 3px 8px rgba(163,177,198,0.35), inset -3px -3px 8px rgba(255,255,255,0.65)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        color: 'var(--ou-text-body)',
+        overflow: 'hidden',
       }}>
-        <IconComp size={36} weight="light" />
+        <ViewThumbnail
+          viewType={preset.view_type}
+          domain={preset.domain}
+          height={100}
+          scale={0.375}
+          IconComp={IconComp}
+        />
       </div>
 
       {/* 정보 */}
@@ -755,6 +766,36 @@ function PresetCard({ preset, installed, installing, onInstall, onOpen }: {
             {installing ? '...' : installed ? '설치됨' : '설치'}
           </button>
         </div>
+      </div>
+    </div>
+  );
+}
+
+// ── 썸네일 (가상 데이터 기반 스케일다운 렌더링) ──────────────
+function ViewThumbnail({ viewType, domain, height, scale, IconComp }: {
+  viewType: string; domain: string; height: number; scale: number; IconComp: PhosphorIcon;
+}) {
+  const isInline = viewType.includes('-');
+  const ViewComp = VIEW_REGISTRY[viewType];
+  const showRender = !!ViewComp && !NO_THUMBNAIL_TYPES.has(viewType) && !isInline;
+
+  if (!showRender) {
+    return (
+      <div style={{ height, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ou-text-body)' }}>
+        <IconComp size={Math.round(height * 0.38)} weight="light" />
+      </div>
+    );
+  }
+
+  const INNER_W = Math.round(480);
+  const INNER_H = Math.round(height / scale);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const nodes = getSampleNodes(viewType, domain) as any[];
+
+  return (
+    <div style={{ height, overflow: 'hidden', position: 'relative', pointerEvents: 'none', userSelect: 'none' }}>
+      <div style={{ width: INNER_W, height: INNER_H, transform: `scale(${scale})`, transformOrigin: 'top left' }}>
+        <ViewComp nodes={nodes} />
       </div>
     </div>
   );
@@ -939,33 +980,58 @@ function PresetDetailModal({ preset, installed, installing, uninstalling, onClos
 
 // ── 기존 뷰 카드 (내 뷰 / 기본 내장 탭) ──────────────────
 function ViewCard({ view, onOpen }: {
-  view: { id: string; name: string; viewType?: string };
+  view: { id: string; name: string; viewType?: string; domain?: string };
   onOpen: () => void;
 }) {
   const [hovered, setHovered] = useState(false);
   const IconComp = (view.viewType && VIEW_ICONS[view.viewType]) || Circle;
+  const domain = view.domain || (view.viewType && VIEW_TYPE_TO_DOMAIN[view.viewType]) || 'knowledge';
   return (
     <button
       onClick={onOpen}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10,
-        padding: '24px 16px 20px', background: 'var(--ou-bg)',
+        display: 'flex', flexDirection: 'column', alignItems: 'stretch', gap: 0,
+        padding: 0, background: 'var(--ou-bg)',
         border: `1.5px solid ${hovered ? 'var(--ou-border-subtle)' : 'var(--ou-border-faint)'}`,
         borderRadius: 16, cursor: 'pointer', fontFamily: 'inherit',
         boxShadow: hovered ? '0 4px 16px rgba(0,0,0,0.06)' : 'none',
         transition: 'border-color 150ms ease, box-shadow 150ms ease',
-        width: '100%',
+        width: '100%', overflow: 'hidden', textAlign: 'left',
       }}
     >
-      <IconComp size={28} weight="light" color="var(--ou-text-body)" />
-      <span style={{
-        fontSize: 12, color: 'var(--ou-text-strong)', textAlign: 'center', lineHeight: 1.3,
-        overflow: 'hidden', textOverflow: 'ellipsis', width: '100%', whiteSpace: 'nowrap', fontWeight: 500,
+      {/* 썸네일 */}
+      <div style={{
+        height: 110,
+        background: 'var(--ou-bg)',
+        boxShadow: 'inset 2px 2px 6px rgba(163,177,198,0.3), inset -2px -2px 6px rgba(255,255,255,0.6)',
+        overflow: 'hidden',
       }}>
-        {view.name}
-      </span>
+        {view.viewType ? (
+          <ViewThumbnail
+            viewType={view.viewType}
+            domain={domain}
+            height={110}
+            scale={0.35}
+            IconComp={IconComp}
+          />
+        ) : (
+          <div style={{ height: 110, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ou-text-body)' }}>
+            <IconComp size={36} weight="light" />
+          </div>
+        )}
+      </div>
+      {/* 이름 */}
+      <div style={{ padding: '10px 12px 12px' }}>
+        <span style={{
+          fontSize: 12, color: 'var(--ou-text-strong)', lineHeight: 1.3,
+          display: 'block', overflow: 'hidden', textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap', fontWeight: 500,
+        }}>
+          {view.name}
+        </span>
+      </div>
     </button>
   );
 }

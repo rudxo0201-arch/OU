@@ -4,7 +4,7 @@ import type { WidgetInstance } from '@/components/widgets/types';
 import { GRID_COLS, GRID_ROWS } from '@/components/widgets/types';
 import { DEFAULT_LAYOUT, DEFAULT_PAGE2_LAYOUT, ADMIN_LAYOUT, ADMIN_PAGE2_LAYOUT } from '@/components/widgets/presets';
 
-const LAYOUT_VERSION = 7;
+const LAYOUT_VERSION = 8;
 
 export interface WidgetPage {
   id: string;

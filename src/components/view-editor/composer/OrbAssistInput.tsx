@@ -7,6 +7,7 @@ export function OrbAssistInput() {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [explanation, setExplanation] = useState('');
+  const [error, setError] = useState('');
   const [availableDomains, setAvailableDomains] = useState<string[]>([]);
   const { viewType, domain, filterRules, groupBy, sortField, sortDir, range, applyOrbConfig } = useViewEditorStore();
 
@@ -22,6 +23,7 @@ export function OrbAssistInput() {
     if (!prompt || loading) return;
     setLoading(true);
     setExplanation('');
+    setError('');
 
     try {
       const res = await fetch('/api/views/assist', {
@@ -34,6 +36,11 @@ export function OrbAssistInput() {
         }),
       });
       const data = await res.json();
+      if (!res.ok) {
+        setError(data.message ?? 'AI 응답에 실패했어요. 잠시 후 다시 시도해주세요.');
+        setTimeout(() => setError(''), 4000);
+        return;
+      }
       if (data.config) {
         applyOrbConfig(data.config as OrbViewConfig);
         setInput('');
@@ -43,7 +50,8 @@ export function OrbAssistInput() {
         setTimeout(() => setExplanation(''), 4000);
       }
     } catch {
-      // 무시
+      setError('네트워크 오류가 발생했어요.');
+      setTimeout(() => setError(''), 4000);
     } finally {
       setLoading(false);
     }
@@ -115,6 +123,15 @@ export function OrbAssistInput() {
           background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-pressed-sm)',
         }}>
           {explanation}
+        </p>
+      )}
+      {error && (
+        <p style={{
+          fontSize: 13, color: 'var(--ou-text-secondary)', margin: '0 0 0 28px',
+          lineHeight: 1.5, padding: '6px 10px', borderRadius: 8,
+          background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-pressed-sm)',
+        }}>
+          {error}
         </p>
       )}
     </div>

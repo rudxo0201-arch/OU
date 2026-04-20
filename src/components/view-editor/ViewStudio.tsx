@@ -107,19 +107,18 @@ export function ViewStudio({ view, onBack }: Props) {
           background: 'var(--ou-bg)', borderRadius: 16,
           boxShadow: 'var(--ou-neu-raised-sm)', overflow: 'hidden',
         }}>
-          {[
-            <DataSourceSection key="ds" />,
-            <FilterSection key="fl" />,
-            <GroupSortSection key="gs" />,
-            <RenderTypeSection key="rt" />,
-          ].map((section, i) => (
-            <div key={i} style={{
-              padding: '16px 18px',
-              borderTop: i > 0 ? '0.5px solid var(--ou-border-subtle)' : 'none',
-            }}>
-              {section}
-            </div>
-          ))}
+          <div style={{ padding: '16px 18px' }}>
+            <DataSourceSection />
+          </div>
+          <div style={{ padding: '16px 18px', borderTop: '0.5px solid var(--ou-border-subtle)' }}>
+            <FilterSection />
+          </div>
+          <div style={{ padding: '16px 18px', borderTop: '0.5px solid var(--ou-border-subtle)' }}>
+            <GroupSortSection />
+          </div>
+          <div style={{ padding: '16px 18px', borderTop: '0.5px solid var(--ou-border-subtle)' }}>
+            <RenderTypeSection />
+          </div>
         </div>
 
         {/* 우: 라이브 프리뷰 */}
