@@ -7,42 +7,54 @@ export function ClockWidget() {
 
   useEffect(() => {
     setNow(new Date());
-    const id = setInterval(() => setNow(new Date()), 1000);
+    const id = setInterval(() => setNow(new Date()), 60000);
     return () => clearInterval(id);
   }, []);
 
   if (!now) return null;
 
-  const h = now.getHours().toString().padStart(2, '0');
-  const m = now.getMinutes().toString().padStart(2, '0');
-  const s = now.getSeconds().toString().padStart(2, '0');
-
-  const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
-  const dateStr = `${now.getFullYear()}.${(now.getMonth() + 1).toString().padStart(2, '0')}.${now.getDate().toString().padStart(2, '0')} ${dayNames[now.getDay()]}`;
+  const dayNames = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+  const month = now.getMonth() + 1;
+  const date = now.getDate();
+  const day = dayNames[now.getDay()];
 
   return (
     <div style={{
       height: '100%',
       display: 'flex', flexDirection: 'column',
-      alignItems: 'center', justifyContent: 'center',
-      gap: 8,
+      justifyContent: 'space-between',
+      padding: '16px 20px',
     }}>
+      {/* 상단 라벨 */}
       <span style={{
-        fontFamily: "var(--ou-font-display)",
-        fontSize: 36,
-        fontWeight: 300,
-        color: 'var(--ou-text-bright)',
-        letterSpacing: 4,
-        lineHeight: 1,
+        fontSize: 10, fontWeight: 600,
+        color: 'var(--ou-text-dimmed)',
+        letterSpacing: '0.12em',
+        textTransform: 'uppercase',
+        fontFamily: 'var(--ou-font-logo)',
       }}>
-        {h}:{m}<span style={{ fontSize: 18, color: 'var(--ou-text-dimmed)' }}>:{s}</span>
+        TODAY · {day}
       </span>
+
+      {/* 큰 날짜 */}
+      <div style={{ lineHeight: 1 }}>
+        <span style={{
+          fontFamily: 'var(--ou-font-display)',
+          fontSize: 52, fontWeight: 700,
+          color: 'var(--ou-text-bright)',
+          letterSpacing: '-0.03em',
+        }}>
+          {month}.{date < 10 ? `0${date}` : date}
+        </span>
+      </div>
+
+      {/* 하단 서브텍스트 */}
       <span style={{
         fontSize: 12,
-        color: 'var(--ou-text-dimmed)',
-        letterSpacing: 1,
+        color: 'var(--ou-text-muted)',
+        lineHeight: 1.4,
       }}>
-        {dateStr}
+        오늘도 좋은 하루
       </span>
     </div>
   );

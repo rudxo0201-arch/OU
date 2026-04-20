@@ -9,26 +9,11 @@ interface Props {
 
 export function ComposerSection({ number, title, children }: Props) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <div style={{
-          width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
-          background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-pressed-sm)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 11, fontWeight: 700, color: 'var(--ou-text-muted)',
-        }}>
-          {number}
-        </div>
-        <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ou-text-secondary)', letterSpacing: '0.02em' }}>
-          {title}
-        </span>
-      </div>
-      <div style={{
-        padding: '14px 16px', borderRadius: 12,
-        background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-pressed-sm)',
-      }}>
-        {children}
-      </div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ou-text-disabled)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+        {number}. {title}
+      </span>
+      <div>{children}</div>
     </div>
   );
 }

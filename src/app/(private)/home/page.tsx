@@ -54,7 +54,7 @@ function MyPage() {
   const [greetingText, setGreetingText] = useState('');
   const [editingGreeting, setEditingGreeting] = useState(false);
   const greetingInputRef = useRef<HTMLInputElement>(null);
-  const [greetingPos, setGreetingPos] = useState<{ top: number; left: number }>({ top: 168, left: 116 });
+  const [greetingPos, setGreetingPos] = useState<{ top: number; left: number }>({ top: 64, left: 20 });
   const dragState = useRef<{ startX: number; startY: number; origTop: number; origLeft: number } | null>(null);
   const searchParams = useSearchParams();
   const isReplay = searchParams.get('tutorial') === 'replay';
@@ -380,7 +380,7 @@ function MyPage() {
 
         <div style={{
           position: 'absolute',
-          top: 248, bottom: 228, left: 116, right: 40,
+          top: 52, bottom: 148, left: 16, right: 16,
           visibility: showWidgets ? 'visible' : 'hidden',
           pointerEvents: mode === 'dashboard' ? 'auto' : 'none',
         }}>

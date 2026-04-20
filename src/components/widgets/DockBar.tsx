@@ -83,12 +83,10 @@ export function DockBar({ onUniverse, universeActive, onAddWidget }: Props) {
   const router = useRouter();
 
   const ITEMS = useMemo(() => [
-    { id: 'settings', label: '설정', isOrb: false },
-    { id: 'universe', label: '우주', isOrb: false },
-    { id: 'orb', label: 'ORB', isOrb: true },
-    { id: 'dictionary', label: '사전', isOrb: false },
-    { id: 'memory', label: '기억', isOrb: false },
-    { id: 'add', label: '추가', isOrb: false },
+    { id: 'settings', label: '설정', isOrb: false, disabled: false },
+    { id: 'universe', label: '우주', isOrb: false, disabled: true },
+    { id: 'orb', label: 'ORB', isOrb: true, disabled: false },
+    { id: 'add', label: '추가', isOrb: false, disabled: false },
   ], []);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
@@ -107,13 +105,10 @@ export function DockBar({ onUniverse, universeActive, onAddWidget }: Props) {
   const handleClick = useCallback((id: string) => {
     switch (id) {
       case 'settings': router.push('/settings'); break;
-      case 'universe': onUniverse(); break;
       case 'orb': router.push('/orb'); break;
-      case 'dictionary': window.dispatchEvent(new CustomEvent('dock-dictionary')); break;
-      case 'memory': window.dispatchEvent(new CustomEvent('dock-memory')); break;
       case 'add': onAddWidget?.() ?? window.dispatchEvent(new CustomEvent('dock-add-widget')); break;
     }
-  }, [onUniverse, onAddWidget, router]);
+  }, [onAddWidget, router]);
 
   function renderIcon(id: string) {
     switch (id) {

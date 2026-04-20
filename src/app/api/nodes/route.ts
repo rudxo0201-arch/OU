@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
       const { data, error } = await supabase
         .from('data_nodes')
         .select('domain')
-        .eq('user_id', user.id);
+        .or(`user_id.eq.${user.id},visibility.eq.public`);
 
       if (error) {
         console.error('[Nodes/GET] domains error:', error.message);
@@ -40,7 +40,7 @@ export async function GET(req: NextRequest) {
     let query = supabase
       .from('data_nodes')
       .select('id, title, domain, domain_data, raw, created_at, updated_at, importance')
-      .eq('user_id', user.id)
+      .or(`user_id.eq.${user.id},visibility.eq.public`)
       .order('created_at', { ascending: false })
       .limit(limit);
 

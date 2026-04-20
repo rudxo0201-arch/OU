@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { VIEW_LABELS } from '@/components/views/registry';
+import { VIEW_LABELS, VIEW_REGISTRY } from '@/components/views/registry';
 import { NeuPageLayout, NeuModal } from '@/components/ds';
 import { useWidgetStore } from '@/stores/widgetStore';
 import { getWidgetTypeForView, getWidgetDefaultSize } from '@/lib/utils/viewToWidget';
@@ -155,7 +155,10 @@ export default function OrbitPage() {
         setInstalledKeys(prev => new Set(prev).add(presetKey));
         fetch('/api/views').then(r => r.json()).then(d => setMyViews(d.views || d.data || []));
         const preset = presets.find(p => p.key === presetKey);
-        if (preset) setJustInstalled({ name: preset.name, viewType: preset.view_type });
+        if (preset) {
+          setSelectedPreset(null); // 설치 완료 후 상세 모달 닫기
+          setJustInstalled({ name: preset.name, viewType: preset.view_type });
+        }
       }
     } finally {
       setInstalling(null);
@@ -757,6 +760,72 @@ function PresetCard({ preset, installed, installing, onInstall, onOpen }: {
   );
 }
 
+// ── 실제 뷰 미리보기 ─────────────────────────────────────
+function ViewPreviewPane({ viewType, domain }: { viewType: string; domain: string }) {
+  const [nodes, setNodes] = useState<unknown[]>([]);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    const apiMap: Record<string, string> = {
+      boncho: '/api/boncho',
+      shanghanlun: '/api/shanghanlun',
+    };
+    const url = apiMap[viewType] || `/api/nodes?domain=${domain}&limit=50`;
+    fetch(url)
+      .then(r => r.json())
+      .then(d => { setNodes(d.nodes || []); setLoaded(true); })
+      .catch(() => setLoaded(true));
+  }, [viewType, domain]);
+
+  const ViewComponent = VIEW_REGISTRY[viewType];
+  if (!ViewComponent) return null;
+
+  return (
+    <div style={{
+      position: 'relative',
+      height: 240,
+      borderRadius: 12,
+      overflow: 'hidden',
+      boxShadow: 'var(--ou-neu-pressed-sm)',
+      background: 'var(--ou-bg)',
+      marginBottom: 16,
+    }}>
+      {/* 실제 뷰 렌더링 — pointer-events 없음 */}
+      <div style={{ pointerEvents: 'none', userSelect: 'none', height: '100%', overflow: 'hidden' }}>
+        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+        <ViewComponent nodes={nodes as any} />
+      </div>
+
+      {/* 데이터 없을 때 오버레이 */}
+      {loaded && nodes.length === 0 && (
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: 'rgba(var(--ou-bg-rgb, 235,235,235), 0.75)',
+          display: 'flex', flexDirection: 'column',
+          alignItems: 'center', justifyContent: 'center', gap: 6,
+        }}>
+          <div style={{ fontSize: 12, color: 'var(--ou-text-muted)', fontWeight: 500 }}>
+            데이터를 입력하면 여기에 표시돼요
+          </div>
+          <div style={{ fontSize: 11, color: 'var(--ou-text-dimmed)' }}>
+            설치 후 Orb에서 말해보세요
+          </div>
+        </div>
+      )}
+
+      {/* 로딩 */}
+      {!loaded && (
+        <div style={{
+          position: 'absolute', inset: 0,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--ou-text-disabled)', animation: 'blink 1s ease-in-out infinite' }} />
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── 프리셋 상세 모달 ──────────────────────────────────────
 function PresetDetailModal({ preset, installed, installing, uninstalling, onClose, onInstall, onUninstall, onOpen }: {
   preset: ViewPreset;
@@ -768,44 +837,31 @@ function PresetDetailModal({ preset, installed, installing, uninstalling, onClos
   onUninstall: () => void;
   onOpen: () => void;
 }) {
-  const IconComp = VIEW_ICONS[preset.view_type] || Circle;
   const categoryLabel = preset.category === 'inline' ? '인라인' : preset.category === 'cross' ? '복합' : '풀뷰';
 
   return (
     <NeuModal open onClose={onClose} title={preset.name}>
-      {/* 아이콘 + 뱃지 */}
-      <div style={{
-        display: 'flex', flexDirection: 'column', alignItems: 'center',
-        gap: 16, marginBottom: 24,
-      }}>
-        <div style={{
-          width: 96, height: 96, borderRadius: 24,
-          background: 'var(--ou-bg)',
-          boxShadow: 'var(--ou-neu-pressed-md)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: 'var(--ou-text-body)',
-        }}>
-          <IconComp size={44} weight="light" />
-        </div>
+      {/* 실제 뷰 미리보기 */}
+      <ViewPreviewPane viewType={preset.view_type} domain={preset.domain} />
 
-        <div style={{ display: 'flex', gap: 8 }}>
-          <span style={{
-            padding: '4px 12px', borderRadius: 999,
-            background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-raised-xs)',
-            fontSize: 11, fontWeight: 600, color: 'var(--ou-text-muted)',
-            letterSpacing: '0.04em',
-          }}>
-            {DOMAIN_LABELS[preset.domain] || preset.domain}
-          </span>
-          <span style={{
-            padding: '4px 12px', borderRadius: 999,
-            background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-pressed-xs)',
-            fontSize: 11, fontWeight: 600, color: 'var(--ou-text-dimmed)',
-            letterSpacing: '0.04em',
-          }}>
-            {categoryLabel}
-          </span>
-        </div>
+      {/* 뱃지 */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+        <span style={{
+          padding: '4px 12px', borderRadius: 999,
+          background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-raised-xs)',
+          fontSize: 11, fontWeight: 600, color: 'var(--ou-text-muted)',
+          letterSpacing: '0.04em',
+        }}>
+          {DOMAIN_LABELS[preset.domain] || preset.domain}
+        </span>
+        <span style={{
+          padding: '4px 12px', borderRadius: 999,
+          background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-pressed-xs)',
+          fontSize: 11, fontWeight: 600, color: 'var(--ou-text-dimmed)',
+          letterSpacing: '0.04em',
+        }}>
+          {categoryLabel}
+        </span>
       </div>
 
       {/* 설명 */}
