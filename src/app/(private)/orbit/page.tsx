@@ -6,6 +6,33 @@ import { VIEW_LABELS } from '@/components/views/registry';
 import { NeuPageLayout } from '@/components/ds';
 import { MagnifyingGlass } from '@phosphor-icons/react';
 
+// ── 뷰 타입 → 도메인 매핑 ────────────────────────────────
+const VIEW_TYPE_TO_DOMAIN: Record<string, string> = {
+  // 풀뷰
+  todo: 'task', calendar: 'schedule', table: 'knowledge', task: 'task',
+  dictionary: 'knowledge', flashcard: 'education', timeline: 'schedule',
+  chart: 'finance', heatmap: 'habit', journal: 'health', profile: 'relation',
+  idea: 'idea', curriculum: 'education', lecture: 'education', boncho: 'health',
+  scrap: 'knowledge', youtube: 'media', map: 'location',
+  // 인라인 — 일정
+  'schedule-time': 'schedule', 'schedule-date': 'schedule', 'schedule-range': 'schedule',
+  'schedule-today': 'schedule', 'schedule-tomorrow': 'schedule',
+  'schedule-week': 'schedule', 'schedule-around': 'schedule',
+  // 인라인 — 가계부
+  'finance-amount': 'finance', 'finance-balance': 'finance', 'finance-today': 'finance',
+  'finance-week': 'finance', 'finance-compare': 'finance', 'finance-category': 'finance',
+  // 인라인 — 할 일
+  'task-check': 'task', 'task-deadline': 'task', 'task-today': 'task',
+  'task-overdue': 'task', 'task-week': 'task', 'task-check-simple': 'task',
+  // 인라인 — 기타
+  'idea-card': 'idea', 'relation-card': 'relation', 'habit-log': 'habit',
+  'habit-streak': 'habit', 'knowledge-note': 'knowledge', 'media-card': 'media',
+  'media-rating': 'media', 'dev-note': 'development', 'location-pin': 'location',
+  'youtube-card': 'media', 'youtube-timestamp': 'media', 'health-log': 'health',
+  'health-symptom': 'health', 'health-med': 'health', 'boncho-herb': 'health',
+  'dict-char': 'knowledge', 'edu-lesson': 'education', 'edu-assignment': 'education',
+};
+
 // ── 아이콘 맵 ────────────────────────────────────────────
 const VIEW_ICONS: Record<string, string> = {
   todo: '☑', calendar: '▥', table: '▦', task: '▦', dictionary: '本',
@@ -108,9 +135,18 @@ export default function OrbitPage() {
 
   const BUILTIN_VIEWS = Object.entries(VIEW_LABELS).map(([key, label]) => ({
     id: `builtin-${key}`, viewType: key, name: label, icon: VIEW_ICONS[key] || '◉',
+    domain: VIEW_TYPE_TO_DOMAIN[key] || 'knowledge',
   }));
 
-  // 검색 + 도메인 필터
+  // 검색 + 도메인 필터 (마켓: BUILTIN_VIEWS 기반)
+  const filteredBuiltin = BUILTIN_VIEWS.filter(v => {
+    const matchDomain = selectedDomain === 'all' || v.domain === selectedDomain;
+    if (!searchQuery) return matchDomain;
+    const q = searchQuery.toLowerCase();
+    return matchDomain && (v.name.toLowerCase().includes(q) || DOMAIN_LABELS[v.domain]?.includes(q));
+  });
+
+  // presets API 보조 필터 (API 데이터 있을 때만)
   const filteredPresets = presets.filter(p => {
     const matchDomain = selectedDomain === 'all' || p.domain === selectedDomain;
     if (!searchQuery) return matchDomain;
@@ -122,6 +158,12 @@ export default function OrbitPage() {
   });
 
   const featuredPresets = presets.filter(p => FEATURED_KEYS.includes(p.key));
+
+  const builtinByDomain = DOMAIN_ORDER.reduce((acc, domain) => {
+    const items = filteredBuiltin.filter(v => v.domain === domain);
+    if (items.length > 0) acc[domain] = items;
+    return acc;
+  }, {} as Record<string, typeof BUILTIN_VIEWS>);
 
   const presetsByDomain = DOMAIN_ORDER.reduce((acc, domain) => {
     const items = filteredPresets.filter(p => p.domain === domain);
@@ -135,7 +177,7 @@ export default function OrbitPage() {
     { key: 'builtin', label: '기본 내장' },
   ];
 
-  const domains = ['all', ...DOMAIN_ORDER.filter(d => presets.some(p => p.domain === d))];
+  const domains = ['all', ...DOMAIN_ORDER.filter(d => BUILTIN_VIEWS.some(v => v.domain === d))];
 
   return (
     <NeuPageLayout onBack={() => router.back()}>
@@ -233,18 +275,33 @@ export default function OrbitPage() {
               ))}
             </div>
 
-            {loading ? (
-              <div style={{ fontSize: 13, color: 'var(--ou-text-muted)', padding: '40px 0', textAlign: 'center' }}>
-                불러오는 중...
-              </div>
-            ) : filteredPresets.length === 0 ? (
+            {filteredBuiltin.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '60px 0' }}>
                 <div style={{ fontSize: 14, color: 'var(--ou-text-muted)' }}>검색 결과가 없어요.</div>
               </div>
+            ) : searchQuery || selectedDomain !== 'all' ? (
+              /* 필터/검색 결과 — 그리드 */
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))',
+                gap: 14,
+              }}>
+                {filteredBuiltin.map(v => (
+                  <ViewCard
+                    key={v.id}
+                    view={v}
+                    onOpen={() => {
+                      const existing = myViews.find(mv => mv.view_type === v.viewType);
+                      if (existing) router.push(`/view/${existing.id}`);
+                      else router.push(`/view/builtin-${v.viewType}`);
+                    }}
+                  />
+                ))}
+              </div>
             ) : (
+              /* 기본 화면 — 도메인별 섹션 */
               <>
-                {/* 피처드 — 전체 탭 + 검색 없을 때만 */}
-                {selectedDomain === 'all' && !searchQuery && featuredPresets.length > 0 && (
+                {featuredPresets.length > 0 && (
                   <div style={{ marginBottom: 40 }}>
                     <SectionHeader title="추천 뷰" />
                     <div style={{
@@ -265,40 +322,19 @@ export default function OrbitPage() {
                     </div>
                   </div>
                 )}
-
-                {/* 도메인별 섹션 */}
-                {selectedDomain === 'all' && !searchQuery ? (
-                  Object.entries(presetsByDomain).map(([domain, items]) => (
-                    <DomainSection
-                      key={domain}
-                      domain={domain}
-                      items={items}
-                      installedKeys={installedKeys}
-                      installing={installing}
-                      onInstall={install}
-                      onOpen={(viewType) => router.push(`/view/builtin-${viewType}`)}
-                      onShowAll={() => setSelectedDomain(domain)}
-                    />
-                  ))
-                ) : (
-                  /* 필터/검색 결과 — 그리드 */
-                  <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
-                    gap: 14,
-                  }}>
-                    {filteredPresets.map(p => (
-                      <PresetCard
-                        key={p.key}
-                        preset={p}
-                        installed={installedKeys.has(p.key)}
-                        installing={installing === p.key}
-                        onInstall={() => install(p.key)}
-                        onOpen={() => router.push(`/view/builtin-${p.view_type}`)}
-                      />
-                    ))}
-                  </div>
-                )}
+                {Object.entries(builtinByDomain).map(([domain, items]) => (
+                  <BuiltinDomainSection
+                    key={domain}
+                    domain={domain}
+                    items={items}
+                    onOpen={(viewType) => {
+                      const existing = myViews.find(mv => mv.view_type === viewType);
+                      if (existing) router.push(`/view/${existing.id}`);
+                      else router.push(`/view/builtin-${viewType}`);
+                    }}
+                    onShowAll={() => setSelectedDomain(domain)}
+                  />
+                ))}
               </>
             )}
           </>
@@ -374,6 +410,35 @@ function SectionHeader({ title, onShowAll }: { title: string; onShowAll?: () => 
           모두 보기
         </button>
       )}
+    </div>
+  );
+}
+
+// ── 빌트인 도메인 섹션 (가로 스크롤) ────────────────────────
+function BuiltinDomainSection({ domain, items, onOpen, onShowAll }: {
+  domain: string;
+  items: { id: string; viewType: string; name: string; icon: string; domain: string }[];
+  onOpen: (viewType: string) => void;
+  onShowAll: () => void;
+}) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  return (
+    <div style={{ marginBottom: 36 }}>
+      <SectionHeader title={DOMAIN_LABELS[domain] || domain} onShowAll={items.length > 4 ? onShowAll : undefined} />
+      <div
+        ref={scrollRef}
+        style={{
+          display: 'flex', gap: 14, overflowX: 'auto',
+          paddingBottom: 8,
+          msOverflowStyle: 'none', scrollbarWidth: 'none',
+        }}
+      >
+        {items.map(v => (
+          <div key={v.id} style={{ flexShrink: 0, width: 140 }}>
+            <ViewCard view={v} onOpen={() => onOpen(v.viewType)} />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
