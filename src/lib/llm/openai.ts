@@ -61,7 +61,7 @@ export class OpenAIProvider implements LLMProvider {
         callbacks.onChunk(delta);
       }
     }
-    callbacks.onComplete(fullText);
+    await callbacks.onComplete(fullText);
   }
 
   async complete(

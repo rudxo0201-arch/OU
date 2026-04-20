@@ -19,7 +19,7 @@ export interface LLMOptions {
 
 export interface LLMStreamCallbacks {
   onChunk: (text: string) => void;
-  onComplete: (fullText: string) => void;
+  onComplete: (fullText: string) => Promise<void> | void;
   onError: (error: Error) => void;
 }
 

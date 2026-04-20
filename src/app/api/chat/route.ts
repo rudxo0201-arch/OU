@@ -276,6 +276,10 @@ export async function POST(req: NextRequest) {
           const startTime = Date.now();
           controller.enqueue(encoder.encode(`data: ${JSON.stringify({ status: '잠시만 기다려 주세요' })}\n\n`));
 
+          // 실시간 토큰 스트리밍 상태
+          let inMetaBlock = false; // 메타블록 시작 감지 시 true
+          let onChunkBuf = ''; // 경계 감지용 소형 버퍼 (마지막 2자 유지)
+
           let lastHeartbeat = Date.now();
           await chatWithFallback({
             messages: recentMessages,
@@ -285,14 +289,35 @@ export async function POST(req: NextRequest) {
             selectedModel,
             userApiKey,
             isUserKey,
-            onChunk: () => {
-              // Vercel 타임아웃 방지: 2초마다 heartbeat 전송
-              const now = Date.now();
-              if (now - lastHeartbeat > 2000) {
-                const elapsed = now - startTime;
-                const msg = elapsed > 5000 ? '곧 끝나요' : '잠시만 기다려 주세요';
-                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ status: msg })}\n\n`));
-                lastHeartbeat = now;
+            onChunk: (token) => {
+              if (inMetaBlock) {
+                // 메타블록 진입 후: heartbeat만 전송
+                const now = Date.now();
+                if (now - lastHeartbeat > 2000) {
+                  const elapsed = now - startTime;
+                  const msg = elapsed > 5000 ? '곧 끝나요' : '잠시만 기다려 주세요';
+                  controller.enqueue(encoder.encode(`data: ${JSON.stringify({ status: msg })}\n\n`));
+                  lastHeartbeat = now;
+                }
+                return;
+              }
+
+              onChunkBuf += token;
+              const backtickIdx = onChunkBuf.indexOf('```');
+
+              if (backtickIdx !== -1) {
+                // 메타블록 시작 감지: 직전까지만 전송
+                inMetaBlock = true;
+                const safe = onChunkBuf.slice(0, backtickIdx);
+                if (safe) controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text: safe })}\n\n`));
+                return;
+              }
+
+              // 버퍼 마지막 2자 유지 (``` 경계 보호), 나머지 전송
+              if (onChunkBuf.length > 2) {
+                const toSend = onChunkBuf.slice(0, -2);
+                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text: toSend })}\n\n`));
+                onChunkBuf = onChunkBuf.slice(-2);
               }
             },
             onComplete: async (fullText, provider) => {
@@ -349,12 +374,14 @@ export async function POST(req: NextRequest) {
               // 메타블록 제거 — 클라이언트에는 cleanText만 전달
               const cleanText = stripLLMMeta(fullText);
 
-              // 타이핑 스트리밍: cleanText를 청크로 쪼개어 전송
-              const CHUNK_SIZE = 20;
-              for (let i = 0; i < cleanText.length; i += CHUNK_SIZE) {
-                const chunk = cleanText.slice(i, i + CHUNK_SIZE);
-                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text: chunk })}\n\n`));
+              // 남은 버퍼 플러시 (메타블록 없이 종료된 경우)
+              if (!inMetaBlock && onChunkBuf) {
+                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text: onChunkBuf })}\n\n`));
+                onChunkBuf = '';
               }
+
+              // 최종 텍스트 보정: 클라이언트가 누적한 토큰과 정확히 일치시킴
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ textFinal: cleanText })}\n\n`));
 
               // Layer 2: 비동기 DataNode 저장 (domainHint 전달 → classifyDomain 스킵)
               let saveError = false;

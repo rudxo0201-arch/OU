@@ -51,7 +51,7 @@ export class AnthropicProvider implements LLMProvider {
         callbacks.onChunk(chunk.delta.text);
       }
     }
-    callbacks.onComplete(fullText);
+    await callbacks.onComplete(fullText);
   }
 
   async complete(
