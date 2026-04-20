@@ -5,8 +5,12 @@ import { useChatStore } from '@/stores/chatStore';
 import { NeuButton } from '@/components/ds';
 import { VIEW_LABELS } from '@/components/views/registry';
 
-export function ViewOptionsChips() {
-  const { pendingViewOptions, clearPendingViewOptions, addRequestedView } = useChatStore();
+interface ViewOptionsChipsProps {
+  messageId: string;
+}
+
+export function ViewOptionsChips({ messageId }: ViewOptionsChipsProps) {
+  const { pendingViewOptions, clearPendingViewOptions, addRequestedView, confirmViewForMessage } = useChatStore();
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
   useEffect(() => {
@@ -24,15 +28,17 @@ export function ViewOptionsChips() {
 
   const confirm = useCallback(() => {
     if (!pendingViewOptions) return;
-    selected.forEach(vt => {
+    const types = Array.from(selected);
+    types.forEach(vt => {
       addRequestedView({
         viewType: vt,
         filter: pendingViewOptions.filter,
         cards: vt === 'flashcard' ? pendingViewOptions.cards : undefined,
       });
     });
+    confirmViewForMessage(messageId, types);
     clearPendingViewOptions();
-  }, [pendingViewOptions, selected, addRequestedView, clearPendingViewOptions]);
+  }, [pendingViewOptions, selected, messageId, addRequestedView, confirmViewForMessage, clearPendingViewOptions]);
 
   if (!pendingViewOptions) return null;
 

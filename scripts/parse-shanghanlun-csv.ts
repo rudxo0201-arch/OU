@@ -36,7 +36,10 @@ function getChapterSection(n: number): { chapter: string; section: string } {
   if (n <= 272) return { chapter: '소양병', section: '소양병편' };
   if (n <= 280) return { chapter: '태음병', section: '태음병편' };
   if (n <= 325) return { chapter: '소음병', section: '소음병편' };
-  return { chapter: '궐음병', section: '궐음병편' };
+  if (n <= 381) return { chapter: '궐음병', section: '궐음병편' };
+  if (n <= 391) return { chapter: '곽란병', section: '곽란병편' };
+  if (n <= 393) return { chapter: '음양역', section: '음양역편' };
+  return { chapter: '노복', section: '노복편' };
 }
 
 // ── ID 생성 ──────────────────────────────────────────────────────────────────

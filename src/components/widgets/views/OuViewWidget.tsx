@@ -21,7 +21,7 @@ export function OuViewWidget() {
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
-      if (e.nativeEvent.isComposing) return; // 한국어 IME 조합 중 Enter 무시
+      if (e.nativeEvent.isComposing) return;
       e.preventDefault();
       const text = (e.currentTarget.value || input).trim();
       setInput('');
@@ -29,35 +29,35 @@ export function OuViewWidget() {
     }
   }, [input, openOrb]);
 
-  // 타이핑 시작하면 ghost text는 사라짐 (input이 있으면 placeholder 숨김)
   const showGhost = !input && !!ghostText;
   const showChip = tutorialPhase === 'active' && !!ghostText && !input;
 
   return (
+    // 외부 div: widget-no-drag 없음 → 카드 테두리 영역에서 드래그 가능
     <div
       data-tutorial-target="ou-view-input"
       style={{
         width: '100%', height: '100%',
-        padding: '0 8px',
-        display: 'flex',
-        alignItems: 'stretch',
+        display: 'flex', alignItems: 'center',
+        justifyContent: 'center',
+        padding: '0 16px',
       }}
     >
-      {/* Orb 입력 — pressed (안쪽으로 들어간 입력창) */}
+      {/* 내부 입력 박스: 입력 관련 요소에만 widget-no-drag */}
       <div
-        className="widget-no-drag"
         style={{
-          flex: 1,
+          width: '100%',
+          maxWidth: 560,
           background: 'var(--ou-bg)',
           borderRadius: 'var(--ou-radius-lg)',
           boxShadow: 'var(--ou-neu-pressed-md)',
-          padding: '10px 16px 8px',
+          padding: '16px 20px 12px',
           display: 'flex',
           flexDirection: 'column',
           position: 'relative',
         }}
       >
-        {/* Ghost text 레이어 */}
+        {/* Ghost text */}
         {showGhost && (
           <div style={{
             position: 'absolute',
@@ -70,7 +70,10 @@ export function OuViewWidget() {
             {ghostText}
           </div>
         )}
+
+        {/* 실제 입력 요소 — widget-no-drag */}
         <input
+          className="widget-no-drag"
           value={input}
           onChange={e => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
@@ -82,7 +85,7 @@ export function OuViewWidget() {
             fontSize: 16, fontFamily: 'inherit',
           }}
         />
-        {/* 튜토리얼 제안 칩 — 탭 하나로 전송 */}
+
         {showChip && (
           <button
             className="widget-no-drag"
@@ -105,7 +108,8 @@ export function OuViewWidget() {
             {ghostText}
           </button>
         )}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, paddingTop: 6 }}>
+
+        <div className="widget-no-drag" style={{ display: 'flex', alignItems: 'center', gap: 6, paddingTop: 10 }}>
           <div style={{
             width: 28, height: 28, borderRadius: '50%',
             background: 'var(--ou-bg)',

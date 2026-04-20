@@ -53,6 +53,8 @@ function MyPage() {
   const [greetingText, setGreetingText] = useState('');
   const [editingGreeting, setEditingGreeting] = useState(false);
   const greetingInputRef = useRef<HTMLInputElement>(null);
+  const [greetingPos, setGreetingPos] = useState<{ top: number; left: number }>({ top: 168, left: 116 });
+  const dragState = useRef<{ startX: number; startY: number; origTop: number; origLeft: number } | null>(null);
   const searchParams = useSearchParams();
   const isReplay = searchParams.get('tutorial') === 'replay';
   const inviteToken = searchParams.get('invite');
@@ -120,6 +122,14 @@ function MyPage() {
         });
     });
   }, [user?.id]);
+
+  // 인사 헤더 위치 복원
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('ou-greeting-pos');
+      if (saved) setGreetingPos(JSON.parse(saved));
+    } catch { /* ignore */ }
+  }, []);
 
   // 편집 모드 이벤트 구독
   useEffect(() => {
@@ -266,14 +276,47 @@ function MyPage() {
 
         {/* 인사 헤더 */}
         {showWidgets && (
-          <div style={{
-            position: 'absolute',
-            top: 168, left: 116, right: 40,
-            display: 'flex', flexDirection: 'column',
-            padding: 0,
-            zIndex: 5,
-            pointerEvents: isEditMode ? 'auto' : 'none',
-          }}>
+          <div
+            style={{
+              position: 'absolute',
+              top: greetingPos.top,
+              left: greetingPos.left,
+              display: 'flex', flexDirection: 'column',
+              padding: isEditMode ? '6px 8px' : 0,
+              borderRadius: isEditMode ? 8 : 0,
+              outline: isEditMode ? '1.5px dashed var(--ou-border-subtle)' : 'none',
+              zIndex: 5,
+              cursor: isEditMode ? 'grab' : 'default',
+              pointerEvents: isEditMode ? 'auto' : 'none',
+              userSelect: 'none',
+              transition: 'outline 150ms, padding 150ms',
+            }}
+            onPointerDown={isEditMode ? (e) => {
+              if (editingGreeting) return;
+              e.currentTarget.setPointerCapture(e.pointerId);
+              dragState.current = {
+                startX: e.clientX, startY: e.clientY,
+                origTop: greetingPos.top, origLeft: greetingPos.left,
+              };
+            } : undefined}
+            onPointerMove={isEditMode ? (e) => {
+              if (!dragState.current) return;
+              const { startX, startY, origTop, origLeft } = dragState.current;
+              setGreetingPos({
+                top: origTop + (e.clientY - startY),
+                left: origLeft + (e.clientX - startX),
+              });
+            } : undefined}
+            onPointerUp={isEditMode ? (e) => {
+              if (!dragState.current) return;
+              dragState.current = null;
+              (e.currentTarget as HTMLElement).style.cursor = 'grab';
+              try {
+                localStorage.setItem('ou-greeting-pos', JSON.stringify(greetingPos));
+              } catch { /* ignore */ }
+            } : undefined}
+          >
+            {/* 날짜 */}
             <div style={{
               fontSize: 12, letterSpacing: '2px',
               color: 'var(--ou-text-muted)',
@@ -283,11 +326,13 @@ function MyPage() {
               {getGreetingDate()}
             </div>
 
+            {/* 인사 텍스트 */}
             {editingGreeting ? (
               <input
                 ref={greetingInputRef}
                 value={greetingText}
                 onChange={e => setGreetingText(e.target.value)}
+                onPointerDown={e => e.stopPropagation()}
                 onBlur={() => {
                   localStorage.setItem(GREETING_STORAGE_KEY, greetingText);
                   setEditingGreeting(false);
@@ -308,6 +353,7 @@ function MyPage() {
                   borderBottom: '1.5px solid var(--ou-border-subtle)',
                   outline: 'none',
                   width: '100%',
+                  minWidth: 200,
                   padding: '2px 0',
                   fontFamily: 'inherit',
                 }}
@@ -321,11 +367,7 @@ function MyPage() {
                   letterSpacing: '-0.02em',
                   lineHeight: 1.2,
                   cursor: isEditMode ? 'text' : 'default',
-                  borderRadius: 6,
-                  padding: isEditMode ? '2px 6px' : 0,
-                  marginLeft: isEditMode ? -6 : 0,
-                  outline: isEditMode ? '1.5px dashed var(--ou-border-subtle)' : 'none',
-                  transition: 'outline 150ms, padding 150ms',
+                  whiteSpace: 'nowrap',
                 }}
               >
                 {greetingText || `안녕하세요, ${displayName || user?.email?.split('@')[0] || '회원'}님.`}

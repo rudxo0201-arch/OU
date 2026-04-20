@@ -22,7 +22,7 @@ interface ChatPanelProps {
 }
 
 export function ChatPanel({ onNodeSelect, autoSendOnOpen }: ChatPanelProps) {
-  const { messages } = useChatStore();
+  const { messages, pendingViewOptions } = useChatStore();
   const scrollRef = useRef<HTMLDivElement>(null);
   const chatInputRef = useRef<ChatInputHandle>(null);
 
@@ -67,12 +67,12 @@ export function ChatPanel({ onNodeSelect, autoSendOnOpen }: ChatPanelProps) {
             message={msg}
             onNodeSelect={onNodeSelect}
             onSendMessage={(text, linkedNodeId) => chatInputRef.current?.sendMessage(text, linkedNodeId)}
+            pendingViewOptions={pendingViewOptions}
           />
         ))}
       </div>
 
       <div style={{ padding: '0 20px 20px' }}>
-        <ViewOptionsChips />
         <div style={{ paddingTop: 12 }}>
           <ChatInput ref={chatInputRef} initialMessage={pendingMsg} onSent={() => setPendingMsg(null)} />
         </div>
@@ -132,10 +132,12 @@ function MessageBubble({
   message,
   onNodeSelect,
   onSendMessage,
+  pendingViewOptions,
 }: {
   message: ChatMessage;
   onNodeSelect?: (payload: NodeSelectPayload) => void;
   onSendMessage?: (text: string, linkedNodeId?: string) => void;
+  pendingViewOptions?: ReturnType<typeof useChatStore>['pendingViewOptions'];
 }) {
   const isUser = message.role === 'user';
   const [hovered, setHovered] = useState(false);
@@ -264,18 +266,24 @@ function MessageBubble({
           </div>
         )}
 
-        {/* Inline view — primary node */}
-        {message.nodeCreated && !message.streaming && (
+        {/* 뷰 선택 칩 — 이 메시지의 nodeId와 pendingViewOptions.nodeId가 일치할 때 */}
+        {message.nodeCreated && !message.streaming &&
+          pendingViewOptions?.nodeId === message.nodeCreated.nodeId && (
+          <ViewOptionsChips messageId={message.id} />
+        )}
+
+        {/* Inline view — primary node (viewConfirmed 후에만 렌더) */}
+        {message.nodeCreated && !message.streaming && message.nodeCreated.viewConfirmed && (
           <InlineView domain={message.nodeCreated.domain} data={message.nodeCreated.domain_data} content={message.content} viewType={message.nodeCreated.viewType} />
         )}
 
-        {/* Inline views — additional nodes */}
-        {message.nodeCreated?.additionalNodes && !message.streaming && message.nodeCreated.additionalNodes.map((n) => (
+        {/* Inline views — additional nodes (viewConfirmed 후에만) */}
+        {message.nodeCreated?.additionalNodes && !message.streaming && message.nodeCreated.viewConfirmed && message.nodeCreated.additionalNodes.map((n) => (
           <InlineView key={n.id} domain={n.domain} data={n.domain_data} content={message.content} viewType={DOMAIN_VIEW_MAP[n.domain]} />
         ))}
 
-        {/* 홈 화면에 추가하기 */}
-        {message.nodeCreated && !message.streaming && (
+        {/* 홈 화면에 추가하기 (viewConfirmed 후에만) */}
+        {message.nodeCreated && !message.streaming && message.nodeCreated.viewConfirmed && (
           <AddToHomeButton domain={message.nodeCreated.domain} nodeId={message.nodeCreated.nodeId} />
         )}
 

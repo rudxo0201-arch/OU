@@ -16,6 +16,7 @@ export interface ChatMessage {
     confidence?: string;
     domain_data?: Record<string, any>;
     viewType?: string;
+    viewConfirmed?: boolean;
     additionalNodes?: Array<{ id: string; domain: string; domain_data: Record<string, any> }>;
   };
   /** 이미지 업로드 시 미리보기 URL */
@@ -77,6 +78,7 @@ interface ChatStore {
   setPendingMessage: (msg: string | null) => void;
   removeMessage: (id: string) => void;
   addRequestedView: (view: { viewType: string; filter?: Record<string, any>; cards?: Array<{ front: string; back: string }> }) => void;
+  confirmViewForMessage: (messageId: string, selectedViewTypes: string[]) => void;
   clearRequestedViews: () => void;
   setPendingViewOptions: (opts: ChatStore['pendingViewOptions']) => void;
   clearPendingViewOptions: () => void;
@@ -115,6 +117,12 @@ export const useChatStore = create<ChatStore>((set, get) => ({
     messages: s.messages.filter(m => m.id !== id),
   })),
   addRequestedView: view => set(s => ({ requestedViews: [...s.requestedViews, view] })),
+  confirmViewForMessage: (messageId, selectedViewTypes) => set(s => ({
+    messages: s.messages.map(m => m.id === messageId && m.nodeCreated
+      ? { ...m, nodeCreated: { ...m.nodeCreated, viewConfirmed: true, viewType: selectedViewTypes[0] } }
+      : m
+    ),
+  })),
   clearRequestedViews: () => set({ requestedViews: [] }),
   setPendingViewOptions: opts => set({ pendingViewOptions: opts }),
   clearPendingViewOptions: () => set({ pendingViewOptions: null }),
