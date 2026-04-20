@@ -85,7 +85,7 @@ export default function AccuracyPage() {
         {/* Header */}
         <header style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 28 }}>
           <button
-            onClick={() => router.push('/my')}
+            onClick={() => router.back()}
             style={{
               width: 44, height: 44, borderRadius: '50%',
               background: 'var(--ou-bg)',

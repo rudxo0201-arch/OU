@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useWidgetStore } from '@/stores/widgetStore';
 import { useTutorialStore } from '@/stores/tutorialStore';
 import { NeuButton } from '@/components/ds';
@@ -11,9 +12,10 @@ interface Props {
 }
 
 export function AddToHomeButton({ domain }: Props) {
+  const router = useRouter();
   const widgets = useWidgetStore(s => s.pages[s.currentPageIndex]?.widgets ?? []);
   const addWidget = useWidgetStore(s => s.addWidget);
-  const { isActive, enterEditMode } = useTutorialStore();
+  const { isActive, completeStep } = useTutorialStore();
 
   const widgetType = DOMAIN_WIDGET_MAP[domain];
   if (!widgetType) return null;
@@ -22,18 +24,14 @@ export function AddToHomeButton({ domain }: Props) {
 
   const handleAdd = () => {
     if (isActive()) {
+      // 튜토리얼 중에는 편집 모드 스킵 — 자동 배치 후 스텝 완료
       if (!alreadyAdded) {
         const id = `${widgetType}-${Date.now()}`;
-        addWidget({ id, type: widgetType, x: 0, y: 0, w: 2, h: 2 });
-        enterEditMode({ type: widgetType, id });
-        window.dispatchEvent(new CustomEvent('orb-close'));
-        window.dispatchEvent(new CustomEvent('widget-edit-mode-enter'));
-      } else {
-        // 위젯이 이미 있으면 편집 모드 없이 스텝만 진행
-        enterEditMode({ type: widgetType, id: widgetType });
-        window.dispatchEvent(new CustomEvent('orb-close'));
-        window.dispatchEvent(new CustomEvent('widget-edit-mode-enter'));
+        addWidget({ id, type: widgetType, x: 1, y: 4, w: 2, h: 2 });
       }
+      completeStep();
+      window.dispatchEvent(new CustomEvent('orb-close'));
+      router.push('/home');
       return;
     }
 

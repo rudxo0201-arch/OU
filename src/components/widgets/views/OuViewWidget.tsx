@@ -1,19 +1,23 @@
 'use client';
 
 import { useState, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { useChatStore } from '@/stores/chatStore';
 import { useTutorialStore } from '@/stores/tutorialStore';
+import { ArrowUpRight } from '@phosphor-icons/react';
 
 export function OuViewWidget() {
   const [input, setInput] = useState('');
   const ghostText = useTutorialStore(s => s.currentGhostText());
+  const tutorialPhase = useTutorialStore(s => s.phase);
+  const router = useRouter();
 
   const openOrb = useCallback((text?: string) => {
     if (text) {
       useChatStore.getState().setPendingMessage(text);
     }
-    window.dispatchEvent(new CustomEvent('orb-expand'));
-  }, []);
+    router.push('/orb');
+  }, [router]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -26,6 +30,7 @@ export function OuViewWidget() {
 
   // 타이핑 시작하면 ghost text는 사라짐 (input이 있으면 placeholder 숨김)
   const showGhost = !input && !!ghostText;
+  const showChip = tutorialPhase === 'active' && !!ghostText && !input;
 
   return (
     <div
@@ -75,6 +80,29 @@ export function OuViewWidget() {
             fontSize: 16, fontFamily: 'inherit',
           }}
         />
+        {/* 튜토리얼 제안 칩 — 탭 하나로 전송 */}
+        {showChip && (
+          <button
+            className="widget-no-drag"
+            onClick={() => openOrb(ghostText!)}
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 4,
+              marginTop: 8, marginBottom: 2,
+              padding: '3px 10px',
+              borderRadius: 999,
+              background: 'var(--ou-bg)',
+              boxShadow: 'var(--ou-neu-raised-xs)',
+              border: 'none', cursor: 'pointer',
+              fontSize: 11, color: 'var(--ou-text-muted)',
+              fontFamily: 'inherit',
+              maxWidth: '100%', overflow: 'hidden',
+              textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+            }}
+          >
+            <ArrowUpRight size={11} weight="bold" />
+            {ghostText}
+          </button>
+        )}
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, paddingTop: 10 }}>
           <div style={{
             width: 28, height: 28, borderRadius: '50%',

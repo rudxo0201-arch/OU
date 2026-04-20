@@ -10,7 +10,7 @@ export default function VerifiedPage() {
       setCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          window.location.href = '/my';
+          window.location.href = '/home';
           return 0;
         }
         return prev - 1;
@@ -60,7 +60,7 @@ export default function VerifiedPage() {
             {countdown}초 후 이동…
           </span>
         ) : (
-          <NeuButton variant="ghost" size="sm" onClick={() => { window.location.href = '/my'; }}>
+          <NeuButton variant="ghost" size="sm" onClick={() => { window.location.href = '/home'; }}>
             지금 이동하기
           </NeuButton>
         )}

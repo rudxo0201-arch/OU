@@ -66,7 +66,7 @@ export default function ViewPage() {
         borderBottom: '1px solid var(--ou-border-subtle)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <NeuButton variant="ghost" size="sm" onClick={() => router.push('/my')} style={{ padding: '4px 8px' }}>
+          <NeuButton variant="ghost" size="sm" onClick={() => router.back()} style={{ padding: '4px 8px' }}>
             ←
           </NeuButton>
           <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ou-text-heading)' }}>

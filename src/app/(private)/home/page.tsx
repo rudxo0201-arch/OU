@@ -9,11 +9,12 @@ import { WidgetGrid, type GridTransition } from '@/components/widgets/WidgetGrid
 import { DockBar } from '@/components/widgets/DockBar';
 import dynamicImport from 'next/dynamic';
 const UniverseView = dynamicImport(() => import('@/components/widgets/UniverseView').then(m => m.UniverseView), { ssr: false });
-const OrbFullscreen = dynamicImport(() => import('@/components/chat/OrbFullscreen').then(m => m.OrbFullscreen), { ssr: false });
 const TutorialComplete = dynamicImport(() => import('@/components/tutorial/TutorialComplete').then(m => m.TutorialComplete), { ssr: false });
+const SpeechBubble = dynamicImport(() => import('@/components/tutorial/SpeechBubble').then(m => m.SpeechBubble), { ssr: false });
 import { useWidgetStore } from '@/stores/widgetStore';
 import { useTutorialStore } from '@/stores/tutorialStore';
 import { TUTORIAL_INITIAL_LAYOUT } from '@/components/widgets/presets';
+import { TUTORIAL_STEPS } from '@/data/tutorial';
 
 function getGreetingDate() {
   const now = new Date();
@@ -50,7 +51,6 @@ function MyPage() {
   const isReplay = searchParams.get('tutorial') === 'replay';
   const inviteToken = searchParams.get('invite');
   const [mode, setMode] = useState<Mode>('dashboard');
-  const [orbExpanded, setOrbExpanded] = useState(false);
   const currentPageIndex = useWidgetStore(s => s.currentPageIndex);
   const pages = useWidgetStore(s => s.pages);
   const setCurrentPage = useWidgetStore(s => s.setCurrentPage);
@@ -63,9 +63,12 @@ function MyPage() {
   const timerRef = useRef<NodeJS.Timeout>();
 
   const tutorialPhase = useTutorialStore(s => s.phase);
+  const tutorialStepIndex = useTutorialStore(s => s.stepIndex);
   const startTutorial = useTutorialStore(s => s.startTutorial);
+  const skipAll = useTutorialStore(s => s.skipAll);
   const prevPhaseRef = useRef(tutorialPhase);
   const [showTutorialComplete, setShowTutorialComplete] = useState(false);
+  const [bubblePos, setBubblePos] = useState<{ top: number; left: number } | null>(null);
 
   // 튜토리얼 시작: replay param이면 바로 시작, 아니면 DB 체크
   useEffect(() => {
@@ -73,7 +76,7 @@ function MyPage() {
       // 설정에서 "다시 보기" 클릭한 경우 — DB 체크 없이 바로 시작
       startTutorial();
       setWidgets(TUTORIAL_INITIAL_LAYOUT);
-      router.replace('/my'); // query param 제거
+      router.replace('/home'); // query param 제거
       return;
     }
     if (tutorialPhase !== 'idle') return;
@@ -145,23 +148,37 @@ function MyPage() {
           }
         });
     });
-    router.replace('/my');
+    router.replace('/home');
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inviteToken, user]);
 
   // 튜토리얼 phase 전환 감지
   useEffect(() => {
     const prev = prevPhaseRef.current;
-    // 편집 완료 후 Orb 자동 확장
+    // 편집 완료 후 Orb로 이동
     if (prev === 'edit-mode' && tutorialPhase === 'active') {
-      setOrbExpanded(true);
+      router.push('/orb');
     }
     // 튜토리얼 완료 → 축하 모달
     if (prev !== 'completed' && tutorialPhase === 'completed') {
       setShowTutorialComplete(true);
     }
     prevPhaseRef.current = tutorialPhase;
-  }, [tutorialPhase]);
+  }, [tutorialPhase, router]);
+
+  // SpeechBubble 위치 추적 — [data-tutorial-target] 엘리먼트 기준
+  useEffect(() => {
+    if (tutorialPhase !== 'active') { setBubblePos(null); return; }
+    const updatePos = () => {
+      const el = document.querySelector('[data-tutorial-target="ou-view-input"]');
+      if (!el) { setBubblePos(null); return; }
+      const rect = el.getBoundingClientRect();
+      setBubblePos({ top: rect.bottom + 14, left: rect.left + rect.width / 2 });
+    };
+    const timer = setTimeout(updatePos, 200);
+    window.addEventListener('resize', updatePos);
+    return () => { clearTimeout(timer); window.removeEventListener('resize', updatePos); };
+  }, [tutorialPhase, tutorialStepIndex]);
 
   // Listen for widget edit mode changes
   useEffect(() => {
@@ -184,19 +201,16 @@ function MyPage() {
 
   useEffect(() => {
     const keyHandler = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); setOrbExpanded(prev => !prev); }
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); router.push('/orb'); }
     };
-    const orbHandler = () => setOrbExpanded(true);
-    const orbCloseHandler = () => setOrbExpanded(false);
+    const orbHandler = () => router.push('/orb');
     window.addEventListener('keydown', keyHandler);
     window.addEventListener('orb-expand', orbHandler);
-    window.addEventListener('orb-close', orbCloseHandler);
     return () => {
       window.removeEventListener('keydown', keyHandler);
       window.removeEventListener('orb-expand', orbHandler);
-      window.removeEventListener('orb-close', orbCloseHandler);
     };
-  }, []);
+  }, [router]);
 
   const toggleUniverse = useCallback(() => {
     if (mode === 'to-universe' || mode === 'to-dashboard') return;
@@ -250,11 +264,9 @@ function MyPage() {
         {showWidgets && (
           <div style={{
             position: 'absolute',
-            top: 52, left: 0, right: 0,
+            top: 52, left: 80, right: 80,
             display: 'flex', flexDirection: 'column', justifyContent: 'center',
-            padding: '20px 80px',
-            background: 'var(--ou-surface-faint)',
-            borderBottom: '1px solid var(--ou-border-faint)',
+            padding: '20px 0',
             zIndex: 5,
             pointerEvents: 'none',
           }}>
@@ -349,8 +361,21 @@ function MyPage() {
         <TutorialComplete onClose={() => setShowTutorialComplete(false)} />
       )}
 
-      {/* Orb fullscreen overlay */}
-      <OrbFullscreen open={orbExpanded} onClose={() => setOrbExpanded(false)} />
+      {/* 튜토리얼 SpeechBubble — 대시보드 입력 위젯 아래 */}
+      {bubblePos && tutorialPhase === 'active' && (
+        <SpeechBubble
+          message={TUTORIAL_STEPS[tutorialStepIndex]?.guideMessage ?? '여기에 입력해보세요'}
+          tail="top"
+          style={{
+            position: 'fixed',
+            top: bubblePos.top,
+            left: bubblePos.left,
+            transform: 'translateX(-50%)',
+            zIndex: 100,
+          }}
+          onSkip={skipAll}
+        />
+      )}
 
       {/* Page indicator dots */}
       {mode === 'dashboard' && pages.length > 1 && (

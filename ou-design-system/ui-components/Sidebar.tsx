@@ -39,7 +39,7 @@ const sections: NavSection[] = [
   {
     label: 'My Universe',
     items: [
-      { id: 'universe', label: 'My Universe', icon: Planet, href: '/my' },
+      { id: 'universe', label: 'My Universe', icon: Planet, href: '/home' },
     ],
   },
   {
@@ -91,7 +91,7 @@ export function Sidebar() {
     <nav className={classes.sidebar} data-expanded={sidebarExpanded || undefined}>
       <Stack gap={0} h="100%">
         {/* Brand Area */}
-        <UnstyledButton className={classes.brandArea} onClick={() => router.push('/my')}>
+        <UnstyledButton className={classes.brandArea} onClick={() => router.back()}>
           <Text className={classes.brandText} fw={500} fz={sidebarExpanded ? 20 : 14}>
             OU
           </Text>

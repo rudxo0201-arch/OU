@@ -4,7 +4,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useState, useEffect } from 'react';
 
 const NAV_ITEMS = [
-  { label: 'Orb', href: '/chat', tab: null },
+  { label: 'Orb', href: '/orb', tab: null },
   { label: 'Universe', href: '/universe', tab: null },
   { label: 'Orbit', href: '/orbit', tab: null },
   { label: 'View Studio', href: '/settings', tab: 'views' },
@@ -64,13 +64,13 @@ function TopNavBarInner({ userInitial }: TopNavBarProps) {
         background: 'var(--ou-bg)',
         display: 'flex',
         alignItems: 'center',
-        padding: '0 40px',
+        padding: '0 80px',
         gap: 24,
       }}
     >
-      {/* OU 로고 → /my */}
+      {/* OU 로고 → /home */}
       <button
-        onClick={() => router.push('/my')}
+        onClick={() => router.push('/home')}
         style={{
           background: 'none',
           border: 'none',
@@ -82,7 +82,7 @@ function TopNavBarInner({ userInitial }: TopNavBarProps) {
         }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/logo-ou.svg" alt="OU" style={{ height: 20, opacity: pathname === '/my' ? 1 : 0.5 }} />
+        <img src="/logo-ou.svg" alt="OU" style={{ height: 20, opacity: pathname === '/home' ? 1 : 0.5 }} />
       </button>
 
       {/* 탭 네비게이션 */}

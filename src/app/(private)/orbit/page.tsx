@@ -48,7 +48,7 @@ export default function OrbitPage() {
   ];
 
   return (
-    <NeuPageLayout onBack={() => router.push('/my')}>
+    <NeuPageLayout onBack={() => router.back()}>
       <div style={{ paddingBottom: 80 }}>
         {/* Header */}
         <div style={{ marginBottom: 28 }}>
@@ -132,43 +132,57 @@ function ViewGrid({ views, onOpen }: {
   return (
     <div style={{
       display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))',
-      gap: 18,
+      gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 160px))',
+      justifyContent: 'center',
+      gap: 16,
     }}>
       {views.map(view => (
-        <button
-          key={view.id}
-          onClick={() => onOpen(view.id, view.viewType)}
-          style={{
-            display: 'flex', flexDirection: 'column',
-            alignItems: 'center', gap: 10,
-            padding: '20px 10px 18px',
-            background: 'var(--ou-bg)',
-            boxShadow: 'var(--ou-neu-raised-xs)',
-            borderRadius: 16,
-            border: 'none', cursor: 'pointer',
-            fontFamily: 'inherit',
-          }}
-        >
-          <div style={{
-            width: 48, height: 48, borderRadius: 12,
-            background: 'var(--ou-bg)',
-            boxShadow: 'var(--ou-neu-pressed-sm)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 20, color: 'var(--ou-text-body)',
-          }}>
-            {view.icon}
-          </div>
-          <span style={{
-            fontSize: 12, color: 'var(--ou-text-strong)',
-            textAlign: 'center', lineHeight: 1.3,
-            overflow: 'hidden', textOverflow: 'ellipsis',
-            width: '100%', whiteSpace: 'nowrap', fontWeight: 500,
-          }}>
-            {view.name}
-          </span>
-        </button>
+        <ViewCard key={view.id} view={view} onOpen={onOpen} />
       ))}
     </div>
+  );
+}
+
+function ViewCard({ view, onOpen }: {
+  view: { id: string; name: string; icon: string; viewType?: string };
+  onOpen: (id: string, viewType?: string) => void;
+}) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <button
+      onClick={() => onOpen(view.id, view.viewType)}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        display: 'flex', flexDirection: 'column',
+        alignItems: 'center', gap: 12,
+        padding: '24px 16px 20px',
+        background: 'var(--ou-bg)',
+        boxShadow: hovered ? 'var(--ou-neu-raised-lg)' : 'var(--ou-neu-raised-sm)',
+        borderRadius: 16,
+        border: 'none', cursor: 'pointer',
+        fontFamily: 'inherit',
+        transform: hovered ? 'translateY(-2px)' : 'translateY(0)',
+        transition: 'box-shadow 200ms ease, transform 200ms ease',
+      }}
+    >
+      <div style={{
+        width: 56, height: 56, borderRadius: 14,
+        background: 'var(--ou-bg)',
+        boxShadow: 'var(--ou-neu-pressed-sm)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontSize: 24, color: 'var(--ou-text-body)',
+      }}>
+        {view.icon}
+      </div>
+      <span style={{
+        fontSize: 13, color: 'var(--ou-text-strong)',
+        textAlign: 'center', lineHeight: 1.3,
+        overflow: 'hidden', textOverflow: 'ellipsis',
+        width: '100%', whiteSpace: 'nowrap', fontWeight: 500,
+      }}>
+        {view.name}
+      </span>
+    </button>
   );
 }

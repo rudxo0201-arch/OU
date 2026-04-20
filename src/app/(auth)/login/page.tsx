@@ -33,7 +33,7 @@ function LoginContent() {
     setError('');
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}/auth/callback?next=/my` },
+      options: { redirectTo: `${window.location.origin}/auth/callback?next=/home` },
     });
     if (error) setError(error.message);
   };
@@ -45,12 +45,12 @@ function LoginContent() {
     if (tab === 'login') {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) { setError(error.message); setLoading(false); }
-      else router.push('/my');
+      else router.push('/home');
     } else {
       const { error } = await supabase.auth.signUp({
         email,
         password,
-        options: { emailRedirectTo: `${window.location.origin}/auth/callback?next=/my` },
+        options: { emailRedirectTo: `${window.location.origin}/auth/callback?next=/home` },
       });
       if (error) { setError(error.message); setLoading(false); }
       else { setSignupDone(true); setLoading(false); }

@@ -28,7 +28,7 @@ export default function ResetPasswordPage() {
     if (error) {
       setError('비밀번호 변경에 실패했어요. 다시 시도해주세요.');
     } else {
-      router.push('/my');
+      router.push('/home');
     }
     setLoading(false);
   }

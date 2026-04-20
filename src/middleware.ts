@@ -38,9 +38,9 @@ export async function middleware(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   const path = request.nextUrl.pathname;
 
-  // 로그인 상태로 /login 접근 → /my
+  // 로그인 상태로 /login 접근 → /home
   if (user && path === '/login') {
-    return NextResponse.redirect(new URL('/my', request.url));
+    return NextResponse.redirect(new URL('/home', request.url));
   }
 
   // 관리자 세션 타임아웃 (30분) — 쿠키 기반 활동 추적

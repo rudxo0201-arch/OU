@@ -75,7 +75,7 @@ export default function InvitePage({ token, sharedFields, expired, used }: Props
             가입하면 이 프로필이 자동으로 등록돼요
           </p>
           <button
-            onClick={() => router.push(`/login?next=/my&invite=${token}`)}
+            onClick={() => router.push(`/login?next=/home&invite=${token}`)}
             style={{
               width: '100%',
               padding: '14px 0',
@@ -93,7 +93,7 @@ export default function InvitePage({ token, sharedFields, expired, used }: Props
           <p style={{ fontSize: 11, color: 'var(--ou-text-muted)', marginTop: 12 }}>
             이미 계정이 있으신가요?{' '}
             <span
-              onClick={() => router.push(`/login?next=/my&invite=${token}`)}
+              onClick={() => router.push(`/login?next=/home&invite=${token}`)}
               style={{ cursor: 'pointer', textDecoration: 'underline' }}
             >
               로그인

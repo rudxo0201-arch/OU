@@ -63,7 +63,7 @@ export default function SettingsPage() {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 28, padding: '0 6px' }}>
           <button
-            onClick={() => router.push('/my')}
+            onClick={() => router.back()}
             style={{
               width: 36, height: 36, borderRadius: '50%',
               background: 'transparent', border: '1px solid var(--ou-border-subtle)',

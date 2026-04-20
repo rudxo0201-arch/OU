@@ -6,7 +6,7 @@ import { ChatInput, type ChatInputHandle } from './ChatInput';
 import { NeuButton, NeuBadge, NeuModal } from '@/components/ds';
 import { AddToHomeButton } from './AddToHomeButton';
 import { stripLLMMeta } from '@/lib/utils/stripLLMMeta';
-import { ViewOptionsChips } from './OrbFullscreen';
+import { ViewOptionsChips } from './ViewOptionsChips';
 
 export interface NodeSelectPayload {
   nodeId: string;

@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 interface Props {
   onUniverse: () => void;
   universeActive?: boolean;
-  onOrbExpand?: () => void;
   onAddWidget?: () => void;
 }
 
@@ -77,7 +76,7 @@ function OrbIcon() {
   );
 }
 
-export function DockBar({ onUniverse, universeActive, onOrbExpand, onAddWidget }: Props) {
+export function DockBar({ onUniverse, universeActive, onAddWidget }: Props) {
   const [mouseIndex, setMouseIndex] = useState(-1);
   const dockRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number | null>(null);
@@ -109,12 +108,12 @@ export function DockBar({ onUniverse, universeActive, onOrbExpand, onAddWidget }
     switch (id) {
       case 'settings': router.push('/settings'); break;
       case 'universe': onUniverse(); break;
-      case 'orb': onOrbExpand?.() ?? window.dispatchEvent(new CustomEvent('orb-expand')); break;
+      case 'orb': router.push('/orb'); break;
       case 'dictionary': window.dispatchEvent(new CustomEvent('dock-dictionary')); break;
       case 'memory': window.dispatchEvent(new CustomEvent('dock-memory')); break;
       case 'add': onAddWidget?.() ?? window.dispatchEvent(new CustomEvent('dock-add-widget')); break;
     }
-  }, [onUniverse, onOrbExpand, onAddWidget, router]);
+  }, [onUniverse, onAddWidget, router]);
 
   function renderIcon(id: string) {
     switch (id) {

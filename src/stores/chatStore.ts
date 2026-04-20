@@ -53,7 +53,7 @@ interface ChatStore {
   turnCount: number;
   isStreaming: boolean;
   showUpgradeModal: boolean;
-  /** 랜딩에서 입력 후 /chat으로 전달할 메시지 */
+  /** 랜딩에서 입력 후 /orb로 전달할 메시지 */
   pendingMessage: string | null;
   /** View 패널에 렌더링된 뷰 목록 (A/B 모두 누적) */
   requestedViews: Array<{ viewType: string; filter?: Record<string, any>; cards?: Array<{ front: string; back: string }> }>;

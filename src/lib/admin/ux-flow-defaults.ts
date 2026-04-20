@@ -11,8 +11,8 @@ export const DEFAULT_UX_FLOW: UXFlowData = {
     { id: 'login', type: 'page', label: '로그인', route: '/login', position: { x: 500, y: 0 }, description: 'Supabase Auth' },
 
     // Private pages
-    { id: 'my', type: 'page', label: '홈 (로그인)', route: '/my', position: { x: 250, y: 200 }, description: '개인 데이터 대시보드' },
-    { id: 'chat', type: 'page', label: 'OU-Chat', route: '/chat', position: { x: 0, y: 200 }, description: '대화 → 데이터 생성' },
+    { id: 'home', type: 'page', label: '홈 (로그인)', route: '/home', position: { x: 250, y: 200 }, description: '개인 데이터 대시보드' },
+    { id: 'orb', type: 'page', label: 'Orb', route: '/orb', position: { x: 0, y: 200 }, description: '대화 → 데이터 생성' },
     { id: 'accuracy', type: 'page', label: '정확도 높이기', route: '/accuracy', position: { x: 500, y: 200 }, description: '미확인 항목 해결' },
     { id: 'feed', type: 'page', label: 'SNS 채널', route: '/feed', position: { x: 0, y: 400 }, description: '페르소나 기반 피드' },
     { id: 'messages', type: 'page', label: 'OU 채팅', route: '/messages', position: { x: 250, y: 400 }, description: '1:1, 그룹 채팅' },
@@ -32,22 +32,22 @@ export const DEFAULT_UX_FLOW: UXFlowData = {
     // Navigation
     { id: 'e1', source: 'landing', target: 'universe', type: 'navigate', label: '둘러보기' },
     { id: 'e2', source: 'landing', target: 'login', type: 'navigate', label: '로그인' },
-    { id: 'e3', source: 'login', target: 'my', type: 'navigate', label: '인증 성공' },
-    { id: 'e4', source: 'my', target: 'chat', type: 'navigate', label: '대화하기' },
-    { id: 'e5', source: 'my', target: 'accuracy', type: 'navigate', label: '확인하기' },
-    { id: 'e6', source: 'my', target: 'feed', type: 'navigate', label: 'SNS' },
-    { id: 'e7', source: 'my', target: 'messages', type: 'navigate', label: '채팅' },
-    { id: 'e8', source: 'my', target: 'settings', type: 'navigate', label: '설정' },
-    { id: 'e9', source: 'my', target: 'admin', type: 'navigate', label: '관리 (admin)' },
-    { id: 'e10', source: 'my', target: 'market', type: 'navigate', label: '마켓' },
+    { id: 'e3', source: 'login', target: 'home', type: 'navigate', label: '인증 성공' },
+    { id: 'e4', source: 'home', target: 'orb', type: 'navigate', label: '대화하기' },
+    { id: 'e5', source: 'home', target: 'accuracy', type: 'navigate', label: '확인하기' },
+    { id: 'e6', source: 'home', target: 'feed', type: 'navigate', label: 'SNS' },
+    { id: 'e7', source: 'home', target: 'messages', type: 'navigate', label: '채팅' },
+    { id: 'e8', source: 'home', target: 'settings', type: 'navigate', label: '설정' },
+    { id: 'e9', source: 'home', target: 'admin', type: 'navigate', label: '관리 (admin)' },
+    { id: 'e10', source: 'home', target: 'market', type: 'navigate', label: '마켓' },
 
     // Data flow
-    { id: 'e11', source: 'chat', target: 'my', type: 'data', label: 'DataNode 생성' },
-    { id: 'e12', source: 'my', target: 'graph_view', type: 'data', label: '노드 렌더링' },
-    { id: 'e13', source: 'my', target: 'data_views', type: 'data', label: '뷰 렌더링' },
+    { id: 'e11', source: 'orb', target: 'home', type: 'data', label: 'DataNode 생성' },
+    { id: 'e12', source: 'home', target: 'graph_view', type: 'data', label: '노드 렌더링' },
+    { id: 'e13', source: 'home', target: 'data_views', type: 'data', label: '뷰 렌더링' },
 
     // Hover/modal
-    { id: 'e14', source: 'my', target: 'view_picker', type: 'hover', label: '뷰 변경' },
+    { id: 'e14', source: 'home', target: 'view_picker', type: 'hover', label: '뷰 변경' },
     { id: 'e15', source: 'graph_view', target: 'node_detail', type: 'hover', label: '노드 클릭' },
     { id: 'e16', source: 'data_views', target: 'node_detail', type: 'hover', label: '항목 클릭' },
   ],
