@@ -11,9 +11,24 @@ import { VIEW_REGISTRY, VIEW_LABELS } from '@/components/views/registry';
 export default function OrbPage() {
   const { messages, requestedViews, clearRequestedViews, persistGuest, restoreGuest } = useChatStore();
 
-  // 마운트 시 이전 대화 복원
+  // 마운트 시 DB에서 대화 복원 (실패 시 localStorage fallback)
   useEffect(() => {
-    restoreGuest();
+    fetch('/api/chat/history')
+      .then(r => r.json())
+      .then(({ messages: dbMsgs }: { messages: Array<{ id: string; role: string; raw: string; created_at: string }> }) => {
+        if (dbMsgs && dbMsgs.length > 0) {
+          useChatStore.getState().reset();
+          dbMsgs.forEach(m => useChatStore.getState().addMessage({
+            id: m.id,
+            role: m.role as 'user' | 'assistant',
+            content: m.raw,
+            createdAt: new Date(m.created_at),
+          }));
+        } else {
+          restoreGuest();
+        }
+      })
+      .catch(() => restoreGuest());
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
