@@ -137,7 +137,7 @@ function MessageBubble({
   message: ChatMessage;
   onNodeSelect?: (payload: NodeSelectPayload) => void;
   onSendMessage?: (text: string, linkedNodeId?: string) => void;
-  pendingViewOptions?: ReturnType<typeof useChatStore>['pendingViewOptions'];
+  pendingViewOptions?: { options: string[]; filter?: Record<string, any>; cards?: Array<{ front: string; back: string }>; intent?: string; nodeId?: string } | null;
 }) {
   const isUser = message.role === 'user';
   const [hovered, setHovered] = useState(false);
