@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useCallback, useRef, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
+import { YoutubeLogo } from '@phosphor-icons/react';
 
 interface Props {
   onUniverse: () => void;
@@ -9,6 +11,7 @@ interface Props {
 
 const BASE_ITEMS = [
   { id: 'universe', label: '유니버스', size: 52, icon: null },
+  { id: 'youtube', label: 'YouTube', size: 44, icon: <YoutubeLogo size={20} weight="fill" /> },
 ];
 
 const BASE_SIZE = 44;
@@ -27,6 +30,7 @@ export function DockBar({ onUniverse, universeActive }: Props) {
   const [mouseIndex, setMouseIndex] = useState(-1);
   const dockRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number | null>(null);
+  const router = useRouter();
 
   const ITEMS = useMemo(() => [...BASE_ITEMS], []);
 
@@ -45,7 +49,8 @@ export function DockBar({ onUniverse, universeActive }: Props) {
 
   const handleClick = useCallback((id: string) => {
     if (id === 'universe') onUniverse();
-  }, [onUniverse]);
+    if (id === 'youtube') router.push('/youtube');
+  }, [onUniverse, router]);
 
   return (
     <div

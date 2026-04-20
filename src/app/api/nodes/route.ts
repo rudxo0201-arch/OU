@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
 
     let query = supabase
       .from('data_nodes')
-      .select('id, title, domain, domain_data, created_at, updated_at, importance')
+      .select('id, title, domain, domain_data, raw, created_at, updated_at, importance')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
       .limit(limit);

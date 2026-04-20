@@ -48,7 +48,7 @@ function clampToGrid(widgets: WidgetInstance[], cols: number = GRID_COLS, rows: 
 }
 
 const DEFAULT_PAGES: WidgetPage[] = [
-  { id: 'main', name: '메인', widgets: DEFAULT_LAYOUT },
+  { id: 'main', name: '안녕하세요. OU에 오신 것을 환영합니다', widgets: DEFAULT_LAYOUT },
   { id: 'page2', name: '페이지 2', widgets: [] },
   { id: 'page3', name: '페이지 3', widgets: [] },
 ];
@@ -78,14 +78,12 @@ export const useWidgetStore = create<WidgetStore>()(
       },
 
       initAdminLayout: () => set((s) => {
-        const alreadySet = s.pages[0]?.widgets.some(w => w.type === 'view-dictionary');
+        const alreadySet = s.pages[0]?.widgets.some(w => w.type === 'ou-view');
         if (alreadySet) return s;
         const pages = [...s.pages];
-        // page 1: 한자사전
-        pages[0] = { ...pages[0], name: '사전', widgets: clampToGrid(ADMIN_LAYOUT, s.gridCols, s.gridRows) };
-        // page 2: 본초학
+        pages[0] = { ...pages[0], widgets: clampToGrid(ADMIN_LAYOUT, s.gridCols, s.gridRows) };
         if (pages[1]) {
-          pages[1] = { ...pages[1], name: '본초', widgets: clampToGrid(ADMIN_PAGE2_LAYOUT, s.gridCols, s.gridRows) };
+          pages[1] = { ...pages[1], widgets: clampToGrid(ADMIN_PAGE2_LAYOUT, s.gridCols, s.gridRows) };
         }
         return { pages, currentPageIndex: 0 };
       }),

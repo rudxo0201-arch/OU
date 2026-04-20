@@ -1,10 +1,13 @@
 'use client';
 
 import { useState } from 'react';
+import dynamic from 'next/dynamic';
 import { CaretLeft, CaretRight } from '@phosphor-icons/react';
 import dayjs from 'dayjs';
 import 'dayjs/locale/ko';
 import type { ViewProps } from './registry';
+
+const MapView = dynamic(() => import('./MapView').then(m => m.MapView), { ssr: false });
 
 dayjs.locale('ko');
 
@@ -227,6 +230,28 @@ export function CalendarView({ nodes, inline }: ViewProps & { inline?: boolean }
           );
         })}
       </div>
+
+      {/* 이번 달 location 있는 일정 → 미니 지도 */}
+      {(() => {
+        const monthEvents = events.filter(e =>
+          e.date.format('YYYY-MM') === currentMonth.format('YYYY-MM') && e.location
+        );
+        if (monthEvents.length === 0) return null;
+        const mapNodes = monthEvents.map(e => ({
+          id: e.id,
+          domain: 'schedule',
+          domain_data: { title: e.title, location: e.location, date: e.date.format('YYYY-MM-DD') },
+          raw: e.title,
+        }));
+        return (
+          <div style={{ marginTop: 4 }}>
+            <div style={{ fontSize: 11, color: 'var(--ou-text-muted)', marginBottom: 6 }}>
+              이번 달 일정 위치
+            </div>
+            <MapView nodes={mapNodes} inline />
+          </div>
+        );
+      })()}
     </div>
   );
 }

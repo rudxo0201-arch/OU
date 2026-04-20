@@ -55,8 +55,18 @@ interface ChatStore {
   showUpgradeModal: boolean;
   /** 랜딩에서 입력 후 /chat으로 전달할 메시지 */
   pendingMessage: string | null;
-  /** Orb가 호출한 뷰 목록 (우측 패널, 호출 시 누적) */
+  /** View 패널에 렌더링된 뷰 목록 (A/B 모두 누적) */
   requestedViews: Array<{ viewType: string; filter?: Record<string, any>; cards?: Array<{ front: string; back: string }> }>;
+  /** LLM이 추천한 뷰 선택지 (회원이 선택 전 상태) */
+  pendingViewOptions: {
+    options: string[];
+    filter?: Record<string, any>;
+    cards?: Array<{ front: string; back: string }>;
+    intent?: string;
+    nodeId?: string;
+  } | null;
+  /** 마지막 메시지의 intent (C → 뷰 전환 버튼 표시 조건) */
+  lastIntent: string | null;
   /** 마지막으로 생성된 노드 ID (suggestion 답변 연결용) */
   lastCreatedNodeId: string | null;
   addMessage: (msg: ChatMessage) => void;
@@ -67,6 +77,9 @@ interface ChatStore {
   removeMessage: (id: string) => void;
   addRequestedView: (view: { viewType: string; filter?: Record<string, any>; cards?: Array<{ front: string; back: string }> }) => void;
   clearRequestedViews: () => void;
+  setPendingViewOptions: (opts: ChatStore['pendingViewOptions']) => void;
+  clearPendingViewOptions: () => void;
+  setLastIntent: (intent: string | null) => void;
   setLastCreatedNodeId: (id: string | null) => void;
   reset: () => void;
   /** 게스트 메시지를 localStorage에 백업 */
@@ -84,6 +97,8 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   showUpgradeModal: false,
   pendingMessage: null,
   requestedViews: [],
+  pendingViewOptions: null,
+  lastIntent: null,
   lastCreatedNodeId: null,
   setStreaming: (v) => set({ isStreaming: v }),
   addMessage: msg => set(s => ({
@@ -100,8 +115,11 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   })),
   addRequestedView: view => set(s => ({ requestedViews: [...s.requestedViews, view] })),
   clearRequestedViews: () => set({ requestedViews: [] }),
+  setPendingViewOptions: opts => set({ pendingViewOptions: opts }),
+  clearPendingViewOptions: () => set({ pendingViewOptions: null }),
+  setLastIntent: intent => set({ lastIntent: intent }),
   setLastCreatedNodeId: id => set({ lastCreatedNodeId: id }),
-  reset: () => set({ messages: [], turnCount: 0, pendingMessage: null, requestedViews: [], lastCreatedNodeId: null }),
+  reset: () => set({ messages: [], turnCount: 0, pendingMessage: null, requestedViews: [], pendingViewOptions: null, lastIntent: null, lastCreatedNodeId: null }),
 
   persistGuest: () => {
     try {

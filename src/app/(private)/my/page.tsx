@@ -38,6 +38,7 @@ function MyPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const isReplay = searchParams.get('tutorial') === 'replay';
+  const inviteToken = searchParams.get('invite');
   const [mode, setMode] = useState<Mode>('dashboard');
   const [orbExpanded, setOrbExpanded] = useState(false);
   const hasOuWidget = useWidgetStore(s => (s.pages[s.currentPageIndex]?.widgets ?? []).some(w => w.type === 'ou-view'));
@@ -84,12 +85,58 @@ function MyPage() {
             } else {
               startTutorial();
               setWidgets(TUTORIAL_INITIAL_LAYOUT);
+              // 베타 가입 보너스 1,000 UNI
+              fetch('/api/uni', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ type: 'signup_bonus', memo: '베타 가입 보너스' }),
+              }).catch(() => {});
             }
           });
       });
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isReplay]);
+
+  // 초대 토큰 처리: 가입 직후 A가 공유한 팩트 정보를 B의 프로필에 자동 등록 + A에게 유니 보상
+  useEffect(() => {
+    if (!inviteToken || !user) return;
+    import('@/lib/supabase/client').then(({ createClient }) => {
+      const supabase = createClient();
+      supabase
+        .from('profile_shares')
+        .select('id, shared_fields, sharer_id, used_at')
+        .eq('token', inviteToken)
+        .gt('expires_at', new Date().toISOString())
+        .is('used_at', null)
+        .single()
+        .then(async ({ data: share }) => {
+          if (!share) return;
+          // B의 profiles에 공유된 팩트 필드 반영
+          const fields = share.shared_fields as Record<string, string>;
+          const profileUpdate: Record<string, string> = {};
+          if (fields.name) profileUpdate.display_name = fields.name;
+          if (Object.keys(profileUpdate).length > 0) {
+            await supabase.from('profiles').update(profileUpdate).eq('id', user.id);
+          }
+          // 토큰 사용 처리
+          await supabase
+            .from('profile_shares')
+            .update({ used_by: user.id, used_at: new Date().toISOString() })
+            .eq('id', share.id);
+          // A(sharer)에게 초대 성공 보상 300 UNI (서버사이드 API 호출)
+          if (share.sharer_id) {
+            fetch('/api/profile-card/invite-reward', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ sharerId: share.sharer_id, shareId: share.id }),
+            }).catch(() => {});
+          }
+        });
+    });
+    router.replace('/my');
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inviteToken, user]);
 
   // 편집 완료 후 Orb 자동 확장 (tutorial edit-mode → active)
   useEffect(() => {
@@ -244,19 +291,19 @@ function MyPage() {
         )}
       </div>
 
-      {/* Tutorial Step 0 말풍선 */}
+      {/* Tutorial Step 0 말풍선 — Orb 입력창 바로 아래 */}
       {tutorialPhase === 'active' && tutorialStepIndex === 0 && !orbExpanded && (
         <div style={{
           position: 'absolute',
           top: '50%',
           left: '50%',
-          transform: 'translate(-50%, -180px)',
+          transform: 'translate(-50%, 40px)',
           zIndex: 20,
           width: 280,
         }}>
           <SpeechBubble
             message={TUTORIAL_STEPS[0].guideMessage}
-            tail="bottom"
+            tail="top"
             onSkip={skipAllTutorial}
           />
         </div>
@@ -313,6 +360,43 @@ function MyPage() {
   );
 }
 
+function UniBalance() {
+  const [balance, setBalance] = useState<number | null>(null);
+
+  useEffect(() => {
+    fetch('/api/uni')
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d) setBalance(d.balance); })
+      .catch(() => {});
+
+    const handler = () => {
+      fetch('/api/uni')
+        .then(r => r.ok ? r.json() : null)
+        .then(d => { if (d) setBalance(d.balance); })
+        .catch(() => {});
+    };
+    window.addEventListener('uni-updated', handler);
+    return () => window.removeEventListener('uni-updated', handler);
+  }, []);
+
+  if (balance === null) return null;
+
+  return (
+    <div style={{
+      display: 'flex', alignItems: 'center', gap: 4,
+      fontSize: 12, color: 'var(--ou-text-secondary)',
+      padding: '3px 8px',
+      background: 'var(--ou-surface)',
+      borderRadius: 99,
+      boxShadow: 'var(--ou-neu-raised-sm)',
+    }}>
+      <span style={{ fontSize: 11, opacity: 0.7 }}>✦</span>
+      <span>{balance.toLocaleString()}</span>
+      <span style={{ fontSize: 10, color: 'var(--ou-text-muted)' }}>UNI</span>
+    </div>
+  );
+}
+
 function MenuBar({ showLogo, email, onSettings, onLogout }: {
   showLogo: boolean; email?: string; onSettings: () => void; onLogout: () => void;
 }) {
@@ -326,6 +410,7 @@ function MenuBar({ showLogo, email, onSettings, onLogout }: {
         <img src="/logo-ou.svg" alt="OU" style={{ height: 20, opacity: 0.6 }} />
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <UniBalance />
         <NeuButton variant="ghost" size="sm" onClick={onSettings} style={{ padding: '4px 8px' }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
             <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" strokeWidth="1.5" />

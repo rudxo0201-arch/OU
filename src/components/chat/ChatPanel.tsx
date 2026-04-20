@@ -6,6 +6,7 @@ import { ChatInput, type ChatInputHandle } from './ChatInput';
 import { NeuCard, NeuButton, NeuBadge, NeuModal } from '@/components/ds';
 import { AddToHomeButton } from './AddToHomeButton';
 import { stripLLMMeta } from '@/lib/utils/stripLLMMeta';
+import { ViewOptionsChips } from './OrbFullscreen';
 
 export interface NodeSelectPayload {
   nodeId: string;
@@ -69,8 +70,11 @@ export function ChatPanel({ onNodeSelect, autoSendOnOpen }: ChatPanelProps) {
         ))}
       </div>
 
-      <div style={{ padding: '12px 20px 20px' }}>
-        <ChatInput ref={chatInputRef} initialMessage={pendingMsg} onSent={() => setPendingMsg(null)} />
+      <div style={{ padding: '0 20px 20px' }}>
+        <ViewOptionsChips />
+        <div style={{ paddingTop: 12 }}>
+          <ChatInput ref={chatInputRef} initialMessage={pendingMsg} onSent={() => setPendingMsg(null)} />
+        </div>
       </div>
     </div>
   );
@@ -403,13 +407,23 @@ export function InlineView({ domain, data, content }: { domain: string; data?: R
   }
 
   if (domain === 'relation') {
-    const person = (data?.person || data?.name || '') as string;
-    const phone = (data?.phone || data?.contact || '') as string;
+    const name = (data?.name || data?.person || '') as string;
+    const relationship = (data?.relationship || '') as string;
+    const type = (data?.type || '') as string;
+    const contact = (data?.contact || data?.phone || '') as string;
+    const birthday = (data?.birthday || '') as string;
+    const mbti = (data?.mbti || '') as string;
+    const job = (data?.job || '') as string;
+    const likes = (data?.likes || '') as string;
+    const typeLabel: Record<string, string> = { family: '가족', friend: '친구', work: '직장', school: '학교', romantic: '연인', other: '지인' };
+    const meta = [relationship || typeLabel[type] || '', birthday ? `🎂 ${birthday}` : '', mbti, job].filter(Boolean).join(' · ');
     return (
       <NeuCard variant="pressed" size="sm" style={{ marginTop: 12, animation: 'ou-fade-in 0.4s ease' }}>
         <div style={{ fontSize: 10, color: 'var(--ou-text-muted)', letterSpacing: 1, marginBottom: 10 }}>PERSON</div>
-        {person && <div style={{ fontSize: 15, fontWeight: 500, color: 'var(--ou-text-strong)' }}>{person}</div>}
-        {phone && <div style={{ fontSize: 12, color: 'var(--ou-text-secondary)', marginTop: 4 }}>{phone}</div>}
+        {name && <div style={{ fontSize: 15, fontWeight: 500, color: 'var(--ou-text-strong)' }}>{name}</div>}
+        {meta && <div style={{ fontSize: 12, color: 'var(--ou-text-secondary)', marginTop: 4 }}>{meta}</div>}
+        {contact && <div style={{ fontSize: 12, color: 'var(--ou-text-muted)', marginTop: 2 }}>{contact}</div>}
+        {likes && <div style={{ fontSize: 11, color: 'var(--ou-text-muted)', marginTop: 6 }}>좋아하는 것: {likes}</div>}
       </NeuCard>
     );
   }

@@ -43,6 +43,12 @@ export const VIEW_REGISTRY: Record<string, ComponentType<ViewProps>> = {
   curriculum: dynamic(() => import('./CurriculumView').then(m => m.CurriculumView), { ssr: false }),
   lecture:    dynamic(() => import('./LectureView').then(m => m.LectureView), { ssr: false }),
   scrap:      dynamic(() => import('./ScrapView').then(m => m.ScrapView), { ssr: false }),
+
+  // ── Wave 5: 미디어 ──
+  youtube:    dynamic(() => import('./YoutubeView').then(m => m.YoutubeView), { ssr: false }),
+
+  // ── Wave 6: 위치 ──
+  map:        dynamic(() => import('./MapView').then(m => m.MapView), { ssr: false }),
 };
 
 export const VIEW_META: Record<string, ViewMeta> = {
@@ -62,6 +68,8 @@ export const VIEW_META: Record<string, ViewMeta> = {
   lecture:    { previewOnClick: false },
   boncho:     { previewOnClick: false },
   scrap:      { previewOnClick: true },
+  youtube:    { previewOnClick: false },
+  map:        { previewOnClick: false },
 };
 
 /** 도메인 → 기본 뷰 매핑 */
@@ -75,6 +83,7 @@ export const DOMAIN_VIEW_MAP: Record<string, string> = {
   idea: 'idea',
   media: 'scrap',
   education: 'curriculum',
+  location: 'map',
 };
 
 /** 뷰 라벨 (한국어) */
@@ -95,4 +104,6 @@ export const VIEW_LABELS: Record<string, string> = {
   lecture: '강의',
   boncho: '본초학',
   scrap: '스크랩',
+  youtube: 'YouTube',
+  map: '지도',
 };

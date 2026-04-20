@@ -42,6 +42,7 @@ export function OuViewWidget() {
       {/* Orb 입력 — pressed (안쪽으로 들어간 입력창) */}
       <div style={{
         width: '100%',
+        maxWidth: 560,
         background: 'var(--ou-bg)',
         borderRadius: 'var(--ou-radius-lg)',
         boxShadow: 'var(--ou-neu-pressed-md)',

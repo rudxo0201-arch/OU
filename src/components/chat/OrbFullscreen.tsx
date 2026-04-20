@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useChatStore, type ChatMessage } from '@/stores/chatStore';
 import { useTutorialStore } from '@/stores/tutorialStore';
 import { TUTORIAL_STEPS } from '@/data/tutorial';
@@ -167,11 +167,32 @@ export function OrbFullscreen({ open, onClose }: Props) {
           {currentGuideMessage && (
             <div style={{
               padding: '10px 16px 0',
-              fontSize: 13,
-              color: 'var(--ou-text-secondary)',
               flexShrink: 0,
             }}>
-              {currentGuideMessage}
+              <div style={{
+                padding: '10px 16px',
+                borderRadius: 12,
+                background: 'var(--ou-accent, #e8976b)',
+                color: 'rgba(255,255,255,0.9)',
+                fontSize: 13,
+                lineHeight: 1.6,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: 12,
+              }}>
+                <span>{currentGuideMessage}</span>
+                <button
+                  onClick={skipAllTutorial}
+                  style={{
+                    fontSize: 11, color: 'rgba(255,255,255,0.4)',
+                    background: 'none', border: 'none', cursor: 'pointer',
+                    whiteSpace: 'nowrap', flexShrink: 0,
+                  }}
+                >
+                  건너뛰기
+                </button>
+              </div>
             </div>
           )}
 
@@ -189,8 +210,8 @@ export function OrbFullscreen({ open, onClose }: Props) {
           )}
         </div>
 
-        {/* 우: 호출 뷰 */}
-        <RequestedViewPanel />
+        {/* 우: View 패널 (A/B 뷰 통합) */}
+        <ViewPanel />
       </div>
     </div>
   );
@@ -271,10 +292,48 @@ function CreatedViewCard({ message }: { message: ChatMessage }) {
   return null;
 }
 
-// ── 호출된 뷰 패널 — 데이터 조회 요청 시에만 쌓임 ──
-function RequestedViewPanel() {
+// viewType → domain 매핑
+const VIEW_DOMAIN_MAP: Record<string, string> = {
+  calendar: 'schedule',
+  todo: 'task',
+  chart: 'finance',
+  heatmap: 'habit',
+  journal: 'emotion',
+  timeline: '',
+  table: 'knowledge',
+  idea: 'idea',
+};
+
+// ── View 패널 — A/B 뷰 통합 (회원이 선택한 뷰 쌓임) ──
+function ViewPanel() {
   const { requestedViews, clearRequestedViews } = useChatStore();
+  const [nodesByView, setNodesByView] = useState<Record<number, any[]>>({});
   const hasViews = requestedViews.length > 0;
+
+  useEffect(() => {
+    requestedViews.forEach((rv, idx) => {
+      // flashcard이거나 이미 fetch한 경우 스킵
+      if (rv.cards || nodesByView[idx] !== undefined) return;
+
+      const domain = VIEW_DOMAIN_MAP[rv.viewType];
+      if (domain === undefined) return;
+
+      const params = new URLSearchParams();
+      if (domain) params.set('domain', domain);
+      params.set('limit', '200');
+      // B intent filter 적용
+      if (rv.filter) {
+        if (rv.filter.days) params.set('days', String(rv.filter.days));
+        if (rv.filter.search) params.set('search', String(rv.filter.search));
+      }
+
+      fetch(`/api/nodes?${params}`)
+        .then(r => r.json())
+        .then(data => setNodesByView(prev => ({ ...prev, [idx]: data.nodes || [] })))
+        .catch(() => setNodesByView(prev => ({ ...prev, [idx]: [] })));
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [requestedViews]);
 
   return (
     <NeuCard
@@ -294,7 +353,7 @@ function RequestedViewPanel() {
         }}
       >
         <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: 2, color: 'var(--ou-text-muted)', textTransform: 'uppercase' }}>
-          호출된 뷰
+          View
         </span>
         {hasViews && (
           <NeuButton variant="ghost" size="sm" onClick={clearRequestedViews} style={{ padding: '3px 6px', minWidth: 0, fontSize: 11 }}>
@@ -310,25 +369,23 @@ function RequestedViewPanel() {
             const ViewComponent = VIEW_REGISTRY[rv.viewType];
             const viewLabel = VIEW_LABELS[rv.viewType] || rv.viewType;
             if (!ViewComponent) return null;
+
+            const nodes = rv.cards
+              ? rv.cards.map((c, i) => ({
+                  id: `card-${i}`,
+                  domain: 'knowledge',
+                  raw: c.front,
+                  domain_data: { question: c.front, answer: c.back, term: c.front, definition: c.back },
+                  triples: [{ subject: c.front, predicate: 'is_a', object: c.back }],
+                }))
+              : (nodesByView[idx] || []);
+
             return (
               <div key={idx}>
                 <div style={{ fontSize: 11, color: 'var(--ou-text-muted)', letterSpacing: 1, marginBottom: 6, textTransform: 'uppercase' }}>
                   {viewLabel}
                 </div>
-                <ViewComponent
-                  nodes={
-                    rv.cards
-                      ? rv.cards.map((c, i) => ({
-                          id: `card-${i}`,
-                          domain: 'knowledge',
-                          raw: c.front,
-                          domain_data: { question: c.front, answer: c.back, term: c.front, definition: c.back },
-                          triples: [{ subject: c.front, predicate: 'is_a', object: c.back }],
-                        }))
-                      : []
-                  }
-                  filters={rv.filter}
-                />
+                <ViewComponent nodes={nodes} filters={rv.filter} />
               </div>
             );
           })}
@@ -336,10 +393,112 @@ function RequestedViewPanel() {
       ) : (
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
           <span style={{ fontSize: 15, color: 'var(--ou-text-disabled)', textAlign: 'center', lineHeight: 1.8 }}>
-            &ldquo;나 어제 뭐했지?&rdquo;<br />같이 요청하면 여기에 표시돼요
+            데이터를 입력하거나<br />조회하면 여기에 표시돼요
           </span>
         </div>
       )}
     </NeuCard>
+  );
+}
+
+// 뷰타입 → 한국어 레이블 (칩 표시용)
+const VIEW_CHIP_LABELS: Record<string, string> = {
+  calendar: '캘린더',
+  todo: '할 일',
+  chart: '차트',
+  timeline: '타임라인',
+  table: '표',
+  heatmap: '히트맵',
+  journal: '일기',
+  flashcard: '플래시카드',
+  boncho: '본초',
+  dictionary: '사전',
+  idea: '아이디어',
+};
+
+// ── 뷰 선택지 칩 — OU 응답 후 채팅 하단에 표시 ──
+export function ViewOptionsChips() {
+  const { pendingViewOptions, clearPendingViewOptions, addRequestedView } = useChatStore();
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+
+  // pendingViewOptions가 바뀌면 선택 초기화
+  useEffect(() => {
+    setSelected(new Set());
+  }, [pendingViewOptions]);
+
+  const toggle = useCallback((vt: string) => {
+    setSelected(prev => {
+      const next = new Set(prev);
+      if (next.has(vt)) next.delete(vt);
+      else next.add(vt);
+      return next;
+    });
+  }, []);
+
+  const confirm = useCallback(() => {
+    if (!pendingViewOptions) return;
+    selected.forEach(vt => {
+      addRequestedView({
+        viewType: vt,
+        filter: pendingViewOptions.filter,
+        cards: vt === 'flashcard' ? pendingViewOptions.cards : undefined,
+      });
+    });
+    clearPendingViewOptions();
+  }, [pendingViewOptions, selected, addRequestedView, clearPendingViewOptions]);
+
+  if (!pendingViewOptions) return null;
+
+  return (
+    <div
+      style={{
+        margin: '8px 0 4px',
+        padding: '12px 14px',
+        borderRadius: 'var(--ou-radius-md)',
+        background: 'var(--ou-surface)',
+        boxShadow: 'var(--ou-neu-raised-sm)',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 8,
+      }}
+    >
+      <span style={{ fontSize: 11, color: 'var(--ou-text-muted)', letterSpacing: 1, textTransform: 'uppercase' }}>
+        뷰 선택
+      </span>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        {pendingViewOptions.options.map(vt => {
+          const isOn = selected.has(vt);
+          return (
+            <button
+              key={vt}
+              onClick={() => toggle(vt)}
+              style={{
+                padding: '8px 12px',
+                borderRadius: 'var(--ou-radius-sm)',
+                border: isOn ? '1.5px solid var(--ou-text-heading)' : '1px solid var(--ou-border-subtle)',
+                background: isOn ? 'var(--ou-surface-raised)' : 'transparent',
+                color: isOn ? 'var(--ou-text-heading)' : 'var(--ou-text-muted)',
+                fontSize: 13,
+                cursor: 'pointer',
+                textAlign: 'left',
+                boxShadow: isOn ? 'var(--ou-neu-raised-xs)' : 'none',
+                transition: 'all 0.15s',
+              }}
+            >
+              {VIEW_CHIP_LABELS[vt] || vt}
+            </button>
+          );
+        })}
+      </div>
+      <NeuButton
+        variant="accent"
+        size="sm"
+        onClick={confirm}
+        disabled={selected.size === 0}
+        style={{ marginTop: 4 }}
+      >
+        확인
+      </NeuButton>
+    </div>
   );
 }

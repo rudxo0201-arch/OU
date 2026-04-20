@@ -288,15 +288,29 @@ export async function POST(req: NextRequest) {
                 setCachedResponse(cacheKey, fullText, cacheTtl).catch(() => {});
               }
 
-              // LLM 메타 파싱: 원문에서 도메인 + suggestions + segments 추출
+              // LLM 메타 파싱: 도메인 + intent + viewOptions + segments 추출
               const metaMatch = fullText.match(/```json:meta\s*\n?([\s\S]*?)```/);
               let domainHint: string | undefined;
               let llmSuggestions: string[] | undefined;
-              let segments: Array<{ text: string; domain: string }> | undefined;
+              let intent: string | undefined;
+              let viewOptions: string[] | undefined;
+              let viewFilter: Record<string, unknown> | undefined;
+              let viewCards: Array<{ front: string; back: string }> | undefined;
+              let segments: Array<{ text: string; domain: string; intent?: string; viewOptions?: string[]; filter?: Record<string, unknown>; cards?: Array<{ front: string; back: string }> }> | undefined;
               if (metaMatch) {
                 try {
                   const meta = JSON.parse(metaMatch[1].trim());
                   domainHint = meta.domain;
+                  intent = meta.intent;
+                  if (Array.isArray(meta.viewOptions) && meta.viewOptions.length > 0) {
+                    viewOptions = meta.viewOptions;
+                  }
+                  if (meta.filter && typeof meta.filter === 'object') {
+                    viewFilter = meta.filter;
+                  }
+                  if (Array.isArray(meta.cards) && meta.cards.length > 0) {
+                    viewCards = meta.cards;
+                  }
                   if (Array.isArray(meta.suggestions) && meta.suggestions.length > 0) {
                     llmSuggestions = meta.suggestions.slice(0, 3);
                   }
@@ -305,6 +319,16 @@ export async function POST(req: NextRequest) {
                       (s: any) => typeof s.text === 'string' && s.text.trim() && typeof s.domain === 'string'
                     );
                     if (segments && segments.length < 2) segments = undefined;
+                    // 혼합 세그먼트: viewOptions가 없으면 첫 번째 A/B 세그먼트에서 추출
+                    if (segments && !viewOptions) {
+                      const firstViewSeg = segments.find(s => Array.isArray(s.viewOptions) && s.viewOptions.length > 0);
+                      if (firstViewSeg) {
+                        viewOptions = firstViewSeg.viewOptions;
+                        viewFilter = firstViewSeg.filter;
+                        viewCards = firstViewSeg.cards;
+                        intent = intent || firstViewSeg.intent;
+                      }
+                    }
                   }
                 } catch { /* skip */ }
               }
@@ -344,8 +368,16 @@ export async function POST(req: NextRequest) {
                 saveError = true;
               }
 
+              // viewData: 뷰 선택지 (회원이 선택 후 View 패널에 렌더링)
+              const viewData = (viewOptions && viewOptions.length > 0) ? {
+                viewOptions,
+                filter: viewFilter,
+                cards: viewCards,
+                intent,
+              } : undefined;
+
               controller.enqueue(encoder.encode(
-                `data: ${JSON.stringify({ done: true, fullText: cleanText, provider, suggestions: llmSuggestions, ...savedData, ...(saveError ? { saveError: true } : {}) })}\n\n`
+                `data: ${JSON.stringify({ done: true, fullText: cleanText, provider, suggestions: llmSuggestions, viewData, ...savedData, ...(saveError ? { saveError: true } : {}) })}\n\n`
               ));
               controller.close();
             },

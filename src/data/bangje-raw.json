@@ -1073,7 +1073,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": "BJ-01-023",
-    "rationale": null
+    "rationale": "총백/담두시로 표사를 가볍게 발산하고, 갈근으로 진액을 끌어올리며, 맥문동/생지황으로 음기를 보충. 음허한 체질이 외감에 걸렸을 때 발한이 지나치지 않도록 자음해표(滋陰解表)."
   },
   {
     "id": "BJ-01-014",
@@ -1200,7 +1200,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "인삼으로 기를 보하면서 자소엽으로 표를 가볍게 열고, 반하/진피로 담습을 삭임. 기허한 사람이 외감에 걸려 기침·가래까지 동반할 때 익기해표(益氣解表) + 화담."
   },
   {
     "id": "BJ-01-016",
@@ -1315,7 +1315,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": "BJ-01-010",
-    "rationale": null
+    "rationale": "강활/독활 등으로 풍한습 표사를 물리치는 패독산에 인삼을 더해 원기를 보충. 기가 허해야 외사가 들어올 수 있다는 논리로, 인삼이 정기를 충전하여 사기를 몰아냄(扶正祛邪). 허인감모(虛人感冒)의 대표방."
   },
   {
     "id": "BJ-01-017",
@@ -1436,7 +1436,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "풍습열이 피부에 뭉친 가려움증에 형개/방풍/우방자/선퇴로 거풍지양하고, 창출/고삼으로 습을 말리며, 지황/당귀/호마인으로 혈을 길러 풍을 잠재움. 치풍선치혈 원리를 피부과에 적용한 방."
   },
   {
     "id": "BJ-01-018",
@@ -2532,7 +2532,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "곽향/자소엽으로 밖의 풍한을 흩고 후박/반하/대복피로 안의 습체를 삭여 표리를 동시 치료. (16장 곽향정기산과 동일 처방. 소양병과 내상이 겹친 경우 화해제로 분류)."
   },
   {
     "id": "BJ-03-004",
@@ -3677,7 +3677,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "5가지 강력한 청열해독 약재로만 구성되어, 불화로 같이 번지는 화독(火毒)을 신속히 끔. (21장 오미소독음과 동일 처방)."
   },
   {
     "id": "BJ-04-009",
@@ -3733,7 +3733,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "은화/현삼을 대량 투입해 열독을 끄고 당귀로 혈맥을 뚫어 사지 말단 괴사(탈저)를 막음. (21장 사묘용안탕과 동일 처방)."
   },
   {
     "id": "BJ-04-010",
@@ -4237,7 +4237,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "갈대줄기(위경)로 폐의 열과 고름을 소변으로 내리고, 의이인/동과인으로 청열배농하며, 도인으로 어혈을 삭여 폐의 농양(肺癰)을 치료. 단순하나 배농 효과가 탁월한 폐옹 대표방."
   },
   {
     "id": "BJ-04-017",
@@ -4413,7 +4413,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "생지황으로 심화를 식히고, 목통/죽엽으로 열을 소변으로 빼내며, 황금을 더해 청열력을 보강. 도적산(導赤散)의 소아용 변방으로 심열(心熱)에 의한 소변삽통과 구설창을 다스림."
   },
   {
     "id": "BJ-04-020",
@@ -6156,7 +6156,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "시호/황금으로 소양병을 화해하고, 대황/지실로 양명의 열결(熱結)을 공하하여 소양과 양명의 합병(합병증)을 표리 동시에 해결. 소시호탕에서 인삼/감초를 빼고 대황/지실/작약을 더한 공하(攻下) 버전."
   },
   {
     "id": "BJ-08-001",
@@ -7260,7 +7260,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "인삼/황기/백출로 기를 보하고 사물탕(당귀/작약/숙지황/천궁)으로 혈을 보충하며, 속단/사인으로 태아를 안정시킴(안태). 기혈양허로 유산 기미가 있을 때 태반이 태산처럼 반석처럼 굳건히 유지되게 하는 안태 대표방."
   },
   {
     "id": "BJ-08-015",
@@ -7423,17 +7423,19 @@
       "소아오지"
     ],
     "source": "소아약증직결",
-    "contraindications": null,
+    "contraindications": [
+      "비허설사"
+    ],
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "숙지황/산수유/산약(三補)으로 간신비를 보하고, 택사/목단피/복령(三瀉)으로 습/화/담을 빼내어 보하되 정체되지 않게 함."
   },
   {
     "id": "BJ-08-017",
     "name": "좌귀환",
     "hanja": "左歸丸",
-    "starred": false,
+    "starred": true,
     "categoryMajor": "8. 보익제",
     "categoryMinor": "8-4. 보음제",
     "categoryBangyak": null,
@@ -7508,11 +7510,13 @@
       "설광홍소태"
     ],
     "source": "경악전서",
-    "contraindications": null,
+    "contraindications": [
+      "비위허약"
+    ],
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "육미지황환에서 사(瀉)하는 약을 빼고 교질(膠質) 약재를 더해, 오직 순보(純補)로만 정수(精髓)를 채움."
   },
   {
     "id": "BJ-08-018",
@@ -7580,8 +7584,8 @@
     "contraindications": null,
     "modifications": null,
     "lesson": null,
-    "parentId": null,
-    "rationale": null
+    "parentId": "BJ-08-017",
+    "rationale": "좌귀환보다 약력이 완만하며, 허화(虛熱)가 아주 심하지 않은 진음 부족 증상에 가볍게 음을 보함."
   },
   {
     "id": "BJ-08-019",
@@ -7620,6 +7624,20 @@
         "herb_id": "2-1-2",
         "dosage": "12g",
         "role": "좌"
+      },
+      {
+        "herb_name": "저척수",
+        "herb_hanja": "猪脊髓",
+        "herb_id": null,
+        "dosage": null,
+        "role": "사"
+      },
+      {
+        "herb_name": "봉밀",
+        "herb_hanja": "蜂蜜",
+        "herb_id": null,
+        "dosage": null,
+        "role": "사"
       }
     ],
     "efficacy": [
@@ -7635,11 +7653,13 @@
       "설홍소태"
     ],
     "source": "단계심법",
-    "contraindications": null,
+    "contraindications": [
+      "비위허한"
+    ],
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "자음약(숙지, 구판)과 강화약(황백, 지모)을 동량 사용하여, 음허로 인한 강렬한 허화를 내리는 데 집중함."
   },
   {
     "id": "BJ-08-020",
@@ -7706,11 +7726,13 @@
       "설홍소진"
     ],
     "source": "유주의화",
-    "contraindications": null,
+    "contraindications": [
+      "실열울결"
+    ],
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "간신음을 자양하면서(자수함목) 천련자의 고한함으로 뭉친 간기를 소통시켜, 음허로 인한 통증을 치료함."
   },
   {
     "id": "BJ-08-021",
@@ -7810,7 +7832,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "백합/생지황/숙지황으로 폐신(肺腎)의 음을 보하여 허화를 끄고(금수이상생 金水相生), 패모/길경으로 담을 삭이며, 당귀/작약으로 혈을 길러 객혈을 다스림. (15장 백합고금탕과 동일 처방)."
   },
   {
     "id": "BJ-08-022",
@@ -7823,11 +7845,32 @@
     "tags": [],
     "composition": [
       {
-        "herb_name": "숙지황",
-        "herb_hanja": "熟地黃",
+        "herb_name": "부자",
+        "herb_hanja": "附子",
+        "herb_id": null,
+        "dosage": "3g",
+        "role": "군"
+      },
+      {
+        "herb_name": "계지",
+        "herb_hanja": "桂枝",
+        "herb_id": "01-1-2",
+        "dosage": "3g",
+        "role": "군"
+      },
+      {
+        "herb_name": "건지황",
+        "herb_hanja": "乾地黃",
         "herb_id": null,
         "dosage": "24g",
-        "role": "군"
+        "role": "신"
+      },
+      {
+        "herb_name": "산약",
+        "herb_hanja": "山藥",
+        "herb_id": null,
+        "dosage": "12g",
+        "role": "신"
       },
       {
         "herb_name": "산수유",
@@ -7837,11 +7880,11 @@
         "role": "신"
       },
       {
-        "herb_name": "산약",
-        "herb_hanja": "山藥",
+        "herb_name": "복령",
+        "herb_hanja": "茯苓",
         "herb_id": null,
-        "dosage": "12g",
-        "role": "신"
+        "dosage": "9g",
+        "role": "좌"
       },
       {
         "herb_name": "택사",
@@ -7856,52 +7899,35 @@
         "herb_id": null,
         "dosage": "9g",
         "role": "좌"
-      },
-      {
-        "herb_name": "복령",
-        "herb_hanja": "茯苓",
-        "herb_id": null,
-        "dosage": "9g",
-        "role": "좌"
-      },
-      {
-        "herb_name": "계지",
-        "herb_hanja": "桂枝",
-        "herb_id": "01-1-2",
-        "dosage": "3g",
-        "role": "좌"
-      },
-      {
-        "herb_name": "부자",
-        "herb_hanja": "附子",
-        "herb_id": null,
-        "dosage": "3g",
-        "role": "좌"
       }
     ],
     "efficacy": [
-      "온보신양"
+      "보신조양"
     ],
     "indications": [
       "신양부족",
-      "요슬산냉",
-      "소변불리혹반다",
+      "요통퇴연",
+      "하반신랭",
+      "소변불리",
+      "소변빈삭",
       "담음천해",
       "소갈",
       "각기"
     ],
     "source": "금궤요략",
-    "contraindications": null,
+    "contraindications": [
+      "음허화왕"
+    ],
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "육미지황환(자음)에 계지/부자(보양)를 아주 조금 배합하여, 음 가운데서 양을 끌어올리는 '음중구양'의 원리를 구현."
   },
   {
     "id": "BJ-08-023",
     "name": "우귀환",
     "hanja": "右歸丸",
-    "starred": false,
+    "starred": true,
     "categoryMajor": "8. 보익제",
     "categoryMinor": "8-5. 보양제",
     "categoryBangyak": null,
@@ -7992,11 +8018,13 @@
       "소변자유"
     ],
     "source": "경악전서",
-    "contraindications": null,
+    "contraindications": [
+      "비위허약"
+    ],
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "신기환에서 사(瀉)하는 약을 빼고 녹각교, 토사자 등 보양 약재를 대거 추가하여 명문(命門)의 화를 강보함."
   },
   {
     "id": "BJ-08-024",
@@ -8078,8 +8106,8 @@
     "contraindications": null,
     "modifications": null,
     "lesson": null,
-    "parentId": null,
-    "rationale": null
+    "parentId": "BJ-08-023",
+    "rationale": "우귀환보다 약력이 완만하며, 신양 부족 증상이 아주 위급하지 않을 때 양기를 서서히 보함."
   },
   {
     "id": "BJ-08-025",
@@ -8087,7 +8115,7 @@
     "hanja": "知柏地黃丸",
     "starred": false,
     "categoryMajor": "8. 보익제",
-    "categoryMinor": "8-5. 보양제",
+    "categoryMinor": "8-4. 보음제",
     "categoryBangyak": null,
     "tags": [],
     "composition": [
@@ -8162,8 +8190,8 @@
     "contraindications": null,
     "modifications": null,
     "lesson": null,
-    "parentId": null,
-    "rationale": null
+    "parentId": "BJ-08-016",
+    "rationale": "육미지황환에 지모와 황백을 더해, 신음 부족으로 인해 치솟는 허화(虛火)를 강하게 눌러 끔."
   },
   {
     "id": "BJ-08-026",
@@ -8235,15 +8263,15 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "선모/음양곽으로 신양(腎陽)을 보하고, 황백/지모로 신음을 기르며 허화를 끄고, 당귀로 혈을 보충. 신음신양을 동시에 조절하는 이선(二仙) — 갱년기(천계절단 天癸竭斷)에 음양이 불균형한 증상의 현대적 처방."
   },
   {
     "id": "BJ-08-027",
     "name": "귀록이선교",
     "hanja": "龜鹿二仙膠",
-    "starred": false,
+    "starred": true,
     "categoryMajor": "8. 보익제",
-    "categoryMinor": "8-5. 보양제",
+    "categoryMinor": "8-6. 음양쌍보제",
     "categoryBangyak": null,
     "tags": [],
     "composition": [
@@ -8277,22 +8305,23 @@
       }
     ],
     "efficacy": [
-      "자음전양",
-      "대보정혈"
+      "자음전정",
+      "익기장양"
     ],
     "indications": [
-      "진원허손",
-      "정혈쇠소",
-      "형소이위",
-      "양위유정",
-      "요슬산연"
+      "음양양허",
+      "신피핍력",
+      "요근산연",
+      "양위유정"
     ],
-    "source": "의편",
-    "contraindications": null,
+    "source": "섭생비포",
+    "contraindications": [
+      "비위허약"
+    ],
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "구판(음)과 녹각(양)이라는 강력한 동물성 약재를 써서 정수(精髓)를 채우고 기혈과 음양을 한꺼번에 보함."
   },
   {
     "id": "BJ-09-001",
@@ -8300,7 +8329,7 @@
     "hanja": "金鎖固精丸",
     "starred": false,
     "categoryMajor": "9. 고삽제",
-    "categoryMinor": "9-1. 삽정축뇨지대제",
+    "categoryMinor": "9-4. 삽정지유제",
     "categoryBangyak": null,
     "tags": [],
     "composition": [
@@ -8349,11 +8378,13 @@
       "신허요통"
     ],
     "source": "의방집해",
-    "contraindications": null,
+    "contraindications": [
+      "하초습열"
+    ],
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "사원질려로 신장을 보하고 연수/검실로 정(精)을 꽉 잡으며, 용골/목려로 수렴하여 정액이 새어나가는 것을 막음."
   },
   {
     "id": "BJ-09-002",
@@ -8361,7 +8392,7 @@
     "hanja": "桑螵蛸散",
     "starred": false,
     "categoryMajor": "9. 고삽제",
-    "categoryMinor": "9-1. 삽정축뇨지대제",
+    "categoryMinor": "9-4. 삽정지유제",
     "categoryBangyak": null,
     "tags": [],
     "composition": [
@@ -8436,7 +8467,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "상표초로 소변을 멎게 하고, 인삼/창포/원지 등으로 심(心)과 신(腎)의 소통을 도와 건망증과 소변 빈삭을 치료함."
   },
   {
     "id": "BJ-09-003",
@@ -8444,7 +8475,7 @@
     "hanja": "縮泉丸",
     "starred": false,
     "categoryMajor": "9. 고삽제",
-    "categoryMinor": "9-1. 삽정축뇨지대제",
+    "categoryMinor": "9-4. 삽정지유제",
     "categoryBangyak": null,
     "tags": [],
     "composition": [
@@ -8483,7 +8514,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "오약으로 신양을 따뜻하게 하고 방광 기화를 돕고, 익지인으로 신기(腎氣)를 수렴하여 소변을 조절하며, 산약으로 비신을 고삽. 신양허로 오줌을 자주 싸거나 야뇨증이 있을 때 온신축뇨(溫腎縮尿)."
   },
   {
     "id": "BJ-09-004",
@@ -8491,7 +8522,7 @@
     "hanja": "桃花湯",
     "starred": false,
     "categoryMajor": "9. 고삽제",
-    "categoryMinor": "9-2. 삽장고탈제",
+    "categoryMinor": "9-3. 삽장고탈제",
     "categoryBangyak": null,
     "tags": [],
     "composition": [
@@ -8530,7 +8561,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "적석지의 강한 수렴고삽력으로 허한 장(腸)을 봉하고, 건강으로 비위를 덥혀 장을 따뜻하게 하며, 갱미로 위기를 보충. 비신양허로 오래된 이질(久痢)·혈변을 온삽(溫澁)하여 멈춤."
   },
   {
     "id": "BJ-09-005",
@@ -8538,7 +8569,7 @@
     "hanja": "四神丸",
     "starred": true,
     "categoryMajor": "9. 고삽제",
-    "categoryMinor": "9-2. 삽장고탈제",
+    "categoryMinor": "9-3. 삽장고탈제",
     "categoryBangyak": null,
     "tags": [],
     "composition": [
@@ -8595,19 +8626,21 @@
       "복통"
     ],
     "source": "증치준승",
-    "contraindications": null,
+    "contraindications": [
+      "실열설사"
+    ],
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "보골지로 신양을 덥히고 육두구/오미자로 장을 수렴하며 오수유로 속을 데워, 새벽마다 배가 아파 설사하는 오경설(五更泄)을 다스림."
   },
   {
     "id": "BJ-09-006",
     "name": "진인양장탕",
     "hanja": "眞人養臟湯",
-    "starred": false,
+    "starred": true,
     "categoryMajor": "9. 고삽제",
-    "categoryMinor": "9-2. 삽장고탈제",
+    "categoryMinor": "9-3. 삽장고탈제",
     "categoryBangyak": null,
     "tags": [],
     "composition": [
@@ -8623,21 +8656,28 @@
         "herb_hanja": "肉豆蔻",
         "herb_id": null,
         "dosage": "4g",
-        "role": "군"
+        "role": "신"
+      },
+      {
+        "herb_name": "가자",
+        "herb_hanja": "訶子",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "신"
       },
       {
         "herb_name": "인삼",
         "herb_hanja": "人參",
         "herb_id": null,
         "dosage": "6g",
-        "role": "신"
+        "role": "좌"
       },
       {
         "herb_name": "백출",
         "herb_hanja": "白朮",
         "herb_id": null,
         "dosage": "6g",
-        "role": "신"
+        "role": "좌"
       },
       {
         "herb_name": "당귀",
@@ -8680,17 +8720,19 @@
       "온보비신"
     ],
     "indications": [
-      "구리불지",
+      "구사구리",
+      "비신허한",
       "탈항",
-      "복통",
-      "식욕부진"
+      "복통"
     ],
     "source": "화제국방",
-    "contraindications": null,
+    "contraindications": [
+      "적체이질"
+    ],
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "앵속각·가자로 설사를 강력히 막고(삽장), 인삼·백출로 비위를 보하며 육계·육두구로 속을 데워 만성 이질을 치료함."
   },
   {
     "id": "BJ-09-007",
@@ -8698,7 +8740,7 @@
     "hanja": "完帶湯",
     "starred": true,
     "categoryMajor": "9. 고삽제",
-    "categoryMinor": "9-3. 고붕지대제",
+    "categoryMinor": "9-5. 고붕지대제",
     "categoryBangyak": null,
     "tags": [],
     "composition": [
@@ -8781,11 +8823,13 @@
       "비허간울로 인한 백대하"
     ],
     "source": "부청주녀과",
-    "contraindications": null,
+    "contraindications": [
+      "습열대하"
+    ],
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "백출·산약으로 비위를 보해 습(濕)을 없애고, 시호·형개로 간기를 소통시켜 여성의 만성적인 백대하(白帶下)를 치료함."
   },
   {
     "id": "BJ-09-008",
@@ -8793,7 +8837,7 @@
     "hanja": "固衝湯",
     "starred": false,
     "categoryMajor": "9. 고삽제",
-    "categoryMinor": "9-3. 고붕지대제",
+    "categoryMinor": "9-5. 고붕지대제",
     "categoryBangyak": null,
     "tags": [],
     "composition": [
@@ -8881,7 +8925,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "백출·황기로 기를 보하고, 용골·목려·오배자 등의 강력한 수렴약과 지혈약을 배합하여 멈추지 않는 하혈(붕루)을 치료함."
   },
   {
     "id": "BJ-10-001",
@@ -8889,7 +8933,7 @@
     "hanja": "酸棗仁湯",
     "starred": true,
     "categoryMajor": "10. 안신제",
-    "categoryMinor": "10-1. 자양안신제",
+    "categoryMinor": "10-2. 자양안신제",
     "categoryBangyak": null,
     "tags": [],
     "composition": [
@@ -8934,17 +8978,16 @@
       "청열제번"
     ],
     "indications": [
-      "간혈부족 허번불면",
-      "심계",
-      "도한",
-      "현훈"
+      "간혈부족",
+      "허번불면",
+      "심계도한"
     ],
     "source": "금궤요략",
     "contraindications": null,
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "산조인으로 간혈을 기르고 심신을 수렴하며 지모로 허열을 끔. 천궁의 맵고 흩는 성질(辛散)을 반좌(反佐)로 써서 간기가 막히는 것을 방지함."
   },
   {
     "id": "BJ-10-002",
@@ -8952,7 +8995,7 @@
     "hanja": "天王補心丹",
     "starred": true,
     "categoryMajor": "10. 안신제",
-    "categoryMinor": "10-1. 자양안신제",
+    "categoryMinor": "10-2. 자양안신제",
     "categoryBangyak": null,
     "tags": [],
     "composition": [
@@ -9060,26 +9103,27 @@
       "보심안신"
     ],
     "indications": [
-      "심음부족 허번불면",
-      "심계",
-      "건망",
-      "몽유",
-      "구설생창"
+      "음허혈소",
+      "심계정충",
+      "허번불면",
+      "수족심열"
     ],
-    "source": "섭씨비방",
-    "contraindications": null,
+    "source": "섭생비포",
+    "contraindications": [
+      "비위허한"
+    ],
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "지황·천문·맥문으로 심신(心腎)의 음을 강하게 자양하고(자음강화), 당귀로 혈을 보하며, 길경을 사약으로 써 약 기운을 가슴(상부)에 머물게 함."
   },
   {
     "id": "BJ-10-003",
     "name": "주사안신환",
     "hanja": "朱砂安神丸",
-    "starred": false,
+    "starred": true,
     "categoryMajor": "10. 안신제",
-    "categoryMinor": "10-2. 중진안신제",
+    "categoryMinor": "10-1. 중진안신제",
     "categoryBangyak": null,
     "tags": [],
     "composition": [
@@ -9129,11 +9173,13 @@
       "정충"
     ],
     "source": "내외상변혹론",
-    "contraindications": null,
+    "contraindications": [
+      "장기복용 금기"
+    ],
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "무거운 주사로 붕 뜬 심신(心神)을 가라앉히고 황련으로 심화(心火)를 끄며, 당귀와 생지황으로 음혈을 길러 타오르는 불을 근본적으로 억제함."
   },
   {
     "id": "BJ-10-004",
@@ -9141,22 +9187,22 @@
     "hanja": "甘麥大棗湯",
     "starred": true,
     "categoryMajor": "10. 안신제",
-    "categoryMinor": "10-1. 자양안신제",
+    "categoryMinor": "10-2. 자양안신제",
     "categoryBangyak": null,
     "tags": [],
     "composition": [
+      {
+        "herb_name": "부소맥",
+        "herb_hanja": "浮小麥",
+        "herb_id": null,
+        "dosage": "30g",
+        "role": "군"
+      },
       {
         "herb_name": "감초",
         "herb_hanja": "甘草",
         "herb_id": null,
         "dosage": "9g",
-        "role": "군"
-      },
-      {
-        "herb_name": "소맥",
-        "herb_hanja": "小麥",
-        "herb_id": null,
-        "dosage": "15g",
         "role": "신"
       },
       {
@@ -9164,7 +9210,7 @@
         "herb_hanja": "大棗",
         "herb_id": null,
         "dosage": "10매",
-        "role": "좌"
+        "role": "사"
       }
     ],
     "efficacy": [
@@ -9173,7 +9219,6 @@
     ],
     "indications": [
       "장조",
-      "비슬불상",
       "정신황홀",
       "비애욕곡"
     ],
@@ -9182,15 +9227,15 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "심(心)의 기음이 부족하여 생긴 신경쇠약(장조증)에, 부소맥으로 심기를 기르고 감초와 대추의 단맛으로 뭉친 감정을 부드럽게 완화(緩急)함."
   },
   {
     "id": "BJ-10-005",
-    "name": "자석환",
+    "name": "자주환",
     "hanja": "磁朱丸",
-    "starred": false,
+    "starred": true,
     "categoryMajor": "10. 안신제",
-    "categoryMinor": "10-2. 중진안신제",
+    "categoryMinor": "10-1. 중진안신제",
     "categoryBangyak": null,
     "tags": [],
     "composition": [
@@ -9221,16 +9266,228 @@
       "잠양명목"
     ],
     "indications": [
-      "심신불교 심계불면",
+      "음허양항",
+      "심계불면",
       "이명",
-      "시력감퇴"
+      "시물혼화"
     ],
     "source": "비급천금요방",
-    "contraindications": null,
+    "contraindications": [
+      "장기복용 금기"
+    ],
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "자석으로 신수(腎水)를 불려 잠기게 하고 주사로 심화(心火)를 내리며(수승화강), 금석 약재가 위장을 상할까 우려하여 신곡을 대량 배합함."
+  },
+  {
+    "id": "BJ-10-006",
+    "name": "진주모환",
+    "hanja": "珍珠母丸",
+    "starred": false,
+    "categoryMajor": "10. 안신제",
+    "categoryMinor": "10-1. 중진안신제",
+    "categoryBangyak": null,
+    "tags": [],
+    "composition": [
+      {
+        "herb_name": "진주모",
+        "herb_hanja": "珍珠母",
+        "herb_id": null,
+        "dosage": "22.5g",
+        "role": "군"
+      },
+      {
+        "herb_name": "당귀",
+        "herb_hanja": "當歸",
+        "herb_id": null,
+        "dosage": "45g",
+        "role": "신"
+      },
+      {
+        "herb_name": "숙지황",
+        "herb_hanja": "熟地黃",
+        "herb_id": null,
+        "dosage": "45g",
+        "role": "신"
+      },
+      {
+        "herb_name": "인삼",
+        "herb_hanja": "人蔘",
+        "herb_id": null,
+        "dosage": "30g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "산조인",
+        "herb_hanja": "酸棗仁",
+        "herb_id": null,
+        "dosage": "30g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "백자인",
+        "herb_hanja": "柏子仁",
+        "herb_id": null,
+        "dosage": "30g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "서각",
+        "herb_hanja": "犀角",
+        "herb_id": null,
+        "dosage": "30g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "복신",
+        "herb_hanja": "茯神",
+        "herb_id": null,
+        "dosage": "30g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "침향",
+        "herb_hanja": "沈香",
+        "herb_id": null,
+        "dosage": "30g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "용치",
+        "herb_hanja": "龍齒",
+        "herb_id": null,
+        "dosage": "30g",
+        "role": "좌"
+      }
+    ],
+    "efficacy": [
+      "진심평간",
+      "자음양혈"
+    ],
+    "indications": [
+      "음혈부족",
+      "간양편항",
+      "심계불면",
+      "두목현훈"
+    ],
+    "source": "보제본사방",
+    "contraindications": [
+      "위장허약자 신용"
+    ],
+    "modifications": null,
+    "usage": null,
+    "parentId": null,
+    "rationale": "진주모·용치로 심간(心肝)을 무겁게 짓누르고, 당귀·지황·산조인으로 음혈을 보하여 간양상항(肝陽上亢)으로 인한 어지럼증과 불면을 다스림.",
+    "lesson": null
+  },
+  {
+    "id": "BJ-10-007",
+    "name": "황련아교탕",
+    "hanja": "黃連阿膠湯",
+    "starred": true,
+    "categoryMajor": "10. 안신제",
+    "categoryMinor": "10-2. 자양안신제",
+    "categoryBangyak": null,
+    "tags": [],
+    "composition": [
+      {
+        "herb_name": "황련",
+        "herb_hanja": "黃連",
+        "herb_id": null,
+        "dosage": "12g",
+        "role": "군"
+      },
+      {
+        "herb_name": "아교",
+        "herb_hanja": "阿膠",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "군"
+      },
+      {
+        "herb_name": "황금",
+        "herb_hanja": "黃芩",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "신"
+      },
+      {
+        "herb_name": "백작약",
+        "herb_hanja": "白芍藥",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "신"
+      },
+      {
+        "herb_name": "계자황",
+        "herb_hanja": "鷄子黃",
+        "herb_id": null,
+        "dosage": "2매",
+        "role": "사"
+      }
+    ],
+    "efficacy": [
+      "자음강화",
+      "교통심신"
+    ],
+    "indications": [
+      "소음병",
+      "음허화왕",
+      "심번불매"
+    ],
+    "source": "상한론",
+    "contraindications": [
+      "비위허한"
+    ],
+    "modifications": null,
+    "usage": null,
+    "parentId": null,
+    "rationale": "황련·황금으로 타오르는 심화(心火)를 내리고, 아교·계자황으로 신수(腎水)를 자양하여 심(心)과 신(腎)이 교류하게 함(수승화강).",
+    "lesson": null
+  },
+  {
+    "id": "BJ-10-008",
+    "name": "교태환",
+    "hanja": "交泰丸",
+    "starred": false,
+    "categoryMajor": "10. 안신제",
+    "categoryMinor": "10-2. 자양안신제",
+    "categoryBangyak": null,
+    "tags": [],
+    "composition": [
+      {
+        "herb_name": "황련",
+        "herb_hanja": "黃連",
+        "herb_id": null,
+        "dosage": "15g",
+        "role": "군"
+      },
+      {
+        "herb_name": "육계",
+        "herb_hanja": "肉桂",
+        "herb_id": null,
+        "dosage": "1.5g",
+        "role": "신"
+      }
+    ],
+    "efficacy": [
+      "교통심신",
+      "청열안신"
+    ],
+    "indications": [
+      "심신불교",
+      "심계",
+      "정충",
+      "불면"
+    ],
+    "source": "한씨의통",
+    "contraindications": null,
+    "modifications": null,
+    "usage": null,
+    "parentId": null,
+    "rationale": "차가운 황련을 대량 써서 심화를 끄고 뜨거운 육계를 극소량 써서 신양을 데워, 위아래의 물과 불이 서로 교류(交泰)하게 하여 불면을 고침.",
+    "lesson": null
   },
   {
     "id": "BJ-11-001",
@@ -9331,11 +9588,14 @@
       "중풍혼미"
     ],
     "source": "온병조변",
-    "contraindications": null,
+    "contraindications": [
+      "임부금기",
+      "한폐증금기"
+    ],
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "우황/사향으로 개규성신하고, 황련/황금/치자의 대고대한(大苦大寒)한 청열해독약과 서각/빙편의 방향성 약재가 결합. 온병 3보(안궁·자설·지보) 중 청열해독력이 가장 강하여 고열·의식불명에 최우선으로 선택."
   },
   {
     "id": "BJ-11-002",
@@ -9463,11 +9723,14 @@
       "소아경간"
     ],
     "source": "화제국방",
-    "contraindications": null,
+    "contraindications": [
+      "임부금기",
+      "한폐증금기"
+    ],
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "석고/한수석으로 강하게 청열사화하고, 영양각으로 식풍지경하며, 사향으로 개규. 안궁우황환보다 청열력은 약하나 식풍지경 효과가 뛰어나 고열경련에 특히 유리."
   },
   {
     "id": "BJ-11-003",
@@ -9546,15 +9809,18 @@
       "신혼경련"
     ],
     "source": "화제국방",
-    "contraindications": null,
+    "contraindications": [
+      "임부금기",
+      "한폐증금기"
+    ],
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "서각/우황의 청열해독개규 위에 안식향/호박 등 방향화담약이 대거 배합되어 탁기를 삭이는 힘이 강함. 안궁우황환보다 화담력이 우수하여 담미심규(痰迷心竅) 계통에 특히 적합."
   },
   {
     "id": "BJ-11-004",
-    "name": "소합향환",
+    "name": "소합향원",
     "hanja": "蘇合香丸",
     "starred": true,
     "categoryMajor": "11. 개규제",
@@ -9678,11 +9944,14 @@
       "심복졸통"
     ],
     "source": "화제국방",
-    "contraindications": null,
+    "contraindications": [
+      "임부금기",
+      "열폐증금기"
+    ],
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "소합향/사향 등 방향성 개규약과 침향/정향/필발 등 온성 이기약이 대거 배합되어, 한기나 탁한 기운에 막혀 기절한 것을 방향으로 뚫고 온열로 덥혀 깨워냄. 양개제와 반대로 한폐증에만 사용."
   },
   {
     "id": "BJ-12-001",
@@ -9740,11 +10009,13 @@
       "흉협만민"
     ],
     "source": "금궤요략",
-    "contraindications": null,
+    "contraindications": [
+      "음허진고"
+    ],
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "반하/후박으로 담을 삭이고 기를 내리며, 복령으로 비위를 튼튼히 하고, 생강/자소엽으로 산한행기. 인후에 매핵기(梅核氣)처럼 뭔가 걸린 느낌을 담기울결(痰氣鬱結)로 보고 기를 돌리고 담을 삭여 풀어냄."
   },
   {
     "id": "BJ-12-002",
@@ -9793,7 +10064,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "과루로 흉중의 탁한 담을 씻어내고, 해백으로 흉양을 통하게 하며, 백주(술)의 온통(溫通)력으로 흉비(胸痺)를 기본적으로 해소. 지실해백계지탕·과루해백반하탕의 모체가 되는 흉비 기본방."
   },
   {
     "id": "BJ-12-003",
@@ -9833,7 +10104,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "천련자로 간의 울화를 내리면서 기를 돌리고, 현호색으로 활혈지통. 기체혈어로 인한 심복통·협통에 기혈을 동시에 소통시켜 진통."
   },
   {
     "id": "BJ-12-004",
@@ -9915,7 +10186,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "오약/청피로 간기를 강하게 소통시키고 한기를 흩어내며, 천련자/고련근피로 기를 내리고, 소회향/목향으로 온중행기. 한기로 인해 아랫배가 당기고 아픈 한산(寒疝) 계통에 특히 적합."
   },
   {
     "id": "BJ-12-005",
@@ -9961,7 +10232,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "시체의 강한 강위(降胃)·지애 작용으로 위기를 내려 딸꾹질을 멈추고, 정향으로 온위산한을 보조하며, 생강으로 위를 따뜻하게 함. 위한(胃寒)으로 기역(氣逆)하여 딸꾹질하는 증상의 간단하나 효과적인 처방."
   },
   {
     "id": "BJ-12-006",
@@ -10015,7 +10286,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "오약/침향/빈랑으로 강하게 기를 순하게 내리고, 인삼으로 원기를 보하여 갑작스럽게 간기(肝氣)가 치솟아 숨이 막히는 칠정기역(七情氣逆)을 이기(理氣)와 보기(補氣)로 동시에 다스림."
   },
   {
     "id": "BJ-12-007",
@@ -10071,11 +10342,11 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "과루해백백주탕에 반하를 더해 화담력을 강화. 담이 흉중에 더 깊이 뭉쳐 흉통이 더 심하고 단기가 있을 때, 반하의 조화담습(燥化痰濕) 효과를 추가하여 흉비를 치료."
   },
   {
     "id": "BJ-12-008",
-    "name": "정향시체산",
+    "name": "정향시체탕",
     "hanja": "丁香柿蒂散",
     "starred": false,
     "categoryMajor": "12. 이기제",
@@ -10095,7 +10366,7 @@
         "herb_hanja": "丁香",
         "herb_id": null,
         "dosage": "6g",
-        "role": "신"
+        "role": "군"
       },
       {
         "herb_name": "인삼",
@@ -10119,12 +10390,14 @@
     "indications": [
       "허한애역"
     ],
-    "source": "증치준승",
-    "contraindications": null,
+    "source": "증인맥치",
+    "contraindications": [
+      "위열애역금기"
+    ],
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "신온한 정향과 시체가 함께 군약으로 작용하여 위기를 내리고 딸꾹질을 그침. 인삼으로 허한 위를 보하고 생강으로 온위산한을 도움. 위한허증의 애역에 온보강역."
   },
   {
     "id": "BJ-12-009",
@@ -10200,7 +10473,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "후박/진피로 기를 돌리고 목향/초두구로 한기를 흩으며 건강으로 중초를 덥힘. 한기(寒氣)와 기체(氣滯)가 겹쳐 복부가 차고 더부룩하며 아플 때 온중행기(溫中行氣)."
   },
   {
     "id": "BJ-12-010",
@@ -10304,7 +10577,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "목향/향부자/오약/청피/후박 등 다양한 이기약을 총동원하여 기체(氣滯)로 인한 복통창만을 순기(順氣). 사인/창출로 습담을 삭이고 생강으로 온위하여 기울·한습이 겹친 복부 팽만에 적합."
   },
   {
     "id": "BJ-13-001",
@@ -10319,7 +10592,7 @@
       {
         "herb_name": "도인",
         "herb_hanja": "桃仁",
-        "herb_id": "12-1-12",
+        "herb_id": null,
         "dosage": "12g",
         "role": "군"
       },
@@ -10328,6 +10601,13 @@
         "herb_hanja": "大黃",
         "herb_id": null,
         "dosage": "12g",
+        "role": "군"
+      },
+      {
+        "herb_name": "계지",
+        "herb_hanja": "桂枝",
+        "herb_id": null,
+        "dosage": "6g",
         "role": "신"
       },
       {
@@ -10335,18 +10615,11 @@
         "herb_hanja": "芒硝",
         "herb_id": null,
         "dosage": "6g",
-        "role": "좌"
+        "role": "신"
       },
       {
-        "herb_name": "계지",
-        "herb_hanja": "桂枝",
-        "herb_id": "01-1-2",
-        "dosage": "6g",
-        "role": "좌"
-      },
-      {
-        "herb_name": "감초",
-        "herb_hanja": "甘草",
+        "herb_name": "자감초",
+        "herb_hanja": "炙甘草",
         "herb_id": null,
         "dosage": "6g",
         "role": "사"
@@ -10362,11 +10635,13 @@
       "심하여광"
     ],
     "source": "상한론",
-    "contraindications": null,
+    "contraindications": [
+      "임부금기"
+    ],
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "도인과 대황을 함께 군약으로 하여 하초의 어혈을 대변으로 몰아내고, 계지의 온통(溫通) 작용으로 혈맥을 열어주며 망초로 사하력을 강화. 축혈증(蓄血證)의 대표방."
   },
   {
     "id": "BJ-13-002",
@@ -10381,14 +10656,14 @@
       {
         "herb_name": "도인",
         "herb_hanja": "桃仁",
-        "herb_id": "12-1-12",
+        "herb_id": null,
         "dosage": "12g",
         "role": "군"
       },
       {
         "herb_name": "홍화",
         "herb_hanja": "紅花",
-        "herb_id": "12-1-13",
+        "herb_id": null,
         "dosage": "9g",
         "role": "군"
       },
@@ -10397,55 +10672,55 @@
         "herb_hanja": "當歸",
         "herb_id": null,
         "dosage": "9g",
-        "role": "신"
+        "role": "군"
       },
       {
         "herb_name": "생지황",
         "herb_hanja": "生地黃",
         "herb_id": null,
         "dosage": "9g",
-        "role": "신"
+        "role": "군"
       },
       {
         "herb_name": "천궁",
         "herb_hanja": "川芎",
-        "herb_id": "12-1-1",
+        "herb_id": null,
         "dosage": "5g",
-        "role": "좌"
+        "role": "신"
       },
       {
         "herb_name": "적작약",
         "herb_hanja": "赤芍藥",
         "herb_id": null,
         "dosage": "6g",
-        "role": "좌"
-      },
-      {
-        "herb_name": "우슬",
-        "herb_hanja": "牛膝",
-        "herb_id": "12-1-15",
-        "dosage": "9g",
-        "role": "좌"
-      },
-      {
-        "herb_name": "길경",
-        "herb_hanja": "桔梗",
-        "herb_id": "13-2-2",
-        "dosage": "5g",
-        "role": "좌"
+        "role": "신"
       },
       {
         "herb_name": "시호",
         "herb_hanja": "柴胡",
-        "herb_id": "01-2-6",
+        "herb_id": null,
         "dosage": "3g",
-        "role": "좌"
+        "role": "신"
       },
       {
         "herb_name": "지각",
         "herb_hanja": "枳殼",
         "herb_id": null,
         "dosage": "6g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "길경",
+        "herb_hanja": "桔梗",
+        "herb_id": null,
+        "dosage": "5g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "우슬",
+        "herb_hanja": "牛膝",
+        "herb_id": null,
+        "dosage": "9g",
         "role": "좌"
       },
       {
@@ -10468,11 +10743,13 @@
       "급조역노"
     ],
     "source": "의림개착",
-    "contraindications": null,
+    "contraindications": [
+      "임부금기"
+    ],
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "사물탕(보혈)과 사역산(이기)을 합방하고 도인/홍화/우슬을 더해, 가슴(혈부)에 정체된 어혈을 풀고 기를 돌려 통증을 제어. 의림개착 축어탕 계열의 본방."
   },
   {
     "id": "BJ-13-003",
@@ -10544,11 +10821,13 @@
       "언어장애"
     ],
     "source": "의림개착",
-    "contraindications": null,
+    "contraindications": [
+      "음허양항"
+    ],
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "황기를 대량(120g)으로 써서 허약해진 기를 먼저 꽉 채우고(기위혈수), 소량의 당귀미/적작/천궁/도인/홍화/지룡으로 경락의 어혈을 뚫음. 기가 밀어주어야 혈이 통한다는 기위혈수(氣爲血帥)의 원리를 극명하게 구현한 중풍 후유증 치료의 핵심방."
   },
   {
     "id": "BJ-13-004",
@@ -10609,7 +10888,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "당귀를 대량(24g)으로 써서 산후에 생성된 어혈을 활혈로 녹이면서(生), 천궁/도인으로 어혈을 적극 제거하고(化), 포강으로 자궁을 덥혀 어혈 배출을 돕는(化) 산후 어혈의 제일 기본방."
   },
   {
     "id": "BJ-13-005",
@@ -10629,6 +10908,13 @@
         "role": "군"
       },
       {
+        "herb_name": "맥문동",
+        "herb_hanja": "麥門冬",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "군"
+      },
+      {
         "herb_name": "당귀",
         "herb_hanja": "當歸",
         "herb_id": null,
@@ -10637,7 +10923,7 @@
       },
       {
         "herb_name": "백작약",
-        "herb_hanja": "白芍藥",
+        "herb_hanja": "芍藥",
         "herb_id": null,
         "dosage": "6g",
         "role": "신"
@@ -10645,34 +10931,34 @@
       {
         "herb_name": "천궁",
         "herb_hanja": "川芎",
-        "herb_id": "12-1-1",
+        "herb_id": null,
         "dosage": "6g",
-        "role": "좌"
+        "role": "신"
       },
       {
         "herb_name": "인삼",
-        "herb_hanja": "人參",
+        "herb_hanja": "人蔘",
         "herb_id": null,
         "dosage": "6g",
-        "role": "좌"
+        "role": "신"
       },
       {
         "herb_name": "계지",
         "herb_hanja": "桂枝",
-        "herb_id": "01-1-2",
+        "herb_id": null,
         "dosage": "6g",
-        "role": "좌"
+        "role": "신"
       },
       {
         "herb_name": "아교",
         "herb_hanja": "阿膠",
         "herb_id": null,
         "dosage": "6g",
-        "role": "좌"
+        "role": "신"
       },
       {
-        "herb_name": "단피",
-        "herb_hanja": "丹皮",
+        "herb_name": "목단피",
+        "herb_hanja": "牡丹皮",
         "herb_id": null,
         "dosage": "6g",
         "role": "좌"
@@ -10687,15 +10973,8 @@
       {
         "herb_name": "반하",
         "herb_hanja": "半夏",
-        "herb_id": "13-1-1",
-        "dosage": "6g",
-        "role": "좌"
-      },
-      {
-        "herb_name": "맥문동",
-        "herb_hanja": "麥門冬",
         "herb_id": null,
-        "dosage": "9g",
+        "dosage": "6g",
         "role": "좌"
       },
       {
@@ -10718,11 +10997,13 @@
       "붕루"
     ],
     "source": "금궤요략",
-    "contraindications": null,
+    "contraindications": [
+      "실열증"
+    ],
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "오수유/계지로 아랫배를 덥히고, 사물탕(당귀/작약/천궁)에 아교를 더해 혈을 보하며, 목단피로 어혈을 흩음. 조(燥)한 오수유와 윤(潤)한 맥문동이 서로 견제하며 조화를 이루는 부인과 성약. 온보·활혈·거어를 동시 구현."
   },
   {
     "id": "BJ-13-006",
@@ -10737,37 +11018,37 @@
       {
         "herb_name": "계지",
         "herb_hanja": "桂枝",
-        "herb_id": "01-1-2",
-        "dosage": "9g",
+        "herb_id": null,
+        "dosage": "각등분",
         "role": "군"
       },
       {
         "herb_name": "복령",
         "herb_hanja": "茯苓",
         "herb_id": null,
-        "dosage": "9g",
-        "role": "신"
+        "dosage": "각등분",
+        "role": "군"
       },
       {
-        "herb_name": "단피",
-        "herb_hanja": "丹皮",
+        "herb_name": "목단피",
+        "herb_hanja": "牡丹皮",
         "herb_id": null,
-        "dosage": "9g",
-        "role": "좌"
-      },
-      {
-        "herb_name": "적작약",
-        "herb_hanja": "赤芍藥",
-        "herb_id": null,
-        "dosage": "9g",
-        "role": "좌"
+        "dosage": "각등분",
+        "role": "군"
       },
       {
         "herb_name": "도인",
         "herb_hanja": "桃仁",
-        "herb_id": "12-1-12",
-        "dosage": "9g",
-        "role": "좌"
+        "herb_id": null,
+        "dosage": "각등분",
+        "role": "군"
+      },
+      {
+        "herb_name": "적작약",
+        "herb_hanja": "芍藥",
+        "herb_id": null,
+        "dosage": "각등분",
+        "role": "군"
       }
     ],
     "efficacy": [
@@ -10780,17 +11061,19 @@
       "임신누하불지"
     ],
     "source": "금궤요략",
-    "contraindications": null,
+    "contraindications": [
+      "임부신용"
+    ],
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "다섯 약재를 동등하게 배합하여 자궁(포궁)에 뭉친 어혈 덩어리(징가)를 서서히 깎아냄. 完이 아닌 丸(환약)으로 제형하여 완만하게 작용, 태아를 보호하거나 산후 어혈을 예방함. 峻猛하지 않아 허약한 여성에게도 사용 가능."
   },
   {
     "id": "BJ-13-007",
     "name": "실소산",
     "hanja": "失笑散",
-    "starred": false,
+    "starred": true,
     "categoryMajor": "13. 이혈제",
     "categoryMinor": "13-1. 활혈거어제",
     "categoryBangyak": null,
@@ -10821,11 +11104,13 @@
       "월경부조"
     ],
     "source": "화제국방",
-    "contraindications": null,
+    "contraindications": [
+      "임부금기"
+    ],
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "오령지(거어지통)와 포황(지혈거어) 단 두 가지만을 식초와 함께 복용하여, 어혈로 인해 칼로 찌르는 듯한 극심한 심복통을 멎게 함. 단순하지만 강력한 지통 효과로 실소산(失笑散)이라 명명."
   },
   {
     "id": "BJ-13-008",
@@ -10907,7 +11192,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "시호로 옆구리(간경)의 기울을 풀어 어혈이 있는 부위로 길을 열고, 대황/도인/홍화로 강하게 어혈을 제거하며, 천산갑/과루근으로 투과하여 흉협 깊숙한 어혈을 복원(復元). 타박 후 옆구리 통증의 대표방."
   },
   {
     "id": "BJ-13-009",
@@ -11003,14 +11288,14 @@
     "contraindications": null,
     "modifications": null,
     "lesson": null,
-    "parentId": null,
-    "rationale": null
+    "parentId": "BJ-13-002",
+    "rationale": "아랫배(소복)가 차가워서 생긴 어혈에 온리약 소회향/건강/육계를 배합하여 아랫배를 데우며 어혈과 통증을 동시에 잡음. 냉기로 인한 월경통과 부정출혈에 온경활혈의 대표방."
   },
   {
     "id": "BJ-13-010",
     "name": "십회산",
     "hanja": "十灰散",
-    "starred": false,
+    "starred": true,
     "categoryMajor": "13. 이혈제",
     "categoryMinor": "13-2. 지혈제",
     "categoryBangyak": null,
@@ -11096,11 +11381,13 @@
       "뉵혈"
     ],
     "source": "십약신서",
-    "contraindications": null,
+    "contraindications": [
+      "비위허한"
+    ],
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "10가지 청열·량혈 약재를 까맣게 태워(灰) 수렴지혈력을 극대화한 뒤, 위로 치솟는 혈열(血熱)을 아래로 내리고 식혀 응급 지혈. 혈열망행(血熱妄行)으로 토혈·코피가 솟구칠 때 응급으로 사용."
   },
   {
     "id": "BJ-13-011",
@@ -11154,7 +11441,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "4가지 생약재(생하엽/생측백엽/생애엽/생지황)를 가열하지 않고 생즙으로 써서 위로 치솟는 혈열망행(血熱妄行)에 의한 토혈·코피를 냉혈지혈(凉血止血). 십회산과 유사하나 태우지 않아 더 순한 량혈지혈."
   },
   {
     "id": "BJ-13-012",
@@ -11176,7 +11463,7 @@
       {
         "herb_name": "애엽",
         "herb_hanja": "艾葉",
-        "herb_id": "11-4-1",
+        "herb_id": null,
         "dosage": "9g",
         "role": "군"
       },
@@ -11188,25 +11475,25 @@
         "role": "신"
       },
       {
+        "herb_name": "백작약",
+        "herb_hanja": "芍藥",
+        "herb_id": null,
+        "dosage": "12g",
+        "role": "신"
+      },
+      {
         "herb_name": "천궁",
         "herb_hanja": "川芎",
-        "herb_id": "12-1-1",
+        "herb_id": null,
         "dosage": "6g",
-        "role": "좌"
+        "role": "신"
       },
       {
-        "herb_name": "백작약",
-        "herb_hanja": "白芍藥",
+        "herb_name": "생지황",
+        "herb_hanja": "生地黃",
         "herb_id": null,
         "dosage": "12g",
-        "role": "좌"
-      },
-      {
-        "herb_name": "숙지황",
-        "herb_hanja": "熟地黃",
-        "herb_id": null,
-        "dosage": "12g",
-        "role": "좌"
+        "role": "신"
       },
       {
         "herb_name": "감초",
@@ -11231,7 +11518,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "아교/생지황으로 혈을 보하고, 애엽으로 자궁을 따뜻하게 하며, 사물탕(당귀/작약/천궁)으로 혈을 보충하고 순환. 자궁이 허약하고 차서 발생하는 붕루·월경과다·임신 하혈을 온보지혈."
   },
   {
     "id": "BJ-13-013",
@@ -11328,7 +11615,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "소계/생지황으로 하초의 혈열을 식혀 지혈하고, 포황/연근절로 수렴지혈 보강, 목통/활석/담죽엽으로 습열을 소변으로 빼내어 통증을 수반한 혈뇨(혈림)를 치료."
   },
   {
     "id": "BJ-13-014",
@@ -11342,7 +11629,7 @@
     "composition": [
       {
         "herb_name": "복룡간",
-        "herb_hanja": "伏龍肝",
+        "herb_hanja": "竈中黃土",
         "herb_id": null,
         "dosage": "30g",
         "role": "군"
@@ -11362,25 +11649,18 @@
         "role": "신"
       },
       {
-        "herb_name": "감초",
-        "herb_hanja": "甘草",
-        "herb_id": null,
-        "dosage": "9g",
-        "role": "사"
-      },
-      {
-        "herb_name": "생지황",
-        "herb_hanja": "生地黃",
-        "herb_id": null,
-        "dosage": "9g",
-        "role": "좌"
-      },
-      {
         "herb_name": "아교",
         "herb_hanja": "阿膠",
         "herb_id": null,
         "dosage": "9g",
-        "role": "좌"
+        "role": "신"
+      },
+      {
+        "herb_name": "생지황",
+        "herb_hanja": "地黃",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "신"
       },
       {
         "herb_name": "황금",
@@ -11388,6 +11668,13 @@
         "herb_id": null,
         "dosage": "9g",
         "role": "좌"
+      },
+      {
+        "herb_name": "감초",
+        "herb_hanja": "甘草",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "사"
       }
     ],
     "efficacy": [
@@ -11401,70 +11688,79 @@
       "혈색암담"
     ],
     "source": "금궤요략",
-    "contraindications": null,
+    "contraindications": [
+      "열증출혈금기"
+    ],
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "복룡간(따뜻한 황토)과 부자/백출로 비위를 덥혀 통섭혈기(統攝血氣)하고, 아교/생지황으로 손상된 혈을 보충하며, 황금으로 온약의 과도한 열을 견제. 속이 차서 생기는 만성 출혈(원혈·토혈)에 온비지혈."
   },
   {
     "id": "BJ-14-001",
     "name": "천궁다조산",
     "hanja": "川芎茶調散",
-    "starred": false,
+    "starred": true,
     "categoryMajor": "14. 치풍제",
-    "categoryMinor": "14-1. 소풍제",
+    "categoryMinor": "14-1. 소산외풍제",
     "categoryBangyak": null,
     "tags": [],
     "composition": [
       {
-        "herb_name": "천궁",
-        "herb_hanja": "川芎",
-        "herb_id": "12-1-1",
+        "herb_name": "박하",
+        "herb_hanja": "薄荷",
+        "herb_id": null,
         "dosage": "12g",
         "role": "군"
       },
       {
-        "herb_name": "형개",
-        "herb_hanja": "荊芥",
-        "herb_id": "01-1-4",
+        "herb_name": "천궁",
+        "herb_hanja": "川芎",
+        "herb_id": null,
         "dosage": "12g",
         "role": "신"
       },
       {
+        "herb_name": "형개",
+        "herb_hanja": "荊芥",
+        "herb_id": null,
+        "dosage": "12g",
+        "role": "신"
+      },
+      {
+        "herb_name": "강활",
+        "herb_hanja": "羌活",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "백지",
+        "herb_hanja": "白芷",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "좌"
+      },
+      {
         "herb_name": "방풍",
         "herb_hanja": "防風",
-        "herb_id": "01-1-7",
+        "herb_id": null,
         "dosage": "5g",
         "role": "좌"
       },
       {
         "herb_name": "세신",
         "herb_hanja": "細辛",
-        "herb_id": "01-1-10",
+        "herb_id": null,
         "dosage": "3g",
         "role": "좌"
       },
       {
-        "herb_name": "백지",
-        "herb_hanja": "白芷",
-        "herb_id": "01-1-6",
-        "dosage": "6g",
-        "role": "좌"
-      },
-      {
-        "herb_name": "강활",
-        "herb_hanja": "羌活",
-        "herb_id": "01-1-5",
-        "dosage": "6g",
-        "role": "좌"
-      },
-      {
-        "herb_name": "박하",
-        "herb_hanja": "薄荷",
-        "herb_id": "01-2-1",
-        "dosage": "12g",
-        "role": "좌"
+        "herb_name": "다청",
+        "herb_hanja": "茶淸",
+        "herb_id": null,
+        "dosage": "적량",
+        "role": "사"
       },
       {
         "herb_name": "감초",
@@ -11483,11 +11779,13 @@
       "현훈"
     ],
     "source": "화제국방",
-    "contraindications": null,
+    "contraindications": [
+      "간양상항두통금기"
+    ],
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "가벼운 박하와 천궁으로 머리에 든 풍사를 위로 흩어내고, 찻잎(다청)의 찬 성질로 열을 식히고 약 기운을 아래로 조화. 두통의 부위에 따라 강활(태양두통)/백지(양명)/세신(소음)/천궁(궐음)이 각각 상응하는 경락을 소통."
   },
   {
     "id": "BJ-14-002",
@@ -11495,79 +11793,58 @@
     "hanja": "消風散",
     "starred": true,
     "categoryMajor": "14. 치풍제",
-    "categoryMinor": "14-1. 소풍제",
+    "categoryMinor": "14-1. 소산외풍제",
     "categoryBangyak": null,
     "tags": [],
     "composition": [
       {
         "herb_name": "형개",
         "herb_hanja": "荊芥",
-        "herb_id": "01-1-4",
+        "herb_id": null,
         "dosage": "6g",
         "role": "군"
       },
       {
         "herb_name": "방풍",
         "herb_hanja": "防風",
-        "herb_id": "01-1-7",
+        "herb_id": null,
         "dosage": "6g",
         "role": "군"
       },
       {
-        "herb_name": "당귀",
-        "herb_hanja": "當歸",
+        "herb_name": "우방자",
+        "herb_hanja": "牛蒡子",
         "herb_id": null,
         "dosage": "6g",
-        "role": "신"
-      },
-      {
-        "herb_name": "생지황",
-        "herb_hanja": "生地黃",
-        "herb_id": null,
-        "dosage": "6g",
-        "role": "신"
-      },
-      {
-        "herb_name": "고삼",
-        "herb_hanja": "苦參",
-        "herb_id": null,
-        "dosage": "6g",
-        "role": "좌"
-      },
-      {
-        "herb_name": "창출",
-        "herb_hanja": "蒼朮",
-        "herb_id": null,
-        "dosage": "6g",
-        "role": "좌"
+        "role": "군"
       },
       {
         "herb_name": "선퇴",
         "herb_hanja": "蟬蛻",
         "herb_id": null,
         "dosage": "6g",
-        "role": "좌"
+        "role": "군"
       },
       {
-        "herb_name": "호마인",
-        "herb_hanja": "胡麻仁",
+        "herb_name": "창출",
+        "herb_hanja": "蒼朮",
         "herb_id": null,
         "dosage": "6g",
-        "role": "좌"
+        "role": "신"
       },
       {
-        "herb_name": "우방자",
-        "herb_hanja": "牛蒡子",
-        "herb_id": "01-2-2",
+        "herb_name": "고삼",
+        "herb_hanja": "苦蔘",
+        "herb_id": null,
         "dosage": "6g",
-        "role": "좌"
+        "role": "신"
       },
       {
-        "herb_name": "지모",
-        "herb_hanja": "知母",
-        "herb_id": "2-1-2",
-        "dosage": "6g",
-        "role": "좌"
+        "herb_name": "통초",
+        "herb_hanja": "木通",
+        "herb_id": null,
+        "dosage": "3g",
+        "role": "신"
       },
       {
         "herb_name": "석고",
@@ -11577,10 +11854,31 @@
         "role": "좌"
       },
       {
-        "herb_name": "통초",
-        "herb_hanja": "通草",
+        "herb_name": "지모",
+        "herb_hanja": "知母",
         "herb_id": null,
-        "dosage": "3g",
+        "dosage": "6g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "당귀",
+        "herb_hanja": "當歸",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "생지황",
+        "herb_hanja": "生地黃",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "호마인",
+        "herb_hanja": "黑芝麻",
+        "herb_id": null,
+        "dosage": "6g",
         "role": "좌"
       },
       {
@@ -11601,11 +11899,13 @@
       "피부소양"
     ],
     "source": "외과정종",
-    "contraindications": null,
+    "contraindications": [
+      "기혈허약금기"
+    ],
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "풍습열 사기가 피부에 뭉친 극심한 가려움증에 거풍/제습/청열하며, 지황/당귀/호마인으로 혈을 길러 풍을 잠재움. 치풍선치혈(治風先治血) 원리 적용 — 혈이 잘 돌면 풍은 스스로 소멸."
   },
   {
     "id": "BJ-14-003",
@@ -11613,7 +11913,7 @@
     "hanja": "小活絡丹",
     "starred": false,
     "categoryMajor": "14. 치풍제",
-    "categoryMinor": "14-1. 소풍제",
+    "categoryMinor": "14-1. 소산외풍제",
     "categoryBangyak": null,
     "tags": [],
     "composition": [
@@ -11673,7 +11973,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "천남성/천오/초오의 맹렬한 거풍습 독성 약재로 경락에 막힌 풍한습담(風寒濕痰)을 뚫고, 유향/몰약으로 어혈을 풀며, 지룡으로 경락을 소통. 완고한 풍한습비(風寒濕痺)에 사용."
   },
   {
     "id": "BJ-14-004",
@@ -11681,7 +11981,7 @@
     "hanja": "羚角鉤藤湯",
     "starred": true,
     "categoryMajor": "14. 치풍제",
-    "categoryMinor": "14-2. 평간식풍제",
+    "categoryMinor": "14-2. 평식내풍제",
     "categoryBangyak": null,
     "tags": [],
     "composition": [
@@ -11697,19 +11997,19 @@
         "herb_hanja": "鉤藤",
         "herb_id": null,
         "dosage": "9g",
-        "role": "군"
+        "role": "신"
       },
       {
         "herb_name": "상엽",
         "herb_hanja": "桑葉",
-        "herb_id": "01-2-3",
+        "herb_id": null,
         "dosage": "6g",
         "role": "신"
       },
       {
         "herb_name": "국화",
         "herb_hanja": "菊花",
-        "herb_id": "01-2-4",
+        "herb_id": null,
         "dosage": "9g",
         "role": "신"
       },
@@ -11730,14 +12030,14 @@
       {
         "herb_name": "천패모",
         "herb_hanja": "川貝母",
-        "herb_id": "13-2-4",
+        "herb_id": null,
         "dosage": "12g",
         "role": "좌"
       },
       {
         "herb_name": "죽여",
         "herb_hanja": "竹茹",
-        "herb_id": "13-2-7",
+        "herb_id": null,
         "dosage": "15g",
         "role": "좌"
       },
@@ -11749,8 +12049,8 @@
         "role": "좌"
       },
       {
-        "herb_name": "감초",
-        "herb_hanja": "甘草",
+        "herb_name": "생감초",
+        "herb_hanja": "生甘草",
         "herb_id": null,
         "dosage": "2.5g",
         "role": "사"
@@ -11766,11 +12066,13 @@
       "두훈현운"
     ],
     "source": "통속상한론",
-    "contraindications": null,
+    "contraindications": [
+      "비허만경풍금기"
+    ],
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "온병으로 열이 극에 달해 간풍이 동한 열성 경련에, 영양각으로 간열을 강하게 끄고(량간凉肝) 구등/상엽/국화로 풍을 잠재우며, 생지황/백작약으로 음혈을 보충. 열극생풍(熱極生風) 경련의 대표방."
   },
   {
     "id": "BJ-14-005",
@@ -11778,7 +12080,7 @@
     "hanja": "天麻鉤藤飮",
     "starred": true,
     "categoryMajor": "14. 치풍제",
-    "categoryMinor": "14-2. 평간식풍제",
+    "categoryMinor": "14-2. 평식내풍제",
     "categoryBangyak": null,
     "tags": [],
     "composition": [
@@ -11801,26 +12103,26 @@
         "herb_hanja": "石決明",
         "herb_id": null,
         "dosage": "18g",
-        "role": "신"
+        "role": "군"
       },
       {
         "herb_name": "치자",
         "herb_hanja": "梔子",
         "herb_id": "2-1-6",
         "dosage": "9g",
-        "role": "좌"
+        "role": "신"
       },
       {
         "herb_name": "황금",
         "herb_hanja": "黃芩",
         "herb_id": null,
         "dosage": "9g",
-        "role": "좌"
+        "role": "신"
       },
       {
         "herb_name": "우슬",
         "herb_hanja": "牛膝",
-        "herb_id": "12-1-15",
+        "herb_id": null,
         "dosage": "12g",
         "role": "좌"
       },
@@ -11834,7 +12136,7 @@
       {
         "herb_name": "익모초",
         "herb_hanja": "益母草",
-        "herb_id": "12-1-11",
+        "herb_id": null,
         "dosage": "9g",
         "role": "좌"
       },
@@ -11875,7 +12177,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "천마/구등/석결명으로 간풍을 평정하고, 치자/황금으로 간열을 끄며, 우슬/상기생/두충으로 하초를 보하여 고혈압성 두통과 어지럼증을 치료. 영양각탕보다 보간신(補肝腎) 측면이 강함."
   },
   {
     "id": "BJ-14-006",
@@ -11883,14 +12185,14 @@
     "hanja": "鎭肝息風湯",
     "starred": true,
     "categoryMajor": "14. 치풍제",
-    "categoryMinor": "14-2. 평간식풍제",
+    "categoryMinor": "14-2. 평식내풍제",
     "categoryBangyak": null,
     "tags": [],
     "composition": [
       {
         "herb_name": "우슬",
         "herb_hanja": "牛膝",
-        "herb_id": "12-1-15",
+        "herb_id": null,
         "dosage": "30g",
         "role": "군"
       },
@@ -11899,7 +12201,7 @@
         "herb_hanja": "代赭石",
         "herb_id": null,
         "dosage": "30g",
-        "role": "군"
+        "role": "신"
       },
       {
         "herb_name": "용골",
@@ -11920,7 +12222,7 @@
         "herb_hanja": "龜板",
         "herb_id": null,
         "dosage": "15g",
-        "role": "좌"
+        "role": "신"
       },
       {
         "herb_name": "백작약",
@@ -11931,7 +12233,7 @@
       },
       {
         "herb_name": "현삼",
-        "herb_hanja": "玄參",
+        "herb_hanja": "玄蔘",
         "herb_id": null,
         "dosage": "15g",
         "role": "좌"
@@ -11951,15 +12253,15 @@
         "role": "좌"
       },
       {
-        "herb_name": "맥아",
-        "herb_hanja": "麥芽",
-        "herb_id": "9-3",
+        "herb_name": "인진호",
+        "herb_hanja": "茵陳",
+        "herb_id": null,
         "dosage": "6g",
         "role": "좌"
       },
       {
-        "herb_name": "인진호",
-        "herb_hanja": "茵蔯蒿",
+        "herb_name": "맥아",
+        "herb_hanja": "麥芽",
         "herb_id": null,
         "dosage": "6g",
         "role": "좌"
@@ -11982,11 +12284,13 @@
       "중풍"
     ],
     "source": "의학충중참서록",
-    "contraindications": null,
+    "contraindications": [
+      "기허혈어중풍금기"
+    ],
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "간신음허로 양기가 머리로 치솟는 내풍에, 우슬로 피를 아래로 강하게 끌어내리고 대자석/용골/모려/구판으로 무겁게 내리누름. 현삼/천문동/백작약으로 음을 보충하여 양을 잠재움. 뇌졸중 전조증의 대표방."
   },
   {
     "id": "BJ-14-007",
@@ -11994,15 +12298,15 @@
     "hanja": "大定風珠",
     "starred": false,
     "categoryMajor": "14. 치풍제",
-    "categoryMinor": "14-2. 평간식풍제",
+    "categoryMinor": "14-2. 평식내풍제",
     "categoryBangyak": null,
     "tags": [],
     "composition": [
       {
-        "herb_name": "생백작약",
-        "herb_hanja": "生白芍藥",
+        "herb_name": "계자황",
+        "herb_hanja": "鷄子黃",
         "herb_id": null,
-        "dosage": "18g",
+        "dosage": "2매",
         "role": "군"
       },
       {
@@ -12017,7 +12321,14 @@
         "herb_hanja": "龜板",
         "herb_id": null,
         "dosage": "12g",
-        "role": "신"
+        "role": "군"
+      },
+      {
+        "herb_name": "별갑",
+        "herb_hanja": "鼈甲",
+        "herb_id": null,
+        "dosage": "12g",
+        "role": "군"
       },
       {
         "herb_name": "생지황",
@@ -12027,31 +12338,24 @@
         "role": "신"
       },
       {
-        "herb_name": "마인",
-        "herb_hanja": "麻仁",
+        "herb_name": "맥문동",
+        "herb_hanja": "麥門冬",
         "herb_id": null,
-        "dosage": "6g",
-        "role": "좌"
+        "dosage": "18g",
+        "role": "신"
+      },
+      {
+        "herb_name": "백작약",
+        "herb_hanja": "白芍藥",
+        "herb_id": null,
+        "dosage": "18g",
+        "role": "신"
       },
       {
         "herb_name": "오미자",
         "herb_hanja": "五味子",
         "herb_id": null,
         "dosage": "6g",
-        "role": "좌"
-      },
-      {
-        "herb_name": "맥문동",
-        "herb_hanja": "麥門冬",
-        "herb_id": null,
-        "dosage": "18g",
-        "role": "좌"
-      },
-      {
-        "herb_name": "별갑",
-        "herb_hanja": "鱉甲",
-        "herb_id": null,
-        "dosage": "12g",
         "role": "좌"
       },
       {
@@ -12062,25 +12366,11 @@
         "role": "좌"
       },
       {
-        "herb_name": "감초",
-        "herb_hanja": "甘草",
+        "herb_name": "자감초",
+        "herb_hanja": "炙甘草",
         "herb_id": null,
         "dosage": "6g",
         "role": "사"
-      },
-      {
-        "herb_name": "계자황",
-        "herb_hanja": "鷄子黃",
-        "herb_id": null,
-        "dosage": "2매",
-        "role": "좌"
-      },
-      {
-        "herb_name": "자석영",
-        "herb_hanja": "紫石英",
-        "herb_id": null,
-        "dosage": "9g",
-        "role": "좌"
       }
     ],
     "efficacy": [
@@ -12096,7 +12386,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "열병이 극에 달해 진음(眞陰)이 완전히 고갈된 위급 상황에, 계자황/아교/구판/별갑 등 동물성 교질 약재를 대량 투입해 억지로 진액을 채워 허풍을 멈춤. 자음식풍(滋陰息風)의 극치."
   },
   {
     "id": "BJ-15-001",
@@ -12111,13 +12401,13 @@
       {
         "herb_name": "행인",
         "herb_hanja": "杏仁",
-        "herb_id": "13-3-1",
+        "herb_id": null,
         "dosage": "9g",
         "role": "군"
       },
       {
-        "herb_name": "소엽",
-        "herb_hanja": "蘇葉",
+        "herb_name": "자소엽",
+        "herb_hanja": "紫蘇葉",
         "herb_id": null,
         "dosage": "9g",
         "role": "군"
@@ -12125,14 +12415,35 @@
       {
         "herb_name": "전호",
         "herb_hanja": "前胡",
-        "herb_id": "13-2-1",
+        "herb_id": null,
         "dosage": "9g",
         "role": "신"
       },
       {
         "herb_name": "길경",
         "herb_hanja": "桔梗",
-        "herb_id": "13-2-2",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "신"
+      },
+      {
+        "herb_name": "반하",
+        "herb_hanja": "半夏",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "신"
+      },
+      {
+        "herb_name": "복령",
+        "herb_hanja": "茯苓",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "신"
+      },
+      {
+        "herb_name": "진피",
+        "herb_hanja": "陳皮",
+        "herb_id": null,
         "dosage": "6g",
         "role": "좌"
       },
@@ -12144,24 +12455,17 @@
         "role": "좌"
       },
       {
-        "herb_name": "반하",
-        "herb_hanja": "半夏",
-        "herb_id": "13-1-1",
-        "dosage": "9g",
+        "herb_name": "생강",
+        "herb_hanja": "生薑",
+        "herb_id": "01-1-11",
+        "dosage": "3g",
         "role": "좌"
       },
       {
-        "herb_name": "복령",
-        "herb_hanja": "茯苓",
+        "herb_name": "대조",
+        "herb_hanja": "大棗",
         "herb_id": null,
-        "dosage": "9g",
-        "role": "좌"
-      },
-      {
-        "herb_name": "진피",
-        "herb_hanja": "陳皮",
-        "herb_id": null,
-        "dosage": "6g",
+        "dosage": "3매",
         "role": "좌"
       },
       {
@@ -12169,20 +12473,6 @@
         "herb_hanja": "甘草",
         "herb_id": null,
         "dosage": "3g",
-        "role": "사"
-      },
-      {
-        "herb_name": "생강",
-        "herb_hanja": "生薑",
-        "herb_id": "01-1-11",
-        "dosage": "3g",
-        "role": "사"
-      },
-      {
-        "herb_name": "대조",
-        "herb_hanja": "大棗",
-        "herb_id": null,
-        "dosage": "3매",
         "role": "사"
       }
     ],
@@ -12196,11 +12486,13 @@
       "맥현"
     ],
     "source": "온병조변",
-    "contraindications": null,
+    "contraindications": [
+      "온조증금기"
+    ],
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "서늘한 건조함(양조)에 상했을 때, 자소엽으로 가볍게 표를 열고 행인/전호로 폐기를 내려 진액을 흩뿌려줌. 이기화담약(진피/지각/반하/복령)이 더해져 묽은 가래를 삭이는 미온번윤(微溫煩潤)의 대표방."
   },
   {
     "id": "BJ-15-002",
@@ -12277,7 +12569,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "따뜻한 건조함(온조)에 상했을 때, 상엽으로 가볍게 열을 식히고 행인/사삼/배껍질(이피)로 폐를 촉촉하게 적심. 약량이 경량(輕量)으로 폐위(上焦)만 가볍게 다스리는 경청지방(輕淸之方)."
   },
   {
     "id": "BJ-15-003",
@@ -12285,14 +12577,14 @@
     "hanja": "清燥救肺湯",
     "starred": true,
     "categoryMajor": "15. 치조제",
-    "categoryMinor": "15-1. 경윤조제",
+    "categoryMinor": "15-2. 자윤조제",
     "categoryBangyak": null,
     "tags": [],
     "composition": [
       {
         "herb_name": "상엽",
         "herb_hanja": "桑葉",
-        "herb_id": "01-2-3",
+        "herb_id": null,
         "dosage": "9g",
         "role": "군"
       },
@@ -12300,19 +12592,19 @@
         "herb_name": "석고",
         "herb_hanja": "石膏",
         "herb_id": "2-1-1",
-        "dosage": "8g",
+        "dosage": "7.5g",
         "role": "신"
       },
       {
         "herb_name": "맥문동",
         "herb_hanja": "麥門冬",
         "herb_id": null,
-        "dosage": "4g",
-        "role": "좌"
+        "dosage": "3.5g",
+        "role": "신"
       },
       {
         "herb_name": "인삼",
-        "herb_hanja": "人參",
+        "herb_hanja": "人蔘",
         "herb_id": null,
         "dosage": "2g",
         "role": "좌"
@@ -12325,22 +12617,22 @@
         "role": "좌"
       },
       {
+        "herb_name": "아교",
+        "herb_hanja": "阿膠",
+        "herb_id": null,
+        "dosage": "2.5g",
+        "role": "좌"
+      },
+      {
         "herb_name": "행인",
         "herb_hanja": "杏仁",
-        "herb_id": "13-3-1",
+        "herb_id": null,
         "dosage": "2g",
         "role": "좌"
       },
       {
         "herb_name": "비파엽",
         "herb_hanja": "枇杷葉",
-        "herb_id": "13-2-13",
-        "dosage": "3g",
-        "role": "좌"
-      },
-      {
-        "herb_name": "아교",
-        "herb_hanja": "阿膠",
         "herb_id": null,
         "dosage": "3g",
         "role": "좌"
@@ -12364,17 +12656,19 @@
       "인비구갈"
     ],
     "source": "의문법률",
-    "contraindications": null,
+    "contraindications": [
+      "비위허한"
+    ],
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "온조(溫燥)가 극심하여 폐의 기음이 모두 상했을 때, 상엽/석고로 폐의 열을 끄고, 맥문동/아교/호마인으로 폐를 강력히 자윤하여 폐를 구출(救肺)함. 기음양허에 청열자음을 겸한 치조명방."
   },
   {
     "id": "BJ-15-004",
     "name": "증액탕",
     "hanja": "增液湯",
-    "starred": false,
+    "starred": true,
     "categoryMajor": "15. 치조제",
     "categoryMinor": "15-2. 자윤조제",
     "categoryBangyak": null,
@@ -12413,7 +12707,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "현삼/맥문동/생지황 세 가지 자음약(함한滋潤)을 대량으로 배합하여, 진액이 말라 대변이 굳어진 무형지열(無形之熱)을 식히고 진액을 불려 대변을 통하게 함. 온병 진액고갈의 증액(增液) 대표방."
   },
   {
     "id": "BJ-15-005",
@@ -12496,7 +12790,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "음허(陰虛)로 조열(燥熱)이 인후에 뭉친 백후(白喉, 디프테리아)에, 지황/맥문/현삼으로 물을 대고 박하로 열독을 흩으며 패모로 가래를 삭임. 인후에 백색 위막(僞膜)이 생기는 질환의 표준처방."
   },
   {
     "id": "BJ-15-006",
@@ -12512,19 +12806,33 @@
         "herb_name": "맥문동",
         "herb_hanja": "麥門冬",
         "herb_id": null,
-        "dosage": "42g",
+        "dosage": "60g",
         "role": "군"
+      },
+      {
+        "herb_name": "인삼",
+        "herb_hanja": "人蔘",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "신"
+      },
+      {
+        "herb_name": "갱미",
+        "herb_hanja": "粳米",
+        "herb_id": null,
+        "dosage": "10g",
+        "role": "신"
+      },
+      {
+        "herb_name": "대조",
+        "herb_hanja": "大棗",
+        "herb_id": null,
+        "dosage": "4매",
+        "role": "신"
       },
       {
         "herb_name": "반하",
         "herb_hanja": "半夏",
-        "herb_id": "13-1-1",
-        "dosage": "6g",
-        "role": "신"
-      },
-      {
-        "herb_name": "인삼",
-        "herb_hanja": "人參",
         "herb_id": null,
         "dosage": "9g",
         "role": "좌"
@@ -12535,20 +12843,6 @@
         "herb_id": null,
         "dosage": "6g",
         "role": "사"
-      },
-      {
-        "herb_name": "갱미",
-        "herb_hanja": "粳米",
-        "herb_id": null,
-        "dosage": "9g",
-        "role": "좌"
-      },
-      {
-        "herb_name": "대조",
-        "herb_hanja": "大棗",
-        "herb_id": null,
-        "dosage": "4매",
-        "role": "좌"
       }
     ],
     "efficacy": [
@@ -12561,11 +12855,13 @@
       "인건구조"
     ],
     "source": "금궤요략",
-    "contraindications": null,
+    "contraindications": [
+      "담탁해수금기"
+    ],
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "맥문동을 대량(반하의 7배)으로 써서 폐위(肺胃)의 진액을 강하게 자양하고, 소량의 반하를 배합하여 건조함으로 치밀어 오르는 기침과 역기를 내림. 건조해서 맞치는 역기(虛熱上逆)를 윤강(潤降)으로 치료."
   },
   {
     "id": "BJ-16-001",
@@ -12573,7 +12869,7 @@
     "hanja": "藿香正氣散",
     "starred": true,
     "categoryMajor": "16. 거습제",
-    "categoryMinor": "16-1. 방향화습제",
+    "categoryMinor": "16-1. 조습화위제",
     "categoryBangyak": null,
     "tags": [],
     "composition": [
@@ -12681,11 +12977,13 @@
       "복통설사"
     ],
     "source": "화제국방",
-    "contraindications": null,
+    "contraindications": [
+      "음허화왕"
+    ],
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "곽향/자소엽으로 밖의 풍한을 흩고, 후박/반하/대복피 등으로 안의 습체를 삭여 비위를 조화. 표리(表裏) 동시 치료로 위장관 감기(여름 감기)의 최고 명방."
   },
   {
     "id": "BJ-16-002",
@@ -12693,7 +12991,7 @@
     "hanja": "平胃散",
     "starred": true,
     "categoryMajor": "16. 거습제",
-    "categoryMinor": "16-1. 방향화습제",
+    "categoryMinor": "16-1. 조습화위제",
     "categoryBangyak": null,
     "tags": [],
     "composition": [
@@ -12752,11 +13050,14 @@
       "설태백니"
     ],
     "source": "간이방",
-    "contraindications": null,
+    "contraindications": [
+      "음허",
+      "임부금기"
+    ],
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "창출의 강한 조습(燥濕)력으로 비위의 습기를 말리고, 후박/진피로 기를 돌려 습(濕)으로 꽉 막힌 위장을 평화롭게 함. 거습제의 기본방(기본골격)."
   },
   {
     "id": "BJ-16-003",
@@ -12764,7 +13065,7 @@
     "hanja": "不換金正氣散",
     "starred": false,
     "categoryMajor": "16. 거습제",
-    "categoryMinor": "16-1. 방향화습제",
+    "categoryMinor": "16-1. 조습화위제",
     "categoryBangyak": null,
     "tags": [],
     "composition": [
@@ -12837,8 +13138,8 @@
     "contraindications": null,
     "modifications": null,
     "lesson": null,
-    "parentId": null,
-    "rationale": null
+    "parentId": "BJ-16-002",
+    "rationale": "평위산에 방향화습하는 곽향과 기를 내리는 반하를 더해, 외사(外邪)와 내부 식체가 겹친 곽란(토사 곽란)을 치료."
   },
   {
     "id": "BJ-16-004",
@@ -12846,17 +13147,10 @@
     "hanja": "五苓散",
     "starred": true,
     "categoryMajor": "16. 거습제",
-    "categoryMinor": "16-2. 이수삼습제",
+    "categoryMinor": "16-3. 이수삼습제",
     "categoryBangyak": null,
     "tags": [],
     "composition": [
-      {
-        "herb_name": "저령",
-        "herb_hanja": "猪苓",
-        "herb_id": null,
-        "dosage": "9g",
-        "role": "군"
-      },
       {
         "herb_name": "택사",
         "herb_hanja": "澤瀉",
@@ -12865,15 +13159,22 @@
         "role": "군"
       },
       {
-        "herb_name": "백출",
-        "herb_hanja": "白朮",
+        "herb_name": "복령",
+        "herb_hanja": "茯苓",
         "herb_id": null,
         "dosage": "9g",
         "role": "신"
       },
       {
-        "herb_name": "복령",
-        "herb_hanja": "茯苓",
+        "herb_name": "저령",
+        "herb_hanja": "猪苓",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "신"
+      },
+      {
+        "herb_name": "백출",
+        "herb_hanja": "白朮",
         "herb_id": null,
         "dosage": "9g",
         "role": "좌"
@@ -12881,9 +13182,9 @@
       {
         "herb_name": "계지",
         "herb_hanja": "桂枝",
-        "herb_id": "01-1-2",
+        "herb_id": null,
         "dosage": "6g",
-        "role": "좌"
+        "role": "사"
       }
     ],
     "efficacy": [
@@ -12897,11 +13198,13 @@
       "수역"
     ],
     "source": "상한론",
-    "contraindications": null,
+    "contraindications": [
+      "습열소변불리금기"
+    ],
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "이수삼습하는 복령/저령/택사/백출에 방광의 기화(氣化)를 돕는 계지를 더해, 정체된 수독(水毒)을 소변으로 빼냄. 방광축수증(膀胱蓄水)의 기본방."
   },
   {
     "id": "BJ-16-005",
@@ -12909,7 +13212,7 @@
     "hanja": "猪苓湯",
     "starred": false,
     "categoryMajor": "16. 거습제",
-    "categoryMinor": "16-2. 이수삼습제",
+    "categoryMinor": "16-3. 이수삼습제",
     "categoryBangyak": null,
     "tags": [],
     "composition": [
@@ -12964,15 +13267,15 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "오령산에서 백출/계지(온조)를 빼고 활석(청열)/아교(자음)를 넣어, 수열이 엉기고 진액이 상한 소변불리를 청열자음이수로 치료."
   },
   {
     "id": "BJ-16-006",
-    "name": "오피산",
-    "hanja": "五皮散",
+    "name": "오피음",
+    "hanja": "五皮飮",
     "starred": false,
     "categoryMajor": "16. 거습제",
-    "categoryMinor": "16-2. 이수삼습제",
+    "categoryMinor": "16-3. 이수삼습제",
     "categoryBangyak": null,
     "tags": [],
     "composition": [
@@ -13027,7 +13330,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "껍질(皮)은 껍질 부종(皮水)으로 간다는 이류상치(以類相治) 원리에 따라 5가지 약재의 껍질만 모아, 전신의 피부 부종을 이기화습하여 빼냄."
   },
   {
     "id": "BJ-16-007",
@@ -13035,7 +13338,7 @@
     "hanja": "防己黃芪湯",
     "starred": true,
     "categoryMajor": "16. 거습제",
-    "categoryMinor": "16-2. 이수삼습제",
+    "categoryMinor": "16-3. 이수삼습제",
     "categoryBangyak": null,
     "tags": [],
     "composition": [
@@ -13096,15 +13399,15 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "황기/백출로 기를 보하여 땀구멍을 닫고, 방기로 수습을 빼내어, 살이 찌고 땀이 많으며 잘 붓는 기허(氣虛)형 부종에 익기거풍이수."
   },
   {
     "id": "BJ-16-008",
-    "name": "실비음",
+    "name": "실비산",
     "hanja": "實脾飮",
     "starred": false,
     "categoryMajor": "16. 거습제",
-    "categoryMinor": "16-2. 이수삼습제",
+    "categoryMinor": "16-4. 온화한습제",
     "categoryBangyak": null,
     "tags": [],
     "composition": [
@@ -13201,7 +13504,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "진무탕과 유사하나 초과/후박/목향 등 이기(理氣) 약재가 대거 포함되어 기를 돌려 부종을 빼는 힘이 더 강함. 비신양허에 기체(氣滯)가 겸한 복부창만 수종에."
   },
   {
     "id": "BJ-16-009",
@@ -13209,14 +13512,14 @@
     "hanja": "三仁湯",
     "starred": false,
     "categoryMajor": "16. 거습제",
-    "categoryMinor": "16-3. 청열거습제",
+    "categoryMinor": "16-2. 청열거습제",
     "categoryBangyak": null,
     "tags": [],
     "composition": [
       {
         "herb_name": "행인",
         "herb_hanja": "杏仁",
-        "herb_id": "13-3-1",
+        "herb_id": null,
         "dosage": "15g",
         "role": "군"
       },
@@ -13225,49 +13528,49 @@
         "herb_hanja": "白豆蔲",
         "herb_id": null,
         "dosage": "6g",
-        "role": "신"
+        "role": "군"
       },
       {
         "herb_name": "의이인",
         "herb_hanja": "薏苡仁",
         "herb_id": null,
         "dosage": "18g",
-        "role": "신"
+        "role": "군"
       },
       {
         "herb_name": "활석",
         "herb_hanja": "滑石",
         "herb_id": null,
         "dosage": "18g",
-        "role": "좌"
+        "role": "신좌"
       },
       {
         "herb_name": "통초",
         "herb_hanja": "通草",
         "herb_id": null,
         "dosage": "6g",
-        "role": "좌"
+        "role": "신좌"
       },
       {
         "herb_name": "담죽엽",
         "herb_hanja": "淡竹葉",
-        "herb_id": "2-1-8",
+        "herb_id": null,
         "dosage": "6g",
-        "role": "좌"
-      },
-      {
-        "herb_name": "반하",
-        "herb_hanja": "半夏",
-        "herb_id": "13-1-1",
-        "dosage": "10g",
-        "role": "좌"
+        "role": "신좌"
       },
       {
         "herb_name": "후박",
         "herb_hanja": "厚朴",
         "herb_id": null,
         "dosage": "6g",
-        "role": "좌"
+        "role": "신좌"
+      },
+      {
+        "herb_name": "반하",
+        "herb_hanja": "半夏",
+        "herb_id": null,
+        "dosage": "10g",
+        "role": "신좌"
       }
     ],
     "efficacy": [
@@ -13284,7 +13587,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "행인(상초 폐기 선발), 백두구(중초 비위 화습), 의이인(하초 습 이수)의 세 가지 씨앗으로 삼초의 기운을 소통시켜 습열을 뺌. 습이 열보다 우세한 습온초기의 대표방."
   },
   {
     "id": "BJ-16-010",
@@ -13292,7 +13595,7 @@
     "hanja": "茵蔯蒿湯",
     "starred": true,
     "categoryMajor": "16. 거습제",
-    "categoryMinor": "16-3. 청열거습제",
+    "categoryMinor": "16-2. 청열거습제",
     "categoryBangyak": null,
     "tags": [],
     "composition": [
@@ -13332,7 +13635,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "인진호로 습열을 소변으로 이끌고, 치자로 삼초의 열을 끄며, 대황으로 어열(瘀熱)을 대변으로 빼내, 이변(二便)을 통해 습열 황달을 걷어냄."
   },
   {
     "id": "BJ-16-011",
@@ -13340,20 +13643,20 @@
     "hanja": "八正散",
     "starred": true,
     "categoryMajor": "16. 거습제",
-    "categoryMinor": "16-3. 청열거습제",
+    "categoryMinor": "16-2. 청열거습제",
     "categoryBangyak": null,
     "tags": [],
     "composition": [
       {
-        "herb_name": "구맥",
-        "herb_hanja": "瞿麥",
+        "herb_name": "목통",
+        "herb_hanja": "木通",
         "herb_id": null,
         "dosage": "9g",
         "role": "군"
       },
       {
-        "herb_name": "편축",
-        "herb_hanja": "萹蓄",
+        "herb_name": "활석",
+        "herb_hanja": "滑石",
         "herb_id": null,
         "dosage": "9g",
         "role": "군"
@@ -13366,8 +13669,15 @@
         "role": "신"
       },
       {
-        "herb_name": "활석",
-        "herb_hanja": "滑石",
+        "herb_name": "구맥",
+        "herb_hanja": "瞿麥",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "신"
+      },
+      {
+        "herb_name": "편축",
+        "herb_hanja": "扁蓄",
         "herb_id": null,
         "dosage": "9g",
         "role": "신"
@@ -13376,13 +13686,6 @@
         "herb_name": "치자",
         "herb_hanja": "梔子",
         "herb_id": "2-1-6",
-        "dosage": "9g",
-        "role": "좌"
-      },
-      {
-        "herb_name": "목통",
-        "herb_hanja": "木通",
-        "herb_id": null,
         "dosage": "9g",
         "role": "좌"
       },
@@ -13423,15 +13726,15 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "5가지 이수통림약으로 방광의 습열을 소변으로 강력히 빼고, 대황/치자로 열을 대변으로 분소하여 열림(熱淋)·혈림의 배뇨삽통을 치료."
   },
   {
     "id": "BJ-16-012",
     "name": "이묘산",
     "hanja": "二妙散",
-    "starred": false,
+    "starred": true,
     "categoryMajor": "16. 거습제",
-    "categoryMinor": "16-3. 청열거습제",
+    "categoryMinor": "16-2. 청열거습제",
     "categoryBangyak": null,
     "tags": [],
     "composition": [
@@ -13463,7 +13766,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "고한한 황백(청열)과 신고한 창출(조습) 두 가지만으로, 하초로 쏟아져 내리는 습열을 말리고 끄는 이묘(二妙)의 명방."
   },
   {
     "id": "BJ-16-013",
@@ -13471,7 +13774,7 @@
     "hanja": "三妙丸",
     "starred": false,
     "categoryMajor": "16. 거습제",
-    "categoryMinor": "16-3. 청열거습제",
+    "categoryMinor": "16-2. 청열거습제",
     "categoryBangyak": null,
     "tags": [],
     "composition": [
@@ -13509,8 +13812,8 @@
     "contraindications": null,
     "modifications": null,
     "lesson": null,
-    "parentId": null,
-    "rationale": null
+    "parentId": "BJ-16-012",
+    "rationale": "이묘산에 우슬을 더해 약 기운을 하반신으로 이끌며(인경) 근육과 경락을 뚫어 하반신 습열 통증에 더 특화."
   },
   {
     "id": "BJ-16-014",
@@ -13518,7 +13821,7 @@
     "hanja": "四妙丸",
     "starred": false,
     "categoryMajor": "16. 거습제",
-    "categoryMinor": "16-3. 청열거습제",
+    "categoryMinor": "16-2. 청열거습제",
     "categoryBangyak": null,
     "tags": [],
     "composition": [
@@ -13563,8 +13866,8 @@
     "contraindications": null,
     "modifications": null,
     "lesson": null,
-    "parentId": null,
-    "rationale": null
+    "parentId": "BJ-16-012",
+    "rationale": "삼묘환에 의이인(율무)을 더해 관절에 고인 습열을 소변으로 이끌어내어 하반신 무력증(위증)을 다스림."
   },
   {
     "id": "BJ-17-001",
@@ -13630,11 +13933,13 @@
       "현훈심계"
     ],
     "source": "화제국방",
-    "contraindications": null,
+    "contraindications": [
+      "음허조담금기"
+    ],
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "매운 반하로 습담을 조화하고, 진피로 기를 돌려 담을 없애며(이기화담), 복령으로 습을 소변으로 빼내고, 오매의 수렴성으로 반하의 과도한 조조(燥燥)를 견제. 모든 담증(痰症) 치료의 총방(總方)."
   },
   {
     "id": "BJ-17-002",
@@ -13649,14 +13954,14 @@
       {
         "herb_name": "반하",
         "herb_hanja": "半夏",
-        "herb_id": "13-1-1",
+        "herb_id": null,
         "dosage": "6g",
         "role": "군"
       },
       {
         "herb_name": "죽여",
         "herb_hanja": "竹茹",
-        "herb_id": "13-2-7",
+        "herb_id": null,
         "dosage": "6g",
         "role": "신"
       },
@@ -13665,7 +13970,7 @@
         "herb_hanja": "枳實",
         "herb_id": null,
         "dosage": "6g",
-        "role": "좌"
+        "role": "신"
       },
       {
         "herb_name": "진피",
@@ -13675,17 +13980,10 @@
         "role": "좌"
       },
       {
-        "herb_name": "감초",
-        "herb_hanja": "甘草",
-        "herb_id": null,
-        "dosage": "3g",
-        "role": "사"
-      },
-      {
         "herb_name": "복령",
         "herb_hanja": "茯苓",
         "herb_id": null,
-        "dosage": "5g",
+        "dosage": "4.5g",
         "role": "좌"
       },
       {
@@ -13693,13 +13991,20 @@
         "herb_hanja": "生薑",
         "herb_id": "01-1-11",
         "dosage": "3g",
-        "role": "사"
+        "role": "좌"
       },
       {
         "herb_name": "대조",
         "herb_hanja": "大棗",
         "herb_id": null,
         "dosage": "2매",
+        "role": "좌"
+      },
+      {
+        "herb_name": "감초",
+        "herb_hanja": "甘草",
+        "herb_id": null,
+        "dosage": "3g",
         "role": "사"
       }
     ],
@@ -13718,7 +14023,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "이진탕의 변방 성격이나 독자적 본방으로 쓰임. 반하/지실/진피의 온성(溫性)에 대나무의 서늘한 죽여를 배합해 열담(熱痰)을 삭이고 담(膽)을 평온케 하여 담울탁요(膽鬱痰擾)의 불면/구토를 치료."
   },
   {
     "id": "BJ-17-003",
@@ -13795,8 +14100,8 @@
     "contraindications": null,
     "modifications": null,
     "lesson": null,
-    "parentId": null,
-    "rationale": null
+    "parentId": "BJ-17-001",
+    "rationale": "이진탕에 담을 강하게 깨는 남성과 기를 내리는 지실을 더해, 완고한 담음이 경락을 막아 기절하거나 사지가 마비되는 담궐(痰厥)을 다스림."
   },
   {
     "id": "BJ-17-004",
@@ -13816,22 +14121,29 @@
         "role": "군"
       },
       {
-        "herb_name": "반하",
-        "herb_hanja": "半夏",
-        "herb_id": "13-1-1",
-        "dosage": "9g",
-        "role": "신"
-      },
-      {
         "herb_name": "과루인",
         "herb_hanja": "瓜蔞仁",
         "herb_id": null,
         "dosage": "6g",
-        "role": "좌"
+        "role": "신"
       },
       {
         "herb_name": "황금",
         "herb_hanja": "黃芩",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "신"
+      },
+      {
+        "herb_name": "반하",
+        "herb_hanja": "半夏",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "지실",
+        "herb_hanja": "枳實",
         "herb_id": null,
         "dosage": "6g",
         "role": "좌"
@@ -13846,13 +14158,6 @@
       {
         "herb_name": "행인",
         "herb_hanja": "杏仁",
-        "herb_id": "13-3-1",
-        "dosage": "6g",
-        "role": "좌"
-      },
-      {
-        "herb_name": "지실",
-        "herb_hanja": "枳實",
         "herb_id": null,
         "dosage": "6g",
         "role": "좌"
@@ -13878,7 +14183,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "대고대한한 담남성과 황금으로 열을 끄고, 과루인으로 담을 씻어내며, 행인/지실로 꽉 막힌 기를 내려 황색의 끈적한 열담(熱痰)을 다스림."
   },
   {
     "id": "BJ-17-005",
@@ -13898,18 +14203,18 @@
         "role": "군"
       },
       {
-        "herb_name": "반하",
-        "herb_hanja": "半夏",
-        "herb_id": "13-1-1",
-        "dosage": "12g",
+        "herb_name": "과루실",
+        "herb_hanja": "瓜蔞實",
+        "herb_id": null,
+        "dosage": "15g",
         "role": "신"
       },
       {
-        "herb_name": "과루",
-        "herb_hanja": "瓜蔞",
-        "herb_id": "13-2-3",
-        "dosage": "20g",
-        "role": "좌"
+        "herb_name": "반하",
+        "herb_hanja": "半夏",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "좌사"
       }
     ],
     "efficacy": [
@@ -13922,11 +14227,13 @@
       "안흉통"
     ],
     "source": "상한론",
-    "contraindications": null,
+    "contraindications": [
+      "한담결흉금기"
+    ],
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "황련으로 심위의 열을 끄고, 과루실로 가슴의 담열을 씻어내며(관흉), 반하로 맺힌 것을 흩어 명치 아래의 소결흉(按之則痛)을 치료. 단 3가지 약재로 청열화담관흉."
   },
   {
     "id": "BJ-17-006",
@@ -13980,13 +14287,13 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "대황/황금의 강한 사하 및 청열력으로 완고한 실열담(實熱痰)을 대변으로 굴려내고(滾), 몽석(礞石)으로 묵은 담을 깨부수며, 침향으로 기를 내려 담이 경락을 막아 생기는 전간(癲癎)·조광(躁狂)에 사용."
   },
   {
     "id": "BJ-17-007",
     "name": "삼자양친탕",
     "hanja": "三子養親湯",
-    "starred": false,
+    "starred": true,
     "categoryMajor": "17. 화담제",
     "categoryMinor": "17-3. 온화한담제",
     "categoryBangyak": null,
@@ -14024,11 +14331,13 @@
       "복부창만"
     ],
     "source": "한씨의통",
-    "contraindications": null,
+    "contraindications": [
+      "기허금기"
+    ],
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "3가지 씨앗(소자=기내림, 백개자=온성담삭임, 나복자=식적소통)을 볶아 써서 노인들의 차가운 가래를 삭이고 기를 내리며 체한 것을 뚫어줌. 담옹기역식체(痰壅氣逆食滯)에 특화."
   },
   {
     "id": "BJ-17-008",
@@ -14104,7 +14413,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "복령/감초로 비를 튼튼히 하고, 건강/세신으로 폐를 덥혀 한담(寒痰)을 녹이며, 오미자로 기침을 수렴하고 반하/행인으로 폐기를 내림. 비폐허한(脾肺虛寒)으로 맑고 묽은 가래가 많이 나오는 한음(寒飮)에 표준."
   },
   {
     "id": "BJ-17-009",
@@ -14119,57 +14428,57 @@
       {
         "herb_name": "반하",
         "herb_hanja": "半夏",
-        "herb_id": "13-1-1",
-        "dosage": "9g",
+        "herb_id": null,
+        "dosage": "4.5g",
         "role": "군"
       },
       {
         "herb_name": "천마",
         "herb_hanja": "天麻",
         "herb_id": null,
-        "dosage": "6g",
+        "dosage": "3g",
         "role": "군"
       },
       {
         "herb_name": "백출",
         "herb_hanja": "白朮",
         "herb_id": null,
-        "dosage": "15g",
+        "dosage": "9g",
+        "role": "신"
+      },
+      {
+        "herb_name": "진피",
+        "herb_hanja": "橘紅",
+        "herb_id": null,
+        "dosage": "3g",
         "role": "신"
       },
       {
         "herb_name": "복령",
         "herb_hanja": "茯苓",
         "herb_id": null,
-        "dosage": "6g",
+        "dosage": "3g",
         "role": "좌"
-      },
-      {
-        "herb_name": "진피",
-        "herb_hanja": "陳皮",
-        "herb_id": null,
-        "dosage": "6g",
-        "role": "좌"
-      },
-      {
-        "herb_name": "감초",
-        "herb_hanja": "甘草",
-        "herb_id": null,
-        "dosage": "5g",
-        "role": "사"
       },
       {
         "herb_name": "생강",
         "herb_hanja": "生薑",
         "herb_id": "01-1-11",
         "dosage": "3g",
-        "role": "사"
+        "role": "좌"
       },
       {
         "herb_name": "대조",
         "herb_hanja": "大棗",
         "herb_id": null,
         "dosage": "3매",
+        "role": "좌"
+      },
+      {
+        "herb_name": "감초",
+        "herb_hanja": "甘草",
+        "herb_id": null,
+        "dosage": "1.5g",
         "role": "사"
       }
     ],
@@ -14183,11 +14492,13 @@
       "오심구토"
     ],
     "source": "의학심오",
-    "contraindications": null,
+    "contraindications": [
+      "음허양항금기"
+    ],
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "비가 허하여 생긴 담(반하/백출)과 풍(천마)이 결합하여 위로 치솟는 풍담현훈(風痰眩暈)을 다스림. 반하/천마 조합이 핵심 — 담이 없으면 천마가 소용없고, 풍이 없으면 반하가 소용없다."
   },
   {
     "id": "BJ-17-010",
@@ -14292,7 +14603,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "담남성/반하로 강하게 화담하고, 천마로 식풍, 석창포로 개규성신하며, 전갈로 경련을 멈추고, 원지/단삼으로 안심정지(安心定志)하여 담화(痰火)로 인한 전간(간질)·전증(癲症)을 치료."
   },
   {
     "id": "BJ-18-001",
@@ -14364,11 +14675,13 @@
       "오심구토"
     ],
     "source": "단계심법",
-    "contraindications": null,
+    "contraindications": [
+      "비위허약금기"
+    ],
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "산사(고기/기름), 신곡(술/면), 나복자(곡물) 3종 소화제로 모든 식체를 녹이고, 연교를 배합해 식체로 인해 발생한 속열을 끔. 건비 없이 오직 소도(消導)에 집중하는 모든 식체의 기본방."
   },
   {
     "id": "BJ-18-002",
@@ -14376,7 +14689,7 @@
     "hanja": "健脾丸",
     "starred": false,
     "categoryMajor": "18. 소식제",
-    "categoryMinor": "18-1. 소식화체제",
+    "categoryMinor": "18-2. 건비소식제",
     "categoryBangyak": null,
     "tags": [],
     "composition": [
@@ -14388,67 +14701,88 @@
         "role": "군"
       },
       {
-        "herb_name": "인삼",
-        "herb_hanja": "人參",
+        "herb_name": "복령",
+        "herb_hanja": "茯苓",
         "herb_id": null,
         "dosage": "9g",
         "role": "군"
       },
       {
-        "herb_name": "산사",
-        "herb_hanja": "山楂",
-        "herb_id": "9-1",
+        "herb_name": "인삼",
+        "herb_hanja": "人蔘",
+        "herb_id": null,
         "dosage": "9g",
         "role": "신"
       },
       {
-        "herb_name": "신곡",
-        "herb_hanja": "神麴",
-        "herb_id": "9-2",
-        "dosage": "6g",
-        "role": "신"
-      },
-      {
-        "herb_name": "맥아",
-        "herb_hanja": "麥芽",
-        "herb_id": "9-3",
-        "dosage": "6g",
-        "role": "신"
-      },
-      {
-        "herb_name": "진피",
-        "herb_hanja": "陳皮",
+        "herb_name": "감초",
+        "herb_hanja": "甘草",
         "herb_id": null,
         "dosage": "6g",
-        "role": "좌"
-      },
-      {
-        "herb_name": "지실",
-        "herb_hanja": "枳實",
-        "herb_id": null,
-        "dosage": "6g",
-        "role": "좌"
+        "role": "신"
       },
       {
         "herb_name": "산약",
         "herb_hanja": "山藥",
         "herb_id": null,
         "dosage": "9g",
-        "role": "좌"
+        "role": "신"
+      },
+      {
+        "herb_name": "육두구",
+        "herb_hanja": "肉豆蔲",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "신"
+      },
+      {
+        "herb_name": "산사",
+        "herb_hanja": "山楂",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "좌사"
+      },
+      {
+        "herb_name": "신곡",
+        "herb_hanja": "神麯",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "좌사"
+      },
+      {
+        "herb_name": "맥아",
+        "herb_hanja": "麥芽",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "좌사"
+      },
+      {
+        "herb_name": "진피",
+        "herb_hanja": "陳皮",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "좌사"
       },
       {
         "herb_name": "사인",
         "herb_hanja": "砂仁",
         "herb_id": null,
         "dosage": "3g",
-        "role": "좌"
+        "role": "좌사"
+      },
+      {
+        "herb_name": "목향",
+        "herb_hanja": "木香",
+        "herb_id": null,
+        "dosage": "3g",
+        "role": "좌사"
       },
       {
         "herb_name": "황련",
         "herb_hanja": "黃連",
         "herb_id": null,
         "dosage": "3g",
-        "role": "좌"
+        "role": "좌사"
       }
     ],
     "efficacy": [
@@ -14463,7 +14797,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "사군자탕(백출/복령/인삼/감초) 베이스에 산약/육두구를 더해 비위를 강하게 보하고(보가 위주), 소화제(산사/신곡/맥아)와 이기약(목향/사인)을 보좌로 써서 허약자의 식체를 다스림."
   },
   {
     "id": "BJ-18-003",
@@ -14546,7 +14880,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "대황으로 강하게 사하하여 쌓인 식체를 뚫고, 지실/신곡으로 소도(消導)하며, 황금/황련으로 습열을 끄고, 복령/백출/택사로 습을 빼냄. 식체로 인해 습열이 생겨 복통과 설사가 동반될 때 공하소도(攻下消導)."
   },
   {
     "id": "BJ-19-001",
@@ -14562,13 +14896,34 @@
         "herb_name": "오매",
         "herb_hanja": "烏梅",
         "herb_id": null,
-        "dosage": "30매",
+        "dosage": "300매",
         "role": "군"
+      },
+      {
+        "herb_name": "촉초",
+        "herb_hanja": "蜀椒",
+        "herb_id": null,
+        "dosage": "4g",
+        "role": "신"
       },
       {
         "herb_name": "세신",
         "herb_hanja": "細辛",
-        "herb_id": "01-1-10",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "신"
+      },
+      {
+        "herb_name": "황련",
+        "herb_hanja": "黃連",
+        "herb_id": null,
+        "dosage": "16g",
+        "role": "신"
+      },
+      {
+        "herb_name": "황백",
+        "herb_hanja": "黃柏",
+        "herb_id": null,
         "dosage": "6g",
         "role": "신"
       },
@@ -14589,34 +14944,13 @@
       {
         "herb_name": "계지",
         "herb_hanja": "桂枝",
-        "herb_id": "01-1-2",
-        "dosage": "6g",
-        "role": "좌"
-      },
-      {
-        "herb_name": "촉초",
-        "herb_hanja": "蜀椒",
-        "herb_id": null,
-        "dosage": "4g",
-        "role": "좌"
-      },
-      {
-        "herb_name": "황련",
-        "herb_hanja": "黃連",
-        "herb_id": null,
-        "dosage": "16g",
-        "role": "좌"
-      },
-      {
-        "herb_name": "황백",
-        "herb_hanja": "黃柏",
         "herb_id": null,
         "dosage": "6g",
         "role": "좌"
       },
       {
         "herb_name": "인삼",
-        "herb_hanja": "人參",
+        "herb_hanja": "人蔘",
         "herb_id": null,
         "dosage": "6g",
         "role": "좌"
@@ -14627,6 +14961,13 @@
         "herb_id": null,
         "dosage": "4g",
         "role": "좌"
+      },
+      {
+        "herb_name": "꿀",
+        "herb_hanja": "蜂蜜",
+        "herb_id": null,
+        "dosage": "적량",
+        "role": "사"
       }
     ],
     "efficacy": [
@@ -14645,7 +14986,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "신맛(오매)으로 회충을 진정시키고, 맵고 뜨거운 약(촉초/세신/건강/부자)으로 회충이 싫어하는 열을 가하며, 쓴 약(황련/황백)으로 회충을 죽이는 3단계 구충 원리. 한열이 뒤섞인 궐음병에도 응용."
   },
   {
     "id": "BJ-19-002",
@@ -14727,7 +15068,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "학슬/빈랑/고련근피/뇌환/관중 등 다양한 구충 약재를 총동원하여 장내 회충·요충·촌충 등을 죽이고 몰아냄. 사군자/무이는 강도를 조절하며, 백반으로 수렴하여 장을 보호. 다종 기생충에 대한 광범위 구충방."
   },
   {
     "id": "BJ-08-028",
@@ -14782,7 +15123,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "생지황을 대량으로 써서 폐신의 음을 자양하고, 복령으로 비를 보하며, 인삼으로 기를 보하고, 백밀로 폐를 윤조하게 함. 꿀처럼 달고 귀한 옥석(玉石)같은 처방(경옥고)으로 장기 복용하여 폐신음허를 완만하게 보충."
   },
   {
     "id": "BJ-16-015",
@@ -14790,7 +15131,7 @@
     "hanja": "當歸拏痛湯",
     "starred": false,
     "categoryMajor": "16. 거습제",
-    "categoryMinor": "16-3. 청열거습제",
+    "categoryMinor": "16-2. 청열거습제",
     "categoryBangyak": null,
     "tags": [
       "시방"
@@ -14915,7 +15256,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "강활/방풍으로 풍습 표사를 흩고, 창출/고삼/택사/저령으로 습을 빼내며, 황금/지모로 열을 끄고, 당귀로 혈을 보충하여 치풍선치혈. 풍습열(風濕熱)이 겹쳐 관절이 붓고 아프며 소변이 불리한 증상에 적합."
   },
   {
     "id": "BJ-04-023",
@@ -15115,7 +15456,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "마황으로 표한을 발산하고 행인으로 폐기를 내리며, 백전/자완/백부근으로 기침을 그침. 외감 한사(寒邪)로 폐의 숙강(肅降)이 막혀 생긴 해수에 사용하는 소해산한(疏解散寒)방."
   },
   {
     "id": "BJ-06-011",
@@ -15196,7 +15537,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "차갑게 얼어붙은 음증 종기(음저)에 숙지황/녹각교로 혈을 보하면서 육계/포강으로 양기를 맹렬히 지피고, 마황으로 땀구멍을 열어 한독을 뺌. (21장 양화탕과 동일 처방)."
   },
   {
     "id": "BJ-13-015",
@@ -15243,7 +15584,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
+    "rationale": "단삼을 대량(30g)으로 써서 어혈을 강하게 제거하면서, 사인/단향으로 기를 돌려 위기(胃氣)를 조화. 기체혈어(氣滯血瘀)로 인한 심위통(心胃痛)에 활혈이기지통(活血理氣止痛). 단삼 하나로 사물탕 역할을 한다는 명언과 함께."
   },
   {
     "id": "BJ-17-011",
@@ -15297,61 +15638,7 @@
     "modifications": null,
     "lesson": null,
     "parentId": null,
-    "rationale": null
-  },
-  {
-    "id": "BJ-08-029",
-    "name": "귀록이선교",
-    "hanja": "龜鹿二仙膠",
-    "starred": false,
-    "categoryMajor": "8. 보익제",
-    "categoryMinor": "8-5. 보양제",
-    "categoryBangyak": null,
-    "tags": [],
-    "composition": [
-      {
-        "herb_name": "녹각",
-        "herb_hanja": "鹿角",
-        "herb_id": null,
-        "dosage": "250g",
-        "role": "군"
-      },
-      {
-        "herb_name": "귀판",
-        "herb_hanja": "龜板",
-        "herb_id": null,
-        "dosage": "250g",
-        "role": "신"
-      },
-      {
-        "herb_name": "인삼",
-        "herb_hanja": "人蔘",
-        "herb_id": null,
-        "dosage": "45g",
-        "role": "좌"
-      },
-      {
-        "herb_name": "구기자",
-        "herb_hanja": "枸杞子",
-        "herb_id": null,
-        "dosage": "90g",
-        "role": "좌"
-      }
-    ],
-    "efficacy": [
-      "자음보양",
-      "전정익기"
-    ],
-    "indications": [
-      "정혈쇠소",
-      "기허정냉"
-    ],
-    "source": "의편",
-    "contraindications": null,
-    "modifications": null,
-    "lesson": null,
-    "parentId": null,
-    "rationale": null
+    "rationale": "반하/복령으로 습담을 조화하고, 풍화초(망초의 풍화 제형)로 완고한 담을 더 강하게 삭여 팔을 돌리기 힘들 정도로 어깨/팔에 담음이 쌓인 증상을 다스림. 痰飮着肩臂의 전문방."
   },
   {
     "id": "BJ-01-020",
@@ -20280,75 +20567,660 @@
     "categoryMinor": "8-4. 보음제",
     "categoryBangyak": null,
     "tags": [],
-    "composition": [],
-    "efficacy": null,
-    "indications": null,
-    "source": null,
+    "composition": [
+      {
+        "herb_name": "숙지황",
+        "herb_hanja": "熟地黃",
+        "herb_id": null,
+        "dosage": "24g",
+        "role": "군"
+      },
+      {
+        "herb_name": "산수유",
+        "herb_hanja": "山茱萸",
+        "herb_id": null,
+        "dosage": "12g",
+        "role": "신"
+      },
+      {
+        "herb_name": "산약",
+        "herb_hanja": "山藥",
+        "herb_id": null,
+        "dosage": "12g",
+        "role": "신"
+      },
+      {
+        "herb_name": "택사",
+        "herb_hanja": "澤瀉",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "목단피",
+        "herb_hanja": "牧丹皮",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "복령",
+        "herb_hanja": "茯苓",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "구기자",
+        "herb_hanja": "枸杞子",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "국화",
+        "herb_hanja": "菊花",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "좌"
+      }
+    ],
+    "efficacy": [
+      "자신양간명목"
+    ],
+    "indications": [
+      "간신음허",
+      "목질",
+      "시물혼화",
+      "안목건삽",
+      "유루"
+    ],
+    "source": "의급",
     "contraindications": null,
     "modifications": null,
     "usage": null,
     "parentId": "BJ-08-016",
-    "rationale": null,
+    "rationale": "육미지황환에 구기자와 국화를 더해 간신음을 자양하고 눈의 정기를 밝게 함.",
     "lesson": null
   },
   {
     "id": "BJ-08-033",
     "name": "지황음자",
     "hanja": "地黃飮子",
-    "starred": false,
+    "starred": true,
     "categoryMajor": "8. 보익제",
     "categoryMinor": "8-6. 음양쌍보제",
     "categoryBangyak": null,
     "tags": [],
-    "composition": [],
-    "efficacy": null,
-    "indications": null,
-    "source": null,
-    "contraindications": null,
+    "composition": [
+      {
+        "herb_name": "숙지황",
+        "herb_hanja": "熟地黃",
+        "herb_id": null,
+        "dosage": null,
+        "role": "군"
+      },
+      {
+        "herb_name": "파극천",
+        "herb_hanja": "巴戟天",
+        "herb_id": null,
+        "dosage": null,
+        "role": "군"
+      },
+      {
+        "herb_name": "산수유",
+        "herb_hanja": "山茱萸",
+        "herb_id": null,
+        "dosage": null,
+        "role": "군"
+      },
+      {
+        "herb_name": "육종용",
+        "herb_hanja": "肉蓯蓉",
+        "herb_id": null,
+        "dosage": null,
+        "role": "군"
+      },
+      {
+        "herb_name": "부자",
+        "herb_hanja": "附子",
+        "herb_id": null,
+        "dosage": null,
+        "role": "신"
+      },
+      {
+        "herb_name": "육계",
+        "herb_hanja": "肉桂",
+        "herb_id": null,
+        "dosage": null,
+        "role": "신"
+      },
+      {
+        "herb_name": "석곡",
+        "herb_hanja": "石斛",
+        "herb_id": null,
+        "dosage": null,
+        "role": "신"
+      },
+      {
+        "herb_name": "맥문동",
+        "herb_hanja": "麥門冬",
+        "herb_id": null,
+        "dosage": null,
+        "role": "신"
+      },
+      {
+        "herb_name": "오미자",
+        "herb_hanja": "五味子",
+        "herb_id": null,
+        "dosage": null,
+        "role": "신"
+      },
+      {
+        "herb_name": "석창포",
+        "herb_hanja": "石菖蒲",
+        "herb_id": null,
+        "dosage": null,
+        "role": "좌"
+      },
+      {
+        "herb_name": "원지",
+        "herb_hanja": "遠志",
+        "herb_id": null,
+        "dosage": null,
+        "role": "좌"
+      },
+      {
+        "herb_name": "복령",
+        "herb_hanja": "茯苓",
+        "herb_id": null,
+        "dosage": null,
+        "role": "좌"
+      },
+      {
+        "herb_name": "생강",
+        "herb_hanja": "生薑",
+        "herb_id": null,
+        "dosage": null,
+        "role": "사"
+      },
+      {
+        "herb_name": "대조",
+        "herb_hanja": "大棗",
+        "herb_id": null,
+        "dosage": null,
+        "role": "사"
+      }
+    ],
+    "efficacy": [
+      "자신음",
+      "보신양",
+      "개규화담"
+    ],
+    "indications": [
+      "음비증",
+      "하반신마비",
+      "언어불능",
+      "족랭"
+    ],
+    "source": "선명론방",
+    "contraindications": [
+      "기화상승"
+    ],
     "modifications": null,
     "usage": null,
     "parentId": null,
-    "rationale": null,
+    "rationale": "신음과 신양을 함께 보하면서(음양쌍보), 창포와 원지로 막힌 구멍을 뚫어 중풍 후유증 등을 치료함.",
     "lesson": null
   },
   {
     "id": "BJ-08-034",
     "name": "칠보미염단",
     "hanja": "七寶美髥丹",
-    "starred": false,
+    "starred": true,
     "categoryMajor": "8. 보익제",
     "categoryMinor": "8-6. 음양쌍보제",
     "categoryBangyak": null,
     "tags": [],
-    "composition": [],
-    "efficacy": null,
-    "indications": null,
-    "source": null,
-    "contraindications": null,
+    "composition": [
+      {
+        "herb_name": "적하수오",
+        "herb_hanja": "赤何首烏",
+        "herb_id": null,
+        "dosage": null,
+        "role": "군"
+      },
+      {
+        "herb_name": "백하수오",
+        "herb_hanja": "白何首烏",
+        "herb_id": null,
+        "dosage": null,
+        "role": "군"
+      },
+      {
+        "herb_name": "적복령",
+        "herb_hanja": "赤茯苓",
+        "herb_id": null,
+        "dosage": null,
+        "role": "신"
+      },
+      {
+        "herb_name": "백복령",
+        "herb_hanja": "白茯苓",
+        "herb_id": null,
+        "dosage": null,
+        "role": "신"
+      },
+      {
+        "herb_name": "우슬",
+        "herb_hanja": "牛膝",
+        "herb_id": null,
+        "dosage": null,
+        "role": "신"
+      },
+      {
+        "herb_name": "당귀",
+        "herb_hanja": "當歸",
+        "herb_id": null,
+        "dosage": null,
+        "role": "신"
+      },
+      {
+        "herb_name": "구기자",
+        "herb_hanja": "枸杞子",
+        "herb_id": null,
+        "dosage": null,
+        "role": "신"
+      },
+      {
+        "herb_name": "토사자",
+        "herb_hanja": "菟絲子",
+        "herb_id": null,
+        "dosage": null,
+        "role": "신"
+      },
+      {
+        "herb_name": "보골지",
+        "herb_hanja": "補骨脂",
+        "herb_id": null,
+        "dosage": null,
+        "role": "신"
+      }
+    ],
+    "efficacy": [
+      "자신수",
+      "익간혈"
+    ],
+    "indications": [
+      "간신양허",
+      "수발조백",
+      "치아동요",
+      "근골위약"
+    ],
+    "source": "의방집해",
+    "contraindications": [
+      "습담내성"
+    ],
     "modifications": null,
     "usage": null,
     "parentId": null,
-    "rationale": null,
+    "rationale": "하수오를 주축으로 신수(腎水)를 보하고 간혈을 길러, 머리카락을 검게 하고 근골을 튼튼하게 함.",
+    "lesson": null
+  },
+  {
+    "id": "BJ-08-035",
+    "name": "도귀환",
+    "hanja": "都氣丸",
+    "starred": false,
+    "categoryMajor": "8. 보익제",
+    "categoryMinor": "8-4. 보음제",
+    "categoryBangyak": null,
+    "tags": [],
+    "composition": [
+      {
+        "herb_name": "숙지황",
+        "herb_hanja": "熟地黃",
+        "herb_id": null,
+        "dosage": "24g",
+        "role": "군"
+      },
+      {
+        "herb_name": "산수유",
+        "herb_hanja": "山茱萸",
+        "herb_id": null,
+        "dosage": "12g",
+        "role": "신"
+      },
+      {
+        "herb_name": "산약",
+        "herb_hanja": "山藥",
+        "herb_id": null,
+        "dosage": "12g",
+        "role": "신"
+      },
+      {
+        "herb_name": "택사",
+        "herb_hanja": "澤瀉",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "목단피",
+        "herb_hanja": "牧丹皮",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "복령",
+        "herb_hanja": "茯苓",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "오미자",
+        "herb_hanja": "五味子",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "좌"
+      }
+    ],
+    "efficacy": [
+      "자신납기"
+    ],
+    "indications": [
+      "신허기천",
+      "애역"
+    ],
+    "source": "의종금감",
+    "contraindications": null,
+    "modifications": null,
+    "usage": null,
+    "parentId": "BJ-08-016",
+    "rationale": "육미지황환에 오미자를 더해, 신장(腎)이 기운을 받아들이지 못해 생기는 숨가쁨(허천)을 다스림.",
+    "lesson": null
+  },
+  {
+    "id": "BJ-08-036",
+    "name": "맥미지황환",
+    "hanja": "麥味地黃丸",
+    "starred": false,
+    "categoryMajor": "8. 보익제",
+    "categoryMinor": "8-4. 보음제",
+    "categoryBangyak": null,
+    "tags": [],
+    "composition": [
+      {
+        "herb_name": "숙지황",
+        "herb_hanja": "熟地黃",
+        "herb_id": null,
+        "dosage": "24g",
+        "role": "군"
+      },
+      {
+        "herb_name": "산수유",
+        "herb_hanja": "山茱萸",
+        "herb_id": null,
+        "dosage": "12g",
+        "role": "신"
+      },
+      {
+        "herb_name": "산약",
+        "herb_hanja": "山藥",
+        "herb_id": null,
+        "dosage": "12g",
+        "role": "신"
+      },
+      {
+        "herb_name": "택사",
+        "herb_hanja": "澤瀉",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "목단피",
+        "herb_hanja": "牧丹皮",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "복령",
+        "herb_hanja": "茯苓",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "맥문동",
+        "herb_hanja": "麥門冬",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "오미자",
+        "herb_hanja": "五味子",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "좌"
+      }
+    ],
+    "efficacy": [
+      "자신양폐"
+    ],
+    "indications": [
+      "폐신음허",
+      "천해",
+      "조열"
+    ],
+    "source": "의종금감",
+    "contraindications": null,
+    "modifications": null,
+    "usage": null,
+    "parentId": "BJ-08-016",
+    "rationale": "육미지황환에 맥문동과 오미자를 더해 폐와 신의 음을 동시에 기르며 기침을 가라앉힘. (팔선장수환)",
+    "lesson": null
+  },
+  {
+    "id": "BJ-08-037",
+    "name": "이지환",
+    "hanja": "二至丸",
+    "starred": false,
+    "categoryMajor": "8. 보익제",
+    "categoryMinor": "8-4. 보음제",
+    "categoryBangyak": null,
+    "tags": [],
+    "composition": [
+      {
+        "herb_name": "여정자",
+        "herb_hanja": "女貞子",
+        "herb_id": null,
+        "dosage": null,
+        "role": "군"
+      },
+      {
+        "herb_name": "한련초",
+        "herb_hanja": "旱蓮草",
+        "herb_id": null,
+        "dosage": null,
+        "role": "신"
+      }
+    ],
+    "efficacy": [
+      "보신양간"
+    ],
+    "indications": [
+      "간신음허",
+      "실신이명",
+      "수발조백",
+      "치아동요"
+    ],
+    "source": "의방집해",
+    "contraindications": [
+      "비허변당"
+    ],
+    "modifications": null,
+    "usage": null,
+    "parentId": null,
+    "rationale": "겨울에 따는 여정실과 여름에 따는 한련초 두 가지만으로 간신의 음을 보하여 머리를 검게 하고 뼈를 튼튼히 함.",
+    "lesson": null
+  },
+  {
+    "id": "BJ-08-038",
+    "name": "제생신기환",
+    "hanja": "濟生腎氣丸",
+    "starred": false,
+    "categoryMajor": "8. 보익제",
+    "categoryMinor": "8-5. 보양제",
+    "categoryBangyak": null,
+    "tags": [],
+    "composition": [
+      {
+        "herb_name": "부자",
+        "herb_hanja": "附子",
+        "herb_id": null,
+        "dosage": "3g",
+        "role": "군"
+      },
+      {
+        "herb_name": "계지",
+        "herb_hanja": "桂枝",
+        "herb_id": "01-1-2",
+        "dosage": "3g",
+        "role": "군"
+      },
+      {
+        "herb_name": "건지황",
+        "herb_hanja": "乾地黃",
+        "herb_id": null,
+        "dosage": "24g",
+        "role": "신"
+      },
+      {
+        "herb_name": "산약",
+        "herb_hanja": "山藥",
+        "herb_id": null,
+        "dosage": "12g",
+        "role": "신"
+      },
+      {
+        "herb_name": "산수유",
+        "herb_hanja": "山茱萸",
+        "herb_id": null,
+        "dosage": "12g",
+        "role": "신"
+      },
+      {
+        "herb_name": "복령",
+        "herb_hanja": "茯苓",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "택사",
+        "herb_hanja": "澤瀉",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "목단피",
+        "herb_hanja": "牧丹皮",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "우슬",
+        "herb_hanja": "牛膝",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "차전자",
+        "herb_hanja": "車前子",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "좌"
+      }
+    ],
+    "efficacy": [
+      "온신조양",
+      "이수소종"
+    ],
+    "indications": [
+      "신양허",
+      "수종",
+      "소변불리"
+    ],
+    "source": "제생방",
+    "contraindications": null,
+    "modifications": null,
+    "usage": null,
+    "parentId": "BJ-08-022",
+    "rationale": "신기환에 우슬과 차전자를 더해, 신양 허약으로 인해 몸이 붓고 소변이 잘 나오지 않는 수종(水腫)을 다스림.",
     "lesson": null
   },
   {
     "id": "BJ-09-009",
     "name": "목려산",
     "hanja": "牡蠣散",
-    "starred": false,
+    "starred": true,
     "categoryMajor": "9. 고삽제",
     "categoryMinor": "9-1. 고표지한제",
     "categoryBangyak": null,
     "tags": [],
-    "composition": [],
-    "efficacy": null,
-    "indications": null,
-    "source": null,
-    "contraindications": null,
+    "composition": [
+      {
+        "herb_name": "모려",
+        "herb_hanja": "牡蠣",
+        "herb_id": null,
+        "dosage": null,
+        "role": "군"
+      },
+      {
+        "herb_name": "황기",
+        "herb_hanja": "黃芪",
+        "herb_id": null,
+        "dosage": null,
+        "role": "신"
+      },
+      {
+        "herb_name": "마황근",
+        "herb_hanja": "麻黃根",
+        "herb_id": null,
+        "dosage": null,
+        "role": "신"
+      },
+      {
+        "herb_name": "부소맥",
+        "herb_hanja": "浮小麥",
+        "herb_id": null,
+        "dosage": null,
+        "role": "사"
+      }
+    ],
+    "efficacy": [
+      "고표렴한"
+    ],
+    "indications": [
+      "체허자한",
+      "도한"
+    ],
+    "source": "화제국방",
+    "contraindications": [
+      "실열한출"
+    ],
     "modifications": null,
     "usage": null,
     "parentId": null,
-    "rationale": null,
+    "rationale": "목려로 수렴하고 마황근으로 땀을 멎게 하며(지한), 황기로 표(表)를 굳건히 하고 부소맥으로 심기를 안정시켜 모든 땀을 다스림.",
     "lesson": null
   },
   {
@@ -20360,35 +21232,350 @@
     "categoryMinor": "9-2. 렴폐지해제",
     "categoryBangyak": null,
     "tags": [],
-    "composition": [],
-    "efficacy": null,
-    "indications": null,
-    "source": null,
-    "contraindications": null,
+    "composition": [
+      {
+        "herb_name": "앵속각",
+        "herb_hanja": "罌粟殼",
+        "herb_id": null,
+        "dosage": null,
+        "role": "군"
+      },
+      {
+        "herb_name": "오미자",
+        "herb_hanja": "五味子",
+        "herb_id": null,
+        "dosage": null,
+        "role": "신"
+      },
+      {
+        "herb_name": "관동화",
+        "herb_hanja": "款冬花",
+        "herb_id": null,
+        "dosage": null,
+        "role": "신"
+      },
+      {
+        "herb_name": "상백피",
+        "herb_hanja": "桑白皮",
+        "herb_id": null,
+        "dosage": null,
+        "role": "신"
+      },
+      {
+        "herb_name": "길경",
+        "herb_hanja": "桔梗",
+        "herb_id": "13-2-2",
+        "dosage": null,
+        "role": "신"
+      },
+      {
+        "herb_name": "인삼",
+        "herb_hanja": "人蔘",
+        "herb_id": null,
+        "dosage": null,
+        "role": "좌"
+      },
+      {
+        "herb_name": "아교",
+        "herb_hanja": "阿膠",
+        "herb_id": null,
+        "dosage": null,
+        "role": "좌"
+      },
+      {
+        "herb_name": "패모",
+        "herb_hanja": "貝母",
+        "herb_id": null,
+        "dosage": null,
+        "role": "좌"
+      },
+      {
+        "herb_name": "감초",
+        "herb_hanja": "甘草",
+        "herb_id": null,
+        "dosage": null,
+        "role": "사"
+      }
+    ],
+    "efficacy": [
+      "렴폐지해",
+      "익기양음"
+    ],
+    "indications": [
+      "구해불이",
+      "폐허천촉"
+    ],
+    "source": "의학정전",
+    "contraindications": [
+      "실사기침"
+    ],
     "modifications": null,
     "usage": null,
     "parentId": null,
-    "rationale": null,
+    "rationale": "앵속각과 오미자로 흩어지는 폐기를 강력히 수렴하고, 보기양음(인삼·아교) 약재를 배합하여 오래된 기침으로 상한 폐를 보함.",
     "lesson": null
   },
   {
     "id": "BJ-09-011",
-    "name": "계지분구모려탕",
-    "hanja": null,
+    "name": "계지가용골모려탕",
+    "hanja": "桂枝加龍骨牡蠣湯",
     "starred": false,
     "categoryMajor": "9. 고삽제",
     "categoryMinor": "9-4. 삽정지유제",
     "categoryBangyak": null,
     "tags": [],
-    "composition": [],
-    "efficacy": null,
-    "indications": null,
-    "source": null,
+    "composition": [
+      {
+        "herb_name": "계지",
+        "herb_hanja": "桂枝",
+        "herb_id": "01-1-2",
+        "dosage": "9g",
+        "role": "군"
+      },
+      {
+        "herb_name": "백작약",
+        "herb_hanja": "芍藥",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "신"
+      },
+      {
+        "herb_name": "생강",
+        "herb_hanja": "生薑",
+        "herb_id": "01-1-11",
+        "dosage": "9g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "대조",
+        "herb_hanja": "大棗",
+        "herb_id": null,
+        "dosage": "12매",
+        "role": "좌"
+      },
+      {
+        "herb_name": "감초",
+        "herb_hanja": "甘草",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "용골",
+        "herb_hanja": "龍骨",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "모려",
+        "herb_hanja": "牡蠣",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "좌"
+      }
+    ],
+    "efficacy": [
+      "자음화양",
+      "진경안신"
+    ],
+    "indications": [
+      "허로실정",
+      "소복현급",
+      "몽유"
+    ],
+    "source": "금궤요략",
     "contraindications": null,
     "modifications": null,
     "usage": null,
     "parentId": null,
-    "rationale": null,
+    "rationale": "계지탕(음양조화)에 중진안신하는 용골·목려를 더해, 정신적인 허로로 인해 꿈속에서 정액을 흘리는(몽유) 증상을 다스림.",
+    "lesson": null
+  },
+  {
+    "id": "BJ-09-012",
+    "name": "이신환",
+    "hanja": "二神丸",
+    "starred": false,
+    "categoryMajor": "9. 고삽제",
+    "categoryMinor": "9-3. 삽장고탈제",
+    "categoryBangyak": null,
+    "tags": [],
+    "composition": [
+      {
+        "herb_name": "보골지",
+        "herb_hanja": "補骨脂",
+        "herb_id": null,
+        "dosage": null,
+        "role": "군"
+      },
+      {
+        "herb_name": "육두구",
+        "herb_hanja": "肉豆蔻",
+        "herb_id": null,
+        "dosage": null,
+        "role": "신"
+      }
+    ],
+    "efficacy": [
+      "온신난비",
+      "지사"
+    ],
+    "indications": [
+      "비신허한",
+      "음식불화",
+      "설사"
+    ],
+    "source": "부인양방",
+    "contraindications": null,
+    "modifications": null,
+    "usage": null,
+    "parentId": "BJ-09-005",
+    "rationale": "사신환의 핵심인 보골지와 육두구만으로 구성되어, 비신이 허한하여 소화가 안 되고 설사하는 초기 증상을 다스림.",
+    "lesson": null
+  },
+  {
+    "id": "BJ-09-013",
+    "name": "오미자환",
+    "hanja": "五味子丸",
+    "starred": false,
+    "categoryMajor": "9. 고삽제",
+    "categoryMinor": "9-3. 삽장고탈제",
+    "categoryBangyak": null,
+    "tags": [],
+    "composition": [
+      {
+        "herb_name": "오미자",
+        "herb_hanja": "五味子",
+        "herb_id": null,
+        "dosage": null,
+        "role": "군"
+      },
+      {
+        "herb_name": "오수유",
+        "herb_hanja": "吳茱萸",
+        "herb_id": null,
+        "dosage": null,
+        "role": "신"
+      }
+    ],
+    "efficacy": [
+      "온중산한",
+      "삽장"
+    ],
+    "indications": [
+      "신설",
+      "경구불유"
+    ],
+    "source": "본사방",
+    "contraindications": null,
+    "modifications": null,
+    "usage": null,
+    "parentId": "BJ-09-005",
+    "rationale": "오미자의 수렴력과 오수유의 온중(溫中) 작용을 결합하여, 오래된 신설(腎泄)을 치료함.",
+    "lesson": null
+  },
+  {
+    "id": "BJ-09-014",
+    "name": "수륙이선단",
+    "hanja": "水陸二仙丹",
+    "starred": false,
+    "categoryMajor": "9. 고삽제",
+    "categoryMinor": "9-4. 삽정지유제",
+    "categoryBangyak": null,
+    "tags": [],
+    "composition": [
+      {
+        "herb_name": "검실",
+        "herb_hanja": "芡實",
+        "herb_id": null,
+        "dosage": null,
+        "role": "군"
+      },
+      {
+        "herb_name": "금앵자",
+        "herb_hanja": "金櫻子",
+        "herb_id": null,
+        "dosage": null,
+        "role": "군"
+      }
+    ],
+    "efficacy": [
+      "익신거함",
+      "삽정"
+    ],
+    "indications": [
+      "신허유정",
+      "임탁"
+    ],
+    "source": "인재직지",
+    "contraindications": null,
+    "modifications": null,
+    "usage": null,
+    "parentId": "BJ-09-001",
+    "rationale": "물에서 나는 검실과 땅에서 나는 금앵자 두 가지만으로 신장의 정기를 굳게 하여 유정과 임탁을 다스림.",
+    "lesson": null
+  },
+  {
+    "id": "BJ-09-015",
+    "name": "이황탕",
+    "hanja": "易黃湯",
+    "starred": false,
+    "categoryMajor": "9. 고삽제",
+    "categoryMinor": "9-5. 고붕지대제",
+    "categoryBangyak": null,
+    "tags": [],
+    "composition": [
+      {
+        "herb_name": "산약",
+        "herb_hanja": "山藥",
+        "herb_id": null,
+        "dosage": "30g",
+        "role": "군"
+      },
+      {
+        "herb_name": "검실",
+        "herb_hanja": "芡實",
+        "herb_id": null,
+        "dosage": "30g",
+        "role": "군"
+      },
+      {
+        "herb_name": "황백",
+        "herb_hanja": "黃柏",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "신"
+      },
+      {
+        "herb_name": "차전자",
+        "herb_hanja": "車前子",
+        "herb_id": null,
+        "dosage": "3g",
+        "role": "신"
+      },
+      {
+        "herb_name": "백과",
+        "herb_hanja": "白果",
+        "herb_id": null,
+        "dosage": "10매",
+        "role": "사"
+      }
+    ],
+    "efficacy": [
+      "보신청열",
+      "거습지대"
+    ],
+    "indications": [
+      "신허습열",
+      "황대하"
+    ],
+    "source": "부청주녀과",
+    "contraindications": null,
+    "modifications": null,
+    "usage": null,
+    "parentId": null,
+    "rationale": "산약·검실로 신장을 보하면서 황백·차전자로 하초의 습열을 꺼서, 노란색이고 냄새가 나는 대하(黃帶)를 다스림.",
     "lesson": null
   },
   {
@@ -20400,15 +21587,62 @@
     "categoryMinor": "12-1. 행기제",
     "categoryBangyak": null,
     "tags": [],
-    "composition": [],
-    "efficacy": null,
-    "indications": null,
-    "source": null,
-    "contraindications": null,
+    "composition": [
+      {
+        "herb_name": "향부자",
+        "herb_hanja": "香附子",
+        "herb_id": null,
+        "dosage": "각등분",
+        "role": "군"
+      },
+      {
+        "herb_name": "천궁",
+        "herb_hanja": "川芎",
+        "herb_id": null,
+        "dosage": "각등분",
+        "role": "신"
+      },
+      {
+        "herb_name": "창출",
+        "herb_hanja": "蒼朮",
+        "herb_id": null,
+        "dosage": "각등분",
+        "role": "신"
+      },
+      {
+        "herb_name": "치자",
+        "herb_hanja": "梔子",
+        "herb_id": "2-1-6",
+        "dosage": "각등분",
+        "role": "좌"
+      },
+      {
+        "herb_name": "신곡",
+        "herb_hanja": "神麯",
+        "herb_id": null,
+        "dosage": "각등분",
+        "role": "좌"
+      }
+    ],
+    "efficacy": [
+      "행기해울"
+    ],
+    "indications": [
+      "기울",
+      "혈울",
+      "담울",
+      "화울",
+      "습울",
+      "식울"
+    ],
+    "source": "단계심법",
+    "contraindications": [
+      "음허화왕"
+    ],
     "modifications": null,
     "usage": null,
     "parentId": null,
-    "rationale": null,
+    "rationale": "향부자로 기울을, 천궁으로 혈울을, 창출로 습울을, 치자로 화울을, 신곡으로 식울을 각각 풀어 6울(六鬱)을 한 번에 소통시킴. 단계의 대표적 행기해울방.",
     "lesson": null
   },
   {
@@ -20420,15 +21654,89 @@
     "categoryMinor": "12-2. 강기제",
     "categoryBangyak": null,
     "tags": [],
-    "composition": [],
-    "efficacy": null,
-    "indications": null,
-    "source": null,
-    "contraindications": null,
+    "composition": [
+      {
+        "herb_name": "자소자",
+        "herb_hanja": "紫蘇子",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "군"
+      },
+      {
+        "herb_name": "반하",
+        "herb_hanja": "半夏",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "군"
+      },
+      {
+        "herb_name": "후박",
+        "herb_hanja": "厚朴",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "신"
+      },
+      {
+        "herb_name": "전호",
+        "herb_hanja": "前胡",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "신"
+      },
+      {
+        "herb_name": "육계",
+        "herb_hanja": "肉桂",
+        "herb_id": null,
+        "dosage": "3g",
+        "role": "신"
+      },
+      {
+        "herb_name": "당귀",
+        "herb_hanja": "當歸",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "자감초",
+        "herb_hanja": "炙甘草",
+        "herb_id": null,
+        "dosage": "3g",
+        "role": "사"
+      },
+      {
+        "herb_name": "생강",
+        "herb_hanja": "生薑",
+        "herb_id": "01-1-11",
+        "dosage": "2쪽",
+        "role": "사"
+      },
+      {
+        "herb_name": "자소엽",
+        "herb_hanja": "紫蘇葉",
+        "herb_id": null,
+        "dosage": "5장",
+        "role": "사"
+      }
+    ],
+    "efficacy": [
+      "강기평천",
+      "거담지해"
+    ],
+    "indications": [
+      "상실하허",
+      "가래많은기침",
+      "숨참",
+      "요슬산연"
+    ],
+    "source": "화제국방",
+    "contraindications": [
+      "음허화왕"
+    ],
     "modifications": null,
     "usage": null,
     "parentId": null,
-    "rationale": null,
+    "rationale": "자소자/반하로 폐기를 내리고 담을 삭이며, 육계로 하초를 덥혀 신이 기를 납기하도록 돕고, 당귀로 혈을 보하여 조조(燥操)를 방지. 상실하허(上實下虛) 패턴에 표준처방.",
     "lesson": null
   },
   {
@@ -20440,15 +21748,88 @@
     "categoryMinor": "12-2. 강기제",
     "categoryBangyak": null,
     "tags": [],
-    "composition": [],
-    "efficacy": null,
-    "indications": null,
-    "source": null,
+    "composition": [
+      {
+        "herb_name": "마황",
+        "herb_hanja": "麻黃",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "군"
+      },
+      {
+        "herb_name": "백과",
+        "herb_hanja": "白果",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "군"
+      },
+      {
+        "herb_name": "자소자",
+        "herb_hanja": "紫蘇子",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "신"
+      },
+      {
+        "herb_name": "행인",
+        "herb_hanja": "杏仁",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "신"
+      },
+      {
+        "herb_name": "반하",
+        "herb_hanja": "半夏",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "신"
+      },
+      {
+        "herb_name": "관동화",
+        "herb_hanja": "款冬花",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "신"
+      },
+      {
+        "herb_name": "상백피",
+        "herb_hanja": "桑白皮",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "황금",
+        "herb_hanja": "黃芩",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "감초",
+        "herb_hanja": "甘草",
+        "herb_id": null,
+        "dosage": "3g",
+        "role": "사"
+      }
+    ],
+    "efficacy": [
+      "선폐강기",
+      "청열화담"
+    ],
+    "indications": [
+      "풍한외속",
+      "담열내온",
+      "기침",
+      "천식",
+      "발열"
+    ],
+    "source": "섭생중묘방",
     "contraindications": null,
     "modifications": null,
     "usage": null,
     "parentId": null,
-    "rationale": null,
+    "rationale": "마황으로 폐기를 열어 표한을 발산하고, 백과로 수렴하여 과도한 발산을 막음. 상백피/황금으로 내재한 열을 식히고, 반하/자소자/행인/관동화로 담을 삭이고 기침을 그침. 선폐와 청열을 동시 구현.",
     "lesson": null
   },
   {
@@ -20460,15 +21841,74 @@
     "categoryMinor": "12-2. 강기제",
     "categoryBangyak": null,
     "tags": [],
-    "composition": [],
-    "efficacy": null,
-    "indications": null,
-    "source": null,
+    "composition": [
+      {
+        "herb_name": "선복화",
+        "herb_hanja": "旋覆花",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "군"
+      },
+      {
+        "herb_name": "대자석",
+        "herb_hanja": "代赭石",
+        "herb_id": null,
+        "dosage": "30g",
+        "role": "신"
+      },
+      {
+        "herb_name": "반하",
+        "herb_hanja": "半夏",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "생강",
+        "herb_hanja": "生薑",
+        "herb_id": "01-1-11",
+        "dosage": "15g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "인삼",
+        "herb_hanja": "人參",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "자감초",
+        "herb_hanja": "炙甘草",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "사"
+      },
+      {
+        "herb_name": "대조",
+        "herb_hanja": "大棗",
+        "herb_id": null,
+        "dosage": "4개",
+        "role": "사"
+      }
+    ],
+    "efficacy": [
+      "강역화담",
+      "익기화위"
+    ],
+    "indications": [
+      "위기허약",
+      "담탁내조",
+      "심하비경",
+      "트림",
+      "딸꾹질"
+    ],
+    "source": "상한론",
     "contraindications": null,
     "modifications": null,
     "usage": null,
     "parentId": null,
-    "rationale": null,
+    "rationale": "무거운 대자석과 선복화로 치밀어 오르는 위기를 강하게 내리고, 반하/생강으로 담을 삭이고 구역을 그치며, 인삼/감초/대조로 허약한 위기를 보함. 강역과 보허를 겸한 구조.",
     "lesson": null
   },
   {
@@ -20480,155 +21920,664 @@
     "categoryMinor": "12-2. 강기제",
     "categoryBangyak": null,
     "tags": [],
-    "composition": [],
-    "efficacy": null,
-    "indications": null,
-    "source": null,
-    "contraindications": null,
+    "composition": [
+      {
+        "herb_name": "진피",
+        "herb_hanja": "陳皮",
+        "herb_id": null,
+        "dosage": "12g",
+        "role": "군"
+      },
+      {
+        "herb_name": "죽여",
+        "herb_hanja": "竹茹",
+        "herb_id": null,
+        "dosage": "12g",
+        "role": "군"
+      },
+      {
+        "herb_name": "인삼",
+        "herb_hanja": "人參",
+        "herb_id": null,
+        "dosage": "3g",
+        "role": "신"
+      },
+      {
+        "herb_name": "생강",
+        "herb_hanja": "生薑",
+        "herb_id": "01-1-11",
+        "dosage": "9g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "감초",
+        "herb_hanja": "甘草",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "사"
+      },
+      {
+        "herb_name": "대조",
+        "herb_hanja": "大棗",
+        "herb_id": null,
+        "dosage": "5개",
+        "role": "사"
+      }
+    ],
+    "efficacy": [
+      "강역지애",
+      "익기청열"
+    ],
+    "indications": [
+      "위허유열",
+      "기역불강",
+      "딸꾹질",
+      "건구역"
+    ],
+    "source": "금궤요략",
+    "contraindications": [
+      "위한애역금기"
+    ],
     "modifications": null,
     "usage": null,
     "parentId": null,
-    "rationale": null,
+    "rationale": "진피로 기를 내리고 위를 조화시키며, 죽여로 위의 열을 식혀 딸꾹질을 그침. 인삼/감초/대조로 허약한 위를 보하고 생강으로 위를 따뜻하게 하여 온화강역. 위허유열 패턴의 표준처방.",
     "lesson": null
   },
   {
     "id": "BJ-13-016",
-    "name": "해표산",
+    "name": "해표초산",
     "hanja": "海螵蛸散",
     "starred": false,
     "categoryMajor": "13. 이혈제",
     "categoryMinor": "13-2. 지혈제",
     "categoryBangyak": null,
     "tags": [],
-    "composition": [],
-    "efficacy": null,
-    "indications": null,
-    "source": null,
+    "composition": [
+      {
+        "herb_name": "해표초",
+        "herb_hanja": "海螵蛸",
+        "herb_id": null,
+        "dosage": "15g",
+        "role": "군"
+      },
+      {
+        "herb_name": "천초근",
+        "herb_hanja": "茜草根",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "신"
+      }
+    ],
+    "efficacy": [
+      "수렴지혈",
+      "양혈활혈"
+    ],
+    "indications": [
+      "붕루",
+      "위출혈",
+      "만성자궁출혈"
+    ],
+    "source": "내경",
     "contraindications": null,
     "modifications": null,
     "usage": null,
     "parentId": null,
-    "rationale": null,
+    "rationale": "해표초(오징어뼈)의 강한 수렴지혈력으로 지혈하고, 천초근의 량혈활혈 작용으로 어혈이 남지 않게 하여 지혈하되 어혈을 만들지 않는 구조. 단 두 가지 약재로 붕루·위출혈을 다스림.",
     "lesson": null
   },
   {
     "id": "BJ-14-008",
     "name": "영양각탕",
     "hanja": "羚羊角湯",
-    "starred": false,
+    "starred": true,
     "categoryMajor": "14. 치풍제",
-    "categoryMinor": "14-2. 평간식풍제",
+    "categoryMinor": "14-2. 평식내풍제",
     "categoryBangyak": null,
     "tags": [],
-    "composition": [],
-    "efficacy": null,
-    "indications": null,
-    "source": null,
-    "contraindications": null,
+    "composition": [
+      {
+        "herb_name": "영양각",
+        "herb_hanja": "羚羊角",
+        "herb_id": null,
+        "dosage": "4.5g",
+        "role": "군"
+      },
+      {
+        "herb_name": "상엽",
+        "herb_hanja": "桑葉",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "신"
+      },
+      {
+        "herb_name": "국화",
+        "herb_hanja": "菊花",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "신"
+      },
+      {
+        "herb_name": "구등",
+        "herb_hanja": "鉤藤",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "신"
+      },
+      {
+        "herb_name": "생지황",
+        "herb_hanja": "生地黃",
+        "herb_id": null,
+        "dosage": "15g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "백작약",
+        "herb_hanja": "白芍藥",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "천패모",
+        "herb_hanja": "川貝母",
+        "herb_id": null,
+        "dosage": "12g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "죽여",
+        "herb_hanja": "竹茹",
+        "herb_id": null,
+        "dosage": "15g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "복신",
+        "herb_hanja": "茯神",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "생감초",
+        "herb_hanja": "生甘草",
+        "herb_id": null,
+        "dosage": "2.5g",
+        "role": "사"
+      }
+    ],
+    "efficacy": [
+      "량간식풍",
+      "청열지경"
+    ],
+    "indications": [
+      "간경열성",
+      "열극생풍",
+      "고열",
+      "경궐",
+      "추축"
+    ],
+    "source": "통속상한론",
+    "contraindications": [
+      "비허만경풍금기"
+    ],
     "modifications": null,
     "usage": null,
     "parentId": null,
-    "rationale": null,
+    "rationale": "온병으로 열이 극에 달해 간풍이 동한 열성 경련에, 영양각 등 량간 약재로 불을 끄고 바람을 잠재움. 영각구등탕의 다른 명칭으로 같은 처방.",
     "lesson": null
   },
   {
     "id": "BJ-16-016",
     "name": "영계출감탕",
     "hanja": "苓桂朮甘湯",
-    "starred": false,
+    "starred": true,
     "categoryMajor": "16. 거습제",
     "categoryMinor": "16-4. 온화한습제",
     "categoryBangyak": null,
     "tags": [],
-    "composition": [],
-    "efficacy": null,
-    "indications": null,
-    "source": null,
+    "composition": [
+      {
+        "herb_name": "복령",
+        "herb_hanja": "茯苓",
+        "herb_id": null,
+        "dosage": "12g",
+        "role": "군"
+      },
+      {
+        "herb_name": "계지",
+        "herb_hanja": "桂枝",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "신"
+      },
+      {
+        "herb_name": "백출",
+        "herb_hanja": "白朮",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "감초",
+        "herb_hanja": "甘草",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "사"
+      }
+    ],
+    "efficacy": [
+      "온양화음",
+      "건비이습"
+    ],
+    "indications": [
+      "비허담음증",
+      "흉협지만",
+      "현훈심계",
+      "기역"
+    ],
+    "source": "금궤요략",
     "contraindications": null,
     "modifications": null,
     "usage": null,
     "parentId": null,
-    "rationale": null,
+    "rationale": "백출/복령으로 비(脾)의 담음을 빼고, 계지로 심양(心陽)을 데워 맑은 양기를 머리로 올려 어지럼증과 두근거림을 다스림. 담음(痰飮)에 의한 현훈의 기본방.",
     "lesson": null
   },
   {
     "id": "BJ-16-017",
     "name": "진무탕",
     "hanja": "眞武湯",
-    "starred": false,
+    "starred": true,
     "categoryMajor": "16. 거습제",
     "categoryMinor": "16-4. 온화한습제",
     "categoryBangyak": null,
     "tags": [],
-    "composition": [],
-    "efficacy": null,
-    "indications": null,
-    "source": null,
-    "contraindications": null,
+    "composition": [
+      {
+        "herb_name": "부자",
+        "herb_hanja": "附子",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "군"
+      },
+      {
+        "herb_name": "복령",
+        "herb_hanja": "茯苓",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "신"
+      },
+      {
+        "herb_name": "백출",
+        "herb_hanja": "白朮",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "신"
+      },
+      {
+        "herb_name": "생강",
+        "herb_hanja": "生薑",
+        "herb_id": "01-1-11",
+        "dosage": "9g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "백작약",
+        "herb_hanja": "白芍藥",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "좌"
+      }
+    ],
+    "efficacy": [
+      "온양이수"
+    ],
+    "indications": [
+      "비신양허",
+      "수기내정",
+      "전신부종",
+      "사지냉",
+      "소변불리"
+    ],
+    "source": "상한론",
+    "contraindications": [
+      "음허수종금기"
+    ],
     "modifications": null,
     "usage": null,
     "parentId": null,
-    "rationale": null,
+    "rationale": "부자로 신양(腎陽)을 맹렬히 덥혀(화생토 火生土) 기화(氣化)를 회복하고, 백출/복령으로 비를 보해 수습을 빼냄. 백작약은 부자의 과도한 조열을 견제. 하초 극한수종(極寒水腫)의 대표방.",
     "lesson": null
   },
   {
     "id": "BJ-16-018",
     "name": "독활기생탕",
     "hanja": "獨活寄生湯",
-    "starred": false,
+    "starred": true,
     "categoryMajor": "16. 거습제",
     "categoryMinor": "16-5. 거풍승습제",
     "categoryBangyak": null,
     "tags": [],
-    "composition": [],
-    "efficacy": null,
-    "indications": null,
-    "source": null,
-    "contraindications": null,
+    "composition": [
+      {
+        "herb_name": "독활",
+        "herb_hanja": "獨活",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "군"
+      },
+      {
+        "herb_name": "상기생",
+        "herb_hanja": "桑寄生",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "신"
+      },
+      {
+        "herb_name": "두충",
+        "herb_hanja": "杜仲",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "신"
+      },
+      {
+        "herb_name": "우슬",
+        "herb_hanja": "牛膝",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "신"
+      },
+      {
+        "herb_name": "강활",
+        "herb_hanja": "羌活",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "신"
+      },
+      {
+        "herb_name": "방풍",
+        "herb_hanja": "防風",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "신"
+      },
+      {
+        "herb_name": "진교",
+        "herb_hanja": "秦艽",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "신"
+      },
+      {
+        "herb_name": "당귀",
+        "herb_hanja": "當歸",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "천궁",
+        "herb_hanja": "川芎",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "백작약",
+        "herb_hanja": "白芍藥",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "숙지황",
+        "herb_hanja": "熟地黃",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "인삼",
+        "herb_hanja": "人蔘",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "복령",
+        "herb_hanja": "茯苓",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "감초",
+        "herb_hanja": "甘草",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "계심",
+        "herb_hanja": "桂心",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "사"
+      }
+    ],
+    "efficacy": [
+      "거풍습",
+      "지비통",
+      "익간신",
+      "보기혈"
+    ],
+    "indications": [
+      "비증일구",
+      "간신양허",
+      "요슬냉통",
+      "관절굴신불리"
+    ],
+    "source": "비급천금요방",
+    "contraindications": [
+      "습열관절염금기"
+    ],
     "modifications": null,
     "usage": null,
     "parentId": null,
-    "rationale": null,
+    "rationale": "독활 등 거풍습약으로 하초의 풍습을 쫓고, 팔진탕(기혈쌍보)과 상기생/두충(간신보익)을 합방하여 만성 퇴행성 요슬관절염을 다스림. 치풍선치혈(治風先治血) 원리를 고관절/요슬에 적용한 명방.",
     "lesson": null
   },
   {
     "id": "BJ-17-012",
     "name": "패모괄루산",
     "hanja": "貝母栝蔞散",
-    "starred": false,
+    "starred": true,
     "categoryMajor": "17. 거담제",
     "categoryMinor": "17-3. 윤조화담제",
     "categoryBangyak": null,
     "tags": [],
-    "composition": [],
-    "efficacy": null,
-    "indications": null,
-    "source": null,
-    "contraindications": null,
+    "composition": [
+      {
+        "herb_name": "패모",
+        "herb_hanja": "貝母",
+        "herb_id": null,
+        "dosage": "4.5g",
+        "role": "군"
+      },
+      {
+        "herb_name": "과루",
+        "herb_hanja": "瓜蔞",
+        "herb_id": null,
+        "dosage": "3g",
+        "role": "군"
+      },
+      {
+        "herb_name": "천화분",
+        "herb_hanja": "天花粉",
+        "herb_id": null,
+        "dosage": "2.5g",
+        "role": "신"
+      },
+      {
+        "herb_name": "맥문동",
+        "herb_hanja": "麥門冬",
+        "herb_id": null,
+        "dosage": "2.5g",
+        "role": "신"
+      },
+      {
+        "herb_name": "귤홍",
+        "herb_hanja": "橘紅",
+        "herb_id": null,
+        "dosage": "2.5g",
+        "role": "신"
+      },
+      {
+        "herb_name": "복령",
+        "herb_hanja": "茯苓",
+        "herb_id": null,
+        "dosage": "2.5g",
+        "role": "신"
+      },
+      {
+        "herb_name": "길경",
+        "herb_hanja": "桔梗",
+        "herb_id": null,
+        "dosage": "2.5g",
+        "role": "좌사"
+      }
+    ],
+    "efficacy": [
+      "윤폐청열",
+      "이기화담"
+    ],
+    "indications": [
+      "조담해수",
+      "객담소이뱉기힘듦",
+      "인후건조"
+    ],
+    "source": "의학심오",
+    "contraindications": [
+      "습담금기"
+    ],
     "modifications": null,
     "usage": null,
     "parentId": null,
-    "rationale": null,
+    "rationale": "패모/과루로 건조한 폐를 적시고 담을 윤활하게 하며, 귤홍/길경으로 기를 돌려 바짝 말라붙은 조담(燥痰)을 뜯어냄. 습담에는 금기—윤조화담(潤燥化痰)에 특화.",
     "lesson": null
   },
   {
     "id": "BJ-21-001",
     "name": "탁리소독음",
     "hanja": "托裡消毒飮",
-    "starred": false,
+    "starred": true,
     "categoryMajor": "21. 옹양제",
     "categoryMinor": "21-2. 탁리투농제",
     "categoryBangyak": null,
     "tags": [],
-    "composition": [],
-    "efficacy": null,
-    "indications": null,
-    "source": null,
+    "composition": [
+      {
+        "herb_name": "인삼",
+        "herb_hanja": "人蔘",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "군"
+      },
+      {
+        "herb_name": "황기",
+        "herb_hanja": "黃芪",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "군"
+      },
+      {
+        "herb_name": "당귀",
+        "herb_hanja": "當歸",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "군"
+      },
+      {
+        "herb_name": "천궁",
+        "herb_hanja": "川芎",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "군"
+      },
+      {
+        "herb_name": "백작약",
+        "herb_hanja": "白芍藥",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "군"
+      },
+      {
+        "herb_name": "백출",
+        "herb_hanja": "白朮",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "군"
+      },
+      {
+        "herb_name": "복령",
+        "herb_hanja": "茯苓",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "군"
+      },
+      {
+        "herb_name": "감초",
+        "herb_hanja": "甘草",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "군"
+      },
+      {
+        "herb_name": "금은화",
+        "herb_hanja": "金銀花",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "신좌"
+      },
+      {
+        "herb_name": "백지",
+        "herb_hanja": "白芷",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "신좌"
+      },
+      {
+        "herb_name": "천산갑",
+        "herb_hanja": "穿山甲",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "신좌"
+      },
+      {
+        "herb_name": "조각자",
+        "herb_hanja": "皂角刺",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "신좌"
+      }
+    ],
+    "efficacy": [
+      "보익기혈",
+      "탁리투농"
+    ],
+    "indications": [
+      "옹양궤후",
+      "기혈허약",
+      "농묽고잘안아묾"
+    ],
+    "source": "외과정종",
     "contraindications": null,
     "modifications": null,
     "usage": null,
     "parentId": null,
-    "rationale": null,
+    "rationale": "팔진탕(기혈쌍보) 베이스로 기력을 튼튼히 받쳐주고(托), 천산갑/조각자로 남아있는 독을 밖으로 밀어내어(透) 농을 빼는 탁법(托法). 종기가 터진 후 정기가 허약한 경우에 표준.",
     "lesson": null
   },
   {
@@ -20640,15 +22589,2162 @@
     "categoryMinor": "21-3. 부정생기제",
     "categoryBangyak": null,
     "tags": [],
-    "composition": [],
-    "efficacy": null,
-    "indications": null,
-    "source": null,
+    "composition": [
+      {
+        "herb_name": "황기",
+        "herb_hanja": "黃芪",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "군"
+      },
+      {
+        "herb_name": "인삼",
+        "herb_hanja": "人蔘",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "군"
+      },
+      {
+        "herb_name": "당귀",
+        "herb_hanja": "當歸",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "신"
+      },
+      {
+        "herb_name": "숙지황",
+        "herb_hanja": "熟地黃",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "신"
+      },
+      {
+        "herb_name": "백작약",
+        "herb_hanja": "白芍藥",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "신"
+      },
+      {
+        "herb_name": "천궁",
+        "herb_hanja": "川芎",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "신"
+      },
+      {
+        "herb_name": "맥문동",
+        "herb_hanja": "麥門冬",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "육종용",
+        "herb_hanja": "肉蓯蓉",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "원지",
+        "herb_hanja": "遠志",
+        "herb_id": null,
+        "dosage": "3g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "복령",
+        "herb_hanja": "茯苓",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "감초",
+        "herb_hanja": "甘草",
+        "herb_id": null,
+        "dosage": "3g",
+        "role": "사"
+      },
+      {
+        "herb_name": "생강",
+        "herb_hanja": "生薑",
+        "herb_id": "01-1-11",
+        "dosage": "3g",
+        "role": "사"
+      },
+      {
+        "herb_name": "대조",
+        "herb_hanja": "大棗",
+        "herb_id": null,
+        "dosage": "3매",
+        "role": "사"
+      }
+    ],
+    "efficacy": [
+      "온보기혈",
+      "생기렴창"
+    ],
+    "indications": [
+      "옹저궤후",
+      "기혈양허",
+      "궤양미렴",
+      "만성피로"
+    ],
+    "source": "외과정종",
     "contraindications": null,
     "modifications": null,
     "usage": null,
     "parentId": null,
-    "rationale": null,
+    "rationale": "십전대보탕의 변방. 종기가 터진 후 기혈이 바닥나 새살이 돋지 않을 때(生肌), 황기를 군약으로 대량 투입하여 원기를 채워 궤양을 아물게 하는 보법(補法).",
     "lesson": null
+  },
+  {
+    "id": "BJ-12-016",
+    "name": "시호소간산",
+    "hanja": "柴胡疏肝散",
+    "starred": false,
+    "categoryMajor": "12. 이기제",
+    "categoryMinor": "12-1. 행기제",
+    "categoryBangyak": null,
+    "tags": [],
+    "composition": [
+      {
+        "herb_name": "시호",
+        "herb_hanja": "柴胡",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "군"
+      },
+      {
+        "herb_name": "지각",
+        "herb_hanja": "枳殼",
+        "herb_id": null,
+        "dosage": "5g",
+        "role": "신"
+      },
+      {
+        "herb_name": "작약",
+        "herb_hanja": "芍藥",
+        "herb_id": null,
+        "dosage": "5g",
+        "role": "신"
+      },
+      {
+        "herb_name": "감초",
+        "herb_hanja": "甘草",
+        "herb_id": null,
+        "dosage": "3g",
+        "role": "신"
+      },
+      {
+        "herb_name": "천궁",
+        "herb_hanja": "川芎",
+        "herb_id": null,
+        "dosage": "5g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "향부자",
+        "herb_hanja": "香附子",
+        "herb_id": null,
+        "dosage": "5g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "진피",
+        "herb_hanja": "陳皮",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "좌"
+      }
+    ],
+    "efficacy": [
+      "소간해울",
+      "행기지통"
+    ],
+    "indications": [
+      "간기울결",
+      "협늑창통",
+      "정지우울"
+    ],
+    "source": "경악전서",
+    "contraindications": null,
+    "modifications": null,
+    "lesson": null,
+    "parentId": "BJ-03-004",
+    "rationale": "사역산(시호·지각·작약·감초)에 천궁·향부자·진피를 가하여 간기울결로 인한 협통 및 흉협창만을 강력하게 소통. 기체혈어를 함께 풀어주는 소간행기의 대표방."
+  },
+  {
+    "id": "BJ-12-017",
+    "name": "지실해백계지탕",
+    "hanja": "枳實薤白桂枝湯",
+    "starred": false,
+    "categoryMajor": "12. 이기제",
+    "categoryMinor": "12-1. 행기제",
+    "categoryBangyak": null,
+    "tags": [],
+    "composition": [
+      {
+        "herb_name": "해백",
+        "herb_hanja": "薤白",
+        "herb_id": null,
+        "dosage": "12g",
+        "role": "군"
+      },
+      {
+        "herb_name": "과루실",
+        "herb_hanja": "瓜蔞實",
+        "herb_id": null,
+        "dosage": "12g",
+        "role": "군"
+      },
+      {
+        "herb_name": "지실",
+        "herb_hanja": "枳實",
+        "herb_id": null,
+        "dosage": "12g",
+        "role": "신"
+      },
+      {
+        "herb_name": "후박",
+        "herb_hanja": "厚朴",
+        "herb_id": null,
+        "dosage": "12g",
+        "role": "신"
+      },
+      {
+        "herb_name": "계지",
+        "herb_hanja": "桂枝",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "사"
+      }
+    ],
+    "efficacy": [
+      "통양산결",
+      "거담하기"
+    ],
+    "indications": [
+      "흉비",
+      "흉양불진",
+      "담기호결",
+      "흉협만통"
+    ],
+    "source": "금궤요략",
+    "contraindications": null,
+    "modifications": null,
+    "lesson": null,
+    "parentId": null,
+    "rationale": "해백/과루실로 흉중의 탁한 담을 씻어내고 흉양을 통하게 하며, 지실/후박으로 기를 내리고, 계지로 흉양을 온통(溫通)시켜 흉비를 근본적으로 해소."
+  },
+  {
+    "id": "BJ-12-018",
+    "name": "귤핵환",
+    "hanja": "橘核丸",
+    "starred": false,
+    "categoryMajor": "12. 이기제",
+    "categoryMinor": "12-1. 행기제",
+    "categoryBangyak": null,
+    "tags": [],
+    "composition": [
+      {
+        "herb_name": "귤핵",
+        "herb_hanja": "橘核",
+        "herb_id": null,
+        "dosage": "30g",
+        "role": "군"
+      },
+      {
+        "herb_name": "해조",
+        "herb_hanja": "海藻",
+        "herb_id": null,
+        "dosage": "30g",
+        "role": "신"
+      },
+      {
+        "herb_name": "곤포",
+        "herb_hanja": "昆布",
+        "herb_id": null,
+        "dosage": "30g",
+        "role": "신"
+      },
+      {
+        "herb_name": "해대",
+        "herb_hanja": "海帶",
+        "herb_id": null,
+        "dosage": "30g",
+        "role": "신"
+      },
+      {
+        "herb_name": "도인",
+        "herb_hanja": "桃仁",
+        "herb_id": null,
+        "dosage": "30g",
+        "role": "신"
+      },
+      {
+        "herb_name": "현호색",
+        "herb_hanja": "玄胡索",
+        "herb_id": null,
+        "dosage": "30g",
+        "role": "신"
+      },
+      {
+        "herb_name": "천련자",
+        "herb_hanja": "川楝子",
+        "herb_id": null,
+        "dosage": "30g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "지실",
+        "herb_hanja": "枳實",
+        "herb_id": null,
+        "dosage": "30g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "후박",
+        "herb_hanja": "厚朴",
+        "herb_id": null,
+        "dosage": "30g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "목향",
+        "herb_hanja": "木香",
+        "herb_id": null,
+        "dosage": "15g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "계심",
+        "herb_hanja": "桂心",
+        "herb_id": null,
+        "dosage": "15g",
+        "role": "사"
+      },
+      {
+        "herb_name": "육계",
+        "herb_hanja": "肉桂",
+        "herb_id": null,
+        "dosage": "15g",
+        "role": "사"
+      }
+    ],
+    "efficacy": [
+      "행기지통",
+      "연견산결"
+    ],
+    "indications": [
+      "산기",
+      "고환종통",
+      "소복통"
+    ],
+    "source": "제생방",
+    "contraindications": [
+      "임부금기"
+    ],
+    "modifications": null,
+    "lesson": null,
+    "parentId": null,
+    "rationale": "귤핵으로 고환 부위의 기를 돌리고, 해조/곤포/해대 등 짠맛 나는 연견약으로 산기(疝氣) 덩어리를 깨뜨리며, 도인/현호색으로 활혈지통. 계심/육계로 한기를 흩어내어 행기연견지통."
+  },
+  {
+    "id": "BJ-13-017",
+    "name": "통규활혈탕",
+    "hanja": "通竅活血湯",
+    "starred": false,
+    "categoryMajor": "13. 이혈제",
+    "categoryMinor": "13-1. 활혈거어제",
+    "categoryBangyak": null,
+    "tags": [],
+    "composition": [
+      {
+        "herb_name": "사향",
+        "herb_hanja": "麝香",
+        "herb_id": null,
+        "dosage": "0.15g",
+        "role": "군"
+      },
+      {
+        "herb_name": "적작약",
+        "herb_hanja": "赤芍",
+        "herb_id": null,
+        "dosage": "3g",
+        "role": "신"
+      },
+      {
+        "herb_name": "천궁",
+        "herb_hanja": "川芎",
+        "herb_id": null,
+        "dosage": "3g",
+        "role": "신"
+      },
+      {
+        "herb_name": "도인",
+        "herb_hanja": "桃仁",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "신"
+      },
+      {
+        "herb_name": "홍화",
+        "herb_hanja": "紅花",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "신"
+      },
+      {
+        "herb_name": "노총",
+        "herb_hanja": "老蔥",
+        "herb_id": null,
+        "dosage": "3뿌리",
+        "role": "좌"
+      },
+      {
+        "herb_name": "선강",
+        "herb_hanja": "鮮薑",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "대조",
+        "herb_hanja": "大棗",
+        "herb_id": null,
+        "dosage": "7개",
+        "role": "사"
+      }
+    ],
+    "efficacy": [
+      "활혈통규"
+    ],
+    "indications": [
+      "두면부어혈",
+      "탈모",
+      "주사비",
+      "이명"
+    ],
+    "source": "의림개착",
+    "contraindications": [
+      "임부금기"
+    ],
+    "modifications": null,
+    "lesson": null,
+    "parentId": "BJ-13-002",
+    "rationale": "사향과 파(노총)의 강한 투과력을 빌려 머리·얼굴 부위의 막힌 혈락을 뚫어줌. 혈부축어탕의 변방으로 두면부(頭面部) 어혈에 특화."
+  },
+  {
+    "id": "BJ-13-018",
+    "name": "격하축어탕",
+    "hanja": "膈下逐瘀湯",
+    "starred": false,
+    "categoryMajor": "13. 이혈제",
+    "categoryMinor": "13-1. 활혈거어제",
+    "categoryBangyak": null,
+    "tags": [],
+    "composition": [
+      {
+        "herb_name": "도인",
+        "herb_hanja": "桃仁",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "군"
+      },
+      {
+        "herb_name": "홍화",
+        "herb_hanja": "紅花",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "군"
+      },
+      {
+        "herb_name": "적작약",
+        "herb_hanja": "赤芍",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "군"
+      },
+      {
+        "herb_name": "당귀",
+        "herb_hanja": "當歸",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "신"
+      },
+      {
+        "herb_name": "천궁",
+        "herb_hanja": "川芎",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "신"
+      },
+      {
+        "herb_name": "단삼",
+        "herb_hanja": "丹蔘",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "신"
+      },
+      {
+        "herb_name": "목단피",
+        "herb_hanja": "牧丹皮",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "신"
+      },
+      {
+        "herb_name": "오약",
+        "herb_hanja": "烏藥",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "지각",
+        "herb_hanja": "枳殼",
+        "herb_id": null,
+        "dosage": "5g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "향부자",
+        "herb_hanja": "香附子",
+        "herb_id": null,
+        "dosage": "5g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "감초",
+        "herb_hanja": "甘草",
+        "herb_id": null,
+        "dosage": "3g",
+        "role": "사"
+      }
+    ],
+    "efficacy": [
+      "활혈거어",
+      "행기지통"
+    ],
+    "indications": [
+      "격하어혈",
+      "복부종괴",
+      "협하통"
+    ],
+    "source": "의림개착",
+    "contraindications": [
+      "임부금기"
+    ],
+    "modifications": null,
+    "lesson": null,
+    "parentId": "BJ-13-002",
+    "rationale": "횡격막 아래에 어혈이 뭉쳐 배에 덩어리가 만져지거나 옆구리가 아플 때, 이기약(향부자/오약/지각)을 보강해 기와 혈을 함께 소통시켜 어혈을 풂."
+  },
+  {
+    "id": "BJ-13-019",
+    "name": "신통축어탕",
+    "hanja": "身痛逐瘀湯",
+    "starred": false,
+    "categoryMajor": "13. 이혈제",
+    "categoryMinor": "13-1. 활혈거어제",
+    "categoryBangyak": null,
+    "tags": [],
+    "composition": [
+      {
+        "herb_name": "도인",
+        "herb_hanja": "桃仁",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "군"
+      },
+      {
+        "herb_name": "홍화",
+        "herb_hanja": "紅花",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "군"
+      },
+      {
+        "herb_name": "오령지",
+        "herb_hanja": "五靈脂",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "군"
+      },
+      {
+        "herb_name": "몰약",
+        "herb_hanja": "沒藥",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "군"
+      },
+      {
+        "herb_name": "당귀",
+        "herb_hanja": "當歸",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "신"
+      },
+      {
+        "herb_name": "천궁",
+        "herb_hanja": "川芎",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "신"
+      },
+      {
+        "herb_name": "우슬",
+        "herb_hanja": "牛膝",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "신"
+      },
+      {
+        "herb_name": "지룡",
+        "herb_hanja": "地龍",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "신"
+      },
+      {
+        "herb_name": "진교",
+        "herb_hanja": "秦艽",
+        "herb_id": null,
+        "dosage": "3g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "강활",
+        "herb_hanja": "羌活",
+        "herb_id": null,
+        "dosage": "3g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "향부자",
+        "herb_hanja": "香附子",
+        "herb_id": null,
+        "dosage": "3g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "감초",
+        "herb_hanja": "甘草",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "사"
+      }
+    ],
+    "efficacy": [
+      "활혈거어",
+      "거풍제습"
+    ],
+    "indications": [
+      "기혈비조",
+      "전신동통",
+      "관절통"
+    ],
+    "source": "의림개착",
+    "contraindications": [
+      "임부금기"
+    ],
+    "modifications": null,
+    "lesson": null,
+    "parentId": "BJ-13-002",
+    "rationale": "온몸의 관절·근육이 어혈로 인해 아플 때, 풍습을 제거하는 강활/진교와 경락을 뚫는 지룡을 더해 기혈비조(氣血痺阻)로 인한 전신통증을 치료."
+  },
+  {
+    "id": "BJ-13-020",
+    "name": "당귀수산",
+    "hanja": "當歸鬚散",
+    "starred": false,
+    "categoryMajor": "13. 이혈제",
+    "categoryMinor": "13-1. 활혈거어제",
+    "categoryBangyak": null,
+    "tags": [],
+    "composition": [
+      {
+        "herb_name": "당귀수",
+        "herb_hanja": "當歸鬚",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "군"
+      },
+      {
+        "herb_name": "적작약",
+        "herb_hanja": "赤芍藥",
+        "herb_id": null,
+        "dosage": "5g",
+        "role": "신"
+      },
+      {
+        "herb_name": "오약",
+        "herb_hanja": "烏藥",
+        "herb_id": null,
+        "dosage": "5g",
+        "role": "신"
+      },
+      {
+        "herb_name": "향부자",
+        "herb_hanja": "香附子",
+        "herb_id": null,
+        "dosage": "5g",
+        "role": "신"
+      },
+      {
+        "herb_name": "소목",
+        "herb_hanja": "蘇木",
+        "herb_id": null,
+        "dosage": "3g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "홍화",
+        "herb_hanja": "紅花",
+        "herb_id": null,
+        "dosage": "3g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "도인",
+        "herb_hanja": "桃仁",
+        "herb_id": null,
+        "dosage": "3g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "계지",
+        "herb_hanja": "桂枝",
+        "herb_id": null,
+        "dosage": "3g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "감초",
+        "herb_hanja": "甘草",
+        "herb_id": null,
+        "dosage": "3g",
+        "role": "사"
+      }
+    ],
+    "efficacy": [
+      "활혈거어",
+      "통락지통"
+    ],
+    "indications": [
+      "타박상",
+      "외상어혈통"
+    ],
+    "source": "의학심오",
+    "contraindications": [
+      "임부금기"
+    ],
+    "modifications": null,
+    "lesson": null,
+    "parentId": null,
+    "rationale": "당귀의 잔뿌리(당귀수)와 강력한 활혈약재들을 술과 함께 달여, 외상으로 인해 정체된 어혈을 빠르게 풀고 통증을 제어. 소목/계지의 온통으로 혈맥 개통을 돕고 감초로 완화."
+  },
+  {
+    "id": "BJ-13-021",
+    "name": "대황성충환",
+    "hanja": "大黃蟅蟲丸",
+    "starred": false,
+    "categoryMajor": "13. 이혈제",
+    "categoryMinor": "13-1. 활혈거어제",
+    "categoryBangyak": null,
+    "tags": [],
+    "composition": [
+      {
+        "herb_name": "대황",
+        "herb_hanja": "大黃",
+        "herb_id": null,
+        "dosage": "300g",
+        "role": "군"
+      },
+      {
+        "herb_name": "성충",
+        "herb_hanja": "蟅蟲",
+        "herb_id": null,
+        "dosage": "30g",
+        "role": "군"
+      },
+      {
+        "herb_name": "도인",
+        "herb_hanja": "桃仁",
+        "herb_id": null,
+        "dosage": "20g",
+        "role": "신"
+      },
+      {
+        "herb_name": "수질",
+        "herb_hanja": "水蛭",
+        "herb_id": null,
+        "dosage": "100g",
+        "role": "신"
+      },
+      {
+        "herb_name": "맹충",
+        "herb_hanja": "虻蟲",
+        "herb_id": null,
+        "dosage": "45g",
+        "role": "신"
+      },
+      {
+        "herb_name": "자리",
+        "herb_hanja": "蜣螂",
+        "herb_id": null,
+        "dosage": "45g",
+        "role": "신"
+      },
+      {
+        "herb_name": "황금",
+        "herb_hanja": "黃芩",
+        "herb_id": null,
+        "dosage": "60g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "건지황",
+        "herb_hanja": "乾地黃",
+        "herb_id": null,
+        "dosage": "300g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "작약",
+        "herb_hanja": "芍藥",
+        "herb_id": null,
+        "dosage": "120g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "행인",
+        "herb_hanja": "杏仁",
+        "herb_id": null,
+        "dosage": "20g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "생칠",
+        "herb_hanja": "生漆",
+        "herb_id": null,
+        "dosage": "30g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "감초",
+        "herb_hanja": "甘草",
+        "herb_id": null,
+        "dosage": "90g",
+        "role": "사"
+      }
+    ],
+    "efficacy": [
+      "거어소징"
+    ],
+    "indications": [
+      "오로허극",
+      "건혈내정",
+      "피부갑착",
+      "목암신흑"
+    ],
+    "source": "금궤요략",
+    "contraindications": [
+      "임부금기"
+    ],
+    "modifications": null,
+    "lesson": null,
+    "parentId": null,
+    "rationale": "수질/맹충/자리/성충 등 혈육지품(血肉之品)을 사용하여 장부 깊숙이 달라붙은 마른 어혈(건혈)을 강력하게 파쇄하고, 건지황/작약으로 정혈(精血)을 보충. 환약으로 완만하게 작용하여 만성 어혈을 서서히 제거."
+  },
+  {
+    "id": "BJ-13-022",
+    "name": "해혈방",
+    "hanja": "咳血方",
+    "starred": false,
+    "categoryMajor": "13. 이혈제",
+    "categoryMinor": "13-2. 지혈제",
+    "categoryBangyak": null,
+    "tags": [],
+    "composition": [
+      {
+        "herb_name": "청대",
+        "herb_hanja": "靑黛",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "군"
+      },
+      {
+        "herb_name": "치자",
+        "herb_hanja": "梔子",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "군"
+      },
+      {
+        "herb_name": "가자",
+        "herb_hanja": "訶子",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "신"
+      },
+      {
+        "herb_name": "해분",
+        "herb_hanja": "海粉",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "신"
+      },
+      {
+        "herb_name": "과루인",
+        "herb_hanja": "瓜蔞仁",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "좌사"
+      }
+    ],
+    "efficacy": [
+      "청화화담",
+      "렴폐지혈"
+    ],
+    "indications": [
+      "간화범폐",
+      "기침에 피가 섞임",
+      "흉협통"
+    ],
+    "source": "단계심법",
+    "contraindications": null,
+    "modifications": null,
+    "lesson": null,
+    "parentId": null,
+    "rationale": "청대/치자로 간화(肝火)를 끄고 가자로 폐를 수렴하며, 해분/과루인으로 가래를 삭여, 화기(火氣)로 인해 허파에서 피가 나오는 것을 막음. 단계의 청간사화지혈방."
+  },
+  {
+    "id": "BJ-13-023",
+    "name": "괴화산",
+    "hanja": "槐花散",
+    "starred": false,
+    "categoryMajor": "13. 이혈제",
+    "categoryMinor": "13-2. 지혈제",
+    "categoryBangyak": null,
+    "tags": [],
+    "composition": [
+      {
+        "herb_name": "괴화",
+        "herb_hanja": "槐花",
+        "herb_id": null,
+        "dosage": "각등분",
+        "role": "군"
+      },
+      {
+        "herb_name": "측백엽",
+        "herb_hanja": "側柏葉",
+        "herb_id": null,
+        "dosage": "각등분",
+        "role": "군"
+      },
+      {
+        "herb_name": "형개",
+        "herb_hanja": "荊芥",
+        "herb_id": null,
+        "dosage": "각등분",
+        "role": "신"
+      },
+      {
+        "herb_name": "지각",
+        "herb_hanja": "枳殼",
+        "herb_id": null,
+        "dosage": "각등분",
+        "role": "신"
+      }
+    ],
+    "efficacy": [
+      "청장지혈",
+      "소풍하기"
+    ],
+    "indications": [
+      "장풍하혈",
+      "치루하혈",
+      "대변에 붉은 피"
+    ],
+    "source": "본사방",
+    "contraindications": null,
+    "modifications": null,
+    "lesson": null,
+    "parentId": null,
+    "rationale": "괴화/측백엽으로 장(腸)의 열을 식혀 피를 멈추고, 형개로 장풍(腸風)을 흩어내며, 지각으로 장의 기운을 소통시켜 치질이나 장풍으로 인한 하혈을 다스림."
+  },
+  {
+    "id": "BJ-15-007",
+    "name": "백합고금탕",
+    "hanja": "百合固金湯",
+    "starred": true,
+    "categoryMajor": "15. 치조제",
+    "categoryMinor": "15-2. 자윤조제",
+    "categoryBangyak": null,
+    "tags": [],
+    "composition": [
+      {
+        "herb_name": "백합",
+        "herb_hanja": "百合",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "군"
+      },
+      {
+        "herb_name": "숙지황",
+        "herb_hanja": "熟地黃",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "군"
+      },
+      {
+        "herb_name": "생지황",
+        "herb_hanja": "生地黃",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "군"
+      },
+      {
+        "herb_name": "맥문동",
+        "herb_hanja": "麥門冬",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "신"
+      },
+      {
+        "herb_name": "현삼",
+        "herb_hanja": "玄蔘",
+        "herb_id": null,
+        "dosage": "3g",
+        "role": "신"
+      },
+      {
+        "herb_name": "패모",
+        "herb_hanja": "貝母",
+        "herb_id": null,
+        "dosage": "3g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "길경",
+        "herb_hanja": "桔梗",
+        "herb_id": null,
+        "dosage": "3g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "백작약",
+        "herb_hanja": "白芍藥",
+        "herb_id": null,
+        "dosage": "3g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "당귀",
+        "herb_hanja": "當歸",
+        "herb_id": null,
+        "dosage": "3g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "감초",
+        "herb_hanja": "甘草",
+        "herb_id": null,
+        "dosage": "3g",
+        "role": "사"
+      }
+    ],
+    "efficacy": [
+      "자양폐신",
+      "지해화담"
+    ],
+    "indications": [
+      "폐신음허",
+      "기침",
+      "객혈",
+      "인후조통"
+    ],
+    "source": "신방팔진",
+    "contraindications": [
+      "외감기침금기"
+    ],
+    "modifications": null,
+    "lesson": null,
+    "parentId": null,
+    "rationale": "백합/숙지황/생지황으로 폐신(肺腎)의 음을 보하여 허화를 끄고(금수이상생 金水相生), 패모/길경으로 담을 삭이며, 당귀/작약으로 혈을 길러 객혈을 다스림. 폐신동치(肺腎同治)의 대표방."
+  },
+  {
+    "id": "BJ-16-019",
+    "name": "사령산",
+    "hanja": "四苓散",
+    "starred": false,
+    "categoryMajor": "16. 거습제",
+    "categoryMinor": "16-3. 이수삼습제",
+    "categoryBangyak": null,
+    "tags": [],
+    "composition": [
+      {
+        "herb_name": "택사",
+        "herb_hanja": "澤瀉",
+        "herb_id": null,
+        "dosage": "15g",
+        "role": "군"
+      },
+      {
+        "herb_name": "복령",
+        "herb_hanja": "茯苓",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "신"
+      },
+      {
+        "herb_name": "저령",
+        "herb_hanja": "猪苓",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "신"
+      },
+      {
+        "herb_name": "백출",
+        "herb_hanja": "白朮",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "좌"
+      }
+    ],
+    "efficacy": [
+      "이수삼습"
+    ],
+    "indications": [
+      "수습내정",
+      "소변불리",
+      "수종",
+      "설사"
+    ],
+    "source": "명의지장",
+    "contraindications": null,
+    "modifications": null,
+    "lesson": null,
+    "parentId": "BJ-16-004",
+    "rationale": "오령산에서 온양화기(溫陽化氣)하는 계지를 빼어, 한열(寒熱) 구별 없이 오직 평화롭게 소변을 빼내는 데만 집중. 기허 소변불리에 보다 중립적으로 사용."
+  },
+  {
+    "id": "BJ-16-020",
+    "name": "위령탕",
+    "hanja": "胃苓湯",
+    "starred": false,
+    "categoryMajor": "16. 거습제",
+    "categoryMinor": "16-3. 이수삼습제",
+    "categoryBangyak": null,
+    "tags": [],
+    "composition": [
+      {
+        "herb_name": "창출",
+        "herb_hanja": "蒼朮",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "군"
+      },
+      {
+        "herb_name": "택사",
+        "herb_hanja": "澤瀉",
+        "herb_id": null,
+        "dosage": "15g",
+        "role": "군"
+      },
+      {
+        "herb_name": "후박",
+        "herb_hanja": "厚朴",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "신"
+      },
+      {
+        "herb_name": "복령",
+        "herb_hanja": "茯苓",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "신"
+      },
+      {
+        "herb_name": "저령",
+        "herb_hanja": "猪苓",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "신"
+      },
+      {
+        "herb_name": "진피",
+        "herb_hanja": "陳皮",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "백출",
+        "herb_hanja": "白朮",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "계지",
+        "herb_hanja": "桂枝",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "사"
+      },
+      {
+        "herb_name": "감초",
+        "herb_hanja": "甘草",
+        "herb_id": null,
+        "dosage": "3g",
+        "role": "사"
+      },
+      {
+        "herb_name": "생강",
+        "herb_hanja": "生薑",
+        "herb_id": "01-1-11",
+        "dosage": "3g",
+        "role": "사"
+      },
+      {
+        "herb_name": "대조",
+        "herb_hanja": "大棗",
+        "herb_id": null,
+        "dosage": "2매",
+        "role": "사"
+      }
+    ],
+    "efficacy": [
+      "거습화위",
+      "행기이수"
+    ],
+    "indications": [
+      "하추비위상냉",
+      "수양성설사",
+      "부종"
+    ],
+    "source": "단계심법",
+    "contraindications": null,
+    "modifications": null,
+    "lesson": null,
+    "parentId": "BJ-16-004",
+    "rationale": "오령산(소변 배출)과 평위산(중초 습 제거)을 합방하여, 여름철 찬 것을 먹고 위장이 막혀 쏟아내는 물설사와 부종을 동시에 치료."
+  },
+  {
+    "id": "BJ-16-021",
+    "name": "인진오령산",
+    "hanja": "茵陳五苓散",
+    "starred": false,
+    "categoryMajor": "16. 거습제",
+    "categoryMinor": "16-3. 이수삼습제",
+    "categoryBangyak": null,
+    "tags": [],
+    "composition": [
+      {
+        "herb_name": "인진호",
+        "herb_hanja": "茵陳蒿",
+        "herb_id": null,
+        "dosage": "10g",
+        "role": "군"
+      },
+      {
+        "herb_name": "택사",
+        "herb_hanja": "澤瀉",
+        "herb_id": null,
+        "dosage": "15g",
+        "role": "신"
+      },
+      {
+        "herb_name": "복령",
+        "herb_hanja": "茯苓",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "저령",
+        "herb_hanja": "猪苓",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "백출",
+        "herb_hanja": "白朮",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "계지",
+        "herb_hanja": "桂枝",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "사"
+      }
+    ],
+    "efficacy": [
+      "이습퇴황"
+    ],
+    "indications": [
+      "습열황달",
+      "습중어열",
+      "소변불리"
+    ],
+    "source": "금궤요략",
+    "contraindications": null,
+    "modifications": null,
+    "lesson": null,
+    "parentId": "BJ-16-004",
+    "rationale": "오령산에 인진호를 더해, 열보다는 습(濕)이 더 우세한 황달을 소변으로 빼냄. 인진호탕이 열을 끄는 방향이라면 이 방은 습을 빼는 방향에 집중."
+  },
+  {
+    "id": "BJ-14-009",
+    "name": "대진교탕",
+    "hanja": "大秦艽湯",
+    "starred": true,
+    "categoryMajor": "14. 치풍제",
+    "categoryMinor": "14-1. 소산외풍제",
+    "categoryBangyak": null,
+    "tags": [],
+    "composition": [
+      {
+        "herb_name": "진교",
+        "herb_hanja": "秦艽",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "군"
+      },
+      {
+        "herb_name": "강활",
+        "herb_hanja": "羌活",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "군"
+      },
+      {
+        "herb_name": "독활",
+        "herb_hanja": "獨活",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "군"
+      },
+      {
+        "herb_name": "방풍",
+        "herb_hanja": "防風",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "군"
+      },
+      {
+        "herb_name": "천궁",
+        "herb_hanja": "川芎",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "신"
+      },
+      {
+        "herb_name": "당귀",
+        "herb_hanja": "當歸",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "신"
+      },
+      {
+        "herb_name": "백작약",
+        "herb_hanja": "白芍藥",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "신"
+      },
+      {
+        "herb_name": "숙지황",
+        "herb_hanja": "熟地黃",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "신"
+      },
+      {
+        "herb_name": "황금",
+        "herb_hanja": "黃芩",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "석고",
+        "herb_hanja": "石膏",
+        "herb_id": "2-1-1",
+        "dosage": "6g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "백출",
+        "herb_hanja": "白朮",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "복령",
+        "herb_hanja": "茯苓",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "생지황",
+        "herb_hanja": "生地黃",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "세신",
+        "herb_hanja": "細辛",
+        "herb_id": null,
+        "dosage": "3g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "감초",
+        "herb_hanja": "甘草",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "사"
+      }
+    ],
+    "efficacy": [
+      "거풍청열",
+      "양혈활혈"
+    ],
+    "indications": [
+      "풍사초중경락증",
+      "구안와사",
+      "설강불능언",
+      "수족불수"
+    ],
+    "source": "소문병기기의보명집",
+    "contraindications": [
+      "음허양항중풍금기"
+    ],
+    "modifications": null,
+    "lesson": null,
+    "parentId": null,
+    "rationale": "풍사가 경락에 침범한 중풍 초기에, 진교/강활/독활/방풍으로 풍을 흩고, 사물탕(당귀/작약/천궁/숙지황)으로 혈을 길러 치풍선치혈(治風先治血)을 구현. 기허나 음허 없이 풍사 단독침입에 사용."
+  },
+  {
+    "id": "BJ-14-010",
+    "name": "견정산",
+    "hanja": "牽正散",
+    "starred": true,
+    "categoryMajor": "14. 치풍제",
+    "categoryMinor": "14-1. 소산외풍제",
+    "categoryBangyak": null,
+    "tags": [],
+    "composition": [
+      {
+        "herb_name": "백부자",
+        "herb_hanja": "白附子",
+        "herb_id": null,
+        "dosage": "각등분",
+        "role": "군"
+      },
+      {
+        "herb_name": "전갈",
+        "herb_hanja": "全蝎",
+        "herb_id": null,
+        "dosage": "각등분",
+        "role": "신"
+      },
+      {
+        "herb_name": "강잠",
+        "herb_hanja": "殭蠶",
+        "herb_id": null,
+        "dosage": "각등분",
+        "role": "신"
+      }
+    ],
+    "efficacy": [
+      "거풍화담",
+      "지경"
+    ],
+    "indications": [
+      "풍담조락",
+      "안면신경마비",
+      "구안와사"
+    ],
+    "source": "양씨가장방",
+    "contraindications": [
+      "임부금기"
+    ],
+    "modifications": null,
+    "lesson": null,
+    "parentId": null,
+    "rationale": "풍담이 얼굴의 경락을 막아 입이 돌아간 구안와사에, 독성이 있는 벌레 약재(전갈/강잠)와 백부자로 맹렬하게 풍담을 뚫어줌. 따뜻한 술과 함께 복용하여 약의 기운을 위로 올림."
+  },
+  {
+    "id": "BJ-14-011",
+    "name": "옥진산",
+    "hanja": "玉眞散",
+    "starred": false,
+    "categoryMajor": "14. 치풍제",
+    "categoryMinor": "14-1. 소산외풍제",
+    "categoryBangyak": null,
+    "tags": [],
+    "composition": [
+      {
+        "herb_name": "백부자",
+        "herb_hanja": "白附子",
+        "herb_id": null,
+        "dosage": "각등분",
+        "role": "군"
+      },
+      {
+        "herb_name": "천남성",
+        "herb_hanja": "天南星",
+        "herb_id": null,
+        "dosage": "각등분",
+        "role": "군"
+      },
+      {
+        "herb_name": "방풍",
+        "herb_hanja": "防風",
+        "herb_id": null,
+        "dosage": "각등분",
+        "role": "신"
+      },
+      {
+        "herb_name": "백지",
+        "herb_hanja": "白芷",
+        "herb_id": null,
+        "dosage": "각등분",
+        "role": "신"
+      },
+      {
+        "herb_name": "천마",
+        "herb_hanja": "天麻",
+        "herb_id": null,
+        "dosage": "각등분",
+        "role": "좌"
+      },
+      {
+        "herb_name": "강활",
+        "herb_hanja": "羌活",
+        "herb_id": null,
+        "dosage": "각등분",
+        "role": "좌"
+      }
+    ],
+    "efficacy": [
+      "거풍화담",
+      "정축지경"
+    ],
+    "indications": [
+      "파상풍",
+      "아관긴급",
+      "각궁반장"
+    ],
+    "source": "외과정종",
+    "contraindications": [
+      "임부금기"
+    ],
+    "modifications": null,
+    "lesson": null,
+    "parentId": null,
+    "rationale": "외상으로 풍독(風毒)이 들어와 발생한 파상풍에, 남성/백부자로 풍담을 삭이고 천마로 전신의 극심한 경련을 진정시킴. 분말로 외상 부위에 바르거나 술과 함께 복용."
+  },
+  {
+    "id": "BJ-14-012",
+    "name": "아교계자황탕",
+    "hanja": "阿膠鷄子黃湯",
+    "starred": false,
+    "categoryMajor": "14. 치풍제",
+    "categoryMinor": "14-2. 평식내풍제",
+    "categoryBangyak": null,
+    "tags": [],
+    "composition": [
+      {
+        "herb_name": "아교",
+        "herb_hanja": "阿膠",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "군"
+      },
+      {
+        "herb_name": "계자황",
+        "herb_hanja": "鷄子黃",
+        "herb_id": null,
+        "dosage": "2매",
+        "role": "군"
+      },
+      {
+        "herb_name": "생지황",
+        "herb_hanja": "生地黃",
+        "herb_id": null,
+        "dosage": "12g",
+        "role": "신"
+      },
+      {
+        "herb_name": "백작약",
+        "herb_hanja": "白芍藥",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "신"
+      },
+      {
+        "herb_name": "구등",
+        "herb_hanja": "鉤藤",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "석결명",
+        "herb_hanja": "石決明",
+        "herb_id": null,
+        "dosage": "15g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "모려",
+        "herb_hanja": "牡蠣",
+        "herb_id": null,
+        "dosage": "12g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "복신",
+        "herb_hanja": "茯神",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "낙석등",
+        "herb_hanja": "絡石藤",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "사"
+      }
+    ],
+    "efficacy": [
+      "자음양혈",
+      "유간식풍"
+    ],
+    "indications": [
+      "사열구기",
+      "음혈부족",
+      "허풍내동",
+      "수족조동"
+    ],
+    "source": "통속상한론",
+    "contraindications": null,
+    "modifications": null,
+    "lesson": null,
+    "parentId": null,
+    "rationale": "열병 후기에 음혈이 말라 근육에 영양이 가지 않아 생기는 허풍(虛風)을 아교/계자황으로 자양하여 근육을 부드럽게 함. 대정풍주보다 경증의 허풍에 사용. 낙석등으로 경락을 통하게 함."
+  },
+  {
+    "id": "BJ-17-013",
+    "name": "척담탕",
+    "hanja": "滌痰湯",
+    "starred": false,
+    "categoryMajor": "17. 거담제",
+    "categoryMinor": "17-1. 조습화담제",
+    "categoryBangyak": null,
+    "tags": [],
+    "composition": [
+      {
+        "herb_name": "반하",
+        "herb_hanja": "半夏",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "군"
+      },
+      {
+        "herb_name": "천남성",
+        "herb_hanja": "天南星",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "신"
+      },
+      {
+        "herb_name": "지실",
+        "herb_hanja": "枳實",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "신"
+      },
+      {
+        "herb_name": "창포",
+        "herb_hanja": "石菖蒲",
+        "herb_id": null,
+        "dosage": "3g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "죽여",
+        "herb_hanja": "竹茹",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "인삼",
+        "herb_hanja": "人蔘",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "복령",
+        "herb_hanja": "茯苓",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "진피",
+        "herb_hanja": "陳皮",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "감초",
+        "herb_hanja": "甘草",
+        "herb_id": null,
+        "dosage": "3g",
+        "role": "사"
+      },
+      {
+        "herb_name": "생강",
+        "herb_hanja": "生薑",
+        "herb_id": "01-1-11",
+        "dosage": "3g",
+        "role": "사"
+      }
+    ],
+    "efficacy": [
+      "척담개규"
+    ],
+    "indications": [
+      "중풍담미심규증",
+      "혀가굳어말못함"
+    ],
+    "source": "제생방",
+    "contraindications": null,
+    "modifications": null,
+    "lesson": null,
+    "parentId": "BJ-17-003",
+    "rationale": "도담탕에 심규를 여는 창포와 위기를 보하는 인삼/죽여를 배합. 중풍으로 담탁이 심규를 막아 말을 못하는 증상을 씻어내는(滌) 탁법적 접근."
+  },
+  {
+    "id": "BJ-18-004",
+    "name": "지출환",
+    "hanja": "枳朮丸",
+    "starred": true,
+    "categoryMajor": "18. 소식제",
+    "categoryMinor": "18-2. 건비소식제",
+    "categoryBangyak": null,
+    "tags": [],
+    "composition": [
+      {
+        "herb_name": "백출",
+        "herb_hanja": "白朮",
+        "herb_id": null,
+        "dosage": "60g",
+        "role": "군"
+      },
+      {
+        "herb_name": "지실",
+        "herb_hanja": "枳實",
+        "herb_id": null,
+        "dosage": "30g",
+        "role": "신좌사"
+      }
+    ],
+    "efficacy": [
+      "건비소비"
+    ],
+    "indications": [
+      "비허기체",
+      "음식정취",
+      "명치더부룩함"
+    ],
+    "source": "비위론",
+    "contraindications": null,
+    "modifications": null,
+    "lesson": null,
+    "parentId": null,
+    "rationale": "백출(보비)을 지실(소적)보다 2배 많이 사용하여, 비장 허약으로 연동운동이 안 되어 꽉 막힌 기운을 뚫어줌. 연잎으로 싸서 지음(荷葉燒飯). 보(補) 위주에 소도(消導)를 겸한 구조."
+  },
+  {
+    "id": "BJ-20-001",
+    "name": "과체산",
+    "hanja": "瓜蒂散",
+    "starred": false,
+    "categoryMajor": "20. 용토제",
+    "categoryMinor": "20-1. 용토제",
+    "categoryBangyak": null,
+    "tags": [],
+    "composition": [
+      {
+        "herb_name": "과체",
+        "herb_hanja": "瓜蒂",
+        "herb_id": null,
+        "dosage": "각등분",
+        "role": "군"
+      },
+      {
+        "herb_name": "적소두",
+        "herb_hanja": "赤小豆",
+        "herb_id": null,
+        "dosage": "각등분",
+        "role": "신"
+      },
+      {
+        "herb_name": "향시",
+        "herb_hanja": "香豉",
+        "herb_id": null,
+        "dosage": "적량",
+        "role": "좌사"
+      }
+    ],
+    "efficacy": [
+      "용토담식"
+    ],
+    "indications": [
+      "담연숙식흉완",
+      "숨가쁘고막힘",
+      "독물오복"
+    ],
+    "source": "상한론",
+    "contraindications": [
+      "체허금기",
+      "임부금기"
+    ],
+    "modifications": null,
+    "lesson": null,
+    "parentId": null,
+    "rationale": "참외 꼭지(과체)의 맹렬한 고한(苦寒)함으로 위장을 자극해 가슴에 꽉 막힌 독극물이나 썩은 음식/담연을 강제로 토하게 함. 토법(吐法)의 대표방. 허증/임부에 절대 금기."
+  },
+  {
+    "id": "BJ-21-003",
+    "name": "선방활명음",
+    "hanja": "仙方活命飮",
+    "starred": true,
+    "categoryMajor": "21. 옹양제",
+    "categoryMinor": "21-1. 산옹소종제",
+    "categoryBangyak": null,
+    "tags": [],
+    "composition": [
+      {
+        "herb_name": "금은화",
+        "herb_hanja": "金銀花",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "군"
+      },
+      {
+        "herb_name": "방풍",
+        "herb_hanja": "防風",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "신"
+      },
+      {
+        "herb_name": "백지",
+        "herb_hanja": "白芷",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "신"
+      },
+      {
+        "herb_name": "당귀미",
+        "herb_hanja": "當歸尾",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "신"
+      },
+      {
+        "herb_name": "적작약",
+        "herb_hanja": "赤芍",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "신"
+      },
+      {
+        "herb_name": "천산갑",
+        "herb_hanja": "穿山甲",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "신"
+      },
+      {
+        "herb_name": "조각자",
+        "herb_hanja": "皂角刺",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "신"
+      },
+      {
+        "herb_name": "유향",
+        "herb_hanja": "乳香",
+        "herb_id": null,
+        "dosage": "3g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "몰약",
+        "herb_hanja": "沒藥",
+        "herb_id": null,
+        "dosage": "3g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "천화분",
+        "herb_hanja": "天花粉",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "패모",
+        "herb_hanja": "貝母",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "감초",
+        "herb_hanja": "甘草",
+        "herb_id": null,
+        "dosage": "3g",
+        "role": "사"
+      }
+    ],
+    "efficacy": [
+      "청열해독",
+      "소종산결"
+    ],
+    "indications": [
+      "옹양종독초기",
+      "양증종기",
+      "홍종열통"
+    ],
+    "source": "부인양방",
+    "contraindications": [
+      "음저금기",
+      "임부금기"
+    ],
+    "modifications": null,
+    "lesson": null,
+    "parentId": null,
+    "rationale": "은화로 해독하고 천산갑/조각자로 농을 부수어(배농), 곪기 전의 양증 종기를 흩어버리는 소법(消法). 외과 소방(消方)의 성약. 음저(陰疽)에는 절대 금기."
+  },
+  {
+    "id": "BJ-21-004",
+    "name": "오미소독음",
+    "hanja": "五味消毒飮",
+    "starred": false,
+    "categoryMajor": "21. 옹양제",
+    "categoryMinor": "21-1. 산옹소종제",
+    "categoryBangyak": null,
+    "tags": [],
+    "composition": [
+      {
+        "herb_name": "금은화",
+        "herb_hanja": "金銀花",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "군"
+      },
+      {
+        "herb_name": "야국화",
+        "herb_hanja": "野菊花",
+        "herb_id": null,
+        "dosage": "3.6g",
+        "role": "신좌"
+      },
+      {
+        "herb_name": "포공영",
+        "herb_hanja": "蒲公英",
+        "herb_id": null,
+        "dosage": "3.6g",
+        "role": "신좌"
+      },
+      {
+        "herb_name": "자화지정",
+        "herb_hanja": "紫花地丁",
+        "herb_id": null,
+        "dosage": "3.6g",
+        "role": "신좌"
+      },
+      {
+        "herb_name": "천규자",
+        "herb_hanja": "天葵子",
+        "herb_id": null,
+        "dosage": "3.6g",
+        "role": "신좌"
+      }
+    ],
+    "efficacy": [
+      "청열해독",
+      "소산정창"
+    ],
+    "indications": [
+      "정창초기",
+      "국소홍종열통",
+      "뿌리단단함"
+    ],
+    "source": "의종금감",
+    "contraindications": [
+      "음저금기"
+    ],
+    "modifications": null,
+    "lesson": null,
+    "parentId": null,
+    "rationale": "5가지 강력한 청열해독 약재로만 구성되어, 불화로 같이 번지는 독한 종기(정창)의 화독(火毒)을 신속히 끔. 단순하나 청열해독 효과가 집중적으로 강함."
+  },
+  {
+    "id": "BJ-21-005",
+    "name": "사묘용안탕",
+    "hanja": "四妙勇安湯",
+    "starred": false,
+    "categoryMajor": "21. 옹양제",
+    "categoryMinor": "21-1. 산옹소종제",
+    "categoryBangyak": null,
+    "tags": [],
+    "composition": [
+      {
+        "herb_name": "금은화",
+        "herb_hanja": "金銀花",
+        "herb_id": null,
+        "dosage": "90g",
+        "role": "군"
+      },
+      {
+        "herb_name": "현삼",
+        "herb_hanja": "玄蔘",
+        "herb_id": null,
+        "dosage": "90g",
+        "role": "신"
+      },
+      {
+        "herb_name": "당귀",
+        "herb_hanja": "當歸",
+        "herb_id": null,
+        "dosage": "60g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "감초",
+        "herb_hanja": "甘草",
+        "herb_id": null,
+        "dosage": "30g",
+        "role": "사"
+      }
+    ],
+    "efficacy": [
+      "청열해독",
+      "활혈지통"
+    ],
+    "indications": [
+      "탈저",
+      "사지말단괴사",
+      "버거씨병"
+    ],
+    "source": "험방신편",
+    "contraindications": null,
+    "modifications": null,
+    "lesson": null,
+    "parentId": null,
+    "rationale": "은화/현삼을 대량(90g) 투입해 열독을 시원하게 끄고 당귀로 혈맥을 강력하게 뚫어, 썩어 들어가는 말단 조직(탈저)의 괴사를 막음. 단 4가지 약재로 극심한 혈열어독을 치료."
+  },
+  {
+    "id": "BJ-21-006",
+    "name": "양화탕",
+    "hanja": "陽和湯",
+    "starred": true,
+    "categoryMajor": "21. 옹양제",
+    "categoryMinor": "21-1. 산옹소종제",
+    "categoryBangyak": null,
+    "tags": [],
+    "composition": [
+      {
+        "herb_name": "숙지황",
+        "herb_hanja": "熟地黃",
+        "herb_id": null,
+        "dosage": "30g",
+        "role": "군"
+      },
+      {
+        "herb_name": "녹각교",
+        "herb_hanja": "鹿角膠",
+        "herb_id": null,
+        "dosage": "9g",
+        "role": "신"
+      },
+      {
+        "herb_name": "육계",
+        "herb_hanja": "肉桂",
+        "herb_id": null,
+        "dosage": "3g",
+        "role": "신"
+      },
+      {
+        "herb_name": "마황",
+        "herb_hanja": "麻黃",
+        "herb_id": null,
+        "dosage": "2g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "백개자",
+        "herb_hanja": "白芥子",
+        "herb_id": null,
+        "dosage": "6g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "포강탄",
+        "herb_hanja": "炮薑炭",
+        "herb_id": null,
+        "dosage": "2g",
+        "role": "좌"
+      },
+      {
+        "herb_name": "생감초",
+        "herb_hanja": "生甘草",
+        "herb_id": null,
+        "dosage": "3g",
+        "role": "사"
+      }
+    ],
+    "efficacy": [
+      "온양보혈",
+      "산한통체"
+    ],
+    "indications": [
+      "음저",
+      "피부색변화없이움푹패임",
+      "맑은진물"
+    ],
+    "source": "외과전생집",
+    "contraindications": [
+      "양증옹양금기"
+    ],
+    "modifications": null,
+    "lesson": null,
+    "parentId": null,
+    "rationale": "선방활명음의 반대. 차갑게 얼어붙은 음증 종기(음저)에 숙지황/녹각교로 혈을 보하면서, 육계/포강으로 양기를 맹렬히 지피고, 마황으로 땀구멍을 열어 한독(寒毒)을 뺌."
   }
 ]
