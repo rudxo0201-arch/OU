@@ -9,7 +9,19 @@ import { ChatPanel, InlineView } from '@/components/chat/ChatPanel';
 import { VIEW_REGISTRY, VIEW_LABELS } from '@/components/views/registry';
 
 export default function OrbPage() {
-  const { messages, requestedViews, clearRequestedViews } = useChatStore();
+  const { messages, requestedViews, clearRequestedViews, persistGuest, restoreGuest } = useChatStore();
+
+  // 마운트 시 이전 대화 복원
+  useEffect(() => {
+    restoreGuest();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // 메시지 변경 시 자동 저장 (스트리밍 중인 메시지 제외)
+  useEffect(() => {
+    const hasNonStreaming = messages.some(m => !m.streaming);
+    if (hasNonStreaming) persistGuest();
+  }, [messages, persistGuest]);
   const tutorialPhase = useTutorialStore(s => s.phase);
   const tutorialStepIndex = useTutorialStore(s => s.stepIndex);
   const skipStep = useTutorialStore(s => s.skipStep);
@@ -59,7 +71,7 @@ export default function OrbPage() {
         flex: 1,
         minHeight: 0,
         display: 'flex',
-        padding: '12px 116px 20px',
+        padding: '12px 40px 20px 116px',
         gap: 16,
       }}>
         {/* 좌: View 패널 */}
