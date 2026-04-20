@@ -23,6 +23,19 @@ export default function ViewPage() {
 
   useEffect(() => {
     if (!viewId) return;
+
+    // builtin-{viewType} 처리 — DB 없이 바로 렌더
+    if (viewId.startsWith('builtin-')) {
+      const vt = viewId.replace('builtin-', '');
+      setViewData({ view_type: vt, name: VIEW_LABELS[vt] || vt });
+      fetch(`/api/nodes?limit=200`)
+        .then(r => r.json())
+        .then(data => { if (data?.nodes) setNodes(data.nodes); })
+        .catch(() => {})
+        .finally(() => setLoading(false));
+      return;
+    }
+
     fetch(`/api/views?id=${viewId}`)
       .then(r => r.json())
       .then(data => {
