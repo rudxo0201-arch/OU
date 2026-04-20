@@ -68,7 +68,7 @@ function MyPage() {
   const skipAll = useTutorialStore(s => s.skipAll);
   const prevPhaseRef = useRef(tutorialPhase);
   const [showTutorialComplete, setShowTutorialComplete] = useState(false);
-  const [bubblePos, setBubblePos] = useState<{ top: number; left: number } | null>(null);
+  const [targetRect, setTargetRect] = useState<{ top: number; left: number; width: number; height: number } | null>(null);
 
   // 튜토리얼 시작: replay param이면 바로 시작, 아니면 DB 체크
   useEffect(() => {
@@ -166,18 +166,18 @@ function MyPage() {
     prevPhaseRef.current = tutorialPhase;
   }, [tutorialPhase, router]);
 
-  // SpeechBubble 위치 추적 — [data-tutorial-target] 엘리먼트 기준
+  // 스포트라이트 + SpeechBubble 위치 추적
   useEffect(() => {
-    if (tutorialPhase !== 'active') { setBubblePos(null); return; }
-    const updatePos = () => {
+    if (tutorialPhase !== 'active') { setTargetRect(null); return; }
+    const updateRect = () => {
       const el = document.querySelector('[data-tutorial-target="ou-view-input"]');
-      if (!el) { setBubblePos(null); return; }
-      const rect = el.getBoundingClientRect();
-      setBubblePos({ top: rect.bottom + 14, left: rect.left + rect.width / 2 });
+      if (!el) { setTargetRect(null); return; }
+      const r = el.getBoundingClientRect();
+      setTargetRect({ top: r.top, left: r.left, width: r.width, height: r.height });
     };
-    const timer = setTimeout(updatePos, 200);
-    window.addEventListener('resize', updatePos);
-    return () => { clearTimeout(timer); window.removeEventListener('resize', updatePos); };
+    const timer = setTimeout(updateRect, 200);
+    window.addEventListener('resize', updateRect);
+    return () => { clearTimeout(timer); window.removeEventListener('resize', updateRect); };
   }, [tutorialPhase, tutorialStepIndex]);
 
   // Listen for widget edit mode changes
@@ -361,20 +361,39 @@ function MyPage() {
         <TutorialComplete onClose={() => setShowTutorialComplete(false)} />
       )}
 
-      {/* 튜토리얼 SpeechBubble — 대시보드 입력 위젯 아래 */}
-      {bubblePos && tutorialPhase === 'active' && (
-        <SpeechBubble
-          message={TUTORIAL_STEPS[tutorialStepIndex]?.guideMessage ?? '여기에 입력해보세요'}
-          tail="top"
-          style={{
-            position: 'fixed',
-            top: bubblePos.top,
-            left: bubblePos.left,
-            transform: 'translateX(-50%)',
-            zIndex: 100,
-          }}
-          onSkip={skipAll}
-        />
+      {/* 튜토리얼 스포트라이트 + SpeechBubble */}
+      {targetRect && tutorialPhase === 'active' && (
+        <>
+          {/* 스포트라이트 오버레이 — 타겟만 밝게, 나머지 dim */}
+          <div
+            style={{
+              position: 'fixed',
+              top: targetRect.top - 12,
+              left: targetRect.left - 12,
+              width: targetRect.width + 24,
+              height: targetRect.height + 24,
+              borderRadius: 'var(--ou-radius-lg)',
+              boxShadow: '0 0 0 9999px rgba(0,0,0,0.25)',
+              zIndex: 90,
+              pointerEvents: 'none',
+              transition: 'all 400ms cubic-bezier(0.34, 1.56, 0.64, 1)',
+              animation: 'ou-fade-in 0.4s ease',
+            }}
+          />
+          {/* SpeechBubble — 타겟 아래, 센터 정렬 */}
+          <SpeechBubble
+            message={TUTORIAL_STEPS[tutorialStepIndex]?.guideMessage ?? '여기에 입력해보세요'}
+            tail="top"
+            style={{
+              position: 'fixed',
+              top: targetRect.top + targetRect.height + 24,
+              left: targetRect.left + targetRect.width / 2,
+              transform: 'translateX(-50%)',
+              zIndex: 100,
+            }}
+            onSkip={skipAll}
+          />
+        </>
       )}
 
       {/* Page indicator dots */}
