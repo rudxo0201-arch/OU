@@ -6,7 +6,6 @@ import { ChatInput, type ChatInputHandle } from './ChatInput';
 import { NeuButton, NeuBadge, NeuModal } from '@/components/ds';
 import { AddToHomeButton } from './AddToHomeButton';
 import { stripLLMMeta } from '@/lib/utils/stripLLMMeta';
-import { ViewOptionsChips } from './ViewOptionsChips';
 import { VIEW_REGISTRY, DOMAIN_VIEW_MAP } from '@/components/views/registry';
 
 export interface NodeSelectPayload {
@@ -22,7 +21,7 @@ interface ChatPanelProps {
 }
 
 export function ChatPanel({ onNodeSelect, autoSendOnOpen }: ChatPanelProps) {
-  const { messages, pendingViewOptions } = useChatStore();
+  const { messages } = useChatStore();
   const scrollRef = useRef<HTMLDivElement>(null);
   const chatInputRef = useRef<ChatInputHandle>(null);
 
@@ -67,7 +66,6 @@ export function ChatPanel({ onNodeSelect, autoSendOnOpen }: ChatPanelProps) {
             message={msg}
             onNodeSelect={onNodeSelect}
             onSendMessage={(text, linkedNodeId) => chatInputRef.current?.sendMessage(text, linkedNodeId)}
-            pendingViewOptions={pendingViewOptions}
           />
         ))}
       </div>
@@ -132,12 +130,10 @@ function MessageBubble({
   message,
   onNodeSelect,
   onSendMessage,
-  pendingViewOptions,
 }: {
   message: ChatMessage;
   onNodeSelect?: (payload: NodeSelectPayload) => void;
   onSendMessage?: (text: string, linkedNodeId?: string) => void;
-  pendingViewOptions?: { options: string[]; filter?: Record<string, any>; cards?: Array<{ front: string; back: string }>; intent?: string; nodeId?: string } | null;
 }) {
   const isUser = message.role === 'user';
   const [hovered, setHovered] = useState(false);
@@ -266,24 +262,18 @@ function MessageBubble({
           </div>
         )}
 
-        {/* 뷰 선택 칩 — 이 메시지의 nodeId와 pendingViewOptions.nodeId가 일치할 때 */}
-        {message.nodeCreated && !message.streaming &&
-          pendingViewOptions?.nodeId === message.nodeCreated.nodeId && (
-          <ViewOptionsChips messageId={message.id} />
-        )}
-
-        {/* Inline view — primary node (viewConfirmed 후에만 렌더) */}
-        {message.nodeCreated && !message.streaming && message.nodeCreated.viewConfirmed && (
+        {/* Inline view — primary node */}
+        {message.nodeCreated && !message.streaming && (
           <InlineView domain={message.nodeCreated.domain} data={message.nodeCreated.domain_data} content={message.content} viewType={message.nodeCreated.viewType} />
         )}
 
-        {/* Inline views — additional nodes (viewConfirmed 후에만) */}
-        {message.nodeCreated?.additionalNodes && !message.streaming && message.nodeCreated.viewConfirmed && message.nodeCreated.additionalNodes.map((n) => (
+        {/* Inline views — additional nodes */}
+        {message.nodeCreated?.additionalNodes && !message.streaming && message.nodeCreated.additionalNodes.map((n) => (
           <InlineView key={n.id} domain={n.domain} data={n.domain_data} content={message.content} viewType={DOMAIN_VIEW_MAP[n.domain]} />
         ))}
 
-        {/* 홈 화면에 추가하기 (viewConfirmed 후에만) */}
-        {message.nodeCreated && !message.streaming && message.nodeCreated.viewConfirmed && (
+        {/* 홈 화면에 추가하기 */}
+        {message.nodeCreated && !message.streaming && (
           <AddToHomeButton domain={message.nodeCreated.domain} nodeId={message.nodeCreated.nodeId} />
         )}
 

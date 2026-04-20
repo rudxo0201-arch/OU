@@ -26,7 +26,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
   const [longTextEditorOpen, setLongTextEditorOpen] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
-  const { addMessage, updateMessage, isStreaming, setStreaming, setLastCreatedNodeId, setPendingViewOptions, setLastIntent } = useChatStore();
+  const { addMessage, updateMessage, isStreaming, setStreaming, setLastCreatedNodeId, setLastIntent } = useChatStore();
   const autoSentRef = useRef(false);
 
   // ---- Hanja detection ----
@@ -170,17 +170,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
             const data = JSON.parse(line.slice(6));
             if (data.text) { accumulated += data.text; updateMessage(assistantId, { content: accumulated.replace(/```json:(?:meta|view)[\s\S]*/g, '').trim() }); }
             if (data.done) {
-              nodeInfo = { domain: data.domain, nodeId: data.nodeId, confidence: data.confidence, domain_data: data.domain_data, suggestions: data.suggestions, additionalNodes: data.additionalNodes };
-              // 뷰 선택지: done 이벤트의 viewData에서 추출
-              if (data.viewData?.viewOptions?.length > 0) {
-                setPendingViewOptions({
-                  options: data.viewData.viewOptions,
-                  filter: data.viewData.filter,
-                  cards: data.viewData.cards,
-                  intent: data.viewData.intent,
-                  nodeId: data.nodeId,
-                });
-              }
+              nodeInfo = { domain: data.domain, nodeId: data.nodeId, confidence: data.confidence, domain_data: data.domain_data, suggestions: data.suggestions, additionalNodes: data.additionalNodes, viewType: data.viewData?.viewOptions?.[0] };
               setLastIntent(data.viewData?.intent ?? null);
             }
           } catch { /* skip */ }
@@ -204,7 +194,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
     } finally {
       setStreaming(false);
     }
-  }, [input, isStreaming, addMessage, updateMessage, setStreaming, setLastCreatedNodeId, setPendingViewOptions, setLastIntent]);
+  }, [input, isStreaming, addMessage, updateMessage, setStreaming, setLastCreatedNodeId, setLastIntent]);
 
   // Auto-send initial message (from Spotlight)
   useEffect(() => {
@@ -264,16 +254,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
             const data = JSON.parse(line.slice(6));
             if (data.text) { accumulated += data.text; updateMessage(assistantId, { content: accumulated.replace(/```json:(?:meta|view)[\s\S]*/g, '').trim() }); }
             if (data.done) {
-              nodeInfo = { domain: data.domain, nodeId: data.nodeId, confidence: data.confidence, domain_data: data.domain_data, suggestions: data.suggestions, additionalNodes: data.additionalNodes };
-              if (data.viewData?.viewOptions?.length > 0) {
-                setPendingViewOptions({
-                  options: data.viewData.viewOptions,
-                  filter: data.viewData.filter,
-                  cards: data.viewData.cards,
-                  intent: data.viewData.intent,
-                  nodeId: data.nodeId,
-                });
-              }
+              nodeInfo = { domain: data.domain, nodeId: data.nodeId, confidence: data.confidence, domain_data: data.domain_data, suggestions: data.suggestions, additionalNodes: data.additionalNodes, viewType: data.viewData?.viewOptions?.[0] };
               setLastIntent(data.viewData?.intent ?? null);
             }
           } catch {}
@@ -297,7 +278,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
     } finally {
       setStreaming(false);
     }
-  }, [isStreaming, addMessage, updateMessage, setStreaming, setLastCreatedNodeId, setPendingViewOptions, setLastIntent]);
+  }, [isStreaming, addMessage, updateMessage, setStreaming, setLastCreatedNodeId, setLastIntent]);
 
   useImperativeHandle(ref, () => ({ sendMessage: (text: string, linkedNodeId?: string) => sendWithText(text, linkedNodeId) }), [sendWithText]);
 
