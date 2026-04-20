@@ -50,7 +50,7 @@ export default function SettingsPage() {
   const visibleTabs = tabs.filter(t => !t.adminOnly || isAdmin);
 
   return (
-    <div style={{ minHeight: '100dvh', display: 'flex', background: 'var(--ou-bg)' }}>
+    <div style={{ minHeight: '100dvh', display: 'flex', background: 'var(--ou-bg)', padding: '0 116px' }}>
       {/* Sidebar */}
       <aside style={{
         width: 260, minHeight: '100dvh', flexShrink: 0,

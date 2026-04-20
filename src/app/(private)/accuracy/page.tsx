@@ -80,8 +80,8 @@ export default function AccuracyPage() {
   }
 
   return (
-    <div style={{ background: 'var(--ou-bg)', minHeight: '100dvh' }}>
-      <div style={{ maxWidth: 680, margin: '0 auto', padding: '40px 24px 120px' }}>
+    <div style={{ background: 'var(--ou-bg)', minHeight: '100dvh', paddingTop: 52 }}>
+      <div style={{ padding: '40px 116px 120px' }}>
         {/* Header */}
         <header style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 28 }}>
           <button

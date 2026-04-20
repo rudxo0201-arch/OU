@@ -72,6 +72,8 @@ export default function YouTubeFeedPage() {
       minHeight: '100dvh',
       background: 'var(--ou-bg)',
       color: 'var(--ou-text-body)',
+      paddingTop: 52,
+      padding: '52px 116px 0',
     }}>
       {/* 헤더 */}
       <header style={{

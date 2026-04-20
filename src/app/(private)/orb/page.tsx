@@ -59,7 +59,7 @@ export default function OrbPage() {
         flex: 1,
         minHeight: 0,
         display: 'flex',
-        padding: '12px 40px 20px',
+        padding: '12px 116px 20px',
         gap: 16,
       }}>
         {/* 좌: View 패널 */}

@@ -70,7 +70,7 @@ export default function ViewPage() {
   }
 
   return (
-    <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--ou-bg)' }}>
+    <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--ou-bg)', paddingTop: 52, padding: '52px 116px 0' }}>
       {/* Top bar */}
       <div style={{
         height: 48, flexShrink: 0,

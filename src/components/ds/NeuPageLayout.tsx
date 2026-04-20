@@ -36,6 +36,7 @@ export function NeuPageLayout({
         background: 'var(--ou-bg)',
         display: 'flex',
         flexDirection: 'column',
+        paddingTop: 52,
         ...style,
       }}
     >
@@ -45,7 +46,7 @@ export function NeuPageLayout({
             display: 'flex',
             alignItems: 'center',
             gap: 8,
-            padding: '12px 16px',
+            padding: '12px 116px',
             borderBottom: '1px solid var(--ou-border-faint)',
             position: 'sticky',
             top: 0,
@@ -82,7 +83,7 @@ export function NeuPageLayout({
       <main
         style={{
           flex: 1,
-          padding: noPadding ? 0 : 'clamp(16px, 3vw, 40px)',
+          padding: noPadding ? 0 : '40px 116px',
           maxWidth: maxWidth ?? undefined,
           width: '100%',
           margin: maxWidth ? '0 auto' : undefined,
