@@ -150,3 +150,14 @@ registerWidget({
   removable: true,
   needsCard: true,
 });
+
+registerWidget({
+  type: 'view-map',
+  label: '지도',
+  component: ViewWidget,
+  scrollable: 'none',
+  minSize: [3, 2],
+  defaultSize: [4, 3],
+  removable: true,
+  needsCard: true,
+});

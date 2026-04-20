@@ -22,6 +22,9 @@ export function ViewWidget({ widgetId }: { widgetId: string }) {
     } else if (viewType === 'dictionary') {
       params.set('domain', 'knowledge');
       params.set('type', 'hanja');
+    } else if (viewType === 'map') {
+      params.set('domain', 'location');
+      params.set('limit', '100');
     } else {
       params.set('limit', '100');
     }
