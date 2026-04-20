@@ -4,7 +4,7 @@ import type { WidgetInstance } from '@/components/widgets/types';
 import { GRID_COLS, GRID_ROWS } from '@/components/widgets/types';
 import { DEFAULT_LAYOUT, ADMIN_LAYOUT, ADMIN_PAGE2_LAYOUT } from '@/components/widgets/presets';
 
-const LAYOUT_VERSION = 4;
+const LAYOUT_VERSION = 5;
 
 export interface WidgetPage {
   id: string;
@@ -24,6 +24,7 @@ interface WidgetStore {
   setGridSize: (cols: number, rows: number) => void;
   addPage: (name?: string) => void;
   removePage: (index: number) => void;
+  renamePage: (index: number, name: string) => void;
 
   // Admin layout init (idempotent)
   initAdminLayout: () => void;
@@ -36,13 +37,13 @@ interface WidgetStore {
   resetLayout: () => void;
 }
 
-function clampToGrid(widgets: WidgetInstance[]): WidgetInstance[] {
+function clampToGrid(widgets: WidgetInstance[], cols: number = GRID_COLS, rows: number = GRID_ROWS): WidgetInstance[] {
   return widgets.map(w => ({
     ...w,
-    x: Math.max(0, Math.min(w.x, GRID_COLS - 1)),
-    y: Math.max(0, Math.min(w.y, GRID_ROWS - 1)),
-    w: Math.min(w.w, GRID_COLS - Math.max(0, w.x)),
-    h: Math.min(w.h, GRID_ROWS - Math.max(0, w.y)),
+    x: Math.max(0, Math.min(w.x, cols - 1)),
+    y: Math.max(0, Math.min(w.y, rows - 1)),
+    w: Math.max(1, Math.min(w.w, cols - Math.max(0, w.x))),
+    h: Math.max(1, Math.min(w.h, rows - Math.max(0, w.y))),
   }));
 }
 
@@ -60,7 +61,14 @@ export const useWidgetStore = create<WidgetStore>()(
       gridCols: GRID_COLS,
       gridRows: GRID_ROWS,
 
-      setGridSize: (cols, rows) => set({ gridCols: cols, gridRows: rows }),
+      setGridSize: (cols, rows) => set((s) => ({
+        gridCols: cols,
+        gridRows: rows,
+        pages: s.pages.map(page => ({
+          ...page,
+          widgets: clampToGrid(page.widgets, cols, rows),
+        })),
+      })),
 
       // Note: use selector `s => s.pages[s.currentPageIndex]?.widgets` for current widgets
       // This getter is for backward compat with destructuring `{ widgets }`
@@ -74,10 +82,10 @@ export const useWidgetStore = create<WidgetStore>()(
         if (alreadySet) return s;
         const pages = [...s.pages];
         // page 1: 한자사전
-        pages[0] = { ...pages[0], name: '사전', widgets: clampToGrid(ADMIN_LAYOUT) };
+        pages[0] = { ...pages[0], name: '사전', widgets: clampToGrid(ADMIN_LAYOUT, s.gridCols, s.gridRows) };
         // page 2: 본초학
         if (pages[1]) {
-          pages[1] = { ...pages[1], name: '본초', widgets: clampToGrid(ADMIN_PAGE2_LAYOUT) };
+          pages[1] = { ...pages[1], name: '본초', widgets: clampToGrid(ADMIN_PAGE2_LAYOUT, s.gridCols, s.gridRows) };
         }
         return { pages, currentPageIndex: 0 };
       }),
@@ -92,6 +100,12 @@ export const useWidgetStore = create<WidgetStore>()(
         }],
       })),
 
+      renamePage: (index, name) => set((s) => {
+        const pages = [...s.pages];
+        if (pages[index]) pages[index] = { ...pages[index], name };
+        return { pages };
+      }),
+
       removePage: (index) => set((s) => {
         if (s.pages.length <= 1) return s; // can't remove last page
         if (index === 0) return s; // can't remove main page
@@ -104,7 +118,7 @@ export const useWidgetStore = create<WidgetStore>()(
 
       setWidgets: (widgets) => set((s) => {
         const pages = [...s.pages];
-        pages[s.currentPageIndex] = { ...pages[s.currentPageIndex], widgets: clampToGrid(widgets) };
+        pages[s.currentPageIndex] = { ...pages[s.currentPageIndex], widgets: clampToGrid(widgets, s.gridCols, s.gridRows) };
         return { pages };
       }),
 
@@ -127,7 +141,7 @@ export const useWidgetStore = create<WidgetStore>()(
         const page = pages[s.currentPageIndex];
         pages[s.currentPageIndex] = {
           ...page,
-          widgets: clampToGrid([...page.widgets, widget]),
+          widgets: clampToGrid([...page.widgets, widget], s.gridCols, s.gridRows),
         };
         return { pages };
       }),

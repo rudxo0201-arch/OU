@@ -6,6 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { createClient } from '@/lib/supabase/client';
 import { useWidgetStore } from '@/stores/widgetStore';
 import { NeuButton, NeuInput, NeuCard, NeuSelect, NeuTable, type NeuTableColumn } from '@/components/ds';
+import { GRID_PRESETS, type GridPreset } from '@/components/widgets/types';
 import { ViewEditorPanel } from '@/components/view-editor/ViewEditorPanel';
 
 type Tab = 'general' | 'display' | 'views' | 'admin';
@@ -257,6 +258,8 @@ function GeneralTab({ user }: { user: { id: string; email?: string; created_at?:
 
       <ApiKeySection />
 
+      <TutorialSection />
+
       <Section title="내 데이터">
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: '0.5px solid var(--ou-border-subtle)', gap: 16 }}>
           <span style={{ fontSize: 14, color: 'var(--ou-text-secondary)' }}>데이터 내보내기</span>
@@ -368,8 +371,6 @@ const PALETTES = [
 
 function DisplayTab() {
   const store = useWidgetStore();
-  const [gridCols, setGridCols] = useState(store.gridCols || 6);
-  const [gridRows, setGridRows] = useState(store.gridRows || 4);
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
     if (typeof document !== 'undefined') return (document.documentElement.getAttribute('data-theme') as 'dark' | 'light') || 'light';
     return 'light';
@@ -457,17 +458,50 @@ function DisplayTab() {
 
       <Section title="홈 화면 그리드">
         <p style={{ fontSize: 13, color: 'var(--ou-text-muted)', lineHeight: 1.8, marginBottom: 12 }}>위젯 배치 그리드의 크기를 조절합니다.</p>
-        <SliderField label="가로 칸 수" value={gridCols} min={4} max={12} onChange={setGridCols} />
-        <SliderField label="세로 칸 수" value={gridRows} min={3} max={8} onChange={setGridRows} />
+        <div style={{ display: 'flex', gap: 14 }}>
+          {(Object.entries(GRID_PRESETS) as [GridPreset, typeof GRID_PRESETS[GridPreset]][]).map(([key, preset]) => {
+            const isActive = store.gridCols === preset.cols && store.gridRows === preset.rows;
+            return (
+              <button
+                key={key}
+                onClick={() => store.setGridSize(preset.cols, preset.rows)}
+                style={{
+                  flex: 1, padding: '14px 18px', borderRadius: 14, cursor: 'pointer',
+                  background: 'var(--ou-bg)', border: 'none', textAlign: 'left',
+                  boxShadow: isActive ? 'var(--ou-neu-pressed-sm)' : 'var(--ou-neu-raised-xs)',
+                  display: 'flex', alignItems: 'center', gap: 12,
+                  transition: 'box-shadow 0.15s',
+                }}
+              >
+                <div style={{
+                  width: 44, height: 44, borderRadius: 10, flexShrink: 0,
+                  display: 'grid',
+                  gridTemplateColumns: `repeat(${preset.cols}, 1fr)`,
+                  gridTemplateRows: `repeat(${preset.rows}, 1fr)`,
+                  gap: 1, padding: 4,
+                  background: 'var(--ou-bg)',
+                  boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.06)',
+                }}>
+                  {Array.from({ length: preset.cols * preset.rows }).map((_, i) => (
+                    <div key={i} style={{ borderRadius: 1, background: 'var(--ou-text-disabled)', opacity: 0.3 }} />
+                  ))}
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <b style={{ fontSize: 13, color: 'var(--ou-text-bright)', fontWeight: 600 }}>{preset.label}</b>
+                  <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed)' }}>{preset.sub}</span>
+                </div>
+              </button>
+            );
+          })}
+        </div>
         <NeuCard variant="pressed" style={{ marginTop: 12, padding: 16 }}>
           <div style={{ fontSize: 11, color: 'var(--ou-text-disabled)', marginBottom: 8 }}>미리보기</div>
-          <div style={{ display: 'grid', gridTemplateColumns: `repeat(${gridCols}, 1fr)`, gridTemplateRows: `repeat(${gridRows}, 1fr)`, gap: 3, aspectRatio: '16/10' }}>
-            {Array.from({ length: gridCols * gridRows }).map((_, i) => (
+          <div style={{ display: 'grid', gridTemplateColumns: `repeat(${store.gridCols}, 1fr)`, gridTemplateRows: `repeat(${store.gridRows}, 1fr)`, gap: 3, aspectRatio: '16/10' }}>
+            {Array.from({ length: store.gridCols * store.gridRows }).map((_, i) => (
               <div key={i} style={{ borderRadius: 3, background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-raised-xs)' }} />
             ))}
           </div>
         </NeuCard>
-        <NeuButton variant="default" onClick={() => store.setGridSize(gridCols, gridRows)} style={{ marginTop: 12 }}>적용</NeuButton>
       </Section>
     </div>
   );
@@ -597,6 +631,26 @@ function SeedButton({ type, label }: { type: string; label: string }) {
         <NeuButton variant="default" size="sm" onClick={run}>{status === 'loading' ? '...' : '실행'}</NeuButton>
       </div>
     </div>
+  );
+}
+
+// ============================================================
+// 튜토리얼 섹션
+// ============================================================
+function TutorialSection() {
+  const router = useRouter();
+
+  const handleRestart = () => {
+    router.push('/my?tutorial=replay');
+  };
+
+  return (
+    <Section title="튜토리얼">
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', gap: 16 }}>
+        <span style={{ fontSize: 14, color: 'var(--ou-text-secondary)' }}>튜토리얼 다시 보기</span>
+        <NeuButton variant="default" size="sm" onClick={handleRestart}>다시 시작</NeuButton>
+      </div>
+    </Section>
   );
 }
 

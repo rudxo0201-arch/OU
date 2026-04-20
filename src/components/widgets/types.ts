@@ -35,3 +35,11 @@ export interface WidgetInstance {
 
 export const GRID_COLS = 6;
 export const GRID_ROWS = 4;
+
+export type GridPreset = 'fine' | 'medium' | 'coarse';
+
+export const GRID_PRESETS: Record<GridPreset, { label: string; sub: string; cols: number; rows: number }> = {
+  fine:   { label: '많은 그리드', sub: '세밀한 배치',   cols: 10, rows: 6 },
+  medium: { label: '중간 그리드', sub: '기본 크기',     cols: 6,  rows: 4 },
+  coarse: { label: '적은 그리드', sub: '간단한 배치',   cols: 4,  rows: 3 },
+};

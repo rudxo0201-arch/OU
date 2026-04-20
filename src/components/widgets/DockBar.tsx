@@ -5,19 +5,11 @@ import { useState, useCallback, useRef, useMemo } from 'react';
 interface Props {
   onUniverse: () => void;
   universeActive?: boolean;
-  onDictionary?: () => void;
-  dictionaryActive?: boolean;
-  onBoncho?: () => void;
-  bonchoActive?: boolean;
 }
 
 const BASE_ITEMS = [
-  { id: 'settings', label: '설정', size: 40, icon: null },
   { id: 'universe', label: '유니버스', size: 52, icon: null },
-  { id: 'add', label: '추가', size: 40, icon: null },
 ];
-const DICT_ITEM  = { id: 'dictionary', label: '한자사전', size: 40, icon: '字' };
-const BONCHO_ITEM = { id: 'boncho',   label: '본초학',  size: 40, icon: '草' };
 
 const BASE_SIZE = 44;
 const MAX_SCALE = 1.6;
@@ -31,18 +23,12 @@ function getMagnification(index: number, mouseIndex: number): number {
   return 1 + (MAX_SCALE - 1) * Math.cos((1 - t) * Math.PI / 2) ** 2;
 }
 
-export function DockBar({ onUniverse, universeActive, onDictionary, dictionaryActive, onBoncho, bonchoActive }: Props) {
+export function DockBar({ onUniverse, universeActive }: Props) {
   const [mouseIndex, setMouseIndex] = useState(-1);
   const dockRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number | null>(null);
 
-  const ITEMS = useMemo(() => [
-    BASE_ITEMS[0],
-    BASE_ITEMS[1],
-    ...(onDictionary ? [DICT_ITEM] : []),
-    ...(onBoncho ? [BONCHO_ITEM] : []),
-    BASE_ITEMS[2],
-  ], [onDictionary, onBoncho]);
+  const ITEMS = useMemo(() => [...BASE_ITEMS], []);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!dockRef.current || rafRef.current !== null) return;
@@ -59,10 +45,7 @@ export function DockBar({ onUniverse, universeActive, onDictionary, dictionaryAc
 
   const handleClick = useCallback((id: string) => {
     if (id === 'universe') onUniverse();
-    if (id === 'settings') window.location.href = '/settings';
-    if (id === 'dictionary' && onDictionary) onDictionary();
-    if (id === 'boncho' && onBoncho) onBoncho();
-  }, [onUniverse, onDictionary]);
+  }, [onUniverse]);
 
   return (
     <div
@@ -83,11 +66,9 @@ export function DockBar({ onUniverse, universeActive, onDictionary, dictionaryAc
       {ITEMS.map((item, i) => {
         const scale = getMagnification(i, mouseIndex);
         const isUniverse = item.id === 'universe';
-        const isDictionary = item.id === 'dictionary';
-        const isBoncho = item.id === 'boncho';
         const isHovered = Math.abs(i - mouseIndex) < 0.5;
         const size = (isUniverse ? 52 : BASE_SIZE) * scale;
-        const isActive = (isUniverse && universeActive) || (isDictionary && dictionaryActive) || (isBoncho && bonchoActive);
+        const isActive = isUniverse && universeActive;
 
         return (
           <div key={item.id} style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>

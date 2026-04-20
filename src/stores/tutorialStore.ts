@@ -28,6 +28,10 @@ interface TutorialStore {
   currentGhostText: () => string | undefined;
 }
 
+function recordTutorialComplete() {
+  fetch('/api/tutorial/complete', { method: 'POST' }).catch(() => {});
+}
+
 export const useTutorialStore = create<TutorialStore>()(
   persist(
     (set, get) => ({
@@ -42,6 +46,7 @@ export const useTutorialStore = create<TutorialStore>()(
         const next = stepIndex + 1;
         if (next >= TUTORIAL_STEP_COUNT) {
           set({ phase: 'completed', stepIndex: next });
+          recordTutorialComplete();
         } else {
           set({ stepIndex: next });
         }
@@ -52,12 +57,16 @@ export const useTutorialStore = create<TutorialStore>()(
         const next = stepIndex + 1;
         if (next >= TUTORIAL_STEP_COUNT) {
           set({ phase: 'completed', stepIndex: next });
+          recordTutorialComplete();
         } else {
           set({ stepIndex: next });
         }
       },
 
-      skipAll: () => set({ phase: 'skipped' }),
+      skipAll: () => {
+        set({ phase: 'skipped' });
+        recordTutorialComplete();
+      },
 
       enterEditMode: (widget) => set({ phase: 'edit-mode', pendingWidget: widget }),
 
@@ -67,12 +76,16 @@ export const useTutorialStore = create<TutorialStore>()(
         const next = stepIndex + 1;
         if (next >= TUTORIAL_STEP_COUNT) {
           set({ phase: 'completed', stepIndex: next, pendingWidget: null });
+          recordTutorialComplete();
         } else {
           set({ phase: 'active', stepIndex: next, pendingWidget: null });
         }
       },
 
-      completeTutorial: () => set({ phase: 'completed' }),
+      completeTutorial: () => {
+        set({ phase: 'completed' });
+        recordTutorialComplete();
+      },
 
       reset: () => set({ phase: 'idle', stepIndex: 0, pendingWidget: null }),
 

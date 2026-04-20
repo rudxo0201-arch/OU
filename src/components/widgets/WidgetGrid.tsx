@@ -54,6 +54,11 @@ export function WidgetGrid({ transition = 'idle' }: Props) {
     }
   }, [editMode]);
 
+  // Broadcast edit mode changes
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent('widget-edit-mode-change', { detail: { editMode } }));
+  }, [editMode]);
+
   // ESC to exit edit mode
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {

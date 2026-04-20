@@ -19,6 +19,7 @@ export const TABLE_SCHEMAS: TableSchema[] = [
       { name: 'language', type: 'text', label: '언어', editable: true },
       { name: 'verified', type: 'boolean', label: '인증', editable: true },
       { name: 'user_level', type: 'enum', label: '레벨', editable: true, options: ['unknown', 'basic', 'intermediate', 'expert'] },
+      { name: 'tutorial_completed_at', type: 'timestamp', label: '튜토리얼 완료', editable: false },
       { name: 'created_at', type: 'timestamp', label: '가입일', editable: false },
       { name: 'updated_at', type: 'timestamp', label: '수정일', editable: false },
     ],

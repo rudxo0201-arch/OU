@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useCallback, useRef, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { Suspense, useState, useCallback, useRef, useEffect, useMemo } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { WidgetGrid, type GridTransition } from '@/components/widgets/WidgetGrid';
 import { DockBar } from '@/components/widgets/DockBar';
-import dynamic from 'next/dynamic';
-const UniverseView = dynamic(() => import('@/components/widgets/UniverseView').then(m => m.UniverseView), { ssr: false });
-const OrbFullscreen = dynamic(() => import('@/components/chat/OrbFullscreen').then(m => m.OrbFullscreen), { ssr: false });
+import dynamicImport from 'next/dynamic';
+const UniverseView = dynamicImport(() => import('@/components/widgets/UniverseView').then(m => m.UniverseView), { ssr: false });
+const OrbFullscreen = dynamicImport(() => import('@/components/chat/OrbFullscreen').then(m => m.OrbFullscreen), { ssr: false });
 import { useWidgetStore } from '@/stores/widgetStore';
 import { useTutorialStore } from '@/stores/tutorialStore';
 import { TUTORIAL_STEPS } from '@/data/tutorial';
@@ -21,17 +21,35 @@ const WIDGET_EXIT_DURATION = 600;
 const SPHERE_DURATION = 600;
 const WIDGET_ENTER_DURATION = 600;
 
-export default function MyPage() {
+export default function MyPageWrapper() {
+  return (
+    <Suspense fallback={
+      <div style={{ minHeight: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--ou-bg)' }}>
+        <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--ou-text-disabled)', animation: 'blink 1s ease-in-out infinite' }} />
+      </div>
+    }>
+      <MyPage />
+    </Suspense>
+  );
+}
+
+function MyPage() {
   const { user, isLoading, signOut, isAdmin } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isReplay = searchParams.get('tutorial') === 'replay';
   const [mode, setMode] = useState<Mode>('dashboard');
   const [orbExpanded, setOrbExpanded] = useState(false);
   const hasOuWidget = useWidgetStore(s => (s.pages[s.currentPageIndex]?.widgets ?? []).some(w => w.type === 'ou-view'));
   const currentPageIndex = useWidgetStore(s => s.currentPageIndex);
   const pages = useWidgetStore(s => s.pages);
   const setCurrentPage = useWidgetStore(s => s.setCurrentPage);
+  const renamePage = useWidgetStore(s => s.renamePage);
   const initAdminLayout = useWidgetStore(s => s.initAdminLayout);
   const setWidgets = useWidgetStore(s => s.setWidgets);
+  const [dashboardEditMode, setDashboardEditMode] = useState(false);
+  const [editingTitle, setEditingTitle] = useState(false);
+  const titleInputRef = useRef<HTMLInputElement>(null);
   const timerRef = useRef<NodeJS.Timeout>();
 
   const tutorialPhase = useTutorialStore(s => s.phase);
@@ -40,14 +58,38 @@ export default function MyPage() {
   const skipAllTutorial = useTutorialStore(s => s.skipAll);
   const prevPhaseRef = useRef(tutorialPhase);
 
-  // 첫 방문: 튜토리얼 시작 + 초기 레이아웃 (Orb만)
+  // 튜토리얼 시작: replay param이면 바로 시작, 아니면 DB 체크
   useEffect(() => {
-    if (tutorialPhase === 'idle') {
+    if (isReplay) {
+      // 설정에서 "다시 보기" 클릭한 경우 — DB 체크 없이 바로 시작
       startTutorial();
       setWidgets(TUTORIAL_INITIAL_LAYOUT);
+      router.replace('/my'); // query param 제거
+      return;
     }
+    if (tutorialPhase !== 'idle') return;
+    import('@/lib/supabase/client').then(({ createClient }) => {
+      const supabase = createClient();
+      supabase.auth.getUser().then(({ data: { user } }) => {
+        if (!user) return;
+        supabase
+          .from('profiles')
+          .select('tutorial_completed_at')
+          .eq('id', user.id)
+          .single()
+          .then(({ data }) => {
+            if (data?.tutorial_completed_at) {
+              // 이미 완료한 회원 — 로컬 상태만 completed로 (DB 호출 없음)
+              useTutorialStore.setState({ phase: 'completed' });
+            } else {
+              startTutorial();
+              setWidgets(TUTORIAL_INITIAL_LAYOUT);
+            }
+          });
+      });
+    });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [isReplay]);
 
   // 편집 완료 후 Orb 자동 확장 (tutorial edit-mode → active)
   useEffect(() => {
@@ -56,6 +98,17 @@ export default function MyPage() {
     }
     prevPhaseRef.current = tutorialPhase;
   }, [tutorialPhase]);
+
+  // Listen for widget edit mode changes
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      setDashboardEditMode(detail.editMode);
+      if (!detail.editMode) setEditingTitle(false);
+    };
+    window.addEventListener('widget-edit-mode-change', handler);
+    return () => window.removeEventListener('widget-edit-mode-change', handler);
+  }, []);
 
   useEffect(() => {
     if (isAdmin && !isLoading) initAdminLayout();
@@ -105,13 +158,79 @@ export default function MyPage() {
   if (mode === 'to-universe') gridTransition = 'exiting';
   if (mode === 'to-dashboard') gridTransition = 'entering';
 
+  const currentPageName = pages[currentPageIndex]?.name ?? '';
+  const hasTitle = currentPageName.length > 0;
+
+  const handleTitleClick = () => {
+    if (dashboardEditMode) {
+      setEditingTitle(true);
+      setTimeout(() => titleInputRef.current?.focus(), 0);
+    }
+  };
+
+  const handleTitleSubmit = (value: string) => {
+    renamePage(currentPageIndex, value.trim());
+    setEditingTitle(false);
+  };
+
   return (
     <div style={{ position: 'relative', height: '100dvh', overflow: 'hidden', background: 'var(--ou-bg)' }}>
       {/* Full-bleed content area */}
       <div style={{ position: 'absolute', inset: 0 }}>
+        {/* Dashboard title — shown when title exists or in edit mode */}
+        {showWidgets && (hasTitle || dashboardEditMode) && (
+          <div style={{
+            position: 'absolute',
+            top: 56, left: 80, right: 80,
+            height: 48,
+            display: 'flex', alignItems: 'center',
+            zIndex: 5,
+          }}>
+            {editingTitle ? (
+              <input
+                ref={titleInputRef}
+                defaultValue={currentPageName}
+                placeholder="제목 입력 (비우면 숨김)"
+                onBlur={e => handleTitleSubmit(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') handleTitleSubmit((e.target as HTMLInputElement).value);
+                  if (e.key === 'Escape') setEditingTitle(false);
+                }}
+                style={{
+                  fontSize: 20, fontWeight: 700,
+                  color: 'var(--ou-text-bright)',
+                  background: 'transparent', border: 'none', outline: 'none',
+                  borderBottom: '1.5px solid var(--ou-text-muted)',
+                  padding: '2px 0', width: 200,
+                }}
+              />
+            ) : (
+              <h2
+                onClick={handleTitleClick}
+                style={{
+                  fontSize: 20, fontWeight: 700,
+                  color: 'var(--ou-text-bright)',
+                  margin: 0,
+                  cursor: dashboardEditMode ? 'text' : 'default',
+                  opacity: dashboardEditMode ? 0.7 : 1,
+                  transition: 'opacity 0.15s',
+                }}
+              >
+                {currentPageName || (dashboardEditMode ? '제목 없음' : '')}
+                {dashboardEditMode && (
+                  <span style={{ fontSize: 12, color: 'var(--ou-text-disabled)', marginLeft: 8, fontWeight: 400 }}>
+                    클릭하여 편집
+                  </span>
+                )}
+              </h2>
+            )}
+          </div>
+        )}
+
         <div style={{
           position: 'absolute',
-          top: 56, bottom: 96, left: 32, right: 32,
+          top: (hasTitle || dashboardEditMode) ? 112 : 64, bottom: 96, left: 80, right: 80,
+          transition: 'top 0.3s ease',
           visibility: showWidgets ? 'visible' : 'hidden',
           pointerEvents: mode === 'dashboard' ? 'auto' : 'none',
         }}>
@@ -187,10 +306,6 @@ export default function MyPage() {
           <DockBar
             onUniverse={toggleUniverse}
             universeActive={universeActive}
-            onDictionary={isAdmin ? () => setCurrentPage(0) : undefined}
-            dictionaryActive={isAdmin && currentPageIndex === 0}
-            onBoncho={isAdmin ? () => setCurrentPage(1) : undefined}
-            bonchoActive={isAdmin && currentPageIndex === 1}
           />
         </div>
       </div>

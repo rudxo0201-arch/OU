@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import dayjs from 'dayjs';
+import { stripLLMMeta } from '@/lib/utils/stripLLMMeta';
 import 'dayjs/locale/ko';
 import type { ViewProps } from './registry';
 
@@ -31,7 +32,7 @@ function parseTodos(nodes: ViewProps['nodes']): TodoItem[] {
     .filter(n => n.domain === 'task')
     .map(n => ({
       id: n.id,
-      title: n.domain_data?.title ?? (n.raw ?? '').slice(0, 60) ?? '할 일',
+      title: n.domain_data?.title ?? (stripLLMMeta(n.raw ?? '').slice(0, 60) || '할 일'),
       done: n.domain_data?.status === 'done' || n.domain_data?.completed === true,
       date: n.domain_data?.date || n.domain_data?.deadline || n.created_at,
       deadline: n.domain_data?.deadline,
