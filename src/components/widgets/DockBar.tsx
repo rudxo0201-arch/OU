@@ -2,21 +2,17 @@
 
 import { useState, useCallback, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { YoutubeLogo, Storefront } from '@phosphor-icons/react';
 
 interface Props {
   onUniverse: () => void;
   universeActive?: boolean;
+  onOrbExpand?: () => void;
+  onAddWidget?: () => void;
 }
 
-const BASE_ITEMS = [
-  { id: 'universe', label: '유니버스', size: 52, icon: null },
-  { id: 'youtube', label: 'YouTube', size: 44, icon: <YoutubeLogo size={20} weight="fill" /> },
-  { id: 'orbit', label: 'Orbit', size: 44, icon: <Storefront size={20} /> },
-];
-
 const BASE_SIZE = 44;
-const MAX_SCALE = 1.6;
+const ORB_SIZE = 52;
+const MAX_SCALE = 1.5;
 const SPREAD = 2;
 
 function getMagnification(index: number, mouseIndex: number): number {
@@ -27,13 +23,74 @@ function getMagnification(index: number, mouseIndex: number): number {
   return 1 + (MAX_SCALE - 1) * Math.cos((1 - t) * Math.PI / 2) ** 2;
 }
 
-export function DockBar({ onUniverse, universeActive }: Props) {
+// 아이콘 SVG (인라인)
+function GearIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <circle cx="12" cy="12" r="3"/>
+      <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+    </svg>
+  );
+}
+
+function GraphIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/>
+      <line x1="8.5" y1="10.5" x2="15.5" y2="7.5"/><line x1="8.5" y1="13.5" x2="15.5" y2="16.5"/>
+    </svg>
+  );
+}
+
+function BookIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/>
+    </svg>
+  );
+}
+
+function ClockIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/>
+    </svg>
+  );
+}
+
+function PlusIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+    </svg>
+  );
+}
+
+// ORB 중앙 아이콘 (accent dot)
+function OrbIcon() {
+  return (
+    <div style={{
+      width: 14, height: 14, borderRadius: '50%',
+      background: 'var(--ou-accent)',
+      boxShadow: '0 0 8px 2px color-mix(in srgb, var(--ou-accent) 50%, transparent)',
+    }} />
+  );
+}
+
+export function DockBar({ onUniverse, universeActive, onOrbExpand, onAddWidget }: Props) {
   const [mouseIndex, setMouseIndex] = useState(-1);
   const dockRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number | null>(null);
   const router = useRouter();
 
-  const ITEMS = useMemo(() => [...BASE_ITEMS], []);
+  const ITEMS = useMemo(() => [
+    { id: 'settings', label: '설정', isOrb: false },
+    { id: 'universe', label: '우주', isOrb: false },
+    { id: 'orb', label: 'ORB', isOrb: true },
+    { id: 'dictionary', label: '사전', isOrb: false },
+    { id: 'memory', label: '기억', isOrb: false },
+    { id: 'add', label: '추가', isOrb: false },
+  ], []);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!dockRef.current || rafRef.current !== null) return;
@@ -49,10 +106,27 @@ export function DockBar({ onUniverse, universeActive }: Props) {
   }, [ITEMS.length]);
 
   const handleClick = useCallback((id: string) => {
-    if (id === 'universe') onUniverse();
-    if (id === 'youtube') router.push('/youtube');
-    if (id === 'orbit') router.push('/orbit');
-  }, [onUniverse, router]);
+    switch (id) {
+      case 'settings': router.push('/settings'); break;
+      case 'universe': onUniverse(); break;
+      case 'orb': onOrbExpand?.() ?? window.dispatchEvent(new CustomEvent('orb-expand')); break;
+      case 'dictionary': window.dispatchEvent(new CustomEvent('dock-dictionary')); break;
+      case 'memory': window.dispatchEvent(new CustomEvent('dock-memory')); break;
+      case 'add': onAddWidget?.() ?? window.dispatchEvent(new CustomEvent('dock-add-widget')); break;
+    }
+  }, [onUniverse, onOrbExpand, onAddWidget, router]);
+
+  function renderIcon(id: string) {
+    switch (id) {
+      case 'settings': return <GearIcon />;
+      case 'universe': return <GraphIcon />;
+      case 'orb': return <OrbIcon />;
+      case 'dictionary': return <BookIcon />;
+      case 'memory': return <ClockIcon />;
+      case 'add': return <PlusIcon />;
+      default: return null;
+    }
+  }
 
   return (
     <div
@@ -67,18 +141,17 @@ export function DockBar({ onUniverse, universeActive }: Props) {
         borderRadius: 'var(--ou-radius-lg)',
         background: 'var(--ou-bg)',
         boxShadow: 'var(--ou-neu-raised-lg)',
-        transition: 'opacity 300ms ease, transform 300ms ease',
       }}
     >
       {ITEMS.map((item, i) => {
         const scale = getMagnification(i, mouseIndex);
-        const isUniverse = item.id === 'universe';
+        const baseSize = item.isOrb ? ORB_SIZE : BASE_SIZE;
+        const size = baseSize * scale;
         const isHovered = Math.abs(i - mouseIndex) < 0.5;
-        const size = (isUniverse ? 52 : BASE_SIZE) * scale;
-        const isActive = isUniverse && universeActive;
+        const isActive = item.id === 'universe' && universeActive;
 
         return (
-          <div key={item.id} style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <div key={item.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
             {/* Tooltip */}
             {isHovered && mouseIndex >= 0 && (
               <div style={{
@@ -90,18 +163,16 @@ export function DockBar({ onUniverse, universeActive }: Props) {
                 padding: '4px 10px',
                 borderRadius: 6,
                 background: 'var(--ou-bg)',
-                boxShadow: 'var(--ou-neu-raised-sm)',
+                border: '1px solid var(--ou-border-subtle)',
                 fontSize: 11,
                 color: 'var(--ou-text-body)',
                 whiteSpace: 'nowrap',
                 pointerEvents: 'none',
-                animation: 'ou-fade-in 0.1s ease',
               }}>
                 {item.label}
               </div>
             )}
 
-            {/* Orb */}
             <button
               onClick={() => handleClick(item.id)}
               style={{
@@ -111,30 +182,38 @@ export function DockBar({ onUniverse, universeActive }: Props) {
                 background: 'var(--ou-bg)',
                 border: 'none',
                 boxShadow: isActive
-                  ? `var(--ou-neu-pressed-md), 0 0 16px 4px color-mix(in srgb, var(--ou-accent) 30%, transparent)`
+                  ? 'var(--ou-neu-pressed-md)'
                   : isHovered && mouseIndex >= 0
                     ? 'var(--ou-neu-raised-lg)'
                     : 'var(--ou-neu-raised-md)',
-                transition: 'width 200ms cubic-bezier(0.34, 1.56, 0.64, 1), height 200ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 200ms ease',
+                transition: 'width 150ms cubic-bezier(0.34, 1.56, 0.64, 1), height 150ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 150ms ease',
                 cursor: 'pointer',
                 flexShrink: 0,
                 color: isActive ? 'var(--ou-accent)' : 'var(--ou-text-muted)',
-                fontSize: isUniverse ? 20 : 14,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontFamily: 'var(--ou-font-mono)',
               }}
             >
-              {item.icon}
+              {renderIcon(item.id)}
             </button>
 
-            {/* Active dot */}
+            {/* 라벨 */}
+            <span style={{
+              fontSize: 10,
+              color: item.id === 'orb' ? 'var(--ou-text-muted)' : 'var(--ou-text-disabled)',
+              marginTop: 4,
+              letterSpacing: '0.5px',
+            }}>
+              {item.label}
+            </span>
+
+            {/* Active dot (universe) */}
             {isActive && (
               <div style={{
                 width: 4, height: 4, borderRadius: '50%',
                 background: 'var(--ou-accent)',
-                marginTop: 4,
+                marginTop: 2,
               }} />
             )}
           </div>

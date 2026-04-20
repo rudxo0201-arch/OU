@@ -4,6 +4,26 @@ import { detectUnresolved } from './unresolved';
 import { isAdminEmail } from '@/lib/auth/roles';
 import { extractAll } from './extraction';
 
+/** 텍스트를 빈 줄 기준으로 섹션 분리. 마크다운 헤딩/볼드 제목 있으면 heading으로 추출 */
+function splitIntoSections(text: string): Array<{ heading: string; body: string }> {
+  const paragraphs = text.split(/\n{2,}/).map(p => p.trim()).filter(p => p.length > 0);
+  if (paragraphs.length === 0) return [{ heading: 'chat', body: text.trim() }];
+
+  return paragraphs.map((para, i) => {
+    const headingMatch = para.match(/^#{1,3}\s+(.+)/);
+    if (headingMatch) {
+      const body = para.replace(/^#{1,3}\s+.+\n?/, '').trim();
+      return { heading: headingMatch[1].trim(), body: body || para };
+    }
+    const boldMatch = para.match(/^\*\*(.+?)\*\*/);
+    if (boldMatch) {
+      const body = para.replace(/^\*\*.+?\*\*\n?/, '').trim();
+      return { heading: boldMatch[1].trim(), body: body || para };
+    }
+    return { heading: `Section ${i + 1}`, body: para };
+  });
+}
+
 // 수정/보충 패턴 감지
 const UPDATE_PATTERNS = [
   /아까\s*말한/, /아까\s*그/, /방금\s*말한/,
@@ -382,29 +402,34 @@ export async function saveMessageAsync(input: SaveMessageInput) {
       return null;
     }
 
-    // Section + Sentences
+    // Section + Sentences (문단별 섹션 분리)
     try {
-      const { data: sec } = await supabase.from('sections').insert({
-        node_id: segNode.id,
-        heading: segmentDomain ?? 'chat',
-        order_idx: 0,
-      }).select().single();
+      const segSectionParts = splitIntoSections(segmentText);
 
-      if (sec) {
-        const rawSentences = segmentText
-          .split(/(?<=[.!?])\s+|。|\n+/)
-          .map((s: string) => s.trim())
-          .filter((s: string) => s.length > 0);
-        const sentences = rawSentences.length > 0 ? rawSentences : [segmentText.trim()];
-        for (let j = 0; j < sentences.length; j++) {
-          await supabase.from('sentences').insert({
-            section_id: sec.id,
-            node_id: segNode.id,
-            text: sentences[j],
-            order_idx: j,
-            embed_status: 'pending',
-            embed_tier: 'hot',
-          });
+      for (let i = 0; i < segSectionParts.length; i++) {
+        const { heading, body } = segSectionParts[i];
+        const { data: sec } = await supabase.from('sections').insert({
+          node_id: segNode.id,
+          heading,
+          order_idx: i,
+        }).select().single();
+
+        if (sec) {
+          const rawSentences = body
+            .split(/(?<=[.!?])\s+|。|\n+/)
+            .map((s: string) => s.trim())
+            .filter((s: string) => s.length > 0);
+          const sentences = rawSentences.length > 0 ? rawSentences : [body.trim()];
+          for (let j = 0; j < sentences.length; j++) {
+            await supabase.from('sentences').insert({
+              section_id: sec.id,
+              node_id: segNode.id,
+              text: sentences[j],
+              order_idx: j,
+              embed_status: 'pending',
+              embed_tier: 'hot',
+            });
+          }
         }
       }
     } catch (e) {
@@ -491,33 +516,36 @@ export async function saveMessageAsync(input: SaveMessageInput) {
   }
 
   if (node) {
-    // Section + Sentences 생성 (Layer 3가 처리할 수 있도록)
+    // Section + Sentences 생성 (userMessage + assistantMessage 합쳐서 문단별 섹션 분리)
     try {
-      const { data: sec } = await supabase.from('sections').insert({
-        node_id: node.id,
-        heading: domain ?? 'chat',
-        order_idx: 0,
-      }).select().single();
+      const combinedText = `${input.userMessage}\n\n${input.assistantMessage}`;
+      const sectionParts = splitIntoSections(combinedText);
 
-      if (sec) {
-        // 문장 분리: ". " / "。" / 줄바꿈 기준
-        const rawSentences = input.userMessage
-          .split(/(?<=[.!?])\s+|。|\n+/)
-          .map((s: string) => s.trim())
-          .filter((s: string) => s.length > 0);
+      for (let i = 0; i < sectionParts.length; i++) {
+        const { heading, body } = sectionParts[i];
+        const { data: sec } = await supabase.from('sections').insert({
+          node_id: node.id,
+          heading,
+          order_idx: i,
+        }).select().single();
 
-        // 최소 1개 문장 보장
-        const sentences = rawSentences.length > 0 ? rawSentences : [input.userMessage.trim()];
+        if (sec) {
+          const rawSentences = body
+            .split(/(?<=[.!?])\s+|。|\n+/)
+            .map((s: string) => s.trim())
+            .filter((s: string) => s.length > 0);
+          const sentences = rawSentences.length > 0 ? rawSentences : [body.trim()];
 
-        for (let j = 0; j < sentences.length; j++) {
-          await supabase.from('sentences').insert({
-            section_id: sec.id,
-            node_id: node.id,
-            text: sentences[j],
-            order_idx: j,
-            embed_status: 'pending',
-            embed_tier: 'hot',
-          });
+          for (let j = 0; j < sentences.length; j++) {
+            await supabase.from('sentences').insert({
+              section_id: sec.id,
+              node_id: node.id,
+              text: sentences[j],
+              order_idx: j,
+              embed_status: 'pending',
+              embed_tier: 'hot',
+            });
+          }
         }
       }
     } catch (e) {

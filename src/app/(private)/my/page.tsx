@@ -14,7 +14,15 @@ const TutorialComplete = dynamicImport(() => import('@/components/tutorial/Tutor
 import { useWidgetStore } from '@/stores/widgetStore';
 import { useTutorialStore } from '@/stores/tutorialStore';
 import { TUTORIAL_INITIAL_LAYOUT } from '@/components/widgets/presets';
-import { NeuButton } from '@/components/ds';
+
+function getGreetingDate() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const weekdays = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+  return `${year} · ${month} · ${day} · ${weekdays[now.getDay()]}`;
+}
 
 type Mode = 'dashboard' | 'to-universe' | 'universe' | 'to-dashboard';
 
@@ -35,14 +43,14 @@ export default function MyPageWrapper() {
 }
 
 function MyPage() {
-  const { user, isLoading, signOut, isAdmin } = useAuth();
+  const { user, isLoading, isAdmin } = useAuth();
   const router = useRouter();
+  const [displayName, setDisplayName] = useState('');
   const searchParams = useSearchParams();
   const isReplay = searchParams.get('tutorial') === 'replay';
   const inviteToken = searchParams.get('invite');
   const [mode, setMode] = useState<Mode>('dashboard');
   const [orbExpanded, setOrbExpanded] = useState(false);
-  const hasOuWidget = useWidgetStore(s => (s.pages[s.currentPageIndex]?.widgets ?? []).some(w => w.type === 'ou-view'));
   const currentPageIndex = useWidgetStore(s => s.currentPageIndex);
   const pages = useWidgetStore(s => s.pages);
   const setCurrentPage = useWidgetStore(s => s.setCurrentPage);
@@ -91,6 +99,15 @@ function MyPage() {
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isReplay]);
+
+  // display_name 패칭
+  useEffect(() => {
+    if (!user?.id) return;
+    import('@/lib/supabase/client').then(({ createClient }) => {
+      createClient().from('profiles').select('display_name').eq('id', user.id).single()
+        .then(({ data }) => { if (data?.display_name) setDisplayName(data.display_name); });
+    });
+  }, [user?.id]);
 
   // 초대 토큰 처리: 가입 직후 A가 공유한 팩트 정보를 B의 프로필에 자동 등록 + A에게 유니 보상
   useEffect(() => {
@@ -228,11 +245,41 @@ function MyPage() {
     <div style={{ position: 'relative', height: '100dvh', overflow: 'hidden', background: 'var(--ou-bg)' }}>
       {/* Full-bleed content area */}
       <div style={{ position: 'absolute', inset: 0 }}>
+
+        {/* 인사 헤더 */}
+        {showWidgets && (
+          <div style={{
+            position: 'absolute',
+            top: 56, left: 80, right: 80,
+            height: 92,
+            display: 'flex', flexDirection: 'column', justifyContent: 'center',
+            zIndex: 5,
+            pointerEvents: 'none',
+          }}>
+            <div style={{
+              fontSize: 12, letterSpacing: '2px',
+              color: 'var(--ou-text-muted)',
+              fontFamily: 'var(--ou-font-logo)',
+              marginBottom: 6,
+            }}>
+              {getGreetingDate()}
+            </div>
+            <div style={{
+              fontSize: 30, fontWeight: 700,
+              color: 'var(--ou-text-bright)',
+              letterSpacing: '-0.02em',
+              lineHeight: 1.2,
+            }}>
+              안녕하세요, {displayName || user?.email?.split('@')[0] || '회원'}님.
+            </div>
+          </div>
+        )}
+
         {/* Dashboard title — shown when title exists or in edit mode */}
         {showWidgets && (hasTitle || dashboardEditMode) && (
           <div style={{
             position: 'absolute',
-            top: 56, left: 80, right: 80,
+            top: 148, left: 80, right: 80,
             height: 48,
             display: 'flex', alignItems: 'center',
             zIndex: 5,
@@ -280,7 +327,7 @@ function MyPage() {
 
         <div style={{
           position: 'absolute',
-          top: (hasTitle || dashboardEditMode) ? 112 : 64, bottom: 96, left: 80, right: 80,
+          top: (hasTitle || dashboardEditMode) ? 196 : 148, bottom: 96, left: 80, right: 80,
           transition: 'top 0.3s ease',
           visibility: showWidgets ? 'visible' : 'hidden',
           pointerEvents: mode === 'dashboard' ? 'auto' : 'none',
@@ -299,14 +346,6 @@ function MyPage() {
       {showTutorialComplete && (
         <TutorialComplete onClose={() => setShowTutorialComplete(false)} />
       )}
-
-      {/* Menu Bar */}
-      <MenuBar
-        showLogo={!hasOuWidget}
-        email={user?.email}
-        onSettings={() => router.push('/settings')}
-        onLogout={signOut}
-      />
 
       {/* Orb fullscreen overlay */}
       <OrbFullscreen open={orbExpanded} onClose={() => setOrbExpanded(false)} />
@@ -346,69 +385,6 @@ function MyPage() {
             universeActive={universeActive}
           />
         </div>
-      </div>
-    </div>
-  );
-}
-
-function UniBalance() {
-  const [balance, setBalance] = useState<number | null>(null);
-
-  useEffect(() => {
-    fetch('/api/uni')
-      .then(r => r.ok ? r.json() : null)
-      .then(d => { if (d) setBalance(d.balance); })
-      .catch(() => {});
-
-    const handler = () => {
-      fetch('/api/uni')
-        .then(r => r.ok ? r.json() : null)
-        .then(d => { if (d) setBalance(d.balance); })
-        .catch(() => {});
-    };
-    window.addEventListener('uni-updated', handler);
-    return () => window.removeEventListener('uni-updated', handler);
-  }, []);
-
-  if (balance === null) return null;
-
-  return (
-    <div style={{
-      display: 'flex', alignItems: 'center', gap: 4,
-      fontSize: 12, color: 'var(--ou-text-secondary)',
-      padding: '3px 8px',
-      background: 'var(--ou-surface)',
-      borderRadius: 99,
-      boxShadow: 'var(--ou-neu-raised-sm)',
-    }}>
-      <span style={{ fontSize: 11, opacity: 0.7 }}>✦</span>
-      <span>{balance.toLocaleString()}</span>
-      <span style={{ fontSize: 10, color: 'var(--ou-text-muted)' }}>UNI</span>
-    </div>
-  );
-}
-
-function MenuBar({ showLogo, email, onSettings, onLogout }: {
-  showLogo: boolean; email?: string; onSettings: () => void; onLogout: () => void;
-}) {
-  return (
-    <div style={{
-      position: 'absolute', top: 0, left: 0, right: 0, height: 56,
-      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      padding: '0 24px', zIndex: 10,
-    }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <img src="/logo-ou.svg" alt="OU" style={{ height: 20, opacity: 0.6 }} />
-      </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-        <UniBalance />
-        <NeuButton variant="ghost" size="sm" onClick={onSettings} style={{ padding: '4px 8px' }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" strokeWidth="1.5" />
-            <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z" stroke="currentColor" strokeWidth="1.5" />
-          </svg>
-        </NeuButton>
-        <span style={{ fontSize: 12, color: 'var(--ou-text-muted)' }}>{email?.split('@')[0]}</span>
       </div>
     </div>
   );
