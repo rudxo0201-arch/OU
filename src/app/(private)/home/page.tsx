@@ -13,6 +13,7 @@ const TutorialComplete = dynamicImport(() => import('@/components/tutorial/Tutor
 const SpeechBubble = dynamicImport(() => import('@/components/tutorial/SpeechBubble').then(m => m.SpeechBubble), { ssr: false });
 import { useWidgetStore } from '@/stores/widgetStore';
 import { useTutorialStore } from '@/stores/tutorialStore';
+import { ViewPickerPanel } from '@/components/widgets/ViewPickerPanel';
 import { TUTORIAL_INITIAL_LAYOUT } from '@/components/widgets/presets';
 import { TUTORIAL_STEPS } from '@/data/tutorial';
 
@@ -73,6 +74,7 @@ function MyPage() {
   const celebrated = useTutorialStore(s => s.celebrated);
   const markCelebrated = useTutorialStore(s => s.markCelebrated);
   const [showTutorialComplete, setShowTutorialComplete] = useState(false);
+  const [showViewPicker, setShowViewPicker] = useState(false);
   const [targetRect, setTargetRect] = useState<{ top: number; left: number; width: number; height: number } | null>(null);
 
   // 튜토리얼 시작: replay param이면 바로 시작, 아니면 DB 체크
@@ -418,7 +420,7 @@ function MyPage() {
           />
           {/* SpeechBubble — 타겟 아래, 센터 정렬 */}
           <SpeechBubble
-            message={TUTORIAL_STEPS[tutorialStepIndex]?.guideMessage ?? '여기에 입력해보세요'}
+            message="뭐라고 칠지 모르겠으면 엔터만 눌러보세요!"
             tail="top"
             style={{
               position: 'fixed',
@@ -455,6 +457,9 @@ function MyPage() {
         </div>
       )}
 
+      {/* View picker panel */}
+      <ViewPickerPanel open={showViewPicker} onClose={() => setShowViewPicker(false)} />
+
       {/* Dock bar */}
       <div style={{
         position: 'absolute', bottom: 40, left: 0, right: 0, height: 88,
@@ -465,6 +470,7 @@ function MyPage() {
           <DockBar
             onUniverse={toggleUniverse}
             universeActive={universeActive}
+            onAddWidget={() => setShowViewPicker(v => !v)}
           />
         </div>
       </div>

@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { VIEW_REGISTRY, VIEW_LABELS } from '@/components/views/registry';
 import { NeuButton, NeuCard, NeuModal } from '@/components/ds';
+import { useWidgetStore } from '@/stores/widgetStore';
+import { getWidgetTypeForView, getWidgetDefaultSize } from '@/lib/utils/viewToWidget';
 
 const VIEW_ICONS: Record<string, string> = {
   todo: '☑', calendar: '📅', table: '📊', task: '📋', dictionary: '📖',
@@ -19,17 +21,18 @@ export default function ViewPage() {
   const [nodes, setNodes] = useState<unknown[]>([]);
   const [loading, setLoading] = useState(true);
   const [showShare, setShowShare] = useState(false);
-  const [showInstallGuide, setShowInstallGuide] = useState(false);
+  const [addedToHome, setAddedToHome] = useState(false);
+
+  const addWidget = useWidgetStore(s => s.addWidget);
+  const widgets = useWidgetStore(s => s.widgets);
 
   useEffect(() => {
     if (!viewId) return;
 
-    // builtin-{viewType} 처리 — DB 없이 바로 렌더
     if (viewId.startsWith('builtin-')) {
       const vt = viewId.replace('builtin-', '');
       setViewData({ view_type: vt, name: VIEW_LABELS[vt] || vt });
 
-      // admin 노드 뷰는 전용 API 사용
       const ADMIN_VIEW_APIS: Record<string, string> = {
         boncho: '/api/boncho',
         shanghanlun: '/api/shanghanlun',
@@ -66,7 +69,23 @@ export default function ViewPage() {
   const viewLabel = (viewData?.name as string) || VIEW_LABELS[viewType] || '뷰';
   const viewIcon = VIEW_ICONS[viewType] || '◉';
 
-  const handleAddToHome = useCallback(() => { setShowInstallGuide(true); setShowShare(false); }, []);
+  const handleAddToHome = useCallback(() => {
+    const widgetType = getWidgetTypeForView(viewType);
+    if (!widgetType) {
+      // 매핑 없는 뷰 타입: 이미 홈에 있다고 안내
+      setShowShare(false);
+      return;
+    }
+
+    const alreadyAdded = widgets.some(w => w.type === widgetType);
+    if (!alreadyAdded) {
+      const [w, h] = getWidgetDefaultSize(widgetType);
+      addWidget({ id: `${widgetType}-${Date.now()}`, type: widgetType, x: 0, y: 0, w, h });
+    }
+    setAddedToHome(true);
+    setShowShare(false);
+  }, [viewType, widgets, addWidget]);
+
   const handleCopyLink = useCallback(() => { navigator.clipboard.writeText(window.location.href); setShowShare(false); }, []);
 
   if (loading) {
@@ -105,7 +124,11 @@ export default function ViewPage() {
               position: 'absolute', top: 40, right: 0,
               width: 180, padding: 4, zIndex: 100,
             }}>
-              <ShareOption label="홈 화면에 추가" icon="📱" onClick={handleAddToHome} />
+              <ShareOption
+                label={widgets.some(w => w.type === getWidgetTypeForView(viewType)) ? '위젯 이미 추가됨' : '홈에 위젯 추가'}
+                icon="🏠"
+                onClick={handleAddToHome}
+              />
               <ShareOption label="링크 복사" icon="🔗" onClick={handleCopyLink} />
               <ShareOption label="공유" icon="↗" onClick={() => {
                 navigator.share?.({ title: viewLabel, url: window.location.href });
@@ -135,9 +158,27 @@ export default function ViewPage() {
         )}
       </div>
 
-      {/* Install guide modal */}
-      <NeuModal open={showInstallGuide} onClose={() => setShowInstallGuide(false)} title={`${viewIcon} ${viewLabel}`}>
-        <InstallGuideContent />
+      {/* 위젯 추가 완료 모달 */}
+      <NeuModal open={addedToHome} onClose={() => setAddedToHome(false)} title="홈에 추가됨">
+        <div style={{ textAlign: 'center', padding: '8px 0 16px' }}>
+          <div style={{ fontSize: 40, marginBottom: 12 }}>🏠</div>
+          <div style={{ fontSize: 14, color: 'var(--ou-text-body)', marginBottom: 20 }}>
+            <strong>{viewLabel}</strong> 위젯이 홈에 추가됐어요
+          </div>
+          <button
+            onClick={() => { setAddedToHome(false); router.push('/home'); }}
+            style={{
+              padding: '10px 28px', borderRadius: 12, border: 'none',
+              fontFamily: 'inherit', fontSize: 13, fontWeight: 600,
+              cursor: 'pointer',
+              background: 'var(--ou-bg)',
+              boxShadow: 'var(--ou-neu-raised-sm)',
+              color: 'var(--ou-text-strong)',
+            }}
+          >
+            홈으로 이동 →
+          </button>
+        </div>
       </NeuModal>
 
       {/* Click outside to close share menu */}
@@ -231,37 +272,5 @@ function EmptyHint({ viewType, onOrb }: { viewType: string; onOrb: () => void })
         Orb 열기 →
       </button>
     </div>
-  );
-}
-
-function InstallGuideContent() {
-  const isIOS = typeof navigator !== 'undefined' && /iPhone|iPad|iPod/.test(navigator.userAgent);
-  const isAndroid = typeof navigator !== 'undefined' && /Android/.test(navigator.userAgent);
-
-  return (
-    <NeuCard variant="pressed" style={{ padding: 16 }}>
-      {isIOS ? (
-        <div style={{ fontSize: 13, color: 'var(--ou-text-body)', lineHeight: 1.8 }}>
-          <div style={{ marginBottom: 8, fontWeight: 600, color: 'var(--ou-text-heading)' }}>iOS</div>
-          1. 하단 Safari 공유 버튼 <span style={{ fontSize: 16 }}>↑</span> 탭<br />
-          2. <strong>홈 화면에 추가</strong> 선택<br />
-          3. <strong>추가</strong> 탭
-        </div>
-      ) : isAndroid ? (
-        <div style={{ fontSize: 13, color: 'var(--ou-text-body)', lineHeight: 1.8 }}>
-          <div style={{ marginBottom: 8, fontWeight: 600, color: 'var(--ou-text-heading)' }}>Android</div>
-          1. Chrome 메뉴 <strong>⋮</strong> 탭<br />
-          2. <strong>홈 화면에 추가</strong> 선택<br />
-          3. <strong>추가</strong> 탭
-        </div>
-      ) : (
-        <div style={{ fontSize: 13, color: 'var(--ou-text-body)', lineHeight: 1.8 }}>
-          <div style={{ marginBottom: 8, fontWeight: 600, color: 'var(--ou-text-heading)' }}>데스크탑</div>
-          1. 브라우저 주소창 오른쪽 <strong>설치 아이콘</strong> 클릭<br />
-          2. 또는 메뉴 → <strong>앱 설치</strong><br />
-          3. 바탕화면에 바로가기 생성
-        </div>
-      )}
-    </NeuCard>
   );
 }

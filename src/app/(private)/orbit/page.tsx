@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { VIEW_LABELS } from '@/components/views/registry';
 import { NeuPageLayout, NeuModal } from '@/components/ds';
+import { useWidgetStore } from '@/stores/widgetStore';
+import { getWidgetTypeForView, getWidgetDefaultSize } from '@/lib/utils/viewToWidget';
 import {
   MagnifyingGlass, CheckSquare, CalendarBlank, Table, Book, Stack,
   ChartBar, GridFour, NotePencil, UserCircle, Lightbulb, ListBullets,
@@ -117,6 +119,10 @@ export default function OrbitPage() {
   const [selectedDomain, setSelectedDomain] = useState<string>('all');
   const [selectedPreset, setSelectedPreset] = useState<ViewPreset | null>(null);
   const [uninstalling, setUninstalling] = useState<string | null>(null);
+  const [justInstalled, setJustInstalled] = useState<{ name: string; viewType: string } | null>(null);
+
+  const addWidget = useWidgetStore(s => s.addWidget);
+  const widgets = useWidgetStore(s => s.widgets);
 
   useEffect(() => {
     Promise.all([
@@ -148,6 +154,8 @@ export default function OrbitPage() {
       if (data.viewId) {
         setInstalledKeys(prev => new Set(prev).add(presetKey));
         fetch('/api/views').then(r => r.json()).then(d => setMyViews(d.views || d.data || []));
+        const preset = presets.find(p => p.key === presetKey);
+        if (preset) setJustInstalled({ name: preset.name, viewType: preset.view_type });
       }
     } finally {
       setInstalling(null);
@@ -447,6 +455,62 @@ export default function OrbitPage() {
             setSelectedPreset(null);
           }}
         />
+      )}
+
+      {/* 설치 완료 → 홈 위젯 배치 프롬프트 */}
+      {justInstalled && (
+        <NeuModal open onClose={() => setJustInstalled(null)} title="설치 완료">
+          <div style={{ textAlign: 'center', padding: '8px 0 16px' }}>
+            <div style={{ fontSize: 36, marginBottom: 12 }}>✓</div>
+            <div style={{ fontSize: 14, color: 'var(--ou-text-body)', marginBottom: 6 }}>
+              <strong>{justInstalled.name}</strong> 설치됐어요
+            </div>
+            <div style={{ fontSize: 12, color: 'var(--ou-text-muted)', marginBottom: 24 }}>
+              홈 화면에 위젯으로 추가할까요?
+            </div>
+            <div style={{ display: 'flex', gap: 10 }}>
+              {(() => {
+                const widgetType = getWidgetTypeForView(justInstalled.viewType);
+                const alreadyOnHome = widgetType ? widgets.some(w => w.type === widgetType) : false;
+                return widgetType ? (
+                  <button
+                    onClick={() => {
+                      if (!alreadyOnHome) {
+                        const [w, h] = getWidgetDefaultSize(widgetType);
+                        addWidget({ id: `${widgetType}-${Date.now()}`, type: widgetType, x: 0, y: 0, w, h });
+                      }
+                      setJustInstalled(null);
+                      router.push('/home');
+                    }}
+                    style={{
+                      flex: 1, padding: '11px 0', borderRadius: 12, border: 'none',
+                      fontFamily: 'inherit', fontSize: 13, fontWeight: 600,
+                      cursor: 'pointer',
+                      background: 'var(--ou-bg)',
+                      boxShadow: 'var(--ou-neu-raised-sm)',
+                      color: 'var(--ou-text-strong)',
+                    }}
+                  >
+                    {alreadyOnHome ? '홈으로 이동' : '위젯 추가 →'}
+                  </button>
+                ) : null;
+              })()}
+              <button
+                onClick={() => setJustInstalled(null)}
+                style={{
+                  flex: 1, padding: '11px 0', borderRadius: 12, border: 'none',
+                  fontFamily: 'inherit', fontSize: 13, fontWeight: 500,
+                  cursor: 'pointer',
+                  background: 'var(--ou-bg)',
+                  boxShadow: 'var(--ou-neu-raised-xs)',
+                  color: 'var(--ou-text-muted)',
+                }}
+              >
+                나중에
+              </button>
+            </div>
+          </div>
+        </NeuModal>
       )}
     </NeuPageLayout>
   );

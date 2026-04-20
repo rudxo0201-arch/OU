@@ -30,7 +30,6 @@ export function OuViewWidget() {
   }, [input, ghostText, openOrb]);
 
   const showGhost = !input && !!ghostText;
-  const showChip = tutorialPhase === 'active' && !!ghostText && !input;
 
   return (
     // 외부 div: widget-no-drag 없음 → 카드 테두리 영역에서 드래그 가능
@@ -86,15 +85,6 @@ export function OuViewWidget() {
           }}
         />
 
-        {showChip && (
-          <div style={{
-            marginTop: 8, marginBottom: 2,
-            fontSize: 11, color: 'var(--ou-text-disabled)',
-            fontFamily: 'inherit',
-          }}>
-            Enter를 눌러보세요
-          </div>
-        )}
 
         <div className="widget-no-drag" style={{ display: 'flex', alignItems: 'center', gap: 6, paddingTop: 10 }}>
           <div style={{
