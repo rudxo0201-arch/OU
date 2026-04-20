@@ -82,7 +82,7 @@ export function NeuPageLayout({
       <main
         style={{
           flex: 1,
-          padding: noPadding ? 0 : 'clamp(16px, 6vw, 80px)',
+          padding: noPadding ? 0 : 'clamp(16px, 3vw, 40px)',
           maxWidth: maxWidth ?? undefined,
           width: '100%',
           margin: maxWidth ? '0 auto' : undefined,

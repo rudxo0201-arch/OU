@@ -264,7 +264,7 @@ function MyPage() {
         {showWidgets && (
           <div style={{
             position: 'absolute',
-            top: 52, left: 80, right: 80,
+            top: 52, left: 40, right: 40,
             display: 'flex', flexDirection: 'column', justifyContent: 'center',
             padding: '20px 0',
             zIndex: 5,
@@ -293,7 +293,7 @@ function MyPage() {
         {showWidgets && (hasTitle || dashboardEditMode) && (
           <div style={{
             position: 'absolute',
-            top: 148, left: 80, right: 80,
+            top: 148, left: 40, right: 40,
             height: 48,
             display: 'flex', alignItems: 'center',
             zIndex: 5,
@@ -341,7 +341,7 @@ function MyPage() {
 
         <div style={{
           position: 'absolute',
-          top: (hasTitle || dashboardEditMode) ? 196 : 148, bottom: 120, left: 80, right: 80,
+          top: (hasTitle || dashboardEditMode) ? 196 : 148, bottom: 120, left: 40, right: 40,
           transition: 'top 0.3s ease',
           visibility: showWidgets ? 'visible' : 'hidden',
           pointerEvents: mode === 'dashboard' ? 'auto' : 'none',
