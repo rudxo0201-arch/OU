@@ -28,6 +28,6 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ presets: data || [] });
   } catch (e) {
-    return NextResponse.json({ presets: [] }, { status: 500 });
+    return NextResponse.json({ presets: [], error: String(e) }, { status: 500 });
   }
 }
