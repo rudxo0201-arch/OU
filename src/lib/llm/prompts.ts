@@ -84,28 +84,84 @@ is_a / part_of / causes / derived_from / related_to / opposite_of / requires / e
 
 ### viewOptions — data_input / data_query일 때 필수
 회원이 선택할 수 있도록 맥락에 맞는 뷰타입 2~4개 추천.
+**첫 번째 뷰타입이 가장 적합한 뷰.** 맥락에 따라 정확히 선택해.
 
-뷰타입 목록:
-- calendar: 일정
-- todo: 할 일 목록
-- chart: 지출 차트
-- timeline: 타임라인
-- table: 정보 표
-- heatmap: 습관 히트맵
-- journal: 감정 일기
-- flashcard: 학습 플래시카드
-- boncho: 본초 검색
-- dictionary: 한자 사전
-- idea: 아이디어 보드
+도메인별 뷰타입 선택 기준:
 
-도메인별 추천 예시:
-- schedule → calendar, timeline, table
-- task → todo, table, calendar
-- finance → chart, table, timeline
-- emotion → journal, timeline, heatmap
-- idea → idea, table, timeline
-- habit → heatmap, chart, table
-- knowledge → table, flashcard, timeline
+**schedule (일정)**
+- 특정 시각이 있는 단건 일정 (오늘 3시, 내일 오후 등) → schedule-time (첫번째)
+- 날짜만 있는 단건 일정 (25일에 회식, 다음주 모임) → schedule-date (첫번째)
+- 기간이 있는 일정 (1일~20일 여행, 이번달 내내) → schedule-range (첫번째)
+- 오늘 일정 조회 → schedule-today (첫번째)
+- 내일 일정 조회 → schedule-tomorrow (첫번째)
+- 이번 주 일정 조회 → schedule-week (첫번째)
+- 요즘/근처 일정 조회 → schedule-around (첫번째)
+- 한 달 전체 조회 → calendar (첫번째)
+- 시간순 나열 → timeline
+
+**finance (가계부)**
+- 단건 지출/수입 → finance-amount (첫번째)
+- 오늘 지출 조회 → finance-today (첫번째)
+- 이번 주 지출 → finance-week (첫번째)
+- 이번 달 지출 분석 → chart (첫번째)
+- 지난달 vs 이번달 비교 → finance-compare (첫번째)
+- 카테고리별 분석 → finance-category (첫번째)
+- 내역 목록 → table
+
+**task (할 일)**
+- 단건 할 일 → task-check (첫번째)
+- 마감일 있는 할 일 → task-deadline (첫번째)
+- 오늘 할 일 → task-today (첫번째)
+- 밀린 할 일 → task-overdue (첫번째)
+- 이번 주 할 일 → task-week (첫번째)
+- 전체 목록 → todo
+- 상태별 관리 → task
+
+**idea (아이디어)**
+- 단건 아이디어 → idea-card (첫번째)
+- 여러 아이디어 조회 → idea (첫번째)
+
+**relation (인물)**
+- 단건 인물 → relation-card (첫번째)
+- 인물 상세 → profile
+
+**habit (습관/운동)**
+- 단건 기록 → habit-log (첫번째)
+- 연속 기록 → habit-streak (첫번째)
+- 기간별 패턴 → heatmap
+
+**knowledge (지식)**
+- 단건 지식/메모 → knowledge-note (첫번째)
+- 암기용 카드 → flashcard
+- 목록 조회 → table
+
+**media (미디어)**
+- 단건 미디어 → media-card (첫번째)
+- 평점 있는 미디어 → media-rating (첫번째)
+- 유튜브 영상 → youtube-card (첫번째)
+- 유튜브 타임스탬프 메모 → youtube-timestamp (첫번째)
+
+**location (장소)**
+- 단건 장소 → location-pin (첫번째)
+- 지도 조회 → map
+
+**health (건강)**
+- 수치 기록 (혈압, 체중 등) → health-log (첫번째)
+- 증상 기록 → health-symptom (첫번째)
+- 복약 기록 → health-med (첫번째)
+
+**education (교육)**
+- 수업/강의 기록 → edu-lesson (첫번째)
+- 과제 마감 → edu-assignment (첫번째)
+
+**development (개발)**
+- 개발 메모/스니펫 → dev-note (첫번째)
+
+**본초 (boncho)**
+- 약재 정보 → boncho-herb (첫번째)
+
+**한자 (dictionary)**
+- 한자 검색 → dict-char (첫번째)
 
 ### filter — data_query일 때 선택적
 기존 데이터 fetch 시 사용할 필터. 날짜 범위, 검색어 등.

@@ -3,20 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useChatStore } from '@/stores/chatStore';
 import { NeuButton } from '@/components/ds';
-
-const VIEW_CHIP_LABELS: Record<string, string> = {
-  calendar: '캘린더',
-  todo: '할 일',
-  chart: '차트',
-  timeline: '타임라인',
-  table: '표',
-  heatmap: '히트맵',
-  journal: '일기',
-  flashcard: '플래시카드',
-  boncho: '본초',
-  dictionary: '사전',
-  idea: '아이디어',
-};
+import { VIEW_LABELS } from '@/components/views/registry';
 
 export function ViewOptionsChips() {
   const { pendingViewOptions, clearPendingViewOptions, addRequestedView } = useChatStore();
@@ -84,7 +71,7 @@ export function ViewOptionsChips() {
                 transition: 'all 0.15s',
               }}
             >
-              {VIEW_CHIP_LABELS[vt] || vt}
+              {VIEW_LABELS[vt] || vt}
             </button>
           );
         })}
