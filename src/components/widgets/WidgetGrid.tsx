@@ -6,6 +6,7 @@ import type { Layout } from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
 
 import { useWidgetStore } from '@/stores/widgetStore';
+import { useTutorialStore } from '@/stores/tutorialStore';
 import { getWidgetDef } from './registry';
 import { GRID_COLS as DEFAULT_COLS, GRID_ROWS as DEFAULT_ROWS } from './types';
 import { WidgetCard } from './WidgetCard';
@@ -61,6 +62,13 @@ export function WidgetGrid({ transition = 'idle' }: Props) {
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, [editMode]);
+
+  // widget-edit-mode-enter event → 편집 모드 진입
+  useEffect(() => {
+    const handler = () => setEditMode(true);
+    window.addEventListener('widget-edit-mode-enter', handler);
+    return () => window.removeEventListener('widget-edit-mode-enter', handler);
+  }, []);
 
   // Close context menu on click anywhere
   useEffect(() => {
@@ -162,7 +170,14 @@ export function WidgetGrid({ transition = 'idle' }: Props) {
       {/* Edit mode "완료" button */}
       {editMode && (
         <button
-          onClick={() => setEditMode(false)}
+          onClick={() => {
+            setEditMode(false);
+            const store = useTutorialStore.getState();
+            if (store.isEditMode()) {
+              store.exitEditMode();
+              window.dispatchEvent(new CustomEvent('orb-expand'));
+            }
+          }}
           style={{
             position: 'absolute', top: -36, right: 0, zIndex: 20,
             padding: '6px 20px', borderRadius: 999,

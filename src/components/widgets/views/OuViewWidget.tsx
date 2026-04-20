@@ -2,9 +2,11 @@
 
 import { useState, useCallback } from 'react';
 import { useChatStore } from '@/stores/chatStore';
+import { useTutorialStore } from '@/stores/tutorialStore';
 
 export function OuViewWidget() {
   const [input, setInput] = useState('');
+  const ghostText = useTutorialStore(s => s.currentGhostText());
 
   const openOrb = useCallback((text?: string) => {
     if (text) {
@@ -16,19 +18,27 @@ export function OuViewWidget() {
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      const text = input.trim();
+      // 입력이 없으면 ghost text 전송
+      const text = input.trim() || ghostText?.trim() || '';
       setInput('');
       openOrb(text || undefined);
     }
-  }, [input, openOrb]);
+  }, [input, ghostText, openOrb]);
+
+  // 타이핑 시작하면 ghost text는 사라짐 (input이 있으면 placeholder 숨김)
+  const showGhost = !input && !!ghostText;
 
   return (
-    <div className="widget-no-drag" style={{
-      width: '100%', height: '100%',
-      display: 'flex', alignItems: 'center',
-      justifyContent: 'center',
-      padding: '0 16px',
-    }}>
+    <div
+      data-tutorial-target="ou-view-input"
+      className="widget-no-drag"
+      style={{
+        width: '100%', height: '100%',
+        display: 'flex', alignItems: 'center',
+        justifyContent: 'center',
+        padding: '0 16px',
+      }}
+    >
       {/* Orb 입력 — pressed (안쪽으로 들어간 입력창) */}
       <div style={{
         width: '100%',
@@ -38,12 +48,26 @@ export function OuViewWidget() {
         padding: '16px 20px 12px',
         display: 'flex',
         flexDirection: 'column',
+        position: 'relative',
       }}>
+        {/* Ghost text 레이어 */}
+        {showGhost && (
+          <div style={{
+            position: 'absolute',
+            top: 16, left: 20,
+            fontSize: 16, fontFamily: 'inherit',
+            color: 'var(--ou-text-disabled)',
+            pointerEvents: 'none',
+            userSelect: 'none',
+          }}>
+            {ghostText}
+          </div>
+        )}
         <input
           value={input}
           onChange={e => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Just talk..."
+          placeholder={showGhost ? '' : 'Just talk...'}
           style={{
             width: '100%', border: 'none', outline: 'none',
             background: 'transparent',

@@ -1,5 +1,10 @@
 import type { WidgetInstance } from './types';
 
+/** 튜토리얼 초기 레이아웃 — Orb만 가운데 */
+export const TUTORIAL_INITIAL_LAYOUT: WidgetInstance[] = [
+  { id: 'ou-view', type: 'ou-view', x: 1, y: 1, w: 4, h: 2 },
+];
+
 export const DEFAULT_LAYOUT: WidgetInstance[] = [
   { id: 'today-summary',  type: 'today-summary',   x: 2, y: 0, w: 2, h: 1 },
   { id: 'clock',          type: 'clock',           x: 4, y: 0, w: 2, h: 1 },

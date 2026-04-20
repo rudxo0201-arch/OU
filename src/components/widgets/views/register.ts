@@ -106,3 +106,47 @@ registerWidget({
   removable: true,
   needsCard: true,
 });
+
+registerWidget({
+  type: 'view-chart',
+  label: '지출 차트',
+  component: ViewWidget,
+  scrollable: 'vertical',
+  minSize: [2, 2],
+  defaultSize: [3, 3],
+  removable: true,
+  needsCard: true,
+});
+
+registerWidget({
+  type: 'view-heatmap',
+  label: '히트맵',
+  component: ViewWidget,
+  scrollable: 'none',
+  minSize: [2, 1],
+  defaultSize: [4, 2],
+  removable: true,
+  needsCard: true,
+});
+
+registerWidget({
+  type: 'view-relation',
+  label: '관계 카드',
+  component: ViewWidget,
+  scrollable: 'vertical',
+  minSize: [2, 2],
+  defaultSize: [3, 3],
+  removable: true,
+  needsCard: true,
+});
+
+registerWidget({
+  type: 'view-profile',
+  label: '프로필',
+  component: ViewWidget,
+  scrollable: 'vertical',
+  minSize: [2, 2],
+  defaultSize: [3, 3],
+  removable: true,
+  needsCard: true,
+});

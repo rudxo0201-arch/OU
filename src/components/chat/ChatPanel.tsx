@@ -4,6 +4,7 @@ import { useRef, useEffect, useState } from 'react';
 import { useChatStore, type ChatMessage } from '@/stores/chatStore';
 import { ChatInput, type ChatInputHandle } from './ChatInput';
 import { NeuCard, NeuButton, NeuBadge, NeuModal } from '@/components/ds';
+import { AddToHomeButton } from './AddToHomeButton';
 
 // Strip LLM meta/view blocks from visible content
 function cleanContent(text: string): string {
@@ -70,7 +71,7 @@ export function ChatPanel({ onNodeSelect, autoSendOnOpen }: ChatPanelProps) {
             key={msg.id}
             message={msg}
             onNodeSelect={onNodeSelect}
-            onSendMessage={(text) => chatInputRef.current?.sendMessage(text)}
+            onSendMessage={(text, linkedNodeId) => chatInputRef.current?.sendMessage(text, linkedNodeId)}
           />
         ))}
       </div>
@@ -111,7 +112,7 @@ function EmptyState() {
       >
         <span
           style={{
-            fontFamily: "var(--font-orbitron, 'Orbitron')",
+            fontFamily: 'var(--ou-font-logo)',
             fontSize: 18,
             fontWeight: 700,
             color: 'var(--ou-text-muted)',
@@ -136,7 +137,7 @@ function MessageBubble({
 }: {
   message: ChatMessage;
   onNodeSelect?: (payload: NodeSelectPayload) => void;
-  onSendMessage?: (text: string) => void;
+  onSendMessage?: (text: string, linkedNodeId?: string) => void;
 }) {
   const isUser = message.role === 'user';
   const [hovered, setHovered] = useState(false);
@@ -259,9 +260,18 @@ function MessageBubble({
           <InlineView domain={message.nodeCreated.domain} data={message.nodeCreated.domain_data} content={message.content} />
         )}
 
+        {/* 홈 화면에 추가하기 */}
+        {message.nodeCreated && !message.streaming && (
+          <AddToHomeButton domain={message.nodeCreated.domain} nodeId={message.nodeCreated.nodeId} />
+        )}
+
         {/* Follow-up suggestions */}
         {message.suggestions && message.suggestions.length > 0 && !message.streaming && (
-          <SuggestionsUI suggestions={message.suggestions} onSelect={onSendMessage} />
+          <SuggestionsUI
+            suggestions={message.suggestions}
+            linkedNodeId={message.nodeCreated?.nodeId}
+            onSelect={onSendMessage}
+          />
         )}
 
         {/* Hanja inline cards */}
@@ -332,7 +342,7 @@ function getDomainLabel(domain: string): string {
 }
 
 // ---- Inline view for created data ----
-function InlineView({ domain, data, content }: { domain: string; data?: Record<string, unknown>; content: string }) {
+export function InlineView({ domain, data, content }: { domain: string; data?: Record<string, unknown>; content: string }) {
   if (domain === 'schedule') {
     const date = (data?.date || data?.when || data?.datetime || '') as string;
     const title = (data?.title || data?.what || content.slice(0, 40)) as string;
@@ -427,7 +437,15 @@ function InlineView({ domain, data, content }: { domain: string; data?: Record<s
 }
 
 // ---- Suggestions UI ----
-function SuggestionsUI({ suggestions, onSelect }: { suggestions: string[]; onSelect?: (text: string) => void }) {
+function SuggestionsUI({
+  suggestions,
+  linkedNodeId,
+  onSelect,
+}: {
+  suggestions: string[];
+  linkedNodeId?: string;
+  onSelect?: (text: string, linkedNodeId?: string) => void;
+}) {
   const [selected, setSelected] = useState<string | null>(null);
   const [customInput, setCustomInput] = useState('');
   const [customSent, setCustomSent] = useState(false);
@@ -435,13 +453,13 @@ function SuggestionsUI({ suggestions, onSelect }: { suggestions: string[]; onSel
   const handleSelect = (text: string) => {
     if (selected) return;
     setSelected(text);
-    onSelect?.(text);
+    onSelect?.(text, linkedNodeId);
   };
 
   const handleCustomSend = () => {
     if (!customInput.trim() || customSent) return;
     setCustomSent(true);
-    onSelect?.(customInput.trim());
+    onSelect?.(customInput.trim(), linkedNodeId);
     setCustomInput('');
   };
 

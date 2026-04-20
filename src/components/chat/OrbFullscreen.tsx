@@ -1,10 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useChatStore, type ChatMessage } from '@/stores/chatStore';
-import { ChatPanel } from './ChatPanel';
+import { useTutorialStore } from '@/stores/tutorialStore';
+import { TUTORIAL_STEPS } from '@/data/tutorial';
+import { ChatPanel, InlineView } from './ChatPanel';
+import { ProfileQuestionUI } from './ProfileQuestionUI';
 import { VIEW_REGISTRY, VIEW_LABELS } from '@/components/views/registry';
-import { NeuCard, NeuButton, NeuBadge } from '@/components/ds';
+import { NeuCard, NeuButton } from '@/components/ds';
 
 interface Props {
   open: boolean;
@@ -14,18 +17,35 @@ interface Props {
 export function OrbFullscreen({ open, onClose }: Props) {
   const [visible, setVisible] = useState(false);
   const [animating, setAnimating] = useState(false);
-  const { messages } = useChatStore();
+  const { messages, clearRequestedViews } = useChatStore();
+  const tutorialPhase = useTutorialStore(s => s.phase);
+  const tutorialStepIndex = useTutorialStore(s => s.stepIndex);
+  const completeTutorial = useTutorialStore(s => s.completeTutorial);
+  const skipAllTutorial = useTutorialStore(s => s.skipAll);
+
+  const isProfileStep = tutorialPhase === 'active' && tutorialStepIndex === 6;
+  const currentGuideMessage = (tutorialPhase === 'active' && tutorialStepIndex > 0 && tutorialStepIndex < 6)
+    ? TUTORIAL_STEPS[tutorialStepIndex]?.guideMessage
+    : undefined;
+  // 패널은 Orb가 열릴 때 기준 스냅샷 — 이후 대화로 누적되도록 messages 직접 참조
+  const openedRef = useRef(false);
 
   useEffect(() => {
     if (open) {
+      // Orb 열릴 때: 좌우 패널 리셋
+      if (!openedRef.current) {
+        clearRequestedViews();
+        openedRef.current = true;
+      }
       setVisible(true);
       requestAnimationFrame(() => setAnimating(true));
     } else {
+      openedRef.current = false;
       setAnimating(false);
       const t = setTimeout(() => setVisible(false), 350);
       return () => clearTimeout(t);
     }
-  }, [open]);
+  }, [open, clearRequestedViews]);
 
   useEffect(() => {
     if (!open) return;
@@ -34,8 +54,9 @@ export function OrbFullscreen({ open, onClose }: Props) {
     return () => window.removeEventListener('keydown', handler);
   }, [open, onClose]);
 
-  const autoViews = messages.filter(
-    (m) => m.nodeCreated || (m.hanjaResults && m.hanjaResults.length > 0) || m.youtubeEmbed
+  // 좌측 패널: 현재 세션에서 생성된 인라인 뷰 (nodeCreated가 있는 assistant 메시지)
+  const createdViews = messages.filter(
+    (m) => m.role === 'assistant' && !m.streaming && (m.nodeCreated || (m.hanjaResults && m.hanjaResults.length > 0) || m.youtubeEmbed)
   );
 
   if (!visible) return null;
@@ -108,7 +129,7 @@ export function OrbFullscreen({ open, onClose }: Props) {
         >
           <span
             style={{
-              fontSize: 11,
+              fontSize: 13,
               fontWeight: 700,
               letterSpacing: 2,
               color: 'var(--ou-text-muted)',
@@ -118,14 +139,14 @@ export function OrbFullscreen({ open, onClose }: Props) {
             생성된 데이터
           </span>
 
-          {autoViews.length === 0 ? (
+          {createdViews.length === 0 ? (
             <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', paddingTop: 32 }}>
-              <span style={{ fontSize: 13, color: 'var(--ou-text-disabled)', textAlign: 'center', lineHeight: 1.6 }}>
+              <span style={{ fontSize: 15, color: 'var(--ou-text-disabled)', textAlign: 'center', lineHeight: 1.6 }}>
                 대화하면<br />여기에 쌓여요
               </span>
             </div>
           ) : (
-            autoViews.map((msg) => <AutoViewCard key={msg.id} message={msg} />)
+            createdViews.map((msg) => <CreatedViewCard key={msg.id} message={msg} />)
           )}
         </NeuCard>
 
@@ -138,9 +159,34 @@ export function OrbFullscreen({ open, onClose }: Props) {
             background: 'var(--ou-bg)',
             boxShadow: 'var(--ou-neu-pressed-lg)',
             overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
           }}
         >
-          <ChatPanel autoSendOnOpen />
+          {/* 튜토리얼 가이드 메시지 (Step 2~6) */}
+          {currentGuideMessage && (
+            <div style={{
+              padding: '10px 16px 0',
+              fontSize: 13,
+              color: 'var(--ou-text-secondary)',
+              flexShrink: 0,
+            }}>
+              {currentGuideMessage}
+            </div>
+          )}
+
+          {isProfileStep ? (
+            <div style={{ flex: 1, overflow: 'auto', padding: 16 }}>
+              <ProfileQuestionUI
+                onSubmit={() => { completeTutorial(); onClose(); }}
+                onSkip={() => { skipAllTutorial(); onClose(); }}
+              />
+            </div>
+          ) : (
+            <div style={{ flex: 1, minHeight: 0 }}>
+              <ChatPanel autoSendOnOpen />
+            </div>
+          )}
         </div>
 
         {/* 우: 호출 뷰 */}
@@ -150,22 +196,16 @@ export function OrbFullscreen({ open, onClose }: Props) {
   );
 }
 
-// ── 자동 뷰 카드 ──
-const DOMAIN_LABELS: Record<string, string> = {
-  schedule: '일정', finance: '지출', task: '할 일',
-  emotion: '감정', idea: '아이디어', habit: '습관',
-  knowledge: '지식', relation: '인물', media: '미디어',
-};
-
-function AutoViewCard({ message }: { message: ChatMessage }) {
+// ── 생성된 뷰 카드 — ChatPanel의 InlineView를 그대로 재사용 ──
+function CreatedViewCard({ message }: { message: ChatMessage }) {
   if (message.nodeCreated) {
-    const domain = message.nodeCreated.domain;
-    const label = DOMAIN_LABELS[domain] || domain;
-    const title = (message.nodeCreated.domain_data?.title as string) || message.content.slice(0, 40) || '데이터';
     return (
       <NeuCard variant="raised" size="sm" style={{ padding: '12px 14px' }}>
-        <NeuBadge accent style={{ marginBottom: 6 }}>{label}</NeuBadge>
-        <div style={{ fontSize: 14, color: 'var(--ou-text-body)', lineHeight: 1.5 }}>{title}</div>
+        <InlineView
+          domain={message.nodeCreated.domain}
+          data={message.nodeCreated.domain_data as Record<string, unknown> | undefined}
+          content={message.content}
+        />
       </NeuCard>
     );
   }
@@ -173,7 +213,7 @@ function AutoViewCard({ message }: { message: ChatMessage }) {
   if (message.hanjaResults && message.hanjaResults.length > 0) {
     return (
       <NeuCard variant="raised" size="sm" style={{ padding: '12px 14px' }}>
-        <NeuBadge accent style={{ marginBottom: 6 }}>한자 {message.hanjaResults.length}자</NeuBadge>
+        <div style={{ fontSize: 10, color: 'var(--ou-text-muted)', letterSpacing: 1, marginBottom: 8 }}>漢 한자 {message.hanjaResults.length}자</div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
           {message.hanjaResults.slice(0, 8).map((h) => (
             <span
@@ -231,11 +271,10 @@ function AutoViewCard({ message }: { message: ChatMessage }) {
   return null;
 }
 
-// ── 호출된 뷰 패널 ──
+// ── 호출된 뷰 패널 — 데이터 조회 요청 시에만 쌓임 ──
 function RequestedViewPanel() {
-  const { requestedView, setRequestedView } = useChatStore();
-  const ViewComponent = requestedView ? VIEW_REGISTRY[requestedView.viewType] : null;
-  const viewLabel = requestedView ? (VIEW_LABELS[requestedView.viewType] || requestedView.viewType) : '';
+  const { requestedViews, clearRequestedViews } = useChatStore();
+  const hasViews = requestedViews.length > 0;
 
   return (
     <NeuCard
@@ -250,41 +289,54 @@ function RequestedViewPanel() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          borderBottom: requestedView ? '1px solid var(--ou-border-subtle)' : 'none',
+          borderBottom: hasViews ? '1px solid var(--ou-border-subtle)' : 'none',
+          flexShrink: 0,
         }}
       >
-        <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: 'var(--ou-text-muted)', textTransform: 'uppercase' }}>
-          {requestedView ? viewLabel : '호출된 뷰'}
+        <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: 2, color: 'var(--ou-text-muted)', textTransform: 'uppercase' }}>
+          호출된 뷰
         </span>
-        {requestedView && (
-          <NeuButton variant="ghost" size="sm" onClick={() => setRequestedView(null)} style={{ padding: '3px 6px', minWidth: 0 }}>
-            ✕
+        {hasViews && (
+          <NeuButton variant="ghost" size="sm" onClick={clearRequestedViews} style={{ padding: '3px 6px', minWidth: 0, fontSize: 11 }}>
+            지우기
           </NeuButton>
         )}
       </div>
 
       {/* Content */}
-      {ViewComponent ? (
-        <div style={{ flex: 1, overflow: 'auto', padding: 12 }}>
-          <ViewComponent
-            nodes={
-              requestedView?.cards
-                ? requestedView.cards.map((c, i) => ({
-                    id: `card-${i}`,
-                    domain: 'knowledge',
-                    raw: c.front,
-                    domain_data: { question: c.front, answer: c.back, term: c.front, definition: c.back },
-                    triples: [{ subject: c.front, predicate: 'is_a', object: c.back }],
-                  }))
-                : []
-            }
-            filters={requestedView?.filter}
-          />
+      {hasViews ? (
+        <div style={{ flex: 1, overflow: 'auto', padding: 12, display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {requestedViews.map((rv, idx) => {
+            const ViewComponent = VIEW_REGISTRY[rv.viewType];
+            const viewLabel = VIEW_LABELS[rv.viewType] || rv.viewType;
+            if (!ViewComponent) return null;
+            return (
+              <div key={idx}>
+                <div style={{ fontSize: 11, color: 'var(--ou-text-muted)', letterSpacing: 1, marginBottom: 6, textTransform: 'uppercase' }}>
+                  {viewLabel}
+                </div>
+                <ViewComponent
+                  nodes={
+                    rv.cards
+                      ? rv.cards.map((c, i) => ({
+                          id: `card-${i}`,
+                          domain: 'knowledge',
+                          raw: c.front,
+                          domain_data: { question: c.front, answer: c.back, term: c.front, definition: c.back },
+                          triples: [{ subject: c.front, predicate: 'is_a', object: c.back }],
+                        }))
+                      : []
+                  }
+                  filters={rv.filter}
+                />
+              </div>
+            );
+          })}
         </div>
       ) : (
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-          <span style={{ fontSize: 14, color: 'var(--ou-text-disabled)', textAlign: 'center', lineHeight: 1.8 }}>
-            &ldquo;다음주 일정 보여줘&rdquo;<br />같이 요청하면 여기에 표시돼요
+          <span style={{ fontSize: 15, color: 'var(--ou-text-disabled)', textAlign: 'center', lineHeight: 1.8 }}>
+            &ldquo;나 어제 뭐했지?&rdquo;<br />같이 요청하면 여기에 표시돼요
           </span>
         </div>
       )}
