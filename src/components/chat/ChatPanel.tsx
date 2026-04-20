@@ -199,9 +199,11 @@ function MessageBubble({
         )}
 
         {/* Content */}
-        {isLong && !expanded
-          ? <span>{stripLLMMeta(message.content.slice(0, BUBBLE_COLLAPSE_THRESHOLD))}…</span>
-          : stripLLMMeta(message.content)
+        {message.isStatus
+          ? <span style={{ color: 'var(--ou-text-muted)', fontStyle: 'italic', fontSize: 14 }}>{message.content}</span>
+          : isLong && !expanded
+            ? <span>{stripLLMMeta(message.content.slice(0, BUBBLE_COLLAPSE_THRESHOLD))}…</span>
+            : stripLLMMeta(message.content)
         }
         {message.streaming && <StreamingDots />}
 

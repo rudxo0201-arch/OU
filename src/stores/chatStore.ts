@@ -8,6 +8,7 @@ export interface ChatMessage {
   content: string;
   createdAt: Date;
   streaming?: boolean;
+  isStatus?: boolean; // LLM 처리 중 상태 메시지 (실제 응답과 구분)
   suggestions?: string[];
   viewHints?: string[];
   nodeCreated?: {

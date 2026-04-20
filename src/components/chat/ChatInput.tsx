@@ -168,7 +168,8 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
           if (!line.startsWith('data: ')) continue;
           try {
             const data = JSON.parse(line.slice(6));
-            if (data.text) { accumulated += data.text; updateMessage(assistantId, { content: accumulated.replace(/```json:(?:meta|view)[\s\S]*/g, '').trim() }); }
+            if (data.status && !accumulated) { updateMessage(assistantId, { content: data.status, isStatus: true }); }
+            if (data.text) { accumulated += data.text; updateMessage(assistantId, { content: accumulated.replace(/```json:(?:meta|view)[\s\S]*/g, '').trim(), isStatus: false }); }
             if (data.done) {
               nodeInfo = { domain: data.domain, nodeId: data.nodeId, confidence: data.confidence, domain_data: data.domain_data, suggestions: data.suggestions, additionalNodes: data.additionalNodes, viewType: data.viewData?.viewOptions?.[0] };
               setLastIntent(data.viewData?.intent ?? null);
@@ -252,7 +253,8 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
           if (!line.startsWith('data: ')) continue;
           try {
             const data = JSON.parse(line.slice(6));
-            if (data.text) { accumulated += data.text; updateMessage(assistantId, { content: accumulated.replace(/```json:(?:meta|view)[\s\S]*/g, '').trim() }); }
+            if (data.status && !accumulated) { updateMessage(assistantId, { content: data.status, isStatus: true }); }
+            if (data.text) { accumulated += data.text; updateMessage(assistantId, { content: accumulated.replace(/```json:(?:meta|view)[\s\S]*/g, '').trim(), isStatus: false }); }
             if (data.done) {
               nodeInfo = { domain: data.domain, nodeId: data.nodeId, confidence: data.confidence, domain_data: data.domain_data, suggestions: data.suggestions, additionalNodes: data.additionalNodes, viewType: data.viewData?.viewOptions?.[0] };
               setLastIntent(data.viewData?.intent ?? null);

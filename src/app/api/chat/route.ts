@@ -272,6 +272,11 @@ export async function POST(req: NextRequest) {
         try {
           let savedData: { domain?: string; nodeId?: string; confidence?: string; domain_data?: Record<string, any>; additionalNodes?: Array<{ id: string; domain: string; domain_data: Record<string, any> }> } = {};
 
+          // 처리 시작 즉시 상태 메시지 전송 (Vercel 연결 유지 + UX)
+          const startTime = Date.now();
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ status: '잠시만 기다려 주세요' })}\n\n`));
+
+          let lastHeartbeat = Date.now();
           await chatWithFallback({
             messages: recentMessages,
             systemPrompt,
@@ -281,8 +286,14 @@ export async function POST(req: NextRequest) {
             userApiKey,
             isUserKey,
             onChunk: () => {
-              // 서버 버퍼에서만 축적됨 (onComplete의 fullText로 수신)
-              // 클라이언트에 직접 전송하지 않아 메타블록 노출 원천 차단
+              // Vercel 타임아웃 방지: 2초마다 heartbeat 전송
+              const now = Date.now();
+              if (now - lastHeartbeat > 2000) {
+                const elapsed = now - startTime;
+                const msg = elapsed > 5000 ? '곧 끝나요' : '잠시만 기다려 주세요';
+                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ status: msg })}\n\n`));
+                lastHeartbeat = now;
+              }
             },
             onComplete: async (fullText, provider) => {
               // Redis 캐시 저장 (동적 TTL: 일반 지식 24h, RAG 포함 1h)
