@@ -3,6 +3,7 @@
 import { useState, useRef, useCallback, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { useChatStore } from '@/stores/chatStore';
 import { NeuCard, NeuButton, NeuModal } from '@/components/ds';
+import { stripLLMMeta } from '@/lib/utils/stripLLMMeta';
 
 interface ChatInputProps {
   initialMessage?: string | null;
@@ -168,7 +169,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
           try {
             const data = JSON.parse(line.slice(6));
             if (data.text) { accumulated += data.text; updateMessage(assistantId, { content: accumulated }); }
-            if (data.done) { nodeInfo = { domain: data.domain, nodeId: data.nodeId, confidence: data.confidence, domain_data: data.domain_data, suggestions: data.suggestions }; }
+            if (data.done) { nodeInfo = { domain: data.domain, nodeId: data.nodeId, confidence: data.confidence, domain_data: data.domain_data, suggestions: data.suggestions, additionalNodes: data.additionalNodes }; }
           } catch { /* skip */ }
         }
       }
@@ -179,6 +180,12 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
           const viewData = JSON.parse(viewMatch[1].trim());
           if (viewData.viewType) useChatStore.getState().addRequestedView(viewData);
         } catch { /* skip */ }
+      }
+
+      // 클라이언트 안전망: 혹시 남아있는 메타블록 strip
+      const safeAccumulated = stripLLMMeta(accumulated);
+      if (safeAccumulated !== accumulated) {
+        updateMessage(assistantId, { content: safeAccumulated });
       }
 
       updateMessage(assistantId, {
@@ -251,7 +258,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
           try {
             const data = JSON.parse(line.slice(6));
             if (data.text) { accumulated += data.text; updateMessage(assistantId, { content: accumulated }); }
-            if (data.done) { nodeInfo = { domain: data.domain, nodeId: data.nodeId, confidence: data.confidence, domain_data: data.domain_data, suggestions: data.suggestions }; }
+            if (data.done) { nodeInfo = { domain: data.domain, nodeId: data.nodeId, confidence: data.confidence, domain_data: data.domain_data, suggestions: data.suggestions, additionalNodes: data.additionalNodes }; }
           } catch {}
         }
       }
@@ -262,6 +269,13 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
           if (viewData.viewType) useChatStore.getState().addRequestedView(viewData);
         } catch { /* skip */ }
       }
+
+      // 클라이언트 안전망: 혹시 남아있는 메타블록 strip
+      const safeAccumulated = stripLLMMeta(accumulated);
+      if (safeAccumulated !== accumulated) {
+        updateMessage(assistantId, { content: safeAccumulated });
+      }
+
       updateMessage(assistantId, {
         streaming: false,
         suggestions: nodeInfo?.suggestions,

@@ -10,7 +10,13 @@ export interface ChatMessage {
   streaming?: boolean;
   suggestions?: string[];
   viewHints?: string[];
-  nodeCreated?: { domain: string; nodeId?: string; confidence?: string; domain_data?: Record<string, any> };
+  nodeCreated?: {
+    domain: string;
+    nodeId?: string;
+    confidence?: string;
+    domain_data?: Record<string, any>;
+    additionalNodes?: Array<{ id: string; domain: string; domain_data: Record<string, any> }>;
+  };
   /** 이미지 업로드 시 미리보기 URL */
   imagePreview?: string;
   /** OCR 결과 (이미지 업로드 시) */

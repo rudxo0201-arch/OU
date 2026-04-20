@@ -5,14 +5,7 @@ import { useChatStore, type ChatMessage } from '@/stores/chatStore';
 import { ChatInput, type ChatInputHandle } from './ChatInput';
 import { NeuCard, NeuButton, NeuBadge, NeuModal } from '@/components/ds';
 import { AddToHomeButton } from './AddToHomeButton';
-
-// Strip LLM meta/view blocks from visible content
-function cleanContent(text: string): string {
-  let cleaned = text;
-  cleaned = cleaned.replace(/```json:view[\s\S]*?```/g, '').trim();
-  cleaned = cleaned.replace(/```json:meta[\s\S]*?```/g, '').trim();
-  return cleaned;
-}
+import { stripLLMMeta } from '@/lib/utils/stripLLMMeta';
 
 export interface NodeSelectPayload {
   nodeId: string;
@@ -203,8 +196,8 @@ function MessageBubble({
 
         {/* Content */}
         {isLong && !expanded
-          ? <span>{cleanContent(message.content.slice(0, BUBBLE_COLLAPSE_THRESHOLD))}…</span>
-          : cleanContent(message.content)
+          ? <span>{stripLLMMeta(message.content.slice(0, BUBBLE_COLLAPSE_THRESHOLD))}…</span>
+          : stripLLMMeta(message.content)
         }
         {message.streaming && <StreamingDots />}
 
@@ -230,35 +223,50 @@ function MessageBubble({
           maxWidth={500}
         >
           <NeuCard variant="pressed" style={{ whiteSpace: 'pre-wrap', fontSize: 13, lineHeight: 1.7, color: 'var(--ou-text-body)', maxHeight: '50vh', overflow: 'auto' }}>
-            {message.content}
+            {stripLLMMeta(message.content)}
           </NeuCard>
         </NeuModal>
 
-        {/* Node created badge */}
+        {/* Node created badges (primary + additional) */}
         {message.nodeCreated && !message.streaming && (
-          <div
-            onClick={() => onNodeSelect?.({
-              nodeId: message.nodeCreated!.nodeId || '',
-              title: message.content.slice(0, 40),
-              domain: message.nodeCreated!.domain,
-              data: message.nodeCreated!.domain_data,
-            })}
-            style={{
-              marginTop: 10,
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-              cursor: onNodeSelect ? 'pointer' : 'default',
-            }}
-          >
-            <NeuBadge>{getDomainLabel(message.nodeCreated.domain)} 기록됨</NeuBadge>
+          <div style={{ marginTop: 10, display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+            <div
+              onClick={() => onNodeSelect?.({
+                nodeId: message.nodeCreated!.nodeId || '',
+                title: message.content.slice(0, 40),
+                domain: message.nodeCreated!.domain,
+                data: message.nodeCreated!.domain_data,
+              })}
+              style={{ cursor: onNodeSelect ? 'pointer' : 'default' }}
+            >
+              <NeuBadge>{getDomainLabel(message.nodeCreated.domain)} 기록됨</NeuBadge>
+            </div>
+            {message.nodeCreated.additionalNodes?.map((n) => (
+              <div
+                key={n.id}
+                onClick={() => onNodeSelect?.({
+                  nodeId: n.id,
+                  title: message.content.slice(0, 40),
+                  domain: n.domain,
+                  data: n.domain_data,
+                })}
+                style={{ cursor: onNodeSelect ? 'pointer' : 'default' }}
+              >
+                <NeuBadge>{getDomainLabel(n.domain)} 기록됨</NeuBadge>
+              </div>
+            ))}
           </div>
         )}
 
-        {/* Inline view */}
+        {/* Inline view — primary node */}
         {message.nodeCreated && !message.streaming && (
           <InlineView domain={message.nodeCreated.domain} data={message.nodeCreated.domain_data} content={message.content} />
         )}
+
+        {/* Inline views — additional nodes */}
+        {message.nodeCreated?.additionalNodes && !message.streaming && message.nodeCreated.additionalNodes.map((n) => (
+          <InlineView key={n.id} domain={n.domain} data={n.domain_data} content={message.content} />
+        ))}
 
         {/* 홈 화면에 추가하기 */}
         {message.nodeCreated && !message.streaming && (
@@ -343,9 +351,10 @@ function getDomainLabel(domain: string): string {
 
 // ---- Inline view for created data ----
 export function InlineView({ domain, data, content }: { domain: string; data?: Record<string, unknown>; content: string }) {
+  const safeContent = stripLLMMeta(content);
   if (domain === 'schedule') {
     const date = (data?.date || data?.when || data?.datetime || '') as string;
-    const title = (data?.title || data?.what || content.slice(0, 40)) as string;
+    const title = (data?.title || data?.what || safeContent.slice(0, 40)) as string;
     const time = (data?.time || data?.start_time || '') as string;
     const location = (data?.location || data?.place || '') as string;
     const participants = (data?.participants || data?.with || '') as string;
@@ -406,7 +415,7 @@ export function InlineView({ domain, data, content }: { domain: string; data?: R
   }
 
   if (domain === 'task') {
-    const title = (data?.title || data?.what || content.slice(0, 40)) as string;
+    const title = (data?.title || data?.what || safeContent.slice(0, 40)) as string;
     const deadline = (data?.deadline || data?.due || '') as string;
     return (
       <NeuCard variant="pressed" size="sm" style={{ marginTop: 12, animation: 'ou-fade-in 0.4s ease' }}>
@@ -422,7 +431,7 @@ export function InlineView({ domain, data, content }: { domain: string; data?: R
   }
 
   if (domain === 'idea' || domain === 'knowledge') {
-    const title = (data?.title || content.slice(0, 60)) as string;
+    const title = (data?.title || safeContent.slice(0, 60)) as string;
     return (
       <NeuCard variant="pressed" size="sm" style={{ marginTop: 12, animation: 'ou-fade-in 0.4s ease' }}>
         <div style={{ fontSize: 10, color: 'var(--ou-text-muted)', letterSpacing: 1, marginBottom: 10 }}>

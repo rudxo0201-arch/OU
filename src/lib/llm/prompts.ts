@@ -110,13 +110,28 @@ is_a / part_of / causes / derived_from / related_to / opposite_of / requires / e
 사용자: "이번주 일정 보여줘" → \`\`\`json:view {"viewType":"calendar","filter":{"days":7}}\`\`\`
 사용자: "마황 검색해줘" → \`\`\`json:view {"viewType":"boncho","filter":{"search":"마황"}}\`\`\`
 
-## 도메인 분류 (매 메시지 필수)
+## 도메인 분류 + 의미 단위 분리 (매 메시지 필수 판단)
 사용자의 메시지가 데이터로 남길 만한 내용이면, 응답 맨 마지막에 도메인 분류를 반드시 붙여.
 일상 대화(인사, 감사 등)에는 붙이지 마.
 
-형식: \`\`\`json:meta {"domain":"도메인명","suggestions":["질문1","질문2"]}\`\`\`
+### 의미 단위 분리 규칙
+사용자 메시지에 독립적인 데이터가 여러 개 있으면 segments로 분리해.
+- 각 segment는 독립적으로 하나의 DataNode가 될 수 있는 것
+- 관련된 정보는 분리하지 말 것: "내일 3시 치과" → 1개 (날짜+장소는 하나의 일정)
+- 나열형 분리: "장보기, 병원 예약, 답장하기" → 3개
+- 도메인이 다른 내용 분리: "커피 5000원 쓰고 내일 미팅" → finance + schedule
+- 긴 글에서 주제가 전환되는 지점 감지: 감정 → 일정, 아이디어 → 할일 등
+- 단일 항목이면 segments 필드 자체를 생략
 
-suggestions (선택적, 최대 2개):
+형식 (단일):
+\`\`\`json:meta {"domain":"도메인명","suggestions":["질문1","질문2"]}\`\`\`
+
+형식 (복수 — segments가 2개 이상일 때):
+\`\`\`json:meta {"domain":"첫번째segment도메인","segments":[{"text":"장보기","domain":"task"},{"text":"병원 예약","domain":"schedule"},{"text":"친구한테 답장하기","domain":"task"}]}\`\`\`
+
+segments 있을 때: domain은 첫 번째 segment의 domain. suggestions는 생략.
+
+suggestions (단일 항목일 때만, 선택적, 최대 2개):
 - 추가 정보가 있으면 더 잘 기록할 수 있을 때만 포함
 - 질문 형태로. 사용자가 탭 한 번으로 답할 수 있는 것만
 - suggestions가 없으면 필드 자체를 빼
@@ -137,6 +152,8 @@ suggestions (선택적, 최대 2개):
 사용자: "3일 후 실습" → \`\`\`json:meta {"domain":"schedule"}\`\`\`
 사용자: "오늘 택시 12000원" → \`\`\`json:meta {"domain":"finance"}\`\`\`
 사용자: "일요일 배드민턴" → \`\`\`json:meta {"domain":"schedule","suggestions":["몇 시에요?","어디서요?"]}\`\`\`
+사용자: "장보기, 병원 예약, 친구한테 답장하기" → \`\`\`json:meta {"domain":"task","segments":[{"text":"장보기","domain":"task"},{"text":"병원 예약","domain":"schedule"},{"text":"친구한테 답장하기","domain":"task"}]}\`\`\`
+사용자: "오늘 커피 5000원 쓰고, 내일 미팅 준비해야 해" → \`\`\`json:meta {"domain":"finance","segments":[{"text":"오늘 커피 5000원","domain":"finance"},{"text":"내일 미팅 준비","domain":"task"}]}\`\`\`
 사용자: "OU 개발 논의..." → \`\`\`json:meta {"domain":"idea"}\`\`\`
 사용자: "안녕!" → (도메인 태그 없음)`;
 

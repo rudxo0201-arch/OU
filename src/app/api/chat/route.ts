@@ -6,6 +6,7 @@ import { buildSystemPrompt } from '@/lib/llm/prompts';
 import { saveMessageAsync } from '@/lib/pipeline/layer2';
 import { searchUserData, searchAdminData, isQuestion, getUserDataCounts } from '@/lib/search/inline';
 import { checkTokenLimit } from '@/lib/utils/token-limit';
+import { stripLLMMeta } from '@/lib/utils/stripLLMMeta';
 import crypto from 'crypto';
 import { generateCacheKey, getCachedResponse, setCachedResponse } from '@/lib/cache/redis';
 import { isAdminEmail } from '@/lib/auth/roles';
@@ -267,7 +268,7 @@ export async function POST(req: NextRequest) {
     const stream = new ReadableStream({
       async start(controller) {
         try {
-          let savedData: { domain?: string; nodeId?: string; confidence?: string; domain_data?: Record<string, any> } = {};
+          let savedData: { domain?: string; nodeId?: string; confidence?: string; domain_data?: Record<string, any>; additionalNodes?: Array<{ id: string; domain: string; domain_data: Record<string, any> }> } = {};
 
           await chatWithFallback({
             messages: recentMessages,
@@ -277,8 +278,9 @@ export async function POST(req: NextRequest) {
             selectedModel,
             userApiKey,
             isUserKey,
-            onChunk: (text) => {
-              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text })}\n\n`));
+            onChunk: () => {
+              // 서버 버퍼에서만 축적됨 (onComplete의 fullText로 수신)
+              // 클라이언트에 직접 전송하지 않아 메타블록 노출 원천 차단
             },
             onComplete: async (fullText, provider) => {
               // Redis 캐시 저장 (동적 TTL: 일반 지식 24h, RAG 포함 1h)
@@ -286,10 +288,11 @@ export async function POST(req: NextRequest) {
                 setCachedResponse(cacheKey, fullText, cacheTtl).catch(() => {});
               }
 
-              // LLM 메타 파싱: 도메인 + suggestions (saveMessageAsync 호출 전에 파싱)
+              // LLM 메타 파싱: 원문에서 도메인 + suggestions + segments 추출
               const metaMatch = fullText.match(/```json:meta\s*\n?([\s\S]*?)```/);
               let domainHint: string | undefined;
               let llmSuggestions: string[] | undefined;
+              let segments: Array<{ text: string; domain: string }> | undefined;
               if (metaMatch) {
                 try {
                   const meta = JSON.parse(metaMatch[1].trim());
@@ -297,7 +300,23 @@ export async function POST(req: NextRequest) {
                   if (Array.isArray(meta.suggestions) && meta.suggestions.length > 0) {
                     llmSuggestions = meta.suggestions.slice(0, 3);
                   }
+                  if (Array.isArray(meta.segments) && meta.segments.length > 1) {
+                    segments = meta.segments.filter(
+                      (s: any) => typeof s.text === 'string' && s.text.trim() && typeof s.domain === 'string'
+                    );
+                    if (segments && segments.length < 2) segments = undefined;
+                  }
                 } catch { /* skip */ }
+              }
+
+              // 메타블록 제거 — 클라이언트에는 cleanText만 전달
+              const cleanText = stripLLMMeta(fullText);
+
+              // 타이핑 스트리밍: cleanText를 청크로 쪼개어 전송
+              const CHUNK_SIZE = 20;
+              for (let i = 0; i < cleanText.length; i += CHUNK_SIZE) {
+                const chunk = cleanText.slice(i, i + CHUNK_SIZE);
+                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text: chunk })}\n\n`));
               }
 
               // Layer 2: 비동기 DataNode 저장 (domainHint 전달 → classifyDomain 스킵)
@@ -309,6 +328,7 @@ export async function POST(req: NextRequest) {
                   assistantMessage: fullText,
                   linkedNodeId: linkedNodeId ?? null,
                   domainHint,
+                  segments,
                 });
                 if (result?.domain) {
                   savedData = {
@@ -316,6 +336,7 @@ export async function POST(req: NextRequest) {
                     nodeId: result.node?.id,
                     confidence: result.confidence,
                     domain_data: result.node?.domain_data,
+                    additionalNodes: result.additionalNodes,
                   };
                 }
               } catch (err) {
@@ -324,7 +345,7 @@ export async function POST(req: NextRequest) {
               }
 
               controller.enqueue(encoder.encode(
-                `data: ${JSON.stringify({ done: true, fullText, provider, suggestions: llmSuggestions, ...savedData, ...(saveError ? { saveError: true } : {}) })}\n\n`
+                `data: ${JSON.stringify({ done: true, fullText: cleanText, provider, suggestions: llmSuggestions, ...savedData, ...(saveError ? { saveError: true } : {}) })}\n\n`
               ));
               controller.close();
             },

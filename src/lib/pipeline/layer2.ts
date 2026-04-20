@@ -186,6 +186,8 @@ interface SaveMessageInput {
   linkedNodeId?: string | null;
   /** Sonnet의 json:meta에서 파싱한 도메인 힌트 — 있으면 classifyDomain() 스킵 */
   domainHint?: string;
+  /** Sonnet이 json:meta segments로 분리한 의미 단위 — 있으면 각 segment별 DataNode 생성 */
+  segments?: Array<{ text: string; domain: string }>;
 }
 
 export async function saveMessageAsync(input: SaveMessageInput) {
@@ -348,7 +350,117 @@ export async function saveMessageAsync(input: SaveMessageInput) {
     }
   }
 
-  // LLM 기반 통합 추출 (정규식 제거)
+  // ── 세그먼트별 노드 생성 헬퍼 ──
+  async function createNodeForSegment(
+    segmentText: string,
+    segmentDomain: string,
+    messageId: string | undefined,
+    adminData: Record<string, any> | undefined,
+  ) {
+    const segExtraction = await extractAll(segmentText, segmentDomain, today);
+    const segDomainData = { ...segExtraction.domain_data, ...(adminData ?? {}) };
+
+    const { data: segNode, error: segErr } = await supabase.from('data_nodes').insert({
+      user_id: input.userId,
+      group_id: input.groupId ?? null,
+      message_id: messageId ?? null,
+      domain: segmentDomain,
+      raw: segmentText,
+      source_type: 'chat',
+      confidence: segExtraction.confidence,
+      resolution: 'resolved',
+      visibility: 'private',
+      domain_data: segDomainData,
+    }).select().single();
+
+    if (segErr || !segNode) {
+      console.error('[Layer2] segment node insert failed:', segErr?.message);
+      return null;
+    }
+
+    // Section + Sentences
+    try {
+      const { data: sec } = await supabase.from('sections').insert({
+        node_id: segNode.id,
+        heading: segmentDomain ?? 'chat',
+        order_idx: 0,
+      }).select().single();
+
+      if (sec) {
+        const rawSentences = segmentText
+          .split(/(?<=[.!?])\s+|。|\n+/)
+          .map((s: string) => s.trim())
+          .filter((s: string) => s.length > 0);
+        const sentences = rawSentences.length > 0 ? rawSentences : [segmentText.trim()];
+        for (let j = 0; j < sentences.length; j++) {
+          await supabase.from('sentences').insert({
+            section_id: sec.id,
+            node_id: segNode.id,
+            text: sentences[j],
+            order_idx: j,
+            embed_status: 'pending',
+            embed_tier: 'hot',
+          });
+        }
+      }
+    } catch (e) {
+      console.error('[Layer2] segment section/sentence insert failed:', e);
+    }
+
+    // Entity nodes
+    if (segExtraction.entities.length > 0) {
+      createEntityNodes(supabase, input.userId!, segNode.id, segExtraction.entities, segExtraction.relations)
+        .catch(e => console.error('[Layer2] segment entity node creation failed:', e));
+    }
+
+    // Layer 3
+    import('./layer3').then(({ embedPendingSentences, extractTriples }) => {
+      embedPendingSentences(segNode.id).catch(e => console.error('[Layer3] segment embed failed:', e));
+      extractTriples(segNode.id, segmentDomain).catch(e => console.error('[Layer3] segment triple failed:', e));
+    }).catch(() => {});
+
+    return segNode;
+  }
+
+  // ── 다중 세그먼트 처리 ──
+  if (input.segments && input.segments.length > 1) {
+    const [primarySeg, ...restSegs] = input.segments;
+
+    const primaryNode = await createNodeForSegment(
+      primarySeg.text,
+      primarySeg.domain,
+      assistantMsg?.id,
+      adminInternalData,
+    );
+
+    const additionalResults = await Promise.all(
+      restSegs.map(seg =>
+        createNodeForSegment(seg.text, seg.domain, assistantMsg?.id, adminInternalData)
+      )
+    );
+
+    const estimatedTokens = Math.max(
+      1,
+      Math.ceil((input.userMessage.length + input.assistantMessage.length) / 2)
+    );
+    await supabase.from('token_usage').insert({
+      user_id: input.userId,
+      operation: 'chat',
+      tokens_used: estimatedTokens,
+    });
+
+    return {
+      node: primaryNode,
+      domain: primarySeg.domain,
+      viewHint: null,
+      confidence,
+      additionalNodes: additionalResults
+        .filter((n): n is NonNullable<typeof n> => n !== null)
+        .map(n => ({ id: n.id, domain: n.domain as string, domain_data: n.domain_data as Record<string, any> })),
+    };
+  }
+
+  // ── 단일 세그먼트 (기존 경로) ──
   const extractionResult = await extractAll(input.userMessage, domain, today);
   const domainData = {
     ...extractionResult.domain_data,
