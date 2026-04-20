@@ -62,6 +62,7 @@ function TopNavBarInner({ userInitial }: TopNavBarProps) {
         height: 52,
         zIndex: 50,
         background: 'var(--ou-bg)',
+        borderBottom: '1px solid var(--ou-border-faint)',
         display: 'flex',
         alignItems: 'center',
         padding: '0 40px',

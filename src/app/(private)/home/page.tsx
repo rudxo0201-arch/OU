@@ -220,9 +220,11 @@ function MyPage() {
     clearTimeout(timerRef.current);
     if (mode === 'dashboard') {
       setMode('to-universe');
+      window.dispatchEvent(new CustomEvent('universe-mode-change', { detail: { active: true } }));
       timerRef.current = setTimeout(() => setMode('universe'), WIDGET_EXIT_DURATION + SPHERE_DURATION);
     } else {
       setMode('to-dashboard');
+      window.dispatchEvent(new CustomEvent('universe-mode-change', { detail: { active: false } }));
       timerRef.current = setTimeout(() => setMode('dashboard'), SPHERE_DURATION + WIDGET_ENTER_DURATION);
     }
   }, [mode]);
@@ -267,7 +269,7 @@ function MyPage() {
         {showWidgets && (
           <div style={{
             position: 'absolute',
-            top: 152, left: 116, right: 40,
+            top: 168, left: 116, right: 40,
             display: 'flex', flexDirection: 'column',
             padding: 0,
             zIndex: 5,
@@ -296,7 +298,7 @@ function MyPage() {
         {showWidgets && (hasTitle || dashboardEditMode) && (
           <div style={{
             position: 'absolute',
-            top: 232, left: 116, right: 40,
+            top: 248, left: 116, right: 40,
             height: 48,
             display: 'flex', alignItems: 'center',
             zIndex: 5,
@@ -344,7 +346,7 @@ function MyPage() {
 
         <div style={{
           position: 'absolute',
-          top: (hasTitle || dashboardEditMode) ? 280 : 232, bottom: 228, left: 116, right: 40,
+          top: (hasTitle || dashboardEditMode) ? 296 : 248, bottom: 228, left: 116, right: 40,
           transition: 'top 0.3s ease',
           visibility: showWidgets ? 'visible' : 'hidden',
           pointerEvents: mode === 'dashboard' ? 'auto' : 'none',
