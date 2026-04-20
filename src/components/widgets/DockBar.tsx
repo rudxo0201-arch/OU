@@ -4,9 +4,9 @@ import { useState, useCallback, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 
 interface Props {
-  onUniverse: () => void;
-  universeActive?: boolean;
   onAddWidget?: () => void;
+  onUniverse?: () => void;
+  universeActive?: boolean;
 }
 
 const BASE_SIZE = 44;
@@ -76,7 +76,7 @@ function OrbIcon() {
   );
 }
 
-export function DockBar({ onUniverse, universeActive, onAddWidget }: Props) {
+export function DockBar({ onAddWidget, onUniverse, universeActive }: Props) {
   const [mouseIndex, setMouseIndex] = useState(-1);
   const dockRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number | null>(null);
@@ -84,7 +84,7 @@ export function DockBar({ onUniverse, universeActive, onAddWidget }: Props) {
 
   const ITEMS = useMemo(() => [
     { id: 'settings', label: '설정', isOrb: false, disabled: false },
-    { id: 'universe', label: '우주', isOrb: false, disabled: true },
+    { id: 'universe', label: '우주', isOrb: false, disabled: false },
     { id: 'orb', label: 'ORB', isOrb: true, disabled: false },
     { id: 'add', label: '추가', isOrb: false, disabled: false },
   ], []);
@@ -105,10 +105,11 @@ export function DockBar({ onUniverse, universeActive, onAddWidget }: Props) {
   const handleClick = useCallback((id: string) => {
     switch (id) {
       case 'settings': router.push('/settings'); break;
+      case 'universe': onUniverse?.(); break;
       case 'orb': router.push('/orb'); break;
       case 'add': onAddWidget?.() ?? window.dispatchEvent(new CustomEvent('dock-add-widget')); break;
     }
-  }, [onAddWidget, router]);
+  }, [onAddWidget, onUniverse, router]);
 
   function renderIcon(id: string) {
     switch (id) {
@@ -142,10 +143,16 @@ export function DockBar({ onUniverse, universeActive, onAddWidget }: Props) {
         const baseSize = item.isOrb ? ORB_SIZE : BASE_SIZE;
         const size = baseSize * scale;
         const isHovered = Math.abs(i - mouseIndex) < 0.5;
-        const isActive = item.id === 'universe' && universeActive;
 
         return (
-          <div key={item.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
+          <div
+            key={item.id}
+            style={{
+              display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative',
+              transform: item.disabled && isHovered && mouseIndex >= 0 ? 'translateY(-5px)' : 'translateY(0)',
+              transition: 'transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1)',
+            }}
+          >
             {/* Tooltip */}
             {isHovered && mouseIndex >= 0 && (
               <div style={{
@@ -163,30 +170,31 @@ export function DockBar({ onUniverse, universeActive, onAddWidget }: Props) {
                 whiteSpace: 'nowrap',
                 pointerEvents: 'none',
               }}>
-                {item.label}
+                {item.disabled ? '준비중입니다' : item.label}
               </div>
             )}
 
             <button
-              onClick={() => handleClick(item.id)}
+              onClick={item.disabled ? undefined : () => handleClick(item.id)}
               style={{
                 width: size,
                 height: size,
                 borderRadius: '50%',
                 background: 'var(--ou-bg)',
                 border: 'none',
-                boxShadow: isActive
+                boxShadow: (item.id === 'universe' && universeActive)
                   ? 'var(--ou-neu-pressed-md)'
                   : isHovered && mouseIndex >= 0
                     ? 'var(--ou-neu-raised-lg)'
                     : 'var(--ou-neu-raised-md)',
                 transition: 'width 150ms cubic-bezier(0.34, 1.56, 0.64, 1), height 150ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 150ms ease',
-                cursor: 'pointer',
+                cursor: item.disabled ? 'default' : 'pointer',
                 flexShrink: 0,
-                color: isActive ? 'var(--ou-accent)' : 'var(--ou-text-muted)',
+                color: 'var(--ou-text-muted)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
+                opacity: item.disabled ? 0.5 : 1,
               }}
             >
               {renderIcon(item.id)}
@@ -201,15 +209,6 @@ export function DockBar({ onUniverse, universeActive, onAddWidget }: Props) {
             }}>
               {item.label}
             </span>
-
-            {/* Active dot (universe) */}
-            {isActive && (
-              <div style={{
-                width: 4, height: 4, borderRadius: '50%',
-                background: 'var(--ou-accent)',
-                marginTop: 2,
-              }} />
-            )}
           </div>
         );
       })}

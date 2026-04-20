@@ -950,24 +950,18 @@ function ViewCard({ view, onOpen }: {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12,
-        padding: '28px 20px 24px', background: 'var(--ou-bg)',
-        boxShadow: hovered ? 'var(--ou-neu-raised-lg)' : 'var(--ou-neu-raised-sm)',
-        borderRadius: 16, border: 'none', cursor: 'pointer', fontFamily: 'inherit',
-        transition: 'box-shadow 200ms ease',
+        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10,
+        padding: '24px 16px 20px', background: 'var(--ou-bg)',
+        border: `1.5px solid ${hovered ? 'var(--ou-border-subtle)' : 'var(--ou-border-faint)'}`,
+        borderRadius: 16, cursor: 'pointer', fontFamily: 'inherit',
+        boxShadow: hovered ? '0 4px 16px rgba(0,0,0,0.06)' : 'none',
+        transition: 'border-color 150ms ease, box-shadow 150ms ease',
         width: '100%',
       }}
     >
-      <div style={{
-        width: 64, height: 64, borderRadius: 16,
-        background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-pressed-sm)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        color: 'var(--ou-text-body)',
-      }}>
-        <IconComp size={28} weight="light" />
-      </div>
+      <IconComp size={28} weight="light" color="var(--ou-text-body)" />
       <span style={{
-        fontSize: 13, color: 'var(--ou-text-strong)', textAlign: 'center', lineHeight: 1.3,
+        fontSize: 12, color: 'var(--ou-text-strong)', textAlign: 'center', lineHeight: 1.3,
         overflow: 'hidden', textOverflow: 'ellipsis', width: '100%', whiteSpace: 'nowrap', fontWeight: 500,
       }}>
         {view.name}
