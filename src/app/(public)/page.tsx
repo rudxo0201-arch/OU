@@ -92,6 +92,35 @@ export default function Home() {
         </div>
       </div>
 
+      {/* About */}
+      <div style={{
+        padding: '64px 24px',
+        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 32,
+        background: 'var(--ou-bg)',
+      }}>
+        <div style={{ maxWidth: 560, textAlign: 'center' }}>
+          <div style={{ fontSize: 13, color: 'var(--ou-text-dimmed)', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 16 }}>
+            What is OU?
+          </div>
+          <div style={{ fontSize: 15, color: 'var(--ou-text-body)', lineHeight: 1.8 }}>
+            OU는 대화를 통해 데이터를 수집하고 구조화하는 개인 데이터 플랫폼입니다.
+            YouTube 구독, 메모, 학습 자료 등을 연결하여 나만의 데이터 우주를 만들어 보세요.
+          </div>
+        </div>
+        <div style={{ display: 'flex', gap: 40, flexWrap: 'wrap', justifyContent: 'center' }}>
+          {[
+            { title: 'Just talk', desc: '대화로 데이터를 입력합니다' },
+            { title: 'Structured', desc: 'OU가 자동으로 정리합니다' },
+            { title: 'Your views', desc: '원하는 형태로 꺼내 씁니다' },
+          ].map(({ title, desc }) => (
+            <div key={title} style={{ textAlign: 'center', minWidth: 120 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ou-text-strong)', marginBottom: 4 }}>{title}</div>
+              <div style={{ fontSize: 12, color: 'var(--ou-text-dimmed)' }}>{desc}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Footer */}
       <div style={{
         padding: '20px 24px',
