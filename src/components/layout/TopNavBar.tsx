@@ -79,6 +79,7 @@ function TopNavBarInner({ userInitial }: TopNavBarProps) {
           display: 'flex',
           alignItems: 'center',
           flexShrink: 0,
+          width: 36,
         }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
