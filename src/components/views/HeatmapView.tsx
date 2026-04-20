@@ -113,7 +113,7 @@ export function HeatmapView({ nodes }: ViewProps) {
 
   if (nodes.length === 0) {
     return (
-      <div style={{ padding: 40, textAlign: 'center', color: 'var(--ou-text-dimmed)', fontSize: 13 }}>
+      <div style={{ padding: 40, textAlign: 'center', color: 'var(--ou-text-muted)', fontSize: 13 }}>
         <div style={{ fontSize: 32, marginBottom: 12, opacity: 0.3 }}>🟩</div>
         활동 기록이 없습니다. Orb에 말해보세요.
       </div>
@@ -126,8 +126,8 @@ export function HeatmapView({ nodes }: ViewProps) {
       <div style={{
         display: 'flex', gap: 16, marginBottom: 20,
         padding: '14px 18px', borderRadius: 12,
-        background: 'rgba(255,255,255,0.02)',
-        border: '1px solid rgba(255,255,255,0.06)',
+        background: 'var(--ou-bg)',
+        boxShadow: 'var(--ou-neu-pressed-sm)',
       }}>
         <StatBox value={streak} label="연속일" highlight={streak > 0} />
         <StatBox value={totalDays} label="기록일" />
@@ -150,14 +150,14 @@ export function HeatmapView({ nodes }: ViewProps) {
         <svg width={svgWidth} height={svgHeight} style={{ display: 'block' }}>
           {monthLabels.map(({ label, week }) => (
             <text key={`m-${week}`} x={28 + week * (CELL_SIZE + CELL_GAP)} y={10}
-              fontSize={9} fill="rgba(255,255,255,0.3)">
+              fontSize={9} fill="var(--ou-text-disabled)">
               {label}
             </text>
           ))}
 
           {DAY_LABELS.map((label, i) => (
             label && <text key={`d-${i}`} x={0} y={20 + i * (CELL_SIZE + CELL_GAP) + CELL_SIZE - 2}
-              fontSize={9} fill="rgba(255,255,255,0.3)">
+              fontSize={9} fill="var(--ou-text-disabled)">
               {label}
             </text>
           ))}
@@ -175,7 +175,7 @@ export function HeatmapView({ nodes }: ViewProps) {
                   y={16 + d * (CELL_SIZE + CELL_GAP)}
                   width={CELL_SIZE} height={CELL_SIZE}
                   rx={2} fill={getIntensity(count)}
-                  stroke={isToday ? 'rgba(255,255,255,0.3)' : 'none'}
+                  stroke={isToday ? 'var(--ou-border-subtle)' : 'none'}
                   strokeWidth={isToday ? 1 : 0}
                 >
                   <title>{`${key}: ${count}회`}</title>
@@ -188,11 +188,11 @@ export function HeatmapView({ nodes }: ViewProps) {
 
       {/* Legend */}
       <div style={{ display: 'flex', gap: 4, justifyContent: 'flex-end', alignItems: 'center' }}>
-        <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)' }}>적음</span>
+        <span style={{ fontSize: 9, color: 'var(--ou-text-disabled)' }}>적음</span>
         {INTENSITIES.map((color, i) => (
           <div key={i} style={{ width: 10, height: 10, borderRadius: 2, backgroundColor: color }} />
         ))}
-        <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)' }}>많음</span>
+        <span style={{ fontSize: 9, color: 'var(--ou-text-disabled)' }}>많음</span>
       </div>
     </div>
   );
@@ -203,9 +203,10 @@ function StatBox({ value, label, highlight }: { value: number; label: string; hi
     <div style={{ flex: 1, textAlign: 'center' }}>
       <div style={{
         fontSize: 18, fontWeight: 700,
-        color: highlight ? 'rgba(255,255,255,0.9)' : 'var(--ou-text-strong)',
+        color: 'var(--ou-text-heading)',
+        opacity: highlight ? 1 : 0.8,
       }}>{value}</div>
-      <div style={{ fontSize: 10, color: 'var(--ou-text-dimmed)', marginTop: 2 }}>{label}</div>
+      <div style={{ fontSize: 10, color: 'var(--ou-text-muted)', marginTop: 2 }}>{label}</div>
     </div>
   );
 }
@@ -214,9 +215,10 @@ function Chip({ label, active, onClick }: { label: string; active: boolean; onCl
   return (
     <button onClick={onClick} style={{
       padding: '4px 10px', borderRadius: 999, fontSize: 11,
-      border: active ? '1px solid rgba(255,255,255,0.3)' : '1px solid rgba(255,255,255,0.08)',
-      background: active ? 'rgba(255,255,255,0.06)' : 'transparent',
-      color: active ? 'var(--ou-text-strong)' : 'var(--ou-text-dimmed)',
+      border: `0.5px solid ${active ? 'var(--ou-border-subtle)' : 'var(--ou-border-faint)'}`,
+      background: 'var(--ou-bg)',
+      boxShadow: active ? 'var(--ou-neu-pressed-sm)' : 'var(--ou-neu-raised-sm)',
+      color: active ? 'var(--ou-text-heading)' : 'var(--ou-text-muted)',
       cursor: 'pointer',
     }}>
       {label}

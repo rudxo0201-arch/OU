@@ -7,7 +7,7 @@
 
 import { SupabaseClient } from '@supabase/supabase-js';
 import { classifyDomain } from './classifier';
-import { extractDomainData } from './extract-domain-data';
+import { extractAll } from './extraction';
 
 export interface IngestMessage {
   role: string;
@@ -65,9 +65,12 @@ export async function ingestConversation({
   // 도메인 분류 — 복합 도메인 지원
   const { domain, domains, viewHint, viewHints, confidence } = await classifyDomain(fullText);
 
-  // domain_data 추출 (비용 0)
+  const today = new Date().toISOString().slice(0, 10);
+
+  // domain_data 추출 (LLM 기반)
+  const extractionResult = await extractAll(userMessages || fullText, domain, today);
   const domainData = {
-    ...extractDomainData(userMessages || fullText, domain),
+    ...extractionResult.domain_data,
     ...(metadata?.source ? { source_tool: metadata.source } : {}),
     ...(metadata?.working_directory ? { working_directory: metadata.working_directory } : {}),
     ...(metadata?.files_changed ? { files_changed: metadata.files_changed } : {}),
@@ -152,7 +155,7 @@ export async function ingestConversation({
   // Layer 3 비동기 (embeddings + triples) — 전부 실행, 비용 아끼지 않음
   import('@/lib/pipeline/layer3').then(({ embedPendingSentences, extractTriples }) => {
     embedPendingSentences(node.id).catch(e => console.error('[Ingest] embed failed:', e));
-    extractTriples(node.id).catch(e => console.error('[Ingest] triple failed:', e));
+    extractTriples(node.id, domain).catch(e => console.error('[Ingest] triple failed:', e));
   }).catch(e => console.error('[Ingest] Layer3 import failed:', e));
 
   return {

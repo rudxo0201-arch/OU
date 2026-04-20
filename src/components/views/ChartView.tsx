@@ -39,7 +39,7 @@ interface SpendingItem {
   title: string;
 }
 
-function parseSpending(nodes: any[]): SpendingItem[] {
+function parseSpending(nodes: ViewProps['nodes']): SpendingItem[] {
   const result: SpendingItem[] = [];
   for (const n of nodes) {
     if (n.domain !== 'finance' || !n.domain_data) continue;
@@ -124,7 +124,7 @@ export function ChartView({ nodes, inline }: ViewProps & { inline?: boolean }) {
   const byCategory = useMemo(() => {
     const map: Record<string, number> = {};
     for (const it of monthItems) {
-      const cat = CATEGORIES.includes(it.category as any) ? it.category : '기타';
+      const cat = CATEGORIES.includes(it.category as typeof CATEGORIES[number]) ? it.category : '기타';
       map[cat] = (map[cat] ?? 0) + it.amount;
     }
     return Object.entries(map).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]);
@@ -142,8 +142,8 @@ export function ChartView({ nodes, inline }: ViewProps & { inline?: boolean }) {
         boxShadow: 'var(--ou-neu-pressed-sm)',
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed)', letterSpacing: 1 }}>SPENDING</span>
-          <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ou-text-strong)' }}>
+          <span style={{ fontSize: 11, color: 'var(--ou-text-muted)', letterSpacing: 1 }}>SPENDING</span>
+          <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ou-text-heading)' }}>
             {totalAmount.toLocaleString()}원
           </span>
         </div>
@@ -153,7 +153,7 @@ export function ChartView({ nodes, inline }: ViewProps & { inline?: boolean }) {
 
   if (allItems.length === 0) {
     return (
-      <div style={{ padding: 40, textAlign: 'center', color: 'var(--ou-text-dimmed)', fontSize: 13 }}>
+      <div style={{ padding: 40, textAlign: 'center', color: 'var(--ou-text-muted)', fontSize: 13 }}>
         지출 기록이 없습니다. Orb에 "커피 4500원" 같이 말해보세요.
       </div>
     );
@@ -163,13 +163,13 @@ export function ChartView({ nodes, inline }: ViewProps & { inline?: boolean }) {
     <div style={{ padding: 20, maxWidth: 560, margin: '0 auto' }}>
       {/* Month navigation */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-        <button onClick={() => setMonthOffset(m => m + 1)} style={{ cursor: 'pointer', padding: 4, color: 'var(--ou-text-dimmed)' }}>◀</button>
+        <button onClick={() => setMonthOffset(m => m + 1)} style={{ cursor: 'pointer', padding: 4, color: 'var(--ou-text-muted)' }}>◀</button>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ou-text-strong)' }}>{currentMonth.format('YYYY년 M월')}</div>
-          <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--ou-text-strong)', marginTop: 4 }}>{totalAmount.toLocaleString()}원</div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ou-text-heading)' }}>{currentMonth.format('YYYY년 M월')}</div>
+          <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--ou-text-heading)', marginTop: 4 }}>{totalAmount.toLocaleString()}원</div>
         </div>
         <button onClick={() => setMonthOffset(m => Math.max(0, m - 1))} disabled={monthOffset === 0}
-          style={{ cursor: monthOffset === 0 ? 'default' : 'pointer', padding: 4, color: 'var(--ou-text-dimmed)', opacity: monthOffset === 0 ? 0.3 : 1 }}>▶</button>
+          style={{ cursor: monthOffset === 0 ? 'default' : 'pointer', padding: 4, color: 'var(--ou-text-muted)', opacity: monthOffset === 0 ? 0.3 : 1 }}>▶</button>
       </div>
 
       {/* Donut chart */}
@@ -186,9 +186,9 @@ export function ChartView({ nodes, inline }: ViewProps & { inline?: boolean }) {
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <div style={{ width: 8, height: 8, borderRadius: '50%', background: CATEGORY_COLORS[category] || '#888' }} />
-                  <span style={{ fontSize: 12, color: 'var(--ou-text-secondary)' }}>{category}</span>
+                  <span style={{ fontSize: 12, color: 'var(--ou-text-body)' }}>{category}</span>
                 </div>
-                <span style={{ fontSize: 12, color: 'var(--ou-text-dimmed)' }}>{amount.toLocaleString()}원 ({percent}%)</span>
+                <span style={{ fontSize: 12, color: 'var(--ou-text-muted)' }}>{amount.toLocaleString()}원 ({percent}%)</span>
               </div>
               <div style={{ height: 6, borderRadius: 3, background: 'var(--ou-border-faint)', overflow: 'hidden' }}>
                 <div style={{
@@ -205,7 +205,7 @@ export function ChartView({ nodes, inline }: ViewProps & { inline?: boolean }) {
 
       {/* Recent transactions */}
       <div>
-        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ou-text-strong)', marginBottom: 10 }}>최근 거래</div>
+        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ou-text-heading)', marginBottom: 10 }}>최근 거래</div>
         {monthItems.slice(0, 10).map((item, i) => (
           <div key={`${item.id}-${i}`} style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -215,12 +215,12 @@ export function ChartView({ nodes, inline }: ViewProps & { inline?: boolean }) {
             boxShadow: 'var(--ou-neu-raised-sm)',
           }}>
             <div>
-              <div style={{ fontSize: 13, color: 'var(--ou-text-secondary)' }}>{item.title}</div>
-              <div style={{ fontSize: 10, color: 'var(--ou-text-dimmed)', marginTop: 2 }}>
+              <div style={{ fontSize: 13, color: 'var(--ou-text-body)' }}>{item.title}</div>
+              <div style={{ fontSize: 10, color: 'var(--ou-text-muted)', marginTop: 2 }}>
                 {item.category} · {item.date ? dayjs(item.date).format('M/D') : ''}
               </div>
             </div>
-            <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--ou-text-strong)' }}>
+            <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--ou-text-heading)' }}>
               -{item.amount.toLocaleString()}원
             </span>
           </div>

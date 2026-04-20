@@ -20,14 +20,6 @@ export function NeuAuthLayout({ children, title, maxWidth = 420, style }: NeuAut
       padding: '40px 20px',
       position: 'relative',
     }}>
-      {/* Dot grid */}
-      <div style={{
-        position: 'absolute', inset: 0,
-        backgroundImage: 'radial-gradient(rgba(0,0,0,0.06) 0.8px, transparent 0.8px)',
-        backgroundSize: '28px 28px',
-        opacity: 0.5, pointerEvents: 'none',
-      }} />
-
       <div style={{
         position: 'relative', zIndex: 1,
         width: '100%', maxWidth,

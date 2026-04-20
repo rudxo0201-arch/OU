@@ -34,7 +34,7 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <NeuAuthLayout title="새 비밀번호 설정" subtitle="새로운 비밀번호를 입력해주세요">
+    <NeuAuthLayout title="새 비밀번호 설정">
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         <NeuInput
           label="새 비밀번호"

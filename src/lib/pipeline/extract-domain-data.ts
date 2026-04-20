@@ -122,10 +122,28 @@ function extractSchedule(raw: string): Record<string, any> {
     if (locFromMatch) result.location = locFromMatch[1];
   }
 
-  // 제목: 날짜/시간/조사를 제거하고 의미 있는 부분만 추출
+  // 제목: 키워드 앞 수식어(1단어)도 포함
+  const TITLE_SKIP = new Set([
+    '오전', '오후', '아침', '점심', '저녁', '밤', '새벽',
+    '내일', '모레', '오늘', '다음주', '이번주', '어제',
+    '월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일',
+    '나', '저', '우리',
+  ]);
   for (const kw of EVENT_KEYWORDS) {
-    if (raw.includes(kw)) {
-      result.title = kw;
+    const kwIdx = raw.indexOf(kw);
+    if (kwIdx !== -1) {
+      const tokens = raw.slice(0, kwIdx).trim().split(/\s+/).filter(Boolean);
+      let modifier = '';
+      if (tokens.length > 0) {
+        // 마지막 토큰에서 단순 조사 제거 (과/와 제외 — 단어의 일부일 수 있음)
+        const last = tokens[tokens.length - 1]
+          .replace(/(이|가|을|를|은|는|로|으로|에서|에|의|도|만|한테|에게)$/, '');
+        // 한글로 시작하는 의미있는 단어만 수식어로 인정
+        if (last && /^[\uAC00-\uD7A3]/.test(last) && !TITLE_SKIP.has(last)) {
+          modifier = last;
+        }
+      }
+      result.title = modifier ? `${modifier} ${kw}` : kw;
       break;
     }
   }

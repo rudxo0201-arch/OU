@@ -87,21 +87,23 @@ export function ProfileView({ nodes }: ViewProps) {
         display: 'flex', flexDirection: 'column', alignItems: 'center',
         padding: '28px 20px',
         borderRadius: 16,
-        border: '1px solid rgba(255,255,255,0.06)',
-        background: 'rgba(255,255,255,0.02)',
+        border: '0.5px solid var(--ou-border-faint)',
+        background: 'var(--ou-bg)',
+        boxShadow: 'var(--ou-neu-raised-lg)',
         marginBottom: 24,
       }}>
         <div style={{
           width: 72, height: 72, borderRadius: '50%',
-          background: 'linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03))',
-          border: '1px solid rgba(255,255,255,0.1)',
+          background: 'var(--ou-bg)',
+          boxShadow: 'var(--ou-neu-raised-sm)',
+          border: '0.5px solid var(--ou-border-faint)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 28, color: 'rgba(255,255,255,0.3)',
+          fontSize: 28, color: 'var(--ou-text-muted)',
           marginBottom: 14,
         }}>
           OU
         </div>
-        <div style={{ fontSize: 18, fontWeight: 600, color: 'var(--ou-text-strong)' }}>
+        <div style={{ fontSize: 18, fontWeight: 600, color: 'var(--ou-text-heading)' }}>
           내 데이터 우주
         </div>
         <div style={{
@@ -115,7 +117,7 @@ export function ProfileView({ nodes }: ViewProps) {
 
       {/* Weekly activity (mini bar chart) */}
       <div style={{ marginBottom: 24 }}>
-        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ou-text-strong)', marginBottom: 12 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ou-text-heading)', marginBottom: 12 }}>
           최근 7일 활동
         </div>
         <div style={{
@@ -130,10 +132,10 @@ export function ProfileView({ nodes }: ViewProps) {
               <div style={{
                 width: '100%', borderRadius: 3,
                 height: Math.max(4, (day.count / stats.maxDaily) * 48),
-                background: day.count > 0 ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.05)',
+                background: day.count > 0 ? 'var(--ou-text-muted)' : 'var(--ou-border-faint)',
                 transition: '300ms ease',
               }} />
-              <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)' }}>{day.date}</span>
+              <span style={{ fontSize: 9, color: 'var(--ou-text-disabled)' }}>{day.date}</span>
             </div>
           ))}
         </div>
@@ -141,11 +143,11 @@ export function ProfileView({ nodes }: ViewProps) {
 
       {/* Domain distribution */}
       <div>
-        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ou-text-strong)', marginBottom: 12 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ou-text-heading)', marginBottom: 12 }}>
           도메인별 분포
         </div>
         {stats.domains.length === 0 ? (
-          <div style={{ fontSize: 12, color: 'var(--ou-text-dimmed)' }}>데이터가 없습니다</div>
+          <div style={{ fontSize: 12, color: 'var(--ou-text-muted)' }}>데이터가 없습니다</div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {stats.domains.map(([domain, count]) => {
@@ -155,20 +157,20 @@ export function ProfileView({ nodes }: ViewProps) {
                   <span style={{ fontSize: 14, width: 20, textAlign: 'center' }}>
                     {DOMAIN_ICONS[domain] || '◉'}
                   </span>
-                  <span style={{ fontSize: 12, color: 'var(--ou-text-secondary)', width: 50, flexShrink: 0 }}>
+                  <span style={{ fontSize: 12, color: 'var(--ou-text-body)', width: 50, flexShrink: 0 }}>
                     {DOMAIN_LABELS[domain] || domain}
                   </span>
                   <div style={{
                     flex: 1, height: 6, borderRadius: 3,
-                    background: 'rgba(255,255,255,0.05)', overflow: 'hidden',
+                    background: 'var(--ou-border-faint)', overflow: 'hidden',
                   }}>
                     <div style={{
                       width: `${ratio * 100}%`, height: '100%',
-                      borderRadius: 3, background: 'rgba(255,255,255,0.25)',
+                      borderRadius: 3, background: 'var(--ou-text-muted)',
                       transition: '300ms ease',
                     }} />
                   </div>
-                  <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed)', width: 28, textAlign: 'right' }}>
+                  <span style={{ fontSize: 11, color: 'var(--ou-text-muted)', width: 28, textAlign: 'right' }}>
                     {count}
                   </span>
                 </div>
@@ -184,8 +186,8 @@ export function ProfileView({ nodes }: ViewProps) {
 function StatItem({ value, label }: { value: number; label: string }) {
   return (
     <div style={{ textAlign: 'center' }}>
-      <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--ou-text-strong)' }}>{value}</div>
-      <div style={{ fontSize: 10, color: 'var(--ou-text-dimmed)', marginTop: 2 }}>{label}</div>
+      <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--ou-text-heading)' }}>{value}</div>
+      <div style={{ fontSize: 10, color: 'var(--ou-text-muted)', marginTop: 2 }}>{label}</div>
     </div>
   );
 }

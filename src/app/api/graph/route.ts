@@ -7,14 +7,29 @@ export async function GET() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    // Fetch user's data nodes + admin nodes (non-archived, limit 2000)
-    const { data: nodes, error: nodesErr } = await supabase
+    // Fetch admin node IDs the user has explicitly referenced
+    const { data: refs } = await supabase
+      .from('user_node_refs')
+      .select('node_id')
+      .eq('user_id', user.id);
+
+    const refNodeIds = (refs ?? []).map((r: { node_id: string }) => r.node_id);
+
+    // Fetch user's own nodes + referenced admin nodes only (non-archived, limit 2000)
+    let nodesQuery = supabase
       .from('data_nodes')
       .select('id, domain, raw, confidence, created_at, domain_data, is_admin_node')
-      .or(`user_id.eq.${user.id},is_admin_node.eq.true`)
       .not('system_tags', 'cs', '{"archived"}')
       .order('created_at', { ascending: false })
       .limit(2000);
+
+    if (refNodeIds.length > 0) {
+      nodesQuery = nodesQuery.or(`user_id.eq.${user.id},id.in.(${refNodeIds.join(',')})`);
+    } else {
+      nodesQuery = nodesQuery.eq('user_id', user.id);
+    }
+
+    const { data: nodes, error: nodesErr } = await nodesQuery;
 
     if (nodesErr) {
       console.error('[Graph] Nodes error:', nodesErr.message);

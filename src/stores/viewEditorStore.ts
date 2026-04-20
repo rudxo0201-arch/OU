@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import type { SavedViewRow } from '@/types/admin';
 import type { LayoutConfig } from '@/types/layout-config';
+import type { FilterRule, OrbViewConfig } from '@/types/view-editor';
 
 // 점(.) 구분 경로로 중첩 객체 값 설정
 function setNested(obj: Record<string, unknown>, path: string, value: unknown): Record<string, unknown> {
@@ -31,6 +32,13 @@ interface ViewEditorState {
   customCode: string;
   isDirty: boolean;
   saving: boolean;
+  // 뷰 편집기 전용 상태
+  domain: string;
+  filterRules: FilterRule[];
+  groupBy: string;
+  sortField: string;
+  sortDir: 'asc' | 'desc';
+  range: 'today' | 'week' | 'month' | 'quarter' | 'year' | 'all';
   // 액션
   open: (view?: SavedViewRow) => void;
   close: () => void;
@@ -43,6 +51,27 @@ interface ViewEditorState {
   removeSchemaField: (viewField: string) => void;
   setSaving: (saving: boolean) => void;
   reset: () => void;
+  // 뷰 편집기 전용 액션
+  setDomain: (domain: string) => void;
+  addFilterRule: () => void;
+  updateFilterRule: (idx: number, partial: Partial<FilterRule>) => void;
+  removeFilterRule: (idx: number) => void;
+  setGroupBy: (field: string) => void;
+  setSort: (field: string, dir: 'asc' | 'desc') => void;
+  setRange: (range: 'today' | 'week' | 'month' | 'quarter' | 'year' | 'all') => void;
+  applyOrbConfig: (config: OrbViewConfig) => void;
+  toSavePayload: () => {
+    name: string;
+    view_type: string;
+    icon: string;
+    description: string;
+    filter_config: Record<string, unknown>;
+    layout_config: LayoutConfig;
+    schema_map: Record<string, string>;
+    visibility: 'private' | 'link' | 'public';
+    is_default: boolean;
+    custom_code: string;
+  };
 }
 
 type ViewEditorFormFields = Pick<
@@ -63,15 +92,33 @@ const INITIAL_FORM = {
   customCode: '',
   isDirty: false,
   saving: false,
+  domain: '',
+  filterRules: [] as FilterRule[],
+  groupBy: '',
+  sortField: '',
+  sortDir: 'asc' as const,
+  range: 'all' as const,
 };
 
-export const useViewEditorStore = create<ViewEditorState>((set) => ({
+function parseFilterConfig(fc: Record<string, unknown>) {
+  return {
+    domain: (fc.domain as string) ?? '',
+    filterRules: (fc.filters as FilterRule[]) ?? [],
+    groupBy: (fc.groupBy as string) ?? '',
+    sortField: ((fc.sort as { field?: string })?.field) ?? '',
+    sortDir: ((fc.sort as { dir?: 'asc' | 'desc' })?.dir) ?? 'asc' as const,
+    range: (fc.range as 'today' | 'week' | 'month' | 'quarter' | 'year' | 'all') ?? 'all',
+  };
+}
+
+export const useViewEditorStore = create<ViewEditorState>((set, get) => ({
   isOpen: false,
   editingView: null,
   ...INITIAL_FORM,
 
   open: (view) => {
     if (view) {
+      const fc = (view.filter_config as Record<string, unknown>) ?? {};
       set({
         isOpen: true,
         editingView: view,
@@ -79,13 +126,14 @@ export const useViewEditorStore = create<ViewEditorState>((set) => ({
         viewType: view.view_type,
         icon: view.icon ?? '',
         description: view.description ?? '',
-        filterConfig: (view.filter_config as Record<string, unknown>) ?? {},
+        filterConfig: fc,
         layoutConfig: (view.layout_config as LayoutConfig) ?? {},
         schemaMap: (view.schema_map as Record<string, string>) ?? {},
         visibility: view.visibility ?? 'private',
         isDefault: view.is_default ?? false,
         customCode: view.custom_code ?? '',
         isDirty: false,
+        ...parseFilterConfig(fc),
       });
     } else {
       set({
@@ -132,4 +180,105 @@ export const useViewEditorStore = create<ViewEditorState>((set) => ({
   setSaving: (saving) => set({ saving }),
 
   reset: () => set({ ...INITIAL_FORM, isOpen: false, editingView: null }),
+
+  // 뷰 편집기 전용 액션
+  setDomain: (domain) => set((s) => ({
+    domain,
+    filterConfig: { ...s.filterConfig, domain },
+    isDirty: true,
+  })),
+
+  addFilterRule: () => set((s) => {
+    const newRule: FilterRule = { field: '', op: '=', value: '' };
+    const filterRules = [...s.filterRules, newRule];
+    return {
+      filterRules,
+      filterConfig: { ...s.filterConfig, filters: filterRules },
+      isDirty: true,
+    };
+  }),
+
+  updateFilterRule: (idx, partial) => set((s) => {
+    const filterRules = s.filterRules.map((r, i) => i === idx ? { ...r, ...partial } : r);
+    return {
+      filterRules,
+      filterConfig: { ...s.filterConfig, filters: filterRules },
+      isDirty: true,
+    };
+  }),
+
+  removeFilterRule: (idx) => set((s) => {
+    const filterRules = s.filterRules.filter((_, i) => i !== idx);
+    return {
+      filterRules,
+      filterConfig: { ...s.filterConfig, filters: filterRules },
+      isDirty: true,
+    };
+  }),
+
+  setGroupBy: (field) => set((s) => ({
+    groupBy: field,
+    filterConfig: { ...s.filterConfig, groupBy: field },
+    isDirty: true,
+  })),
+
+  setSort: (field, dir) => set((s) => ({
+    sortField: field,
+    sortDir: dir,
+    filterConfig: { ...s.filterConfig, sort: { field, dir } },
+    isDirty: true,
+  })),
+
+  setRange: (range) => set((s) => ({
+    range,
+    filterConfig: { ...s.filterConfig, range },
+    isDirty: true,
+  })),
+
+  applyOrbConfig: (config) => set((s) => {
+    const domain = config.domain ?? s.domain;
+    const viewType = config.viewType ?? s.viewType;
+    const filterRules = config.filters ?? s.filterRules;
+    const groupBy = config.groupBy ?? s.groupBy;
+    const sortField = config.sort?.field ?? s.sortField;
+    const sortDir = config.sort?.dir ?? s.sortDir;
+    const range = config.range ?? s.range;
+
+    const filterConfig: Record<string, unknown> = {
+      ...s.filterConfig,
+      domain,
+      filters: filterRules,
+      groupBy,
+      sort: sortField ? { field: sortField, dir: sortDir } : s.filterConfig.sort,
+      range,
+    };
+
+    return {
+      domain,
+      viewType,
+      filterRules,
+      groupBy,
+      sortField,
+      sortDir,
+      range,
+      filterConfig,
+      isDirty: true,
+    };
+  }),
+
+  toSavePayload: () => {
+    const s = get();
+    return {
+      name: s.name,
+      view_type: s.viewType,
+      icon: s.icon,
+      description: s.description,
+      filter_config: s.filterConfig,
+      layout_config: s.layoutConfig,
+      schema_map: s.schemaMap,
+      visibility: s.visibility,
+      is_default: s.isDefault,
+      custom_code: s.customCode,
+    };
+  },
 }));

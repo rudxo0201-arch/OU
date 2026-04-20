@@ -15,11 +15,13 @@ const VIEW_HINT_MAP: Record<string, string> = {
   idea: 'mindmap',
   emotion: 'journal',
   habit: 'heatmap',
-  health: 'health_dashboard',
-  relationship: 'relationship',
-  education: 'grade_tracker',
+  relation: 'relation',
   media: 'scrap',
   development: 'dev_workspace',
+  // 하위 호환 alias (기존 데이터 대응)
+  health: 'heatmap',
+  relationship: 'relation',
+  education: 'knowledge_graph',
 };
 
 const VALID_DOMAINS = Object.keys(VIEW_HINT_MAP);
@@ -39,19 +41,17 @@ export async function classifyDomain(text: string) {
 - finance: 돈, 금액, 수입/지출, 매출
 - emotion: 감정, 기분, 심리 상태
 - task: 할 일, 해야 할 것, 마감
-- education: 성적, 시험, 학업, 학교
+- knowledge: 지식, 학습, 정보, 공부 (학업 포함)
 - idea: 아이디어, 기획, 구상, 창업
-- habit: 습관, 루틴, 반복 행동
-- health: 건강, 운동, 병원, 증상
-- relationship: 사람 이름이나 관계가 언급된 것 (엄마, 친구, 동료 등)
+- habit: 습관, 루틴, 반복 행동, 운동, 건강
+- relation: 사람 이름이나 관계가 언급된 것 (엄마, 친구, 동료 등)
 - media: 영화, 드라마, 음악, 책, 게임
 - development: 개발, 코딩, 기술
-- knowledge: 지식, 학습, 정보 질문
 
 규칙:
 - 해당하는 도메인을 모두 선택 (복수 가능)
 - 감정이 포함되어 있으면 반드시 emotion도 포함
-- 사람이 언급되면 반드시 relationship도 포함
+- 사람이 언급되면 반드시 relation도 포함
 - 최소 1개 이상 선택
 
 텍스트: "${text.slice(0, 2000)}"

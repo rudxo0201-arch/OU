@@ -104,20 +104,21 @@ function HanjaCard({ node, onClick }: { node: any; onClick: () => void }) {
         gap: 5,
         padding: '12px 6px 10px',
         borderRadius: 10,
-        border: '0.5px solid var(--ou-border-faint, rgba(0,0,0,0.08))',
+        border: '0.5px solid var(--ou-border-faint)',
         background: 'var(--ou-bg)',
+        boxShadow: 'var(--ou-neu-raised-sm)',
         transition: 'box-shadow 0.15s ease, border-color 0.15s ease',
         minHeight: 90,
         userSelect: 'none',
         overflow: 'hidden',
       }}
       onMouseEnter={e => {
-        (e.currentTarget as HTMLElement).style.boxShadow = 'var(--ou-neu-raised-sm, 0 2px 8px rgba(0,0,0,0.1))';
-        (e.currentTarget as HTMLElement).style.borderColor = 'var(--ou-border, rgba(0,0,0,0.2))';
+        (e.currentTarget as HTMLElement).style.boxShadow = 'var(--ou-neu-raised-lg)';
+        (e.currentTarget as HTMLElement).style.borderColor = 'var(--ou-border-subtle)';
       }}
       onMouseLeave={e => {
-        (e.currentTarget as HTMLElement).style.boxShadow = '';
-        (e.currentTarget as HTMLElement).style.borderColor = 'var(--ou-border-faint, rgba(0,0,0,0.08))';
+        (e.currentTarget as HTMLElement).style.boxShadow = 'var(--ou-neu-raised-sm)';
+        (e.currentTarget as HTMLElement).style.borderColor = 'var(--ou-border-faint)';
       }}
     >
       {/* 한자 */}
@@ -125,7 +126,7 @@ function HanjaCard({ node, onClick }: { node: any; onClick: () => void }) {
         fontSize: 34,
         fontWeight: 600,
         lineHeight: 1,
-        color: 'var(--ou-text-strong)',
+        color: 'var(--ou-text-heading)',
         fontFamily: CJK_FONT,
       }}>
         {d.char}
@@ -137,7 +138,7 @@ function HanjaCard({ node, onClick }: { node: any; onClick: () => void }) {
           display: 'inline-block',
           maxWidth: 'calc(100% - 8px)',
           padding: '1px 8px',
-          border: '0.5px solid var(--ou-border, rgba(0,0,0,0.18))',
+          border: '0.5px solid var(--ou-border-subtle)',
           borderRadius: 999,
           fontSize: 10,
           color: 'var(--ou-text-body)',
@@ -156,7 +157,7 @@ function HanjaCard({ node, onClick }: { node: any; onClick: () => void }) {
       {/* 음 (음독) */}
       <span style={{
         fontSize: 11,
-        color: eum ? 'var(--ou-text-secondary)' : 'transparent',
+        color: eum ? 'var(--ou-text-body)' : 'transparent',
         letterSpacing: '0.03em',
         minHeight: 14,
       }}>
@@ -175,48 +176,48 @@ function DetailPanel({ node, nodes, onClose, onSelect }: { node: any; nodes: any
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24, padding: 16 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', padding: 4 }}><ArrowLeft size={18} /></button>
-        {d.grade != null && <span style={{ fontSize: 10, padding: '2px 8px', border: '0.5px solid var(--ou-border, #333)', borderRadius: 4 }}>{d.grade > 0 ? `${d.grade}급` : '특급'}</span>}
+        {d.grade != null && <span style={{ fontSize: 10, padding: '2px 8px', border: '0.5px solid var(--ou-border-subtle)', borderRadius: 4 }}>{d.grade > 0 ? `${d.grade}급` : '특급'}</span>}
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'center' }}>
         <span style={{ fontSize: 64, fontWeight: 700, lineHeight: 1 }}>{d.char}</span>
         <span style={{ fontSize: 18, fontWeight: 500 }}>{d.readings?.ko_hun?.[0] && `${d.readings.ko_hun[0]} `}{d.readings?.ko?.[0] || d.hangul_reading}</span>
-        <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)' }}>부수: {d.radical_char} ({d.radical_name_ko}) | 총획: {d.stroke_count}</span>
+        <span style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>부수: {d.radical_char} ({d.radical_name_ko}) | 총획: {d.stroke_count}</span>
       </div>
 
       {d.composition && (
-        <div style={{ padding: 12, border: '1px solid var(--ou-border, #333)', borderRadius: 8 }}>
-          <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', display: 'block', marginBottom: 4 }}>구성 원리</span>
+        <div style={{ padding: 12, border: '0.5px solid var(--ou-border-subtle)', borderRadius: 8 }}>
+          <span style={{ fontSize: 11, color: 'var(--ou-text-muted)', display: 'block', marginBottom: 4 }}>구성 원리</span>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            <span style={{ fontSize: 10, padding: '1px 6px', border: '0.5px solid var(--ou-border, #333)', borderRadius: 4 }}>{d.composition.type}</span>
+            <span style={{ fontSize: 10, padding: '1px 6px', border: '0.5px solid var(--ou-border-subtle)', borderRadius: 4 }}>{d.composition.type}</span>
             {d.composition.components?.length > 0 && <span style={{ fontSize: 13 }}>{d.composition.components.join(' + ')}</span>}
           </div>
           {d.composition.explanation && <span style={{ fontSize: 13, display: 'block', marginTop: 4 }}>{d.composition.explanation}</span>}
-          {d.composition.mnemonic && <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', display: 'block', marginTop: 4, fontStyle: 'italic' }}>{d.composition.mnemonic}</span>}
+          {d.composition.mnemonic && <span style={{ fontSize: 11, color: 'var(--ou-text-muted)', display: 'block', marginTop: 4, fontStyle: 'italic' }}>{d.composition.mnemonic}</span>}
         </div>
       )}
 
-      <div style={{ padding: 12, border: '1px solid var(--ou-border, #333)', borderRadius: 8 }}>
-        <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', display: 'block', marginBottom: 4 }}>읽기</span>
+      <div style={{ padding: 12, border: '0.5px solid var(--ou-border-subtle)', borderRadius: 8 }}>
+        <span style={{ fontSize: 11, color: 'var(--ou-text-muted)', display: 'block', marginBottom: 4 }}>읽기</span>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          {d.readings?.ko?.length > 0 && <div style={{ display: 'flex', gap: 8 }}><span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', width: 32 }}>한국</span><span style={{ fontSize: 13 }}>{d.readings.ko.join(', ')}</span></div>}
-          {d.readings?.cn_pinyin && <div style={{ display: 'flex', gap: 8 }}><span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', width: 32 }}>중국</span><span style={{ fontSize: 13 }}>{d.readings.cn_pinyin}</span></div>}
-          {(d.readings?.jp_on || d.readings?.jp_kun) && <div style={{ display: 'flex', gap: 8 }}><span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', width: 32 }}>일본</span><span style={{ fontSize: 13 }}>{d.readings.jp_on && `${d.readings.jp_on}`}{d.readings.jp_on && d.readings.jp_kun && ' / '}{d.readings.jp_kun && `${d.readings.jp_kun}`}</span></div>}
+          {d.readings?.ko?.length > 0 && <div style={{ display: 'flex', gap: 8 }}><span style={{ fontSize: 11, color: 'var(--ou-text-muted)', width: 32 }}>한국</span><span style={{ fontSize: 13 }}>{d.readings.ko.join(', ')}</span></div>}
+          {d.readings?.cn_pinyin && <div style={{ display: 'flex', gap: 8 }}><span style={{ fontSize: 11, color: 'var(--ou-text-muted)', width: 32 }}>중국</span><span style={{ fontSize: 13 }}>{d.readings.cn_pinyin}</span></div>}
+          {(d.readings?.jp_on || d.readings?.jp_kun) && <div style={{ display: 'flex', gap: 8 }}><span style={{ fontSize: 11, color: 'var(--ou-text-muted)', width: 32 }}>일본</span><span style={{ fontSize: 13 }}>{d.readings.jp_on && `${d.readings.jp_on}`}{d.readings.jp_on && d.readings.jp_kun && ' / '}{d.readings.jp_kun && `${d.readings.jp_kun}`}</span></div>}
         </div>
       </div>
 
       {d.definition_en && (
-        <div style={{ padding: 12, border: '1px solid var(--ou-border, #333)', borderRadius: 8 }}>
-          <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', display: 'block', marginBottom: 4 }}>영문 정의</span>
+        <div style={{ padding: 12, border: '0.5px solid var(--ou-border-subtle)', borderRadius: 8 }}>
+          <span style={{ fontSize: 11, color: 'var(--ou-text-muted)', display: 'block', marginBottom: 4 }}>영문 정의</span>
           <span style={{ fontSize: 13 }}>{d.definition_en}</span>
         </div>
       )}
 
       {sameRadical.length > 0 && (
         <div>
-          <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', display: 'block', marginBottom: 4 }}>같은 부수 ({d.radical_char})</span>
+          <span style={{ fontSize: 11, color: 'var(--ou-text-muted)', display: 'block', marginBottom: 4 }}>같은 부수 ({d.radical_char})</span>
           <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
             {sameRadical.map(n => (
-              <div key={n.id} onClick={() => onSelect(n)} style={{ border: '1px solid var(--ou-border, #333)', borderRadius: 4, cursor: 'pointer', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13 }}>
+              <div key={n.id} onClick={() => onSelect(n)} style={{ border: '0.5px solid var(--ou-border-subtle)', borderRadius: 4, cursor: 'pointer', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13 }}>
                 {getNodeDomainData(n).char}
               </div>
             ))}
@@ -226,10 +227,10 @@ function DetailPanel({ node, nodes, onClose, onSelect }: { node: any; nodes: any
 
       {sameReading.length > 0 && (
         <div>
-          <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', display: 'block', marginBottom: 4 }}>같은 음 ({d.readings?.ko?.[0]})</span>
+          <span style={{ fontSize: 11, color: 'var(--ou-text-muted)', display: 'block', marginBottom: 4 }}>같은 음 ({d.readings?.ko?.[0]})</span>
           <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
             {sameReading.map(n => (
-              <div key={n.id} onClick={() => onSelect(n)} style={{ border: '1px solid var(--ou-border, #333)', borderRadius: 4, cursor: 'pointer', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13 }}>
+              <div key={n.id} onClick={() => onSelect(n)} style={{ border: '0.5px solid var(--ou-border-subtle)', borderRadius: 4, cursor: 'pointer', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13 }}>
                 {getNodeDomainData(n).char}
               </div>
             ))}
@@ -317,12 +318,12 @@ export function DictionaryView({ nodes, onSearch, total, loading }: DictionaryVi
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: 16 }}>
       {/* Search */}
       <div style={{ position: 'relative' }}>
-        <MagnifyingGlass size={16} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--ou-text-dimmed, #888)' }} />
+        <MagnifyingGlass size={16} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--ou-text-muted)' }} />
         <input
           placeholder="한자, 음, 훈 검색 (문장 붙여넣기 가능)"
           value={searchQuery}
           onChange={e => handleSearchChange(e.target.value)}
-          style={{ width: '100%', padding: '8px 32px 8px 32px', fontSize: 14, border: '0.5px solid var(--ou-border, #333)', borderRadius: 6, background: 'transparent', color: 'inherit', outline: 'none' }}
+          style={{ width: '100%', padding: '8px 32px 8px 32px', fontSize: 14, border: '0.5px solid var(--ou-border-subtle)', borderRadius: 6, background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-pressed-sm)', color: 'inherit', outline: 'none' }}
         />
         {searchQuery && (
           <button onClick={() => handleSearchChange('')} style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', padding: 2 }}>
@@ -333,9 +334,9 @@ export function DictionaryView({ nodes, onSearch, total, loading }: DictionaryVi
 
       {hanjaChars.length > 0 && (
         <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-          <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)' }}>추출된 한자:</span>
+          <span style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>추출된 한자:</span>
           {hanjaChars.map((c, i) => (
-            <span key={i} style={{ fontSize: 10, padding: '1px 6px', border: '0.5px solid var(--ou-border, #333)', borderRadius: 4 }}>{c}</span>
+            <span key={i} style={{ fontSize: 10, padding: '1px 6px', border: '0.5px solid var(--ou-border-subtle)', borderRadius: 4 }}>{c}</span>
           ))}
         </div>
       )}
@@ -344,21 +345,21 @@ export function DictionaryView({ nodes, onSearch, total, loading }: DictionaryVi
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
         {availableFilters.radicals.length > 0 && (
           <select value={filters.radical || ''} onChange={e => e.target.value ? handleFilterChange('radical', e.target.value) : clearFilter('radical')}
-            style={{ padding: '4px 8px', fontSize: 12, border: '0.5px solid var(--ou-border, #333)', borderRadius: 6, background: 'transparent', color: 'inherit', width: 90 }}>
+            style={{ padding: '4px 8px', fontSize: 12, border: '0.5px solid var(--ou-border-subtle)', borderRadius: 6, background: 'var(--ou-bg)', color: 'inherit', width: 90 }}>
             <option value="">부수</option>
             {availableFilters.radicals.slice(0, 50).map(([char, count]) => (<option key={char} value={char}>{char} ({count})</option>))}
           </select>
         )}
         {availableFilters.grades.length > 0 && (
           <select value={filters.gradeMin?.toString() || ''} onChange={e => { if (e.target.value) { const g = parseInt(e.target.value); handleFilterChange('gradeMin', g); handleFilterChange('gradeMax', g); } else { clearFilter('gradeMin'); clearFilter('gradeMax'); } }}
-            style={{ padding: '4px 8px', fontSize: 12, border: '0.5px solid var(--ou-border, #333)', borderRadius: 6, background: 'transparent', color: 'inherit', width: 90 }}>
+            style={{ padding: '4px 8px', fontSize: 12, border: '0.5px solid var(--ou-border-subtle)', borderRadius: 6, background: 'var(--ou-bg)', color: 'inherit', width: 90 }}>
             <option value="">급수</option>
             {availableFilters.grades.map(([grade, count]) => (<option key={grade} value={grade.toString()}>{grade > 0 ? `${grade}급` : '특급'} ({count})</option>))}
           </select>
         )}
         {availableFilters.compositionTypes.length > 0 && (
           <select value={filters.compositionType || ''} onChange={e => e.target.value ? handleFilterChange('compositionType', e.target.value) : clearFilter('compositionType')}
-            style={{ padding: '4px 8px', fontSize: 12, border: '0.5px solid var(--ou-border, #333)', borderRadius: 6, background: 'transparent', color: 'inherit', width: 100 }}>
+            style={{ padding: '4px 8px', fontSize: 12, border: '0.5px solid var(--ou-border-subtle)', borderRadius: 6, background: 'var(--ou-bg)', color: 'inherit', width: 100 }}>
             <option value="">구성원리</option>
             {availableFilters.compositionTypes.map(([type, count]) => (<option key={type} value={type}>{type} ({count})</option>))}
           </select>
@@ -368,16 +369,16 @@ export function DictionaryView({ nodes, onSearch, total, loading }: DictionaryVi
       {/* Active filter chips */}
       {Object.keys(filters).length > 0 && (
         <div style={{ display: 'flex', gap: 4 }}>
-          {filters.radical && <button onClick={() => clearFilter('radical')} style={{ fontSize: 11, padding: '2px 8px', border: '0.5px solid var(--ou-border, #333)', borderRadius: 12, background: 'none', cursor: 'pointer', color: 'inherit' }}>{filters.radical}부 x</button>}
-          {filters.gradeMin != null && <button onClick={() => { clearFilter('gradeMin'); clearFilter('gradeMax'); }} style={{ fontSize: 11, padding: '2px 8px', border: '0.5px solid var(--ou-border, #333)', borderRadius: 12, background: 'none', cursor: 'pointer', color: 'inherit' }}>{filters.gradeMin}급 x</button>}
-          {filters.compositionType && <button onClick={() => clearFilter('compositionType')} style={{ fontSize: 11, padding: '2px 8px', border: '0.5px solid var(--ou-border, #333)', borderRadius: 12, background: 'none', cursor: 'pointer', color: 'inherit' }}>{filters.compositionType} x</button>}
+          {filters.radical && <button onClick={() => clearFilter('radical')} style={{ fontSize: 11, padding: '2px 8px', border: '0.5px solid var(--ou-border-subtle)', borderRadius: 12, background: 'none', cursor: 'pointer', color: 'inherit' }}>{filters.radical}부 x</button>}
+          {filters.gradeMin != null && <button onClick={() => { clearFilter('gradeMin'); clearFilter('gradeMax'); }} style={{ fontSize: 11, padding: '2px 8px', border: '0.5px solid var(--ou-border-subtle)', borderRadius: 12, background: 'none', cursor: 'pointer', color: 'inherit' }}>{filters.gradeMin}급 x</button>}
+          {filters.compositionType && <button onClick={() => clearFilter('compositionType')} style={{ fontSize: 11, padding: '2px 8px', border: '0.5px solid var(--ou-border-subtle)', borderRadius: 12, background: 'none', cursor: 'pointer', color: 'inherit' }}>{filters.compositionType} x</button>}
         </div>
       )}
 
       {/* Count + loading */}
       <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-        {loading && <div style={{ width: 12, height: 12, border: '2px solid var(--ou-gray-5, #888)', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.6s linear infinite' }} />}
-        <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)' }}>{totalCount.toLocaleString()}자</span>
+        {loading && <div style={{ width: 12, height: 12, border: `2px solid var(--ou-text-muted)`, borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.6s linear infinite' }} />}
+        <span style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>{totalCount.toLocaleString()}자</span>
       </div>
 
       {/* Card grid — auto-fill, 최소 88px 카드 */}
@@ -388,9 +389,9 @@ export function DictionaryView({ nodes, onSearch, total, loading }: DictionaryVi
       {/* Pagination */}
       {totalPages > 1 && (
         <div style={{ display: 'flex', justifyContent: 'center', gap: 4, marginTop: 12 }}>
-          <button disabled={page <= 1} onClick={() => setPage(p => Math.max(1, p - 1))} style={{ padding: '4px 8px', border: '0.5px solid var(--ou-border, #333)', borderRadius: 4, background: 'none', cursor: page <= 1 ? 'default' : 'pointer', color: 'inherit', opacity: page <= 1 ? 0.3 : 1 }}>Prev</button>
+          <button disabled={page <= 1} onClick={() => setPage(p => Math.max(1, p - 1))} style={{ padding: '4px 8px', border: '0.5px solid var(--ou-border-subtle)', borderRadius: 4, background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-raised-sm)', cursor: page <= 1 ? 'default' : 'pointer', color: 'inherit', opacity: page <= 1 ? 0.3 : 1 }}>Prev</button>
           <span style={{ padding: '4px 8px', fontSize: 12 }}>{page} / {totalPages}</span>
-          <button disabled={page >= totalPages} onClick={() => setPage(p => Math.min(totalPages, p + 1))} style={{ padding: '4px 8px', border: '0.5px solid var(--ou-border, #333)', borderRadius: 4, background: 'none', cursor: page >= totalPages ? 'default' : 'pointer', color: 'inherit', opacity: page >= totalPages ? 0.3 : 1 }}>Next</button>
+          <button disabled={page >= totalPages} onClick={() => setPage(p => Math.min(totalPages, p + 1))} style={{ padding: '4px 8px', border: '0.5px solid var(--ou-border-subtle)', borderRadius: 4, background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-raised-sm)', cursor: page >= totalPages ? 'default' : 'pointer', color: 'inherit', opacity: page >= totalPages ? 0.3 : 1 }}>Next</button>
         </div>
       )}
 
@@ -398,7 +399,7 @@ export function DictionaryView({ nodes, onSearch, total, loading }: DictionaryVi
       {drawerOpen && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', justifyContent: 'flex-end' }} onClick={() => setDrawerOpen(false)}>
           <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)' }} />
-          <div onClick={e => e.stopPropagation()} style={{ position: 'relative', width: 380, maxWidth: '90vw', height: '100vh', overflowY: 'auto', background: 'var(--ou-bg, #111)', borderLeft: '0.5px solid var(--ou-border, #333)' }}>
+          <div onClick={e => e.stopPropagation()} style={{ position: 'relative', width: 380, maxWidth: '90vw', height: '100vh', overflowY: 'auto', background: 'var(--ou-bg)', borderLeft: '0.5px solid var(--ou-border-subtle)' }}>
             {selectedNode && (
               <DetailPanel node={selectedNode} nodes={filteredNodes} onClose={() => setDrawerOpen(false)} onSelect={node => setSelectedNode(node)} />
             )}

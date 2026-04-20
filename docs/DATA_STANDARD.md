@@ -91,6 +91,7 @@
 | relation_type | text | 관계 타입 |
 | weight | float | 가중치 (0-1) |
 | source | text | 출처 |
+| metadata | jsonb | 도메인별 추가 정보 (예: 방제의 경우 `{"role":"군","dosage":"9g"}`) |
 
 ### triple_sentence_sources
 | 컬럼 | 타입 | 설명 |

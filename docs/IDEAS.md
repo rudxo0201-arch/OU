@@ -33,3 +33,31 @@
 
 뷰 하나가 개인도구/SaaS/상품/플랫폼 전부 통합.
 SaaS = 뷰, 템플릿 + 노코드 + AI생성.
+
+### [2026-04-20] 다중 뷰 추천 + "더 많은 뷰" UX
+상태: 🔄 검토중
+
+하나의 입력에서 여러 관점의 뷰를 추천하는 기능.
+
+예: "점심 김치찌개 12000원" 입력 시:
+- 가계부 차트 (지출 12000원)
+- 식단 테이블 (오늘 점심: 김치찌개)
+- 메뉴 빈도 차트 (김치찌개 +1회)
+
+구현 방향:
+1. extractAll 결과에 `recommended_views: string[]` 포함 (LLM이 추천)
+2. SSE done 이벤트에 recommended_views 전달
+3. ChatPanel InlineView: 비중 높은 1~3개 뷰 즉시 표시
+4. "더 많은 뷰를 보시겠어요?" 버튼 → 나머지 뷰 펼침
+5. OrbFullscreen 좌측 패널도 동일 패턴
+
+뷰 우선순위 기준:
+- primary domain 뷰 (항상 첫 번째)
+- 트리플에서 파생 가능한 뷰 (식단, 통계 등)
+- 엔티티 관련 뷰 (인물 카드, 장소 등)
+
+InlineView 리팩터 필요:
+- 현재: domain별 하드코딩 switch문 → VIEW_REGISTRY inline 모드 활용으로 전환
+- chatStore.nodeCreated에 recommended_views 필드 추가
+
+선행 작업: 추출 파이프라인 아키텍처 재설계 (extraction registry)

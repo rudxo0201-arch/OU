@@ -6,6 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { createClient } from '@/lib/supabase/client';
 import { useWidgetStore } from '@/stores/widgetStore';
 import { NeuButton, NeuInput, NeuCard, NeuSelect, NeuTable, type NeuTableColumn } from '@/components/ds';
+import { ViewEditorPanel } from '@/components/view-editor/ViewEditorPanel';
 
 type Tab = 'general' | 'display' | 'views' | 'admin';
 
@@ -35,6 +36,13 @@ export default function SettingsPage() {
   }
 
   if (!user) { router.push('/login'); return null; }
+
+  const TAB_ICONS: Record<Tab, React.ReactNode> = {
+    general: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 10v6M4.22 4.22l4.24 4.24m7.08 7.08l4.24 4.24M1 12h6m10 0h6M4.22 19.78l4.24-4.24m7.08-7.08l4.24-4.24"/></svg>,
+    display: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41"/></svg>,
+    views: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><rect x="3" y="4" width="18" height="4" rx="1"/><rect x="3" y="12" width="12" height="4" rx="1"/><rect x="3" y="20" width="16" height="0.5" rx="0.5"/></svg>,
+    admin: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M12 2l8 4v6c0 5-4 9-8 10-4-1-8-5-8-10V6l8-4z"/></svg>,
+  };
 
   const tabs: { key: Tab; label: string; adminOnly?: boolean }[] = [
     { key: 'general', label: '일반' },
@@ -81,8 +89,11 @@ export default function SettingsPage() {
               background: activeTab === tab.key ? 'var(--ou-bg)' : 'transparent',
               boxShadow: activeTab === tab.key ? 'var(--ou-neu-raised-sm)' : 'none',
               color: activeTab === tab.key ? 'var(--ou-text-bright)' : 'var(--ou-text-secondary)',
+              display: 'flex', alignItems: 'center', gap: 12,
+              ...(tab.adminOnly ? { marginTop: 'auto', fontSize: 13, color: activeTab === tab.key ? 'var(--ou-text-bright)' : 'var(--ou-text-dimmed)' } : {}),
             }}
           >
+            <span style={{ opacity: 0.7, display: 'flex', alignItems: 'center' }}>{TAB_ICONS[tab.key]}</span>
             {tab.label}
           </button>
         ))}
@@ -153,6 +164,12 @@ function GeneralTab({ user }: { user: { id: string; email?: string; created_at?:
     setLlmKeys(p => ({ ...p, [provider]: false }));
   };
 
+  const PROVIDER_META: Record<string, { label: string; dot: string; placeholder: string }> = {
+    anthropic: { label: 'Anthropic', dot: '#cc785c', placeholder: 'sk-ant-...' },
+    openai:    { label: 'OpenAI',    dot: '#10a37f', placeholder: 'sk-...' },
+    google:    { label: 'Google',    dot: '#4285f4', placeholder: 'AIza...' },
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
       <Section title="프로필" sub="· 어시스턴트가 당신을 부를 이름">
@@ -163,7 +180,17 @@ function GeneralTab({ user }: { user: { id: string; email?: string; created_at?:
           <NeuInput value={profile.handle} onChange={e => setProfile(p => ({ ...p, handle: e.target.value }))} placeholder="@handle" />
         </Field>
         <Field label="소개">
-          <NeuInput value={profile.bio} onChange={e => setProfile(p => ({ ...p, bio: e.target.value }))} placeholder="간단한 소개" />
+          <textarea
+            value={profile.bio}
+            onChange={e => setProfile(p => ({ ...p, bio: e.target.value }))}
+            placeholder="나에 대한 짧은 설명..."
+            style={{
+              width: '100%', padding: '12px 16px', borderRadius: 12, border: 'none',
+              background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-pressed-sm)',
+              fontSize: 14, color: 'var(--ou-text-strong)', outline: 'none',
+              resize: 'vertical', minHeight: 72, fontFamily: 'inherit', lineHeight: 1.6,
+            }}
+          />
         </Field>
         <NeuButton variant="default" onClick={saveProfile} style={{ marginTop: 4 }}>
           {saving ? '저장 중...' : saved ? '저장됨' : '프로필 저장'}
@@ -171,48 +198,78 @@ function GeneralTab({ user }: { user: { id: string; email?: string; created_at?:
       </Section>
 
       <Section title="계정">
-        <Row label="이메일" value={user?.email || '-'} />
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: '0.5px solid var(--ou-border-subtle)', gap: 16 }}>
+          <span style={{ fontSize: 14, color: 'var(--ou-text-secondary)' }}>이메일</span>
+          <span style={{ fontSize: 12, color: 'var(--ou-text-dimmed)', fontFamily: 'var(--ou-font-mono, monospace)' }}>{user?.email || '-'}</span>
+        </div>
         <Row label="가입일" value={user?.created_at ? new Date(user.created_at).toLocaleDateString('ko-KR') : '-'} />
-        <Row label="구독 플랜" value="Free" />
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: '0.5px solid var(--ou-border-subtle)', gap: 16 }}>
+          <span style={{ fontSize: 14, color: 'var(--ou-text-secondary)' }}>구독 플랜</span>
+          <span style={{ fontSize: 14, color: 'var(--ou-text-strong)', fontWeight: 500 }}>
+            Free · <a href="#" style={{ color: 'var(--ou-accent)', textDecoration: 'none', fontWeight: 600 }}>업그레이드</a>
+          </span>
+        </div>
       </Section>
 
-      <Section title="내 API 키 (BYOK)">
-        <p style={{ fontSize: 13, color: 'var(--ou-text-muted)', lineHeight: 1.8, marginBottom: 8 }}>
-          자신의 API 키를 등록하면 고급 모델을 직접 사용할 수 있습니다.
-        </p>
-        {(['anthropic', 'openai', 'google'] as const).map(provider => (
-          <div key={provider} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 0', borderBottom: '1px solid var(--ou-border-subtle)' }}>
-            <span style={{ fontSize: 14, color: 'var(--ou-text-body)', width: 110 }}>
-              {provider === 'anthropic' ? 'Anthropic' : provider === 'openai' ? 'OpenAI' : 'Google'}
-            </span>
-            {llmKeys[provider] ? (
-              <>
-                <span style={{ flex: 1, fontSize: 12, color: 'var(--ou-text-muted)' }}>등록됨</span>
-                <NeuButton variant="ghost" size="sm" onClick={() => deleteLlmKey(provider)} style={{ color: 'var(--ou-accent)' }}>삭제</NeuButton>
-              </>
-            ) : (
-              <>
-                <NeuInput
-                  type="password"
-                  placeholder="API Key"
-                  value={keyInputs[provider] || ''}
-                  onChange={e => setKeyInputs(p => ({ ...p, [provider]: e.target.value }))}
-                  style={{ flex: 1, fontSize: 12 }}
-                />
-                <NeuButton variant="default" size="sm" onClick={() => saveLlmKey(provider)}>
-                  {keySaving[provider] ? '...' : '등록'}
-                </NeuButton>
-              </>
-            )}
-          </div>
-        ))}
+      <Section title="내 API 키" sub="· BYOK — 내 키로 고급 모델 사용">
+        <div style={{
+          padding: '12px 16px', borderRadius: 12,
+          background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-pressed-sm)',
+          fontSize: 12, lineHeight: 1.7, color: 'var(--ou-text-dimmed)',
+          display: 'flex', gap: 10, alignItems: 'flex-start',
+        }}>
+          <div style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--ou-accent)', marginTop: 7, flexShrink: 0 }} />
+          <div>자신의 API 키를 등록하면 Claude Opus, GPT-5 등 상위 모델을 직접 사용할 수 있어요. 키는 AES-256으로 암호화되어 서버에 저장돼요.</div>
+        </div>
+        <div>
+          {(['anthropic', 'openai', 'google'] as const).map(provider => {
+            const meta = PROVIDER_META[provider];
+            return (
+              <div key={provider} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 0', borderBottom: '0.5px solid var(--ou-border-subtle)' }}>
+                <div style={{ width: 120, fontSize: 14, color: 'var(--ou-text-strong)', fontWeight: 500, display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: meta.dot, flexShrink: 0, display: 'inline-block' }} />
+                  {meta.label}
+                </div>
+                {llmKeys[provider] ? (
+                  <>
+                    <span style={{ flex: 1, fontSize: 12, color: '#3a8b63' }}>● 등록됨</span>
+                    <NeuButton variant="ghost" size="sm" onClick={() => deleteLlmKey(provider)} style={{ color: 'var(--ou-accent)' }}>삭제</NeuButton>
+                  </>
+                ) : (
+                  <>
+                    <NeuInput
+                      type="password"
+                      placeholder={meta.placeholder}
+                      value={keyInputs[provider] || ''}
+                      onChange={e => setKeyInputs(p => ({ ...p, [provider]: e.target.value }))}
+                      style={{ flex: 1, fontSize: 12, padding: '8px 14px' }}
+                    />
+                    <NeuButton variant="default" size="sm" onClick={() => saveLlmKey(provider)}>
+                      {keySaving[provider] ? '...' : '등록'}
+                    </NeuButton>
+                  </>
+                )}
+              </div>
+            );
+          })}
+        </div>
       </Section>
 
       <ApiKeySection />
 
-      <Section title="시스템">
-        <Row label="언어" value="한국어" />
-        <Row label="알림" value="미구현" />
+      <Section title="내 데이터">
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: '0.5px solid var(--ou-border-subtle)', gap: 16 }}>
+          <span style={{ fontSize: 14, color: 'var(--ou-text-secondary)' }}>데이터 내보내기</span>
+          <NeuButton variant="default" size="sm">JSON으로 받기</NeuButton>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: '0.5px solid var(--ou-border-subtle)', gap: 16 }}>
+          <span style={{ fontSize: 14, color: 'var(--ou-text-secondary)' }}>모든 기억 초기화</span>
+          <NeuButton variant="ghost" size="sm" style={{ color: 'var(--ou-accent)' }}>초기화</NeuButton>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', gap: 16 }}>
+          <span style={{ fontSize: 14, color: 'var(--ou-text-secondary)' }}>계정 삭제</span>
+          <NeuButton variant="ghost" size="sm" style={{ color: 'var(--ou-accent)' }}>계정 영구 삭제</NeuButton>
+        </div>
       </Section>
     </div>
   );
@@ -301,12 +358,12 @@ function ApiKeySection() {
 // 디스플레이 탭
 // ============================================================
 const PALETTES = [
-  { key: 'sunrise', label: 'Sunrise', color: '#e8976b' },
-  { key: 'arctic', label: 'Arctic', color: '#6b9de8' },
-  { key: 'blossom', label: 'Blossom', color: '#d4849a' },
-  { key: 'forest', label: 'Forest', color: '#6bc49a' },
-  { key: 'dusk', label: 'Dusk', color: '#8b7ec8' },
-  { key: 'stone', label: 'Stone', color: '#9a9a9a' },
+  { key: 'sunrise', label: 'Sunrise', gradient: 'linear-gradient(135deg, #f4b896, #f9d49a)' },
+  { key: 'arctic', label: 'Arctic', gradient: 'linear-gradient(135deg, #a4c2ec, #a8d6e0)' },
+  { key: 'blossom', label: 'Blossom', gradient: 'linear-gradient(135deg, #e8b8c4, #f0cdd8)' },
+  { key: 'forest', label: 'Forest', gradient: 'linear-gradient(135deg, #a8d8b8, #c4dec8)' },
+  { key: 'dusk', label: 'Dusk', gradient: 'linear-gradient(135deg, #b8afd8, #d0c8f0)' },
+  { key: 'stone', label: 'Stone', gradient: 'linear-gradient(135deg, #c4c4c4, #d8d8d8)' },
 ];
 
 function DisplayTab() {
@@ -334,8 +391,70 @@ function DisplayTab() {
     localStorage.setItem('ou-palette', p);
   };
 
+  const THEMES = [
+    { key: 'light' as const, label: '라이트', sub: '부드러운 뉴모피즘', previewBg: '#e8ecf1' },
+    { key: 'dark' as const, label: '다크', sub: '그라파이트 우주', previewBg: '#2a2d3e' },
+  ];
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
+      <Section title="테마">
+        <div style={{ display: 'flex', gap: 14 }}>
+          {THEMES.map(t => (
+            <button
+              key={t.key}
+              onClick={() => applyTheme(t.key)}
+              style={{
+                flex: 1, padding: '14px 18px', borderRadius: 14, cursor: 'pointer',
+                background: 'var(--ou-bg)', border: 'none', textAlign: 'left',
+                boxShadow: theme === t.key ? 'var(--ou-neu-pressed-sm)' : 'var(--ou-neu-raised-xs)',
+                display: 'flex', alignItems: 'center', gap: 12,
+                transition: 'box-shadow 0.15s',
+              }}
+            >
+              <div style={{
+                width: 44, height: 44, borderRadius: 10, flexShrink: 0,
+                background: t.previewBg,
+                boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.06)',
+              }} />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <b style={{ fontSize: 13, color: 'var(--ou-text-bright)', fontWeight: 600 }}>{t.label}</b>
+                <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed)' }}>{t.sub}</span>
+              </div>
+            </button>
+          ))}
+        </div>
+      </Section>
+
+      <Section title="컬러 팔레트" sub="· 어시스턴트 강조색">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 14 }}>
+          {PALETTES.map(p => (
+            <button
+              key={p.key}
+              onClick={() => applyPalette(p.key)}
+              style={{
+                padding: '16px 10px 14px', borderRadius: 14, border: 'none', cursor: 'pointer',
+                background: 'var(--ou-bg)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10,
+                boxShadow: palette === p.key ? 'var(--ou-neu-pressed-sm)' : 'var(--ou-neu-raised-xs)',
+              }}
+            >
+              <div style={{
+                width: 36, height: 36, borderRadius: '50%',
+                background: p.gradient,
+                boxShadow: '0 2px 8px rgba(0,0,0,0.1), inset 0 -4px 6px rgba(0,0,0,0.05)',
+              }} />
+              <span style={{
+                fontSize: 11, textTransform: 'uppercase' as const, letterSpacing: '0.8px',
+                color: palette === p.key ? 'var(--ou-text-bright)' : 'var(--ou-text-secondary)',
+                fontWeight: palette === p.key ? 600 : 400,
+              }}>
+                {p.label}
+              </span>
+            </button>
+          ))}
+        </div>
+      </Section>
+
       <Section title="홈 화면 그리드">
         <p style={{ fontSize: 13, color: 'var(--ou-text-muted)', lineHeight: 1.8, marginBottom: 12 }}>위젯 배치 그리드의 크기를 조절합니다.</p>
         <SliderField label="가로 칸 수" value={gridCols} min={4} max={12} onChange={setGridCols} />
@@ -350,41 +469,6 @@ function DisplayTab() {
         </NeuCard>
         <NeuButton variant="default" onClick={() => store.setGridSize(gridCols, gridRows)} style={{ marginTop: 12 }}>적용</NeuButton>
       </Section>
-
-      <Section title="테마">
-        <div style={{ display: 'flex', gap: 12 }}>
-          {(['light', 'dark'] as const).map(t => (
-            <NeuButton key={t} variant={theme === t ? 'default' : 'ghost'} onClick={() => applyTheme(t)}>
-              {t === 'light' ? '라이트' : '다크'}
-            </NeuButton>
-          ))}
-        </div>
-      </Section>
-
-      <Section title="악센트 컬러">
-        <p style={{ fontSize: 13, color: 'var(--ou-text-muted)', lineHeight: 1.8, marginBottom: 16 }}>버튼, 글로우, 강조 등에 사용되는 테마 색상입니다.</p>
-        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-          {PALETTES.map(p => (
-            <NeuCard
-              key={p.key}
-              variant={palette === p.key ? 'pressed' : 'raised'}
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, padding: 12, cursor: 'pointer', minWidth: 72 }}
-              onClick={() => applyPalette(p.key)}
-            >
-              <div style={{
-                width: 36, height: 36, borderRadius: '50%',
-                background: p.color,
-                boxShadow: palette === p.key ? `0 0 12px 4px ${p.color}40` : 'var(--ou-neu-raised-xs)',
-                transform: palette === p.key ? 'scale(1.1)' : 'scale(1)',
-                transition: 'all var(--ou-transition)',
-              }} />
-              <span style={{ fontSize: 11, color: palette === p.key ? 'var(--ou-text-heading)' : 'var(--ou-text-muted)', fontWeight: palette === p.key ? 600 : 400 }}>
-                {p.label}
-              </span>
-            </NeuCard>
-          ))}
-        </div>
-      </Section>
     </div>
   );
 }
@@ -393,70 +477,7 @@ function DisplayTab() {
 // 뷰 편집 탭
 // ============================================================
 function ViewsTab() {
-  const [views, setViews] = useState<Record<string, unknown>[]>([]);
-  const [selected, setSelected] = useState<Record<string, unknown> | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch('/api/views').then(r => r.json()).then(data => { setViews(data.views || data.data || []); setLoading(false); }).catch(() => setLoading(false));
-  }, []);
-
-  if (loading) return <p style={{ color: 'var(--ou-text-muted)', fontSize: 13 }}>뷰 목록 불러오는 중...</p>;
-
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-      <Section title="내 뷰">
-        {views.length === 0 && <p style={{ fontSize: 12, color: 'var(--ou-text-disabled)' }}>저장된 뷰가 없습니다.</p>}
-        {views.map(v => (
-          <NeuButton
-            key={v.id as string}
-            variant={selected && (selected as Record<string, unknown>).id === v.id ? 'default' : 'ghost'}
-            onClick={() => setSelected(selected && (selected as Record<string, unknown>).id === v.id ? null : v)}
-            style={{ justifyContent: 'space-between', width: '100%', borderBottom: '1px solid var(--ou-border-subtle)', borderRadius: 0, padding: '10px 0' }}
-          >
-            <div>
-              <span style={{ fontSize: 13, color: 'var(--ou-text-body)' }}>{v.name as string}</span>
-              <span style={{ fontSize: 11, color: 'var(--ou-text-muted)', marginLeft: 8 }}>{v.view_type as string}</span>
-            </div>
-            <span style={{ fontSize: 11, color: 'var(--ou-text-disabled)' }}>{selected && (selected as Record<string, unknown>).id === v.id ? '▲' : '▼'}</span>
-          </NeuButton>
-        ))}
-      </Section>
-
-      {selected && <ViewEditor view={selected} onUpdate={updated => {
-        setViews(vs => vs.map(v => v.id === (updated as Record<string, unknown>).id ? { ...v, ...(updated as Record<string, unknown>) } : v));
-        setSelected(s => s?.id === (updated as Record<string, unknown>).id ? { ...s, ...(updated as Record<string, unknown>) } : s);
-      }} />}
-    </div>
-  );
-}
-
-function ViewEditor({ view, onUpdate }: { view: Record<string, unknown>; onUpdate: (v: Record<string, unknown>) => void }) {
-  const [meta, setMeta] = useState({ name: (view.name as string) || '', description: (view.description as string) || '' });
-  const [layout, setLayout] = useState<Record<string, unknown>>((view.layout_config as Record<string, unknown>) || {});
-  const [saving, setSaving] = useState(false);
-
-  const save = async () => {
-    setSaving(true);
-    const res = await fetch('/api/views', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: view.id, ...meta, layout_config: layout }) });
-    if (res.ok) onUpdate({ id: view.id, ...meta, layout_config: layout });
-    setSaving(false);
-  };
-
-  return (
-    <NeuCard variant="raised" style={{ padding: 20 }}>
-      <h4 style={{ fontSize: 13, fontWeight: 600, color: 'var(--ou-text-heading)', marginBottom: 16 }}>{view.name as string} 편집</h4>
-      <Field label="이름"><NeuInput value={meta.name} onChange={e => setMeta(m => ({ ...m, name: e.target.value }))} /></Field>
-      <Field label="설명"><NeuInput value={meta.description} onChange={e => setMeta(m => ({ ...m, description: e.target.value }))} /></Field>
-      <div style={{ marginTop: 16 }}>
-        <span style={{ fontSize: 12, color: 'var(--ou-text-muted)', marginBottom: 8, display: 'block' }}>레이아웃</span>
-        <SliderField label="카드 둥글기" value={((layout.card as Record<string, number>) || {}).borderRadius ?? 8} min={0} max={24} onChange={v => setLayout(l => ({ ...l, card: { ...(l.card as Record<string, unknown> || {}), borderRadius: v } }))} />
-        <SliderField label="글자 크기" value={(((layout.textStyles as Record<string, unknown>)?.primary as Record<string, number>) || {}).fontSize ?? 14} min={10} max={36} onChange={v => setLayout(l => ({ ...l, textStyles: { ...(l.textStyles as Record<string, unknown> || {}), primary: { ...((l.textStyles as Record<string, Record<string, unknown>>)?.primary || {}), fontSize: v } } }))} />
-        <SliderField label="그리드 칸 수" value={((layout.grid as Record<string, number>) || {}).columns ?? 4} min={1} max={12} onChange={v => setLayout(l => ({ ...l, grid: { ...(l.grid as Record<string, unknown> || {}), columns: v } }))} />
-      </div>
-      <NeuButton variant="default" onClick={save} style={{ marginTop: 16 }}>{saving ? '저장 중...' : '저장'}</NeuButton>
-    </NeuCard>
-  );
+  return <ViewEditorPanel />;
 }
 
 // ============================================================

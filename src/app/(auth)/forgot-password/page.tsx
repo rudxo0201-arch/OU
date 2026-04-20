@@ -47,7 +47,7 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <NeuAuthLayout title="비밀번호 찾기" subtitle="가입한 이메일을 입력해주세요">
+    <NeuAuthLayout title="비밀번호 찾기">
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         <NeuInput
           label="이메일"

@@ -94,12 +94,12 @@ export function CalendarView({ nodes, inline }: ViewProps & { inline?: boolean }
                 <div style={{ fontSize: 11, color: 'var(--ou-text-dimmed)' }}>
                   {e.date.format('M/D')}
                 </div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ou-text-strong)' }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ou-text-heading)' }}>
                   {e.date.format('ddd')}
                 </div>
               </div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ou-text-strong)' }}>
+                <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ou-text-heading)' }}>
                   {e.title}
                 </div>
                 <div style={{ fontSize: 11, color: 'var(--ou-text-dimmed)', marginTop: 2 }}>
@@ -174,7 +174,7 @@ export function CalendarView({ nodes, inline }: ViewProps & { inline?: boolean }
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 4 }}>
         {WEEKDAYS.map(day => (
-          <span key={day} style={{ textAlign: 'center', fontSize: 11, color: 'var(--ou-text-dimmed, #888)' }}>{day}</span>
+          <span key={day} style={{ textAlign: 'center', fontSize: 11, color: 'var(--ou-text-muted)' }}>{day}</span>
         ))}
       </div>
 
@@ -220,7 +220,7 @@ export function CalendarView({ nodes, inline }: ViewProps & { inline?: boolean }
                   </span>
                 ))}
                 {dayEvents.length > 2 && (
-                  <span style={{ fontSize: 9, color: 'var(--ou-text-dimmed, #888)' }}>+{dayEvents.length - 2}</span>
+                  <span style={{ fontSize: 9, color: 'var(--ou-text-muted)' }}>+{dayEvents.length - 2}</span>
                 )}
               </div>
             </div>

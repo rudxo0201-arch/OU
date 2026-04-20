@@ -17,6 +17,7 @@ const NATURE_OPTIONS = ['寒', '微寒', '涼', '平', '溫', '微溫', '熱', '
 const FLAVOR_OPTIONS = ['辛', '甘', '苦', '酸', '鹹', '淡', '澀'] as const;
 const CHANNEL_OPTIONS = ['肺經', '心經', '脾經', '肝經', '腎經', '胃經', '大腸經', '小腸經', '膀胱經', '膽經', '三焦經', '心包經'] as const;
 
+// 性(온냉) 시각 인코딩 — 의도적 색상 유지
 const NATURE_COLORS: Record<string, string> = {
   '寒': 'rgba(100,160,255,0.2)', '微寒': 'rgba(100,160,255,0.12)',
   '涼': 'rgba(140,200,255,0.15)', '平': 'rgba(200,200,200,0.12)',
@@ -44,7 +45,7 @@ interface Formula {
   dosage: string;
 }
 
-function parseHerbs(nodes: any[]): Herb[] {
+function parseHerbs(nodes: ViewProps['nodes']): Herb[] {
   return nodes
     .filter(n => n.domain === 'knowledge' && n.domain_data?.herb_id)
     .map(n => ({
@@ -61,7 +62,7 @@ function parseHerbs(nodes: any[]): Herb[] {
     }));
 }
 
-function findFormulas(nodes: any[], herbName: string): Formula[] {
+function findFormulas(nodes: ViewProps['nodes'], herbName: string): Formula[] {
   const results: Formula[] = [];
   for (const n of nodes) {
     if (!n.domain_data?.formula_id) continue;
@@ -152,7 +153,7 @@ export function BonchoView({ nodes }: ViewProps) {
 
   if (allHerbs.length === 0) {
     return (
-      <div style={{ padding: 40, textAlign: 'center', color: 'var(--ou-text-dimmed)', fontSize: 13 }}>
+      <div style={{ padding: 40, textAlign: 'center', color: 'var(--ou-text-muted)', fontSize: 13 }}>
         <div style={{ fontSize: 32, marginBottom: 12, opacity: 0.3 }}>🌿</div>
         본초 데이터가 없습니다. 관리자 설정에서 본초 시딩을 실행하세요.
       </div>
@@ -166,17 +167,18 @@ export function BonchoView({ nodes }: ViewProps) {
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ fontSize: 16, fontWeight: 600, color: 'var(--ou-text-strong)' }}>본초학 🌿</span>
-            <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed)' }}>{filtered.length}/{allHerbs.length}</span>
+            <span style={{ fontSize: 16, fontWeight: 600, color: 'var(--ou-text-heading)' }}>본초학 🌿</span>
+            <span style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>{filtered.length}/{allHerbs.length}</span>
           </div>
           {compareList.length > 0 && (
             <button
               onClick={() => setShowCompare(!showCompare)}
               style={{
                 padding: '5px 14px', borderRadius: 999, fontSize: 11,
-                border: '1px solid rgba(255,255,255,0.2)',
-                background: showCompare ? 'rgba(255,255,255,0.1)' : 'transparent',
-                color: 'var(--ou-text-secondary)', cursor: 'pointer',
+                border: '0.5px solid var(--ou-border-subtle)',
+                background: 'var(--ou-bg)',
+                boxShadow: showCompare ? 'var(--ou-neu-pressed-sm)' : 'var(--ou-neu-raised-sm)',
+                color: 'var(--ou-text-body)', cursor: 'pointer',
               }}
             >
               비교 ({compareList.length})
@@ -192,8 +194,9 @@ export function BonchoView({ nodes }: ViewProps) {
             placeholder="약재명, 한자, 효능, 주치 검색..."
             style={{
               width: '100%', padding: '8px 14px', fontSize: 12,
-              border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10,
-              background: 'rgba(255,255,255,0.03)', color: 'inherit', outline: 'none',
+              border: '0.5px solid var(--ou-border-faint)', borderRadius: 10,
+              background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-pressed-sm)',
+              color: 'inherit', outline: 'none',
             }}
           />
         </div>
@@ -212,7 +215,7 @@ export function BonchoView({ nodes }: ViewProps) {
 
           {/* 性 */}
           <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap', alignItems: 'center' }}>
-            <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', width: 16, flexShrink: 0 }}>性</span>
+            <span style={{ fontSize: 10, color: 'var(--ou-text-disabled)', width: 16, flexShrink: 0 }}>性</span>
             {NATURE_OPTIONS.map(n => (
               <MiniChip key={n} label={n} active={natureFilter === n}
                 color={NATURE_COLORS[n]}
@@ -222,7 +225,7 @@ export function BonchoView({ nodes }: ViewProps) {
 
           {/* 味 */}
           <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap', alignItems: 'center' }}>
-            <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', width: 16, flexShrink: 0 }}>味</span>
+            <span style={{ fontSize: 10, color: 'var(--ou-text-disabled)', width: 16, flexShrink: 0 }}>味</span>
             {FLAVOR_OPTIONS.map(f => (
               <MiniChip key={f} label={f} active={flavorFilter === f}
                 onClick={() => setFlavorFilter(flavorFilter === f ? '' : f)} />
@@ -231,7 +234,7 @@ export function BonchoView({ nodes }: ViewProps) {
 
           {/* 歸經 */}
           <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap', alignItems: 'center' }}>
-            <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', width: 16, flexShrink: 0 }}>經</span>
+            <span style={{ fontSize: 10, color: 'var(--ou-text-disabled)', width: 16, flexShrink: 0 }}>經</span>
             {CHANNEL_OPTIONS.map(c => (
               <MiniChip key={c} label={c.replace('經', '')} active={channelFilter === c}
                 onClick={() => setChannelFilter(channelFilter === c ? '' : c)} />
@@ -263,7 +266,7 @@ export function BonchoView({ nodes }: ViewProps) {
         </div>
 
         {filtered.length === 0 && (
-          <div style={{ padding: 32, textAlign: 'center', color: 'var(--ou-text-dimmed)', fontSize: 12 }}>
+          <div style={{ padding: 32, textAlign: 'center', color: 'var(--ou-text-muted)', fontSize: 12 }}>
             검색 결과 없음
           </div>
         )}
@@ -273,7 +276,7 @@ export function BonchoView({ nodes }: ViewProps) {
       {selected && (
         <div style={{
           width: 320, flexShrink: 0, overflow: 'auto',
-          borderLeft: '1px solid rgba(255,255,255,0.06)',
+          borderLeft: '0.5px solid var(--ou-border-faint)',
           padding: 20,
           animation: 'ou-fade-in 0.2s ease',
         }}>
@@ -289,6 +292,7 @@ function HerbCard({ herb, isSelected, isComparing, onClick, onCompare }: {
   herb: Herb; isSelected: boolean; isComparing: boolean;
   onClick: () => void; onCompare: () => void;
 }) {
+  // NATURE_COLORS: 온냉 시각 인코딩 (의도적 색상)
   const natureColor = herb.nature[0] ? (NATURE_COLORS[herb.nature[0]] || 'rgba(255,255,255,0.05)') : 'rgba(255,255,255,0.02)';
 
   return (
@@ -297,8 +301,9 @@ function HerbCard({ herb, isSelected, isComparing, onClick, onCompare }: {
       style={{
         padding: '12px 10px',
         borderRadius: 10,
-        border: isSelected ? '1px solid rgba(255,255,255,0.25)' : isComparing ? '1px solid rgba(120,200,255,0.3)' : '1px solid rgba(255,255,255,0.06)',
+        border: `0.5px solid ${isSelected ? 'var(--ou-border-subtle)' : isComparing ? 'rgba(120,200,255,0.3)' : 'var(--ou-border-faint)'}`,
         background: natureColor,
+        boxShadow: isSelected ? 'var(--ou-neu-pressed-sm)' : 'var(--ou-neu-raised-sm)',
         cursor: 'pointer',
         transition: '150ms ease',
         position: 'relative',
@@ -310,15 +315,15 @@ function HerbCard({ herb, isSelected, isComparing, onClick, onCompare }: {
       )}
 
       {/* Name */}
-      <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ou-text-strong)', marginBottom: 2 }}>
+      <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ou-text-heading)', marginBottom: 2 }}>
         {herb.name}
       </div>
       {herb.hanja && (
-        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', marginBottom: 6 }}>{herb.hanja}</div>
+        <div style={{ fontSize: 11, color: 'var(--ou-text-muted)', marginBottom: 6 }}>{herb.hanja}</div>
       )}
 
       {/* 性味 */}
-      <div style={{ fontSize: 10, color: 'var(--ou-text-dimmed)', lineHeight: 1.5 }}>
+      <div style={{ fontSize: 10, color: 'var(--ou-text-muted)', lineHeight: 1.5 }}>
         {herb.nature.length > 0 && <span>{herb.nature.join('·')}</span>}
         {herb.nature.length > 0 && herb.flavor.length > 0 && <span> / </span>}
         {herb.flavor.length > 0 && <span>{herb.flavor.join('·')}</span>}
@@ -326,7 +331,7 @@ function HerbCard({ herb, isSelected, isComparing, onClick, onCompare }: {
 
       {/* 歸經 */}
       {herb.channelTropism.length > 0 && (
-        <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', marginTop: 4 }}>
+        <div style={{ fontSize: 9, color: 'var(--ou-text-disabled)', marginTop: 4 }}>
           {herb.channelTropism.map(c => c.replace('經', '')).join(' ')}
         </div>
       )}
@@ -338,9 +343,9 @@ function HerbCard({ herb, isSelected, isComparing, onClick, onCompare }: {
         style={{
           position: 'absolute', bottom: 6, right: 6,
           width: 18, height: 18, borderRadius: 4, fontSize: 10,
-          border: '0.5px solid rgba(255,255,255,0.1)',
+          border: '0.5px solid var(--ou-border-faint)',
           background: isComparing ? 'rgba(120,200,255,0.2)' : 'transparent',
-          color: 'rgba(255,255,255,0.3)', cursor: 'pointer',
+          color: 'var(--ou-text-disabled)', cursor: 'pointer',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}
       >
@@ -359,18 +364,20 @@ function DetailPanel({ herb, formulas, onClose }: { herb: Herb; formulas: Formul
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
         <div>
-          <div style={{ fontSize: 22, fontWeight: 600, color: 'var(--ou-text-strong)' }}>{herb.name}</div>
-          {herb.hanja && <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>{herb.hanja}</div>}
+          <div style={{ fontSize: 22, fontWeight: 600, color: 'var(--ou-text-heading)' }}>{herb.name}</div>
+          {herb.hanja && <div style={{ fontSize: 14, color: 'var(--ou-text-muted)', marginTop: 2 }}>{herb.hanja}</div>}
           {herb.categoryMinor && (
-            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 4 }}>
+            <div style={{ fontSize: 11, color: 'var(--ou-text-disabled)', marginTop: 4 }}>
               {getCategoryLabel(herb.categoryMinor)}
             </div>
           )}
         </div>
         <button onClick={onClose} style={{
-          width: 24, height: 24, borderRadius: '50%', background: 'rgba(255,255,255,0.05)',
+          width: 24, height: 24, borderRadius: '50%', background: 'var(--ou-bg)',
+          boxShadow: 'var(--ou-neu-raised-sm)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          cursor: 'pointer', fontSize: 14, color: 'rgba(255,255,255,0.3)',
+          cursor: 'pointer', fontSize: 14, color: 'var(--ou-text-disabled)',
+          border: 'none',
         }}>×</button>
       </div>
 
@@ -388,8 +395,8 @@ function DetailPanel({ herb, formulas, onClose }: { herb: Herb; formulas: Formul
             {herb.efficacy.map((e, i) => (
               <span key={i} style={{
                 padding: '3px 10px', borderRadius: 999, fontSize: 11,
-                border: '0.5px solid rgba(255,255,255,0.1)',
-                color: 'var(--ou-text-secondary)',
+                border: '0.5px solid var(--ou-border-faint)',
+                color: 'var(--ou-text-body)',
               }}>{e}</span>
             ))}
           </div>
@@ -403,8 +410,8 @@ function DetailPanel({ herb, formulas, onClose }: { herb: Herb; formulas: Formul
             {herb.indications.map((ind, i) => (
               <span key={i} style={{
                 padding: '3px 10px', borderRadius: 999, fontSize: 11,
-                border: '0.5px solid rgba(255,255,255,0.06)',
-                color: 'var(--ou-text-dimmed)',
+                border: '0.5px solid var(--ou-border-faint)',
+                color: 'var(--ou-text-muted)',
               }}>{ind}</span>
             ))}
           </div>
@@ -419,22 +426,22 @@ function DetailPanel({ herb, formulas, onClose }: { herb: Herb; formulas: Formul
               <div key={i} style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                 padding: '6px 10px', borderRadius: 6,
-                border: '0.5px solid rgba(255,255,255,0.06)',
+                border: '0.5px solid var(--ou-border-faint)',
               }}>
                 <div>
-                  <span style={{ fontSize: 12, color: 'var(--ou-text-secondary)' }}>{f.name}</span>
-                  <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', marginLeft: 4 }}>{f.hanja}</span>
+                  <span style={{ fontSize: 12, color: 'var(--ou-text-body)' }}>{f.name}</span>
+                  <span style={{ fontSize: 10, color: 'var(--ou-text-disabled)', marginLeft: 4 }}>{f.hanja}</span>
                 </div>
                 <div style={{ display: 'flex', gap: 4 }}>
                   {f.role && (
                     <span style={{
                       fontSize: 9, padding: '1px 6px', borderRadius: 4,
-                      border: '0.5px solid rgba(255,255,255,0.1)',
-                      color: 'rgba(255,255,255,0.4)',
+                      border: '0.5px solid var(--ou-border-faint)',
+                      color: 'var(--ou-text-muted)',
                     }}>{ROLE_LABELS[f.role] || f.role}</span>
                   )}
                   {f.dosage && (
-                    <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.25)' }}>{f.dosage}</span>
+                    <span style={{ fontSize: 9, color: 'var(--ou-text-disabled)' }}>{f.dosage}</span>
                   )}
                 </div>
               </div>
@@ -470,14 +477,14 @@ function ComparePanel({ herbs, onRemove }: { herbs: Herb[]; onRemove: (h: Herb) 
       <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
         <thead>
           <tr>
-            <th style={{ padding: '8px 10px', textAlign: 'left', color: 'rgba(255,255,255,0.3)', fontWeight: 500, borderBottom: '1px solid rgba(255,255,255,0.06)' }}></th>
+            <th style={{ padding: '8px 10px', textAlign: 'left', color: 'var(--ou-text-disabled)', fontWeight: 500, borderBottom: '0.5px solid var(--ou-border-faint)' }}></th>
             {herbs.map(h => (
-              <th key={h.id} style={{ padding: '8px 10px', textAlign: 'center', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+              <th key={h.id} style={{ padding: '8px 10px', textAlign: 'center', borderBottom: '0.5px solid var(--ou-border-faint)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
-                  <span style={{ fontWeight: 600, color: 'var(--ou-text-strong)' }}>{h.name}</span>
-                  <button onClick={() => onRemove(h)} style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', cursor: 'pointer' }}>×</button>
+                  <span style={{ fontWeight: 600, color: 'var(--ou-text-heading)' }}>{h.name}</span>
+                  <button onClick={() => onRemove(h)} style={{ fontSize: 10, color: 'var(--ou-text-disabled)', cursor: 'pointer', background: 'none', border: 'none' }}>×</button>
                 </div>
-                {h.hanja && <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)' }}>{h.hanja}</div>}
+                {h.hanja && <div style={{ fontSize: 10, color: 'var(--ou-text-disabled)' }}>{h.hanja}</div>}
               </th>
             ))}
           </tr>
@@ -485,9 +492,9 @@ function ComparePanel({ herbs, onRemove }: { herbs: Herb[]; onRemove: (h: Herb) 
         <tbody>
           {fields.map(field => (
             <tr key={field}>
-              <td style={{ padding: '6px 10px', color: 'rgba(255,255,255,0.4)', fontWeight: 500, borderTop: '1px solid rgba(255,255,255,0.04)', whiteSpace: 'nowrap' }}>{field}</td>
+              <td style={{ padding: '6px 10px', color: 'var(--ou-text-muted)', fontWeight: 500, borderTop: '0.5px solid var(--ou-border-faint)', whiteSpace: 'nowrap' }}>{field}</td>
               {herbs.map(h => (
-                <td key={h.id} style={{ padding: '6px 10px', color: 'var(--ou-text-secondary)', borderTop: '1px solid rgba(255,255,255,0.04)', textAlign: 'center', lineHeight: 1.5 }}>
+                <td key={h.id} style={{ padding: '6px 10px', color: 'var(--ou-text-body)', borderTop: '0.5px solid var(--ou-border-faint)', textAlign: 'center', lineHeight: 1.5 }}>
                   {getField(h, field)}
                 </td>
               ))}
@@ -503,7 +510,7 @@ function ComparePanel({ herbs, onRemove }: { herbs: Herb[]; onRemove: (h: Herb) 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div style={{ marginBottom: 18 }}>
-      <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.4)', marginBottom: 8, letterSpacing: 0.5 }}>{title}</div>
+      <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ou-text-muted)', marginBottom: 8, letterSpacing: 0.5 }}>{title}</div>
       {children}
     </div>
   );
@@ -511,9 +518,9 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-      <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>{label}</span>
-      <span style={{ fontSize: 12, color: 'var(--ou-text-secondary)', textAlign: 'right' }}>{value}</span>
+    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0', borderBottom: '0.5px solid var(--ou-border-faint)' }}>
+      <span style={{ fontSize: 12, color: 'var(--ou-text-muted)' }}>{label}</span>
+      <span style={{ fontSize: 12, color: 'var(--ou-text-body)', textAlign: 'right' }}>{value}</span>
     </div>
   );
 }
@@ -522,9 +529,10 @@ function Chip({ label, active, onClick }: { label: string; active: boolean; onCl
   return (
     <button onClick={onClick} style={{
       padding: '4px 10px', borderRadius: 999, fontSize: 11,
-      border: active ? '1px solid rgba(255,255,255,0.3)' : '1px solid rgba(255,255,255,0.08)',
-      background: active ? 'rgba(255,255,255,0.06)' : 'transparent',
-      color: active ? 'var(--ou-text-strong)' : 'var(--ou-text-dimmed)',
+      border: `0.5px solid ${active ? 'var(--ou-border-subtle)' : 'var(--ou-border-faint)'}`,
+      background: 'var(--ou-bg)',
+      boxShadow: active ? 'var(--ou-neu-pressed-sm)' : 'var(--ou-neu-raised-sm)',
+      color: active ? 'var(--ou-text-heading)' : 'var(--ou-text-muted)',
       cursor: 'pointer', transition: '100ms ease',
     }}>
       {label}
@@ -536,9 +544,10 @@ function MiniChip({ label, active, color, onClick }: { label: string; active: bo
   return (
     <button onClick={onClick} style={{
       padding: '2px 7px', borderRadius: 4, fontSize: 10,
-      border: active ? '1px solid rgba(255,255,255,0.3)' : '0.5px solid rgba(255,255,255,0.08)',
-      background: active ? (color || 'rgba(255,255,255,0.1)') : 'transparent',
-      color: active ? 'var(--ou-text-strong)' : 'rgba(255,255,255,0.35)',
+      border: `0.5px solid ${active ? 'var(--ou-border-subtle)' : 'var(--ou-border-faint)'}`,
+      background: active ? (color || 'var(--ou-bg)') : 'transparent',
+      boxShadow: active && !color ? 'var(--ou-neu-pressed-sm)' : undefined,
+      color: active ? 'var(--ou-text-heading)' : 'var(--ou-text-muted)',
       cursor: 'pointer', transition: '100ms ease',
     }}>
       {label}

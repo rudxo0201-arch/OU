@@ -71,8 +71,8 @@ export function LectureView({ nodes }: LectureViewProps) {
   if (chapters.length === 0) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '32px 0', gap: 12 }}>
-        <ListNumbers size={48} weight="light" style={{ color: 'var(--ou-gray-5, #888)' }} />
-        <span style={{ fontSize: 13, color: 'var(--ou-text-dimmed, #888)' }}>강의에 넣을 데이터가 없습니다</span>
+        <ListNumbers size={48} weight="light" style={{ color: 'var(--ou-text-muted)' }} />
+        <span style={{ fontSize: 13, color: 'var(--ou-text-muted)' }}>강의에 넣을 데이터가 없습니다</span>
       </div>
     );
   }
@@ -80,13 +80,13 @@ export function LectureView({ nodes }: LectureViewProps) {
   return (
     <div style={{ display: 'flex', height: 500 }}>
       {/* Left: chapter list */}
-      <div style={{ width: 220, borderRight: '0.5px solid var(--ou-border, #333)', flexShrink: 0 }}>
-        <div style={{ padding: '8px 12px', borderBottom: '0.5px solid var(--ou-border, #333)' }}>
-          <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ou-text-dimmed, #888)', textTransform: 'uppercase' }}>
+      <div style={{ width: 220, borderRight: '0.5px solid var(--ou-border-subtle)', flexShrink: 0 }}>
+        <div style={{ padding: '8px 12px', borderBottom: '0.5px solid var(--ou-border-subtle)' }}>
+          <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ou-text-muted)', textTransform: 'uppercase' }}>
             챕터 ({chapters.length})
           </span>
-          <div style={{ height: 3, borderRadius: 2, backgroundColor: 'var(--ou-bg-subtle, #e0e0e0)', marginTop: 4, overflow: 'hidden' }}>
-            <div style={{ height: '100%', width: `${progress}%`, backgroundColor: 'var(--ou-gray-5, #888)', borderRadius: 2 }} />
+          <div style={{ height: 3, borderRadius: 2, background: 'var(--ou-border-faint)', marginTop: 4, overflow: 'hidden' }}>
+            <div style={{ height: '100%', width: `${progress}%`, background: 'var(--ou-text-muted)', borderRadius: 2 }} />
           </div>
         </div>
         <div style={{ height: 440, overflowY: 'auto' }}>
@@ -102,11 +102,12 @@ export function LectureView({ nodes }: LectureViewProps) {
                   style={{
                     display: 'flex', gap: 8, padding: '8px 12px', flexWrap: 'nowrap', alignItems: 'center',
                     cursor: 'pointer',
-                    background: isActive ? 'var(--ou-bg-subtle, rgba(255,255,255,0.06))' : 'transparent',
-                    borderBottom: '0.5px solid var(--ou-border, #333)',
+                    background: isActive ? 'var(--ou-bg)' : 'transparent',
+                    boxShadow: isActive ? 'inset var(--ou-neu-pressed-sm)' : undefined,
+                    borderBottom: '0.5px solid var(--ou-border-subtle)',
                   }}
                 >
-                  <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', width: 18, textAlign: 'right' }}>{idx + 1}</span>
+                  <span style={{ fontSize: 11, color: 'var(--ou-text-muted)', width: 18, textAlign: 'right' }}>{idx + 1}</span>
                   <TypeIcon size={12} weight="light" />
                   <span style={{ fontSize: 11, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ch.title}</span>
                 </div>
@@ -119,7 +120,7 @@ export function LectureView({ nodes }: LectureViewProps) {
       {/* Right: content area */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         {/* Navigation */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 16px', borderBottom: '0.5px solid var(--ou-border, #333)', alignItems: 'center' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 16px', borderBottom: '0.5px solid var(--ou-border-subtle)', alignItems: 'center' }}>
           <button
             disabled={selectedChapterIdx === 0}
             onClick={() => setSelectedChapterIdx(i => Math.max(0, i - 1))}
@@ -138,14 +139,14 @@ export function LectureView({ nodes }: LectureViewProps) {
         </div>
 
         {/* Tab bar */}
-        <div style={{ display: 'flex', gap: 0, padding: '0 16px', borderBottom: '0.5px solid var(--ou-border, #333)' }}>
+        <div style={{ display: 'flex', gap: 0, padding: '0 16px', borderBottom: '0.5px solid var(--ou-border-subtle)' }}>
           {['content', 'quiz', 'overview'].map(tab => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
               style={{
                 padding: '8px 12px', border: 'none', background: 'none', cursor: 'pointer', fontSize: 11,
-                color: activeTab === tab ? 'inherit' : 'var(--ou-text-dimmed, #888)',
+                color: activeTab === tab ? 'inherit' : 'var(--ou-text-muted)',
                 borderBottom: activeTab === tab ? '2px solid currentColor' : '2px solid transparent',
                 display: 'flex', alignItems: 'center', gap: 4,
               }}
@@ -160,7 +161,7 @@ export function LectureView({ nodes }: LectureViewProps) {
           {activeTab === 'content' && (
             <>
               {currentChapter?.mediaUrl && (
-                <div style={{ border: '0.5px solid var(--ou-border, #333)', borderRadius: 8, overflow: 'hidden', aspectRatio: '16/9', background: '#111', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+                <div style={{ border: '0.5px solid var(--ou-border-subtle)', borderRadius: 8, overflow: 'hidden', aspectRatio: '16/9', background: 'var(--ou-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
                   {currentChapter.contentType === 'video' ? (
                     <video src={currentChapter.mediaUrl} controls style={{ width: '100%', height: '100%' }} />
                   ) : currentChapter.contentType === 'image' ? (
@@ -185,23 +186,23 @@ export function LectureView({ nodes }: LectureViewProps) {
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '32px 0' }}>
-                <Cards size={48} weight="light" style={{ color: 'var(--ou-gray-5, #888)' }} />
-                <span style={{ fontSize: 13, color: 'var(--ou-text-dimmed, #888)', marginTop: 8 }}>데이터에서 자동 생성할 퀴즈가 없습니다</span>
+                <Cards size={48} weight="light" style={{ color: 'var(--ou-text-muted)' }} />
+                <span style={{ fontSize: 13, color: 'var(--ou-text-muted)', marginTop: 8 }}>데이터에서 자동 생성할 퀴즈가 없습니다</span>
               </div>
             )
           )}
 
           {activeTab === 'overview' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ou-text-dimmed, #888)', textTransform: 'uppercase' }}>전체 챕터</span>
+              <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ou-text-muted)', textTransform: 'uppercase' }}>전체 챕터</span>
               {chapters.map((ch, idx) => (
                 <div
                   key={ch.id}
                   onClick={() => { setSelectedChapterIdx(idx); setActiveTab('content'); }}
-                  style={{ display: 'flex', gap: 8, padding: '4px 0', cursor: 'pointer', borderBottom: '0.5px solid var(--ou-border, #333)', alignItems: 'center' }}
+                  style={{ display: 'flex', gap: 8, padding: '4px 0', cursor: 'pointer', borderBottom: '0.5px solid var(--ou-border-subtle)', alignItems: 'center' }}
                 >
-                  <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', width: 24, textAlign: 'right' }}>{idx + 1}</span>
-                  <span style={{ fontSize: 10, padding: '1px 6px', border: '0.5px solid var(--ou-border, #333)', borderRadius: 4 }}>{ch.contentType}</span>
+                  <span style={{ fontSize: 11, color: 'var(--ou-text-muted)', width: 24, textAlign: 'right' }}>{idx + 1}</span>
+                  <span style={{ fontSize: 10, padding: '1px 6px', border: '0.5px solid var(--ou-border-subtle)', borderRadius: 4 }}>{ch.contentType}</span>
                   <span style={{ fontSize: 13, flex: 1 }}>{ch.title}</span>
                 </div>
               ))}
@@ -221,21 +222,23 @@ function QuizCard({ index, question, answer }: { index: number; question: string
       onClick={() => setRevealed(r => !r)}
       style={{
         padding: 16,
-        border: '0.5px solid var(--ou-border, #333)',
+        border: '0.5px solid var(--ou-border-subtle)',
         borderRadius: 8,
+        background: 'var(--ou-bg)',
+        boxShadow: revealed ? 'var(--ou-neu-pressed-sm)' : 'var(--ou-neu-raised-sm)',
         cursor: 'pointer',
       }}
     >
       <div style={{ display: 'flex', gap: 8, marginBottom: 8, alignItems: 'center' }}>
-        <span style={{ fontSize: 10, padding: '1px 6px', border: '0.5px solid var(--ou-border, #333)', borderRadius: 4 }}>Q{index + 1}</span>
+        <span style={{ fontSize: 10, padding: '1px 6px', border: '0.5px solid var(--ou-border-subtle)', borderRadius: 4 }}>Q{index + 1}</span>
         <span style={{ fontSize: 13, fontWeight: 500 }}>{question}</span>
       </div>
       {revealed ? (
-        <span style={{ fontSize: 13, color: 'var(--ou-text-dimmed, #888)', paddingLeft: 28, lineHeight: 1.6 }}>
+        <span style={{ fontSize: 13, color: 'var(--ou-text-muted)', paddingLeft: 28, lineHeight: 1.6 }}>
           {answer}
         </span>
       ) : (
-        <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', paddingLeft: 28 }}>눌러서 답 확인</span>
+        <span style={{ fontSize: 11, color: 'var(--ou-text-muted)', paddingLeft: 28 }}>눌러서 답 확인</span>
       )}
     </div>
   );

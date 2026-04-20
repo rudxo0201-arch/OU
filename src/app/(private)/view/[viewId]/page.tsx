@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { VIEW_REGISTRY, VIEW_LABELS } from '@/components/views/registry';
+import { NeuButton, NeuCard, NeuModal } from '@/components/ds';
 
 const VIEW_ICONS: Record<string, string> = {
   todo: '☑', calendar: '📅', table: '📊', task: '📋', dictionary: '📖',
@@ -14,61 +15,49 @@ const VIEW_ICONS: Record<string, string> = {
 export default function ViewPage() {
   const { viewId } = useParams<{ viewId: string }>();
   const router = useRouter();
-  const [viewData, setViewData] = useState<any>(null);
-  const [nodes, setNodes] = useState<any[]>([]);
+  const [viewData, setViewData] = useState<Record<string, unknown> | null>(null);
+  const [nodes, setNodes] = useState<unknown[]>([]);
   const [loading, setLoading] = useState(true);
   const [showShare, setShowShare] = useState(false);
   const [showInstallGuide, setShowInstallGuide] = useState(false);
 
-  // 뷰 데이터 + 노드 로드
   useEffect(() => {
     if (!viewId) return;
-
-    // saved_views에서 뷰 정보 로드
     fetch(`/api/views?id=${viewId}`)
       .then(r => r.json())
       .then(data => {
-        const view = data.view || data.views?.find((v: any) => v.id === viewId);
+        const view = data.view || data.views?.find((v: Record<string, unknown>) => v.id === viewId);
         if (view) {
           setViewData(view);
-          // 뷰의 필터에 맞는 노드 로드
-          return fetch(`/api/nodes?domain=${view.filter_config?.domain || ''}&limit=200`);
+          const filterConfig = view.filter_config as Record<string, unknown> | undefined;
+          return fetch(`/api/nodes?domain=${filterConfig?.domain || ''}&limit=200`);
         }
         return null;
       })
       .then(r => r?.json())
-      .then(data => {
-        if (data?.nodes) setNodes(data.nodes);
-      })
+      .then(data => { if (data?.nodes) setNodes(data.nodes); })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, [viewId]);
 
-  const viewType = viewData?.view_type || '';
+  const viewType = (viewData?.view_type as string) || '';
   const ViewComponent = VIEW_REGISTRY[viewType];
-  const viewLabel = viewData?.name || VIEW_LABELS[viewType] || '뷰';
+  const viewLabel = (viewData?.name as string) || VIEW_LABELS[viewType] || '뷰';
   const viewIcon = VIEW_ICONS[viewType] || '◉';
 
-  const handleAddToHome = useCallback(() => {
-    setShowInstallGuide(true);
-    setShowShare(false);
-  }, []);
-
-  const handleCopyLink = useCallback(() => {
-    navigator.clipboard.writeText(window.location.href);
-    setShowShare(false);
-  }, []);
+  const handleAddToHome = useCallback(() => { setShowInstallGuide(true); setShowShare(false); }, []);
+  const handleCopyLink = useCallback(() => { navigator.clipboard.writeText(window.location.href); setShowShare(false); }, []);
 
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--ou-text-body)', animation: 'blink 1s ease-in-out infinite' }} />
+      <div style={{ minHeight: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--ou-bg)' }}>
+        <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--ou-text-disabled)', animation: 'blink 1s ease-in-out infinite' }} />
       </div>
     );
   }
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--ou-bg)' }}>
       {/* Top bar */}
       <div style={{
         height: 48, flexShrink: 0,
@@ -77,44 +66,23 @@ export default function ViewPage() {
         borderBottom: '1px solid var(--ou-border-subtle)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <button
-            onClick={() => router.push('/my')}
-            style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', color: 'var(--ou-text-dimmed)' }}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-              <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
-          <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ou-text-strong)' }}>
+          <NeuButton variant="ghost" size="sm" onClick={() => router.push('/my')} style={{ padding: '4px 8px' }}>
+            ←
+          </NeuButton>
+          <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ou-text-heading)' }}>
             {viewIcon} {viewLabel}
           </span>
         </div>
 
-        {/* Share button */}
         <div style={{ position: 'relative' }}>
-          <button
-            onClick={() => setShowShare(!showShare)}
-            style={{
-              width: 32, height: 32, borderRadius: '50%',
-              border: '0.5px solid var(--ou-border-subtle)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer', fontSize: 14,
-              color: 'var(--ou-text-dimmed)',
-            }}
-          >
+          <NeuButton variant="ghost" size="sm" onClick={() => setShowShare(!showShare)} style={{ padding: '4px 10px' }}>
             ⋯
-          </button>
+          </NeuButton>
 
-          {/* Share dropdown */}
           {showShare && (
-            <div style={{
+            <NeuCard variant="raised" style={{
               position: 'absolute', top: 40, right: 0,
-              width: 180, borderRadius: 10,
-              border: '1px solid var(--ou-border-subtle)',
-              background: 'var(--ou-bg)',
-              backdropFilter: 'blur(12px)',
-              padding: 4, zIndex: 100,
-              animation: 'ou-fade-in 0.15s ease',
+              width: 180, padding: 4, zIndex: 100,
             }}>
               <ShareOption label="홈 화면에 추가" icon="📱" onClick={handleAddToHome} />
               <ShareOption label="링크 복사" icon="🔗" onClick={handleCopyLink} />
@@ -122,7 +90,7 @@ export default function ViewPage() {
                 navigator.share?.({ title: viewLabel, url: window.location.href });
                 setShowShare(false);
               }} />
-            </div>
+            </NeuCard>
           )}
         </div>
       </div>
@@ -130,36 +98,27 @@ export default function ViewPage() {
       {/* View content */}
       <div style={{ flex: 1, overflow: 'auto' }}>
         {ViewComponent ? (
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           <ViewComponent
-            nodes={nodes}
-            layoutConfig={viewData?.layout_config}
-            filters={viewData?.filter_config}
+            nodes={nodes as any}
+            layoutConfig={viewData?.layout_config as Record<string, unknown>}
+            filters={viewData?.filter_config as Record<string, unknown>}
           />
         ) : (
-          <div style={{
-            padding: 40, textAlign: 'center',
-            color: 'var(--ou-text-dimmed)', fontSize: 13,
-          }}>
+          <div style={{ padding: 40, textAlign: 'center', color: 'var(--ou-text-muted)', fontSize: 13 }}>
             뷰를 찾을 수 없습니다
           </div>
         )}
       </div>
 
       {/* Install guide modal */}
-      {showInstallGuide && (
-        <InstallGuide
-          viewLabel={viewLabel}
-          viewIcon={viewIcon}
-          onClose={() => setShowInstallGuide(false)}
-        />
-      )}
+      <NeuModal open={showInstallGuide} onClose={() => setShowInstallGuide(false)} title={`${viewIcon} ${viewLabel}`}>
+        <InstallGuideContent />
+      </NeuModal>
 
       {/* Click outside to close share menu */}
       {showShare && (
-        <div
-          style={{ position: 'fixed', inset: 0, zIndex: 50 }}
-          onClick={() => setShowShare(false)}
-        />
+        <div style={{ position: 'fixed', inset: 0, zIndex: 50 }} onClick={() => setShowShare(false)} />
       )}
     </div>
   );
@@ -167,109 +126,46 @@ export default function ViewPage() {
 
 function ShareOption({ label, icon, onClick }: { label: string; icon: string; onClick: () => void }) {
   return (
-    <button
+    <NeuButton
+      variant="ghost"
+      size="sm"
       onClick={onClick}
-      style={{
-        width: '100%', padding: '10px 12px',
-        display: 'flex', alignItems: 'center', gap: 10,
-        borderRadius: 8, cursor: 'pointer',
-        fontSize: 13, color: 'var(--ou-text-secondary, #ccc)',
-        transition: '100ms ease',
-      }}
+      style={{ width: '100%', justifyContent: 'flex-start', gap: 10, padding: '10px 12px', borderRadius: 8 }}
     >
       <span>{icon}</span>
       {label}
-    </button>
+    </NeuButton>
   );
 }
 
-function InstallGuide({ viewLabel, viewIcon, onClose }: {
-  viewLabel: string;
-  viewIcon: string;
-  onClose: () => void;
-}) {
-  const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
-  const isAndroid = /Android/.test(navigator.userAgent);
+function InstallGuideContent() {
+  const isIOS = typeof navigator !== 'undefined' && /iPhone|iPad|iPod/.test(navigator.userAgent);
+  const isAndroid = typeof navigator !== 'undefined' && /Android/.test(navigator.userAgent);
 
   return (
-    <div style={{
-      position: 'fixed', inset: 0, zIndex: 200,
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      background: 'rgba(0,0,0,0.6)',
-      backdropFilter: 'blur(4px)',
-    }} onClick={onClose}>
-      <div
-        onClick={e => e.stopPropagation()}
-        style={{
-          width: 320, borderRadius: 16,
-          background: 'var(--ou-bg)',
-          border: '1px solid var(--ou-border-subtle)',
-          padding: 24,
-          animation: 'ou-fade-in 0.2s ease',
-        }}
-      >
-        {/* Preview */}
-        <div style={{ textAlign: 'center', marginBottom: 20 }}>
-          <div style={{
-            width: 56, height: 56, borderRadius: 12,
-            background: 'var(--ou-border-faint)',
-            border: '1px solid var(--ou-border-subtle)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 28, margin: '0 auto 10px',
-          }}>
-            {viewIcon}
-          </div>
-          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ou-text-strong)' }}>
-            {viewLabel}
-          </div>
-          <div style={{ fontSize: 11, color: 'var(--ou-text-dimmed)', marginTop: 2 }}>
-            ouuniverse.com
-          </div>
+    <NeuCard variant="pressed" style={{ padding: 16 }}>
+      {isIOS ? (
+        <div style={{ fontSize: 13, color: 'var(--ou-text-body)', lineHeight: 1.8 }}>
+          <div style={{ marginBottom: 8, fontWeight: 600, color: 'var(--ou-text-heading)' }}>iOS</div>
+          1. 하단 Safari 공유 버튼 <span style={{ fontSize: 16 }}>↑</span> 탭<br />
+          2. <strong>홈 화면에 추가</strong> 선택<br />
+          3. <strong>추가</strong> 탭
         </div>
-
-        {/* Instructions */}
-        <div style={{
-          padding: 16, borderRadius: 10,
-          background: 'var(--ou-border-faint)',
-          border: '1px solid var(--ou-border-faint)',
-        }}>
-          {isIOS ? (
-            <div style={{ fontSize: 13, color: 'var(--ou-text-secondary)', lineHeight: 1.8 }}>
-              <div style={{ marginBottom: 8, fontWeight: 500, color: 'var(--ou-text-strong)' }}>iOS</div>
-              1. 하단 Safari 공유 버튼 <span style={{ fontSize: 16 }}>↑</span> 탭<br />
-              2. <strong>홈 화면에 추가</strong> 선택<br />
-              3. <strong>추가</strong> 탭
-            </div>
-          ) : isAndroid ? (
-            <div style={{ fontSize: 13, color: 'var(--ou-text-secondary)', lineHeight: 1.8 }}>
-              <div style={{ marginBottom: 8, fontWeight: 500, color: 'var(--ou-text-strong)' }}>Android</div>
-              1. Chrome 메뉴 <strong>⋮</strong> 탭<br />
-              2. <strong>홈 화면에 추가</strong> 선택<br />
-              3. <strong>추가</strong> 탭
-            </div>
-          ) : (
-            <div style={{ fontSize: 13, color: 'var(--ou-text-secondary)', lineHeight: 1.8 }}>
-              <div style={{ marginBottom: 8, fontWeight: 500, color: 'var(--ou-text-strong)' }}>데스크탑</div>
-              1. 브라우저 주소창 오른쪽 <strong>설치 아이콘</strong> 클릭<br />
-              2. 또는 메뉴 → <strong>앱 설치</strong><br />
-              3. 바탕화면에 바로가기 생성
-            </div>
-          )}
+      ) : isAndroid ? (
+        <div style={{ fontSize: 13, color: 'var(--ou-text-body)', lineHeight: 1.8 }}>
+          <div style={{ marginBottom: 8, fontWeight: 600, color: 'var(--ou-text-heading)' }}>Android</div>
+          1. Chrome 메뉴 <strong>⋮</strong> 탭<br />
+          2. <strong>홈 화면에 추가</strong> 선택<br />
+          3. <strong>추가</strong> 탭
         </div>
-
-        <button
-          onClick={onClose}
-          style={{
-            width: '100%', marginTop: 16,
-            padding: '10px 0', borderRadius: 999,
-            border: '0.5px solid var(--ou-border-subtle)',
-            fontSize: 13, color: 'var(--ou-text-dimmed)',
-            cursor: 'pointer',
-          }}
-        >
-          확인
-        </button>
-      </div>
-    </div>
+      ) : (
+        <div style={{ fontSize: 13, color: 'var(--ou-text-body)', lineHeight: 1.8 }}>
+          <div style={{ marginBottom: 8, fontWeight: 600, color: 'var(--ou-text-heading)' }}>데스크탑</div>
+          1. 브라우저 주소창 오른쪽 <strong>설치 아이콘</strong> 클릭<br />
+          2. 또는 메뉴 → <strong>앱 설치</strong><br />
+          3. 바탕화면에 바로가기 생성
+        </div>
+      )}
+    </NeuCard>
   );
 }

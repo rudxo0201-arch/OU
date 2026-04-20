@@ -21,7 +21,7 @@ interface Flashcard {
   difficulty?: number; // 0=미학습, 1=어려움, 2=보통, 3=쉬움
 }
 
-function parseCards(nodes: any[]): Flashcard[] {
+function parseCards(nodes: ViewProps['nodes']): Flashcard[] {
   return nodes.map(n => {
     const triples = n.triples ?? n.domain_data?.triples ?? [];
     if (triples.length > 0) {
@@ -118,7 +118,7 @@ export function FlashcardView({ nodes }: ViewProps) {
 
   if (cards.length === 0) {
     return (
-      <div style={{ padding: 40, textAlign: 'center', color: 'var(--ou-text-dimmed)', fontSize: 13 }}>
+      <div style={{ padding: 40, textAlign: 'center', color: 'var(--ou-text-muted)', fontSize: 13 }}>
         <div style={{ fontSize: 32, marginBottom: 12, opacity: 0.3 }}>🃏</div>
         플래시카드로 변환할 데이터가 없습니다
       </div>
@@ -134,10 +134,10 @@ export function FlashcardView({ nodes }: ViewProps) {
     return (
       <div style={{ padding: 40, textAlign: 'center', maxWidth: 400, margin: '0 auto' }}>
         <div style={{ fontSize: 32, marginBottom: 12 }}>🎉</div>
-        <div style={{ fontSize: 18, fontWeight: 600, color: 'var(--ou-text-strong)', marginBottom: 8 }}>
+        <div style={{ fontSize: 18, fontWeight: 600, color: 'var(--ou-text-heading)', marginBottom: 8 }}>
           학습 완료!
         </div>
-        <div style={{ fontSize: 13, color: 'var(--ou-text-dimmed)', marginBottom: 24 }}>
+        <div style={{ fontSize: 13, color: 'var(--ou-text-muted)', marginBottom: 24 }}>
           {cards.length}장 학습
         </div>
 
@@ -167,7 +167,7 @@ export function FlashcardView({ nodes }: ViewProps) {
     >
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, width: '100%', maxWidth: 420, justifyContent: 'space-between' }}>
-        <span style={{ fontSize: 12, color: 'var(--ou-text-dimmed)' }}>
+        <span style={{ fontSize: 12, color: 'var(--ou-text-muted)' }}>
           {currentIndex + 1} / {cards.length}
         </span>
         <button onClick={handleShuffle} style={{ ...actionBtn, padding: '4px 10px' }}>
@@ -223,7 +223,7 @@ export function FlashcardView({ nodes }: ViewProps) {
             <span style={{
               fontSize: card.front.length === 1 ? 48 : card.front.length < 10 ? 28 : 18,
               fontWeight: 600, textAlign: 'center', lineHeight: 1.5,
-              color: 'var(--ou-text-strong)',
+              color: 'var(--ou-text-heading)',
               wordBreak: 'keep-all',
             }}>
               {card.front}
@@ -244,7 +244,7 @@ export function FlashcardView({ nodes }: ViewProps) {
             <span style={{
               fontSize: 14, textAlign: 'center', lineHeight: 1.8,
               whiteSpace: 'pre-wrap', wordBreak: 'keep-all',
-              color: 'var(--ou-text-secondary)',
+              color: 'var(--ou-text-body)',
             }}>
               {card.back}
             </span>
@@ -298,7 +298,7 @@ function RateButton({ label, shortcut, onClick }: {
       border: 'none',
       boxShadow: 'var(--ou-neu-raised-sm)',
       cursor: 'pointer', fontSize: 13,
-      color: 'var(--ou-text-secondary)',
+      color: 'var(--ou-text-body)',
       display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2,
       transition: '150ms ease', minWidth: 80,
     }}>
@@ -316,8 +316,8 @@ function StatBadge({ label, count }: { label: string; count: number; color?: str
       boxShadow: 'var(--ou-neu-pressed-sm)',
       textAlign: 'center',
     }}>
-      <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--ou-text-strong)' }}>{count}</div>
-      <div style={{ fontSize: 11, color: 'var(--ou-text-dimmed)' }}>{label}</div>
+      <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--ou-text-heading)' }}>{count}</div>
+      <div style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>{label}</div>
     </div>
   );
 }
@@ -337,6 +337,6 @@ const actionBtn: React.CSSProperties = {
   border: 'none',
   background: 'var(--ou-bg)',
   boxShadow: 'var(--ou-neu-raised-sm)',
-  fontSize: 12, color: 'var(--ou-text-dimmed)',
+  fontSize: 12, color: 'var(--ou-text-muted)',
   cursor: 'pointer',
 };

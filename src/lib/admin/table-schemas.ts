@@ -124,6 +124,7 @@ export const TABLE_SCHEMAS: TableSchema[] = [
       { name: 'relation_type', type: 'text', label: '관계 타입', editable: true },
       { name: 'weight', type: 'float', label: '가중치', editable: true },
       { name: 'source', type: 'text', label: '출처', editable: true },
+      { name: 'metadata', type: 'json', label: '메타데이터', editable: true },
       { name: 'created_at', type: 'timestamp', label: '생성일', editable: false },
     ],
   },

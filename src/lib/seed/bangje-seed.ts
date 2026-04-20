@@ -27,6 +27,9 @@ interface BangjeRawItem {
   source: string | null;
   contraindications: string[] | null;
   modifications: string[] | null;
+  usage: string | null;
+  parentId: string | null;
+  rationale: string | null;
   lesson: string | null;
 }
 
@@ -61,6 +64,9 @@ function buildRawText(formula: BangjeRawItem): string {
   }
   if (formula.source) {
     parts.push(`출전은 ${formula.source}이다.`);
+  }
+  if (formula.usage) {
+    parts.push(`용법: ${formula.usage}.`);
   }
   if (formula.contraindications) {
     parts.push(`금기는 ${formula.contraindications.join(', ')}이다.`);
@@ -209,6 +215,9 @@ export async function seedBangjeData(
           source: formula.source,
           contraindications: formula.contraindications,
           modifications: formula.modifications,
+          usage: formula.usage,
+          parent_id: formula.parentId,
+          rationale: formula.rationale,
           starred: formula.starred,
           lesson: formula.lesson,
           enrichment_status: hasData ? 'partial' : 'pending',
@@ -296,7 +305,8 @@ export async function seedBangjeData(
         target_node_id: herbNodeId,
         relation_type: 'requires',
         weight,
-        source: 'sql',
+        source: 'seed',
+        metadata: { role: comp.role ?? null, dosage: comp.dosage ?? null },
       });
     }
   }

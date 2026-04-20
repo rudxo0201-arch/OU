@@ -47,7 +47,7 @@ export function ScrapView({ nodes }: ViewProps) {
 
   if (scraps.length === 0) {
     return (
-      <div style={{ padding: 40, textAlign: 'center', color: 'var(--ou-text-dimmed, #888)', fontSize: 13 }}>
+      <div style={{ padding: 40, textAlign: 'center', color: 'var(--ou-text-muted)', fontSize: 13 }}>
         스크랩이 없습니다. 유튜브 URL이나 파일을 Orb에 보내보세요.
       </div>
     );
@@ -72,8 +72,9 @@ export function ScrapView({ nodes }: ViewProps) {
         {filtered.map(scrap => (
           <div key={scrap.id} style={{
             borderRadius: 10,
-            border: '1px solid rgba(255,255,255,0.06)',
-            background: 'rgba(255,255,255,0.02)',
+            border: '0.5px solid var(--ou-border-faint)',
+            background: 'var(--ou-bg)',
+            boxShadow: 'var(--ou-neu-raised-sm)',
             overflow: 'hidden',
             transition: '150ms ease',
           }}>
@@ -98,8 +99,9 @@ export function ScrapView({ nodes }: ViewProps) {
               <div style={{
                 width: '100%', height: 60,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                background: 'rgba(255,255,255,0.03)',
-                fontSize: 20, color: 'rgba(255,255,255,0.15)',
+                background: 'var(--ou-bg)',
+                boxShadow: 'inset var(--ou-neu-pressed-sm)',
+                fontSize: 20, color: 'var(--ou-text-disabled)',
               }}>
                 {scrap.type === 'file' ? '📄' : '📝'}
               </div>
@@ -109,7 +111,7 @@ export function ScrapView({ nodes }: ViewProps) {
             <div style={{ padding: '10px 14px' }}>
               <div style={{
                 fontSize: 13, fontWeight: 500,
-                color: 'var(--ou-text-strong, #fff)',
+                color: 'var(--ou-text-heading)',
                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                 marginBottom: 4,
               }}>
@@ -118,13 +120,13 @@ export function ScrapView({ nodes }: ViewProps) {
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <span style={{
                   fontSize: 10, padding: '1px 6px', borderRadius: 4,
-                  border: '0.5px solid rgba(255,255,255,0.08)',
-                  color: 'var(--ou-text-dimmed, #888)',
+                  border: '0.5px solid var(--ou-border-faint)',
+                  color: 'var(--ou-text-muted)',
                 }}>
                   {scrap.type === 'video' ? '영상' : scrap.type === 'file' ? '파일' : '노트'}
                 </span>
                 {scrap.createdAt && (
-                  <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)' }}>
+                  <span style={{ fontSize: 10, color: 'var(--ou-text-disabled)' }}>
                     {new Date(scrap.createdAt).toLocaleDateString('ko-KR')}
                   </span>
                 )}
@@ -143,9 +145,10 @@ function Chip({ label, active, onClick }: { label: string; active: boolean; onCl
       onClick={onClick}
       style={{
         padding: '5px 12px', borderRadius: 999, fontSize: 11,
-        border: active ? '1px solid rgba(255,255,255,0.3)' : '1px solid rgba(255,255,255,0.08)',
-        background: active ? 'rgba(255,255,255,0.06)' : 'transparent',
-        color: active ? 'var(--ou-text-strong, #fff)' : 'var(--ou-text-dimmed, #888)',
+        border: `0.5px solid ${active ? 'var(--ou-border-subtle)' : 'var(--ou-border-faint)'}`,
+        background: 'var(--ou-bg)',
+        boxShadow: active ? 'var(--ou-neu-pressed-sm)' : 'var(--ou-neu-raised-sm)',
+        color: active ? 'var(--ou-text-heading)' : 'var(--ou-text-muted)',
         cursor: 'pointer', transition: '150ms ease',
       }}
     >

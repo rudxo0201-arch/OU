@@ -50,7 +50,8 @@ export function OUChatWindow({ open, onClose }: Props) {
   if (!visible) return null;
 
   const messages = useChatStore(s => s.messages);
-  const requestedView = useChatStore(s => s.requestedView);
+  const requestedViews = useChatStore(s => s.requestedViews);
+  const lastRequestedView = requestedViews[requestedViews.length - 1] ?? null;
 
   const artifacts = messages
     .filter(m => m.role === 'assistant' && m.nodeCreated && !m.streaming)
@@ -60,8 +61,8 @@ export function OUChatWindow({ open, onClose }: Props) {
 
   const previewArtifact = selectedIdx !== null
     ? artifacts[selectedIdx]
-    : requestedView
-      ? { domain: requestedView.viewType, domain_data: undefined, nodeId: undefined, confidence: undefined, msgId: '', idx: -1 }
+    : lastRequestedView
+      ? { domain: lastRequestedView.viewType, domain_data: undefined, nodeId: undefined, confidence: undefined, msgId: '', idx: -1 }
       : artifacts[artifacts.length - 1] ?? null;
 
   return (

@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  let body: { messages?: Array<{ role: string; content: string }>; isGuest?: boolean; selectedModel?: string };
+  let body: { messages?: Array<{ role: string; content: string }>; isGuest?: boolean; selectedModel?: string; linkedNodeId?: string };
   try {
     body = await req.json();
   } catch {
@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const { messages, isGuest } = body;
+  const { messages, isGuest, linkedNodeId } = body;
 
   if (!messages || !Array.isArray(messages) || messages.length === 0) {
     return new Response(JSON.stringify({ error: 'messages array is required' }), {
@@ -286,13 +286,29 @@ export async function POST(req: NextRequest) {
                 setCachedResponse(cacheKey, fullText, cacheTtl).catch(() => {});
               }
 
-              // Layer 2: 비동기 DataNode 저장
+              // LLM 메타 파싱: 도메인 + suggestions (saveMessageAsync 호출 전에 파싱)
+              const metaMatch = fullText.match(/```json:meta\s*\n?([\s\S]*?)```/);
+              let domainHint: string | undefined;
+              let llmSuggestions: string[] | undefined;
+              if (metaMatch) {
+                try {
+                  const meta = JSON.parse(metaMatch[1].trim());
+                  domainHint = meta.domain;
+                  if (Array.isArray(meta.suggestions) && meta.suggestions.length > 0) {
+                    llmSuggestions = meta.suggestions.slice(0, 3);
+                  }
+                } catch { /* skip */ }
+              }
+
+              // Layer 2: 비동기 DataNode 저장 (domainHint 전달 → classifyDomain 스킵)
               let saveError = false;
               try {
                 const result = await saveMessageAsync({
                   userId: user?.id,
                   userMessage: messages[messages.length - 1]?.content ?? '',
                   assistantMessage: fullText,
+                  linkedNodeId: linkedNodeId ?? null,
+                  domainHint,
                 });
                 if (result?.domain) {
                   savedData = {
@@ -305,36 +321,6 @@ export async function POST(req: NextRequest) {
               } catch (err) {
                 console.error('[Layer2] saveMessageAsync failed:', err);
                 saveError = true;
-              }
-
-              // LLM 메타 파싱: 도메인 + suggestions
-              const metaMatch = fullText.match(/```json:meta\s*\n?([\s\S]*?)```/);
-              let llmDomain: string | undefined;
-              let llmSuggestions: string[] | undefined;
-              if (metaMatch) {
-                try {
-                  const meta = JSON.parse(metaMatch[1].trim());
-                  llmDomain = meta.domain;
-                  if (Array.isArray(meta.suggestions) && meta.suggestions.length > 0) {
-                    llmSuggestions = meta.suggestions.slice(0, 3);
-                  }
-                } catch { /* skip */ }
-              }
-
-              // 도메인 불일치 로그
-              const userInput = messages[messages.length - 1]?.content ?? '';
-              if (llmDomain && savedData.domain && llmDomain !== savedData.domain) {
-                Promise.resolve(
-                  supabase.from('domain_classification_log').insert({
-                    user_id: user?.id,
-                    input_text: userInput.slice(0, 200),
-                    regex_domain: savedData.domain ?? 'unknown',
-                    llm_domain: llmDomain,
-                    adopted: llmDomain,
-                  })
-                ).catch(() => {});
-                // LLM 분류 우선 채택
-                savedData.domain = llmDomain;
               }
 
               controller.enqueue(encoder.encode(

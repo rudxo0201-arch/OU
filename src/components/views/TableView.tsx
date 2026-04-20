@@ -64,7 +64,7 @@ export function TableView({ nodes }: ViewProps) {
 
   if (nodes.length === 0) {
     return (
-      <div style={{ padding: 40, textAlign: 'center', color: 'var(--ou-text-dimmed)', fontSize: 13 }}>
+      <div style={{ padding: 40, textAlign: 'center', color: 'var(--ou-text-muted)', fontSize: 13 }}>
         테이블에 표시할 데이터가 없습니다
       </div>
     );
@@ -75,15 +75,16 @@ export function TableView({ nodes }: ViewProps) {
       {/* Toolbar */}
       <div style={{ display: 'flex', gap: 10, marginBottom: 14, alignItems: 'center', flexWrap: 'wrap' }}>
         <div style={{ flex: 1, minWidth: 200, position: 'relative' }}>
-          <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', fontSize: 13, color: 'rgba(255,255,255,0.25)' }}>🔍</span>
+          <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', fontSize: 13, color: 'var(--ou-text-disabled)' }}>🔍</span>
           <input
             placeholder="검색..."
             value={search}
             onChange={e => { setSearch(e.target.value); setPage(0); }}
             style={{
               width: '100%', padding: '7px 10px 7px 30px',
-              fontSize: 12, border: '1px solid rgba(255,255,255,0.08)',
-              borderRadius: 8, background: 'rgba(255,255,255,0.03)',
+              fontSize: 12, border: '0.5px solid var(--ou-border-faint)',
+              borderRadius: 8, background: 'var(--ou-bg)',
+              boxShadow: 'var(--ou-neu-pressed-sm)',
               color: 'inherit', outline: 'none',
             }}
           />
@@ -94,8 +95,9 @@ export function TableView({ nodes }: ViewProps) {
             onChange={e => { setDomainFilter(e.target.value); setPage(0); }}
             style={{
               padding: '7px 10px', fontSize: 12,
-              border: '1px solid rgba(255,255,255,0.08)',
-              borderRadius: 8, background: 'rgba(255,255,255,0.03)',
+              border: '0.5px solid var(--ou-border-faint)',
+              borderRadius: 8, background: 'var(--ou-bg)',
+              boxShadow: 'var(--ou-neu-pressed-sm)',
               color: 'inherit',
             }}
           >
@@ -105,14 +107,14 @@ export function TableView({ nodes }: ViewProps) {
             ))}
           </select>
         )}
-        <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>{displayNodes.length}개</span>
+        <span style={{ fontSize: 11, color: 'var(--ou-text-disabled)' }}>{displayNodes.length}개</span>
       </div>
 
       {/* Table */}
-      <div style={{ overflowX: 'auto', borderRadius: 10, border: '1px solid rgba(255,255,255,0.06)' }}>
+      <div style={{ overflowX: 'auto', borderRadius: 10, border: '0.5px solid var(--ou-border-faint)', boxShadow: 'var(--ou-neu-pressed-sm)' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
           <thead>
-            <tr style={{ background: 'rgba(255,255,255,0.02)' }}>
+            <tr>
               {[
                 { col: 'domain', label: '도메인', w: 80 },
                 { col: 'raw', label: '내용', w: undefined },
@@ -125,8 +127,8 @@ export function TableView({ nodes }: ViewProps) {
                   style={{
                     padding: '10px 10px', textAlign: 'left', cursor: 'pointer',
                     whiteSpace: 'nowrap', fontWeight: 500, fontSize: 11,
-                    borderBottom: '1px solid rgba(255,255,255,0.06)',
-                    color: sortKey === col ? 'var(--ou-text-strong)' : 'var(--ou-text-dimmed)',
+                    borderBottom: '0.5px solid var(--ou-border-faint)',
+                    color: sortKey === col ? 'var(--ou-text-heading)' : 'var(--ou-text-muted)',
                     width: w,
                   }}
                 >
@@ -137,27 +139,27 @@ export function TableView({ nodes }: ViewProps) {
           </thead>
           <tbody>
             {pageNodes.map(node => (
-              <tr key={node.id} style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+              <tr key={node.id} style={{ borderTop: '0.5px solid var(--ou-border-faint)' }}>
                 <td style={{ padding: '8px 10px' }}>
                   <span style={{
                     fontSize: 10, padding: '2px 8px', borderRadius: 4,
-                    border: '0.5px solid rgba(255,255,255,0.08)',
-                    color: 'var(--ou-text-dimmed)',
+                    border: '0.5px solid var(--ou-border-faint)',
+                    color: 'var(--ou-text-muted)',
                   }}>
                     {DOMAIN_LABELS[node.domain] || node.domain || '-'}
                   </span>
                 </td>
-                <td style={{ padding: '8px 10px', maxWidth: 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--ou-text-secondary)' }}>
+                <td style={{ padding: '8px 10px', maxWidth: 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--ou-text-body)' }}>
                   {node.domain_data?.title || (node.raw ?? '').slice(0, 80) || '-'}
                 </td>
-                <td style={{ padding: '8px 10px', color: 'var(--ou-text-dimmed)' }}>{node.confidence ?? '-'}</td>
-                <td style={{ padding: '8px 10px', color: 'var(--ou-text-dimmed)' }}>
+                <td style={{ padding: '8px 10px', color: 'var(--ou-text-muted)' }}>{node.confidence ?? '-'}</td>
+                <td style={{ padding: '8px 10px', color: 'var(--ou-text-muted)' }}>
                   {node.created_at ? new Date(node.created_at).toLocaleDateString('ko-KR') : '-'}
                 </td>
               </tr>
             ))}
             {pageNodes.length === 0 && (
-              <tr><td colSpan={4} style={{ padding: 32, textAlign: 'center', color: 'var(--ou-text-dimmed)' }}>검색 결과 없음</td></tr>
+              <tr><td colSpan={4} style={{ padding: 32, textAlign: 'center', color: 'var(--ou-text-muted)' }}>검색 결과 없음</td></tr>
             )}
           </tbody>
         </table>
@@ -167,10 +169,10 @@ export function TableView({ nodes }: ViewProps) {
       {totalPages > 1 && (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 12 }}>
           <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0}
-            style={{ padding: '4px 12px', borderRadius: 999, border: '0.5px solid rgba(255,255,255,0.08)', fontSize: 11, color: 'var(--ou-text-dimmed)', cursor: 'pointer', opacity: page === 0 ? 0.3 : 1 }}>이전</button>
-          <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed)' }}>{page + 1} / {totalPages}</span>
+            style={{ padding: '4px 12px', borderRadius: 999, border: '0.5px solid var(--ou-border-faint)', background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-raised-sm)', fontSize: 11, color: 'var(--ou-text-muted)', cursor: 'pointer', opacity: page === 0 ? 0.3 : 1 }}>이전</button>
+          <span style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>{page + 1} / {totalPages}</span>
           <button onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))} disabled={page >= totalPages - 1}
-            style={{ padding: '4px 12px', borderRadius: 999, border: '0.5px solid rgba(255,255,255,0.08)', fontSize: 11, color: 'var(--ou-text-dimmed)', cursor: 'pointer', opacity: page >= totalPages - 1 ? 0.3 : 1 }}>다음</button>
+            style={{ padding: '4px 12px', borderRadius: 999, border: '0.5px solid var(--ou-border-faint)', background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-raised-sm)', fontSize: 11, color: 'var(--ou-text-muted)', cursor: 'pointer', opacity: page >= totalPages - 1 ? 0.3 : 1 }}>다음</button>
         </div>
       )}
     </div>

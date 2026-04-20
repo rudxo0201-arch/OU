@@ -41,14 +41,14 @@ export function KanbanView({ nodes, inline }: ViewProps & { inline?: boolean }) 
             <div key={n.id} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <div style={{
                 width: 14, height: 14, borderRadius: 3, flexShrink: 0,
-                border: `1.5px solid ${isDone ? 'var(--ou-text-secondary)' : 'var(--ou-border-muted)'}`,
-                background: isDone ? 'var(--ou-text-secondary)' : 'transparent',
+                border: `1.5px solid ${isDone ? 'var(--ou-text-body)' : 'var(--ou-border-subtle)'}`,
+                background: isDone ? 'var(--ou-text-body)' : 'transparent',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
-                {isDone && <span style={{ color: 'var(--ou-space)', fontSize: 10, lineHeight: 1 }}>✓</span>}
+                {isDone && <span style={{ color: 'var(--ou-bg)', fontSize: 10, lineHeight: 1 }}>✓</span>}
               </div>
               <span style={{
-                fontSize: 12, color: 'var(--ou-text-strong)',
+                fontSize: 12, color: 'var(--ou-text-heading)',
                 textDecoration: isDone ? 'line-through' : 'none',
                 opacity: isDone ? 0.5 : 1,
                 flex: 1,
@@ -66,6 +66,7 @@ export function KanbanView({ nodes, inline }: ViewProps & { inline?: boolean }) 
       </div>
     );
   }
+
   const [dragOverCol, setDragOverCol] = useState<string | null>(null);
   const [dragId, setDragId] = useState<string | null>(null);
   const [statusOverrides, setStatusOverrides] = useState<Record<string, string>>({});
@@ -84,7 +85,7 @@ export function KanbanView({ nodes, inline }: ViewProps & { inline?: boolean }) 
     return [...DEFAULT_COLUMNS, ...extra];
   }, [tasks, statusOverrides]);
 
-  const getStatus = useCallback((node: any) =>
+  const getStatus = useCallback((node: ViewProps['nodes'][number]) =>
     statusOverrides[node.id] ?? node.domain_data?.status ?? 'todo',
   [statusOverrides]);
 
@@ -139,8 +140,9 @@ export function KanbanView({ nodes, inline }: ViewProps & { inline?: boolean }) 
                   fontSize: 10,
                   padding: '1px 6px',
                   borderRadius: 4,
-                  backgroundColor: 'var(--ou-bg-subtle, rgba(255,255,255,0.06))',
-                  color: 'var(--ou-text-dimmed, #888)',
+                  background: 'var(--ou-bg)',
+                  boxShadow: 'var(--ou-neu-pressed-sm)',
+                  color: 'var(--ou-text-muted)',
                 }}>{colTasks.length}</span>
               </div>
 
@@ -151,10 +153,9 @@ export function KanbanView({ nodes, inline }: ViewProps & { inline?: boolean }) 
                   gap: 8,
                   minHeight: 60,
                   borderRadius: 8,
-                  border: colTasks.length === 0 || isOver
-                    ? '1.5px dashed var(--ou-border, #333)'
-                    : '1.5px solid transparent',
-                  background: isOver ? 'var(--ou-bg-subtle, rgba(255,255,255,0.04))' : undefined,
+                  border: `1.5px ${colTasks.length === 0 || isOver ? 'dashed' : 'solid'} ${isOver ? 'var(--ou-border-subtle)' : colTasks.length === 0 ? 'var(--ou-border-faint)' : 'transparent'}`,
+                  background: isOver ? 'var(--ou-bg)' : undefined,
+                  boxShadow: isOver ? 'var(--ou-neu-pressed-sm)' : undefined,
                   transition: 'background 200ms, border-color 200ms',
                   padding: 4,
                 }}
@@ -169,12 +170,13 @@ export function KanbanView({ nodes, inline }: ViewProps & { inline?: boolean }) 
                       onDragEnd={handleDragEnd}
                       style={{
                         padding: 12,
-                        border: '0.5px solid var(--ou-border, #333)',
+                        border: '0.5px solid var(--ou-border-subtle)',
                         borderRadius: 8,
+                        background: 'var(--ou-bg)',
+                        boxShadow: isDragging ? '0 4px 12px rgba(0,0,0,0.15)' : 'var(--ou-neu-raised-sm)',
                         opacity: isDragging ? 0.4 : 1,
                         cursor: 'grab',
                         transition: 'opacity 200ms, box-shadow 200ms',
-                        boxShadow: isDragging ? '0 4px 12px rgba(0,0,0,0.15)' : undefined,
                       }}
                     >
                       <div style={{ display: 'flex', flexDirection: 'row', gap: 6, alignItems: 'center', marginBottom: 4, flexWrap: 'nowrap' }}>
@@ -188,12 +190,12 @@ export function KanbanView({ nodes, inline }: ViewProps & { inline?: boolean }) 
                         </span>
                       </div>
                       {task.domain_data?.description && (
-                        <p style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', margin: '2px 0 0', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+                        <p style={{ fontSize: 11, color: 'var(--ou-text-muted)', margin: '2px 0 0', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
                           {task.domain_data.description}
                         </p>
                       )}
                       {task.domain_data?.due && (
-                        <p style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)', margin: '4px 0 0' }}>
+                        <p style={{ fontSize: 11, color: 'var(--ou-text-muted)', margin: '4px 0 0' }}>
                           마감: {task.domain_data.due}
                         </p>
                       )}
@@ -203,7 +205,7 @@ export function KanbanView({ nodes, inline }: ViewProps & { inline?: boolean }) 
 
                 {colTasks.length === 0 && (
                   <div style={{ padding: '24px 0' }}>
-                    <p style={{ fontSize: 12, color: 'var(--ou-text-dimmed, #888)', textAlign: 'center', margin: 0 }}>
+                    <p style={{ fontSize: 12, color: 'var(--ou-text-muted)', textAlign: 'center', margin: 0 }}>
                       {isOver ? '여기에 놓기' : '비어있음'}
                     </p>
                   </div>

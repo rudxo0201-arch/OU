@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { DotSphere } from '@/components/landing/DotSphere';
 
 export default function Home() {
   return (
@@ -30,13 +29,6 @@ export default function Home() {
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
         position: 'relative', padding: 40, overflow: 'hidden',
       }}>
-        {/* Dot grid */}
-        <div style={{
-          position: 'absolute', inset: 0,
-          backgroundImage: 'radial-gradient(rgba(0,0,0,0.05) 0.8px, transparent 0.8px)',
-          backgroundSize: '32px 32px', opacity: 0.5, pointerEvents: 'none',
-        }} />
-
         {/* 640px raised outer halo */}
         <div style={{
           position: 'absolute', width: 640, height: 640, borderRadius: '50%',
@@ -48,17 +40,6 @@ export default function Home() {
             width: 520, height: 520, borderRadius: '50%',
             background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-pressed-lg)',
           }} />
-        </div>
-
-        {/* DotSphere at 40% opacity */}
-        <div style={{
-          position: 'absolute', inset: 0, display: 'flex',
-          alignItems: 'center', justifyContent: 'center',
-          opacity: 0.4, mixBlendMode: 'multiply',
-        }}>
-          <div style={{ width: 420, height: 420 }}>
-            <DotSphere />
-          </div>
         </div>
 
         {/* Content */}

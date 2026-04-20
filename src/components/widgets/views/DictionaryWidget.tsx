@@ -1,17 +1,23 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { DictionaryView } from '@/components/views/DictionaryView';
 
 /**
  * 한자사전 전용 위젯 — /api/hanja/search를 서버사이드 모드로 사용
+ * skip_count: 페이지 이동 시 count 재계산 생략 (캐시된 total 유지)
  */
 export function DictionaryWidget() {
   const [nodes, setNodes] = useState<any[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
+  const cachedTotal = useRef(0);
+  const prevFilters = useRef<string>('');
 
-  const fetchHanja = useCallback(async (params: Record<string, string | number | undefined> = {}) => {
+  const fetchHanja = useCallback(async (
+    params: Record<string, string | number | undefined> = {},
+    skipCount = false,
+  ) => {
     setLoading(true);
     try {
       const url = new URLSearchParams();
@@ -19,16 +25,21 @@ export function DictionaryWidget() {
         if (v != null && v !== '') url.set(k, String(v));
       });
       if (!url.has('limit')) url.set('limit', '100');
+      if (skipCount) url.set('skip_count', 'true');
+
       const res = await fetch(`/api/hanja/search?${url}`);
       const data = await res.json();
       setNodes(data.nodes ?? []);
-      setTotal(data.total ?? 0);
+      if (!skipCount) {
+        cachedTotal.current = data.total ?? 0;
+        setTotal(data.total ?? 0);
+      }
+      // skip_count 시 기존 total 유지
     } catch { /* fire-and-forget */ } finally {
       setLoading(false);
     }
   }, []);
 
-  // 초기 로드
   useEffect(() => { fetchHanja(); }, [fetchHanja]);
 
   const handleSearch = useCallback((params: {
@@ -40,6 +51,14 @@ export function DictionaryWidget() {
     compType?: string;
     page?: number;
   }) => {
+    // 필터 변경 여부 판단 (page 제외)
+    const filterKey = JSON.stringify({
+      q: params.query, radical: params.radical, grade: params.grade,
+      strokeMin: params.strokeMin, strokeMax: params.strokeMax, compType: params.compType,
+    });
+    const isPageOnly = filterKey === prevFilters.current;
+    prevFilters.current = filterKey;
+
     fetchHanja({
       q: params.query,
       radical: params.radical,
@@ -48,7 +67,7 @@ export function DictionaryWidget() {
       stroke_max: params.strokeMax,
       comp_type: params.compType,
       page: params.page,
-    });
+    }, isPageOnly && (params.page ?? 1) > 1);
   }, [fetchHanja]);
 
   return (

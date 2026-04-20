@@ -26,7 +26,7 @@ type TodoItem = {
   raw?: string;
 };
 
-function parseTodos(nodes: any[]): TodoItem[] {
+function parseTodos(nodes: ViewProps['nodes']): TodoItem[] {
   return nodes
     .filter(n => n.domain === 'task')
     .map(n => ({
@@ -114,10 +114,10 @@ export function TodoView({ nodes, inline }: ViewProps) {
     <div style={{ padding: 20, maxWidth: 600, margin: '0 auto' }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-        <h2 style={{ fontSize: 18, fontWeight: 600, color: 'var(--ou-text-strong, #fff)', margin: 0 }}>
+        <h2 style={{ fontSize: 18, fontWeight: 600, color: 'var(--ou-text-heading)', margin: 0 }}>
           할 일
         </h2>
-        <span style={{ fontSize: 12, color: 'var(--ou-text-dimmed, #888)' }}>
+        <span style={{ fontSize: 12, color: 'var(--ou-text-muted)' }}>
           {activeTodos.length}개 남음
         </span>
       </div>
@@ -141,7 +141,7 @@ export function TodoView({ nodes, inline }: ViewProps) {
       ))}
 
       {activeTodos.length === 0 && (
-        <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--ou-text-dimmed, #888)', fontSize: 13 }}>
+        <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--ou-text-muted)', fontSize: 13 }}>
           모든 할 일을 완료했어요
         </div>
       )}
@@ -152,7 +152,7 @@ export function TodoView({ nodes, inline }: ViewProps) {
           <button
             onClick={() => setDoneVisible(!doneVisible)}
             style={{
-              fontSize: 12, color: 'var(--ou-text-dimmed, #888)',
+              fontSize: 12, color: 'var(--ou-text-muted)',
               cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
               marginBottom: 8, border: 'none', background: 'none',
               padding: '6px 12px', borderRadius: 8,
@@ -207,9 +207,9 @@ function TodoRow({ item, isDone, onToggle, compact }: {
         height: compact ? 14 : 18,
         borderRadius: compact ? 3 : 5,
         border: isDone
-          ? `1.5px solid var(--ou-text-dimmed, #888)`
+          ? `1.5px solid var(--ou-text-muted)`
           : `1.5px solid ${priorityColor}`,
-        background: isDone ? 'var(--ou-text-dimmed, #888)' : 'transparent',
+        background: isDone ? 'var(--ou-text-muted)' : 'transparent',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         flexShrink: 0,
         transition: '150ms ease',
@@ -233,7 +233,7 @@ function TodoRow({ item, isDone, onToggle, compact }: {
 
       {/* Deadline */}
       {item.deadline && !compact && (
-        <span style={{ fontSize: 10, color: 'var(--ou-text-dimmed, #888)', flexShrink: 0 }}>
+        <span style={{ fontSize: 10, color: 'var(--ou-text-muted)', flexShrink: 0 }}>
           {dayjs(item.deadline).format('M/D')}
         </span>
       )}

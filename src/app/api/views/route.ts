@@ -56,7 +56,7 @@ export async function GET(req: NextRequest) {
 
     const { data, error } = await supabase
       .from('saved_views')
-      .select('id, name, view_type, filter_config, created_at')
+      .select('*')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false });
 

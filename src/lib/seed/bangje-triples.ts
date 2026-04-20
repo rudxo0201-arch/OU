@@ -36,7 +36,7 @@ function generateTriplesForFormula(
 
   // (방제, is_a, 소분류) — 분류 관계
   if (domainData.category_minor) {
-    const cat = domainData.category_minor.replace(/^\d+-\d+\.\s*/, '');
+    const cat = domainData.category_minor.replace(/^\d+(?:-\d+)?\.\s*/, '');
     triples.push({ ...base, subject: name, predicate: 'is_a', object: cat });
   }
 

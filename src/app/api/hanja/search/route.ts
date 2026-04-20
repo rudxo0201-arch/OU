@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { logSearch } from '@/lib/logging/search-log';
 
-// CJK Unicode 범위
 const CJK_REGEX = /[\u4E00-\u9FFF\u3400-\u4DBF\uF900-\uFAFF]/g;
 
 function extractHanja(text: string): string[] {
@@ -23,69 +22,58 @@ export async function GET(req: NextRequest) {
     const page = Math.max(1, parseInt(params.get('page') || '1'));
     const limit = Math.min(200, Math.max(1, parseInt(params.get('limit') || '100')));
     const offset = (page - 1) * limit;
+    const skipCount = params.get('skip_count') === 'true';
 
     const supabase = createAdminClient();
-
-    // 한자가 포함된 검색인지 판별
     const hanjaChars = extractHanja(q);
     const isHanjaSearch = hanjaChars.length > 0;
     const isKoreanSearch = !isHanjaSearch && q.length > 0;
 
-    // 기본 쿼리: 한자 타입 노드만
-    let query = supabase
+    // ─── count 쿼리 (필터 변경 시만) ────────────────────────────────────────
+    let total = 0;
+    if (!skipCount) {
+      let countQ = supabase
+        .from('data_nodes')
+        .select('id', { count: 'exact', head: true })
+        .eq('is_admin_node', true)
+        .eq('domain', 'knowledge')
+        .filter('domain_data->>type', 'eq', 'hanja');
+
+      if (isHanjaSearch) {
+        const cf = hanjaChars.map(c => `domain_data->>char.eq.${c}`).join(',');
+        countQ = countQ.or(cf);
+      } else if (isKoreanSearch) {
+        countQ = countQ.or(`domain_data->>hangul_reading.ilike.%${q}%,domain_data->>definition_en.ilike.%${q}%`);
+      }
+      if (radical) countQ = countQ.filter('domain_data->>radical_char', 'eq', radical);
+      if (grade) countQ = countQ.filter('domain_data->>grade', 'eq', grade);
+      if (compType) countQ = countQ.filter('domain_data->composition->>type', 'eq', compType);
+
+      const { count } = await countQ;
+      total = count ?? 0;
+    }
+
+    // ─── 데이터 쿼리 ────────────────────────────────────────────────────────
+    let dataQ = supabase
       .from('data_nodes')
-      .select('id, domain, domain_data, created_at, visibility', { count: 'exact' })
+      .select('id, domain, domain_data, created_at, visibility')
       .eq('is_admin_node', true)
       .eq('domain', 'knowledge')
       .filter('domain_data->>type', 'eq', 'hanja');
 
-    // 검색 조건
     if (isHanjaSearch) {
-      // 한자 직접 검색: OR로 개별 char 매칭
-      const charFilters = hanjaChars
-        .map(c => `domain_data->>char.eq.${c}`)
-        .join(',');
-      query = query.or(charFilters);
+      const cf = hanjaChars.map(c => `domain_data->>char.eq.${c}`).join(',');
+      dataQ = dataQ.or(cf);
     } else if (isKoreanSearch) {
-      query = query.or(
-        `domain_data->>hangul_reading.ilike.%${q}%,domain_data->>definition_en.ilike.%${q}%`,
-      );
+      dataQ = dataQ.or(`domain_data->>hangul_reading.ilike.%${q}%,domain_data->>definition_en.ilike.%${q}%`);
     }
+    if (radical) dataQ = dataQ.filter('domain_data->>radical_char', 'eq', radical);
+    if (grade) dataQ = dataQ.filter('domain_data->>grade', 'eq', grade);
+    if (compType) dataQ = dataQ.filter('domain_data->composition->>type', 'eq', compType);
+    if (!isHanjaSearch) dataQ = dataQ.order('id', { ascending: true });
+    dataQ = dataQ.range(offset, offset + limit - 1);
 
-    // 필터 조건
-    if (radical) {
-      query = query.filter('domain_data->>radical_char', 'eq', radical);
-    }
-
-    if (grade) {
-      query = query.filter('domain_data->>grade', 'eq', grade);
-    }
-
-    if (compType) {
-      query = query.filter('domain_data->composition->>type', 'eq', compType);
-    }
-
-    // 정렬 (획수 오름차순, 미지정 시 id 순)
-    if (!isHanjaSearch) {
-      query = query.order('id', { ascending: true });
-    }
-
-    // 페이지네이션
-    query = query.range(offset, offset + limit - 1);
-
-    const { data, count, error } = await query;
-
-    // 검색 로그 (fire-and-forget)
-    if (!error && (q || radical || grade || compType)) {
-      void logSearch({
-        searchContext: 'dictionary',
-        query: q,
-        filters: { radical, grade, compType, strokeMin, strokeMax },
-        resultCount: count ?? 0,
-        searchMode: 'server',
-        page,
-      });
-    }
+    const { data, error } = await dataQ;
 
     if (error) {
       console.error('[Hanja Search] Error:', error);
@@ -94,7 +82,7 @@ export async function GET(req: NextRequest) {
 
     let nodes = data || [];
 
-    // char 기준 중복 제거 (DB에 동일 한자 중복 입력된 경우 대응)
+    // char 기준 중복 제거
     const seen = new Set<string>();
     nodes = nodes.filter((n: any) => {
       const char = n.domain_data?.char;
@@ -103,22 +91,25 @@ export async function GET(req: NextRequest) {
       return true;
     });
 
-    // 한자 검색인 경우 입력 순서대로 정렬
     if (isHanjaSearch && nodes.length > 0) {
       const orderMap = new Map(hanjaChars.map((c, i) => [c, i]));
-      nodes.sort((a: any, b: any) => {
-        const aIdx = orderMap.get(a.domain_data?.char) ?? 999;
-        const bIdx = orderMap.get(b.domain_data?.char) ?? 999;
-        return aIdx - bIdx;
+      nodes.sort((a: any, b: any) =>
+        (orderMap.get(a.domain_data?.char) ?? 999) - (orderMap.get(b.domain_data?.char) ?? 999)
+      );
+    }
+
+    if (q || radical || grade || compType) {
+      void logSearch({
+        searchContext: 'dictionary',
+        query: q,
+        filters: { radical, grade, compType, strokeMin, strokeMax },
+        resultCount: total,
+        searchMode: 'server',
+        page,
       });
     }
 
-    return NextResponse.json({
-      nodes,
-      total: count ?? 0,
-      page,
-      limit,
-    });
+    return NextResponse.json({ nodes, total, page, limit });
   } catch (e) {
     console.error('[Hanja Search] Unexpected error:', e);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

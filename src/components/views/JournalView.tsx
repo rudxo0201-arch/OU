@@ -85,7 +85,7 @@ export function JournalView({ nodes }: ViewProps) {
 
   if (entries.length === 0) {
     return (
-      <div style={{ padding: 40, textAlign: 'center', color: 'var(--ou-text-dimmed)', fontSize: 13 }}>
+      <div style={{ padding: 40, textAlign: 'center', color: 'var(--ou-text-muted)', fontSize: 13 }}>
         <div style={{ fontSize: 32, marginBottom: 12, opacity: 0.3 }}>📝</div>
         감정 기록이 없습니다. Orb에 오늘 기분을 말해보세요.
       </div>
@@ -114,8 +114,8 @@ export function JournalView({ nodes }: ViewProps) {
                 fontSize: 12,
               }}>
                 <span>{info.emoji}</span>
-                <span style={{ color: 'var(--ou-text-secondary)' }}>{info.label || mood}</span>
-                <span style={{ color: 'var(--ou-text-dimmed)', fontSize: 10 }}>{count}</span>
+                <span style={{ color: 'var(--ou-text-body)' }}>{info.label || mood}</span>
+                <span style={{ color: 'var(--ou-text-muted)', fontSize: 10 }}>{count}</span>
               </div>
             );
           })}
@@ -161,12 +161,12 @@ export function JournalView({ nodes }: ViewProps) {
                       <span style={{ fontSize: 20 }}>{info.emoji}</span>
                       <div style={{ flex: 1 }}>
                         {entry.mood && (
-                          <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--ou-text-strong)' }}>
+                          <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--ou-text-heading)' }}>
                             {info.label || entry.mood}
                           </span>
                         )}
                         <div style={{
-                          fontSize: 13, color: 'var(--ou-text-secondary)',
+                          fontSize: 13, color: 'var(--ou-text-body)',
                           lineHeight: 1.6, marginTop: 2,
                           overflow: isExpanded ? 'visible' : 'hidden',
                           display: isExpanded ? 'block' : '-webkit-box',
@@ -180,7 +180,7 @@ export function JournalView({ nodes }: ViewProps) {
                     </div>
 
                     {entry.date && (
-                      <div style={{ fontSize: 10, color: 'var(--ou-text-dimmed)', marginTop: 6, textAlign: 'right' }}>
+                      <div style={{ fontSize: 10, color: 'var(--ou-text-muted)', marginTop: 6, textAlign: 'right' }}>
                         {dayjs(entry.date).format('A h:mm')}
                       </div>
                     )}

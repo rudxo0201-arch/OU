@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls -la \"/Users/kt/Desktop/claude/OU_Real/ou-web/src/app/\\(private\\)/\")",
+      "Bash(cat \"/Users/kt/Desktop/claude/OU_Real/ou-web/src/app/\\(private\\)/my/page.tsx\")",
+      "Bash(cat \"/Users/kt/Desktop/claude/OU_Real/ou-web/src/app/\\(private\\)/chat/page.tsx\")"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path' | { read -r f; cd /Users/kt/Desktop/claude/OU_Real/ou-web; rel=$(python3 -c \"import os; print(os.path.relpath('$f','$(pwd)'))\" 2>/dev/null); match=$(git status --porcelain 2>/dev/null | awk '{print $2}' | grep -F \"$rel\"); if [ -n \"$match\" ]; then printf '{\"decision\":\"block\",\"reason\":\"⚠️ 충돌 위험: %s 파일이 다른 곳에서 수정 중입니다. 사용자에게 확인하세요.\"}' \"$match\"; fi; }",
+            "timeout": 5,
+            "statusMessage": "충돌 확인 중..."
+          }
+        ]
+      }
+    ]
+  }
+}

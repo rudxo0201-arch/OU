@@ -26,7 +26,7 @@ interface Chapter {
   lessons: Lesson[];
 }
 
-function buildCurriculum(nodes: any[]): Chapter[] {
+function buildCurriculum(nodes: ViewProps['nodes']): Chapter[] {
   // 교육/미디어 도메인 노드를 챕터별로 그룹핑
   const eduNodes = nodes.filter(n =>
     n.domain === 'education' || n.domain === 'media' || n.domain === 'knowledge'
@@ -81,7 +81,7 @@ export function CurriculumView({ nodes }: ViewProps) {
 
   if (chapters.length === 0) {
     return (
-      <div style={{ padding: 40, textAlign: 'center', color: 'var(--ou-text-dimmed, #888)', fontSize: 13 }}>
+      <div style={{ padding: 40, textAlign: 'center', color: 'var(--ou-text-muted)', fontSize: 13 }}>
         커리큘럼에 표시할 자료가 없습니다. 유튜브 영상이나 학습 자료를 추가해보세요.
       </div>
     );
@@ -92,22 +92,23 @@ export function CurriculumView({ nodes }: ViewProps) {
       {/* Progress bar */}
       <div style={{ marginBottom: 24 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-          <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ou-text-strong, #fff)' }}>
+          <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ou-text-heading)' }}>
             커리큘럼
           </span>
-          <span style={{ fontSize: 12, color: 'var(--ou-text-dimmed, #888)' }}>
+          <span style={{ fontSize: 12, color: 'var(--ou-text-muted)' }}>
             {completedCount}/{totalLessons} 완료
           </span>
         </div>
         <div style={{
           height: 4, borderRadius: 2,
-          background: 'rgba(255,255,255,0.06)',
+          background: 'var(--ou-border-faint)',
+          boxShadow: 'var(--ou-neu-pressed-sm)',
           overflow: 'hidden',
         }}>
           <div style={{
             width: `${progress * 100}%`, height: '100%',
             borderRadius: 2,
-            background: 'rgba(255,255,255,0.4)',
+            background: 'var(--ou-text-muted)',
             transition: '300ms ease',
           }} />
         </div>
@@ -127,22 +128,23 @@ export function CurriculumView({ nodes }: ViewProps) {
                 width: '100%', textAlign: 'left',
                 padding: '12px 14px',
                 borderRadius: 8,
-                border: '1px solid rgba(255,255,255,0.06)',
-                background: isOpen ? 'rgba(255,255,255,0.03)' : 'transparent',
+                border: '0.5px solid var(--ou-border-faint)',
+                background: 'var(--ou-bg)',
+                boxShadow: isOpen ? 'var(--ou-neu-pressed-sm)' : 'var(--ou-neu-raised-sm)',
                 cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                 transition: '150ms ease',
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)' }}>
+                <span style={{ fontSize: 10, color: 'var(--ou-text-disabled)' }}>
                   {isOpen ? '▼' : '▶'}
                 </span>
-                <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--ou-text-strong, #fff)' }}>
+                <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--ou-text-heading)' }}>
                   {chapter.title}
                 </span>
               </div>
-              <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed, #888)' }}>
+              <span style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>
                 {chapterCompleted}/{chapter.lessons.length}
               </span>
             </button>
@@ -165,15 +167,13 @@ export function CurriculumView({ nodes }: ViewProps) {
                     {/* Checkbox */}
                     <div style={{
                       width: 16, height: 16, borderRadius: 4, flexShrink: 0,
-                      border: isCompleted(lesson)
-                        ? '1.5px solid rgba(255,255,255,0.4)'
-                        : '1.5px solid rgba(255,255,255,0.15)',
-                      background: isCompleted(lesson) ? 'rgba(255,255,255,0.4)' : 'transparent',
+                      border: `1.5px solid ${isCompleted(lesson) ? 'var(--ou-border-subtle)' : 'var(--ou-border-faint)'}`,
+                      background: isCompleted(lesson) ? 'var(--ou-text-muted)' : 'transparent',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                     }}>
                       {isCompleted(lesson) && (
                         <svg width="9" height="9" viewBox="0 0 10 10" fill="none">
-                          <path d="M2 5.5L4 7.5L8 3" stroke="#111" strokeWidth="1.5" strokeLinecap="round" />
+                          <path d="M2 5.5L4 7.5L8 3" stroke="var(--ou-bg)" strokeWidth="1.5" strokeLinecap="round" />
                         </svg>
                       )}
                     </div>
@@ -186,7 +186,7 @@ export function CurriculumView({ nodes }: ViewProps) {
                     {/* Title */}
                     <span style={{
                       fontSize: 13, flex: 1,
-                      color: isCompleted(lesson) ? 'var(--ou-text-dimmed, #888)' : 'var(--ou-text-secondary, #ccc)',
+                      color: isCompleted(lesson) ? 'var(--ou-text-muted)' : 'var(--ou-text-body)',
                       textDecoration: isCompleted(lesson) ? 'line-through' : 'none',
                     }}>
                       {lesson.title}
@@ -194,7 +194,7 @@ export function CurriculumView({ nodes }: ViewProps) {
 
                     {/* Duration */}
                     {lesson.duration && (
-                      <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', flexShrink: 0 }}>
+                      <span style={{ fontSize: 10, color: 'var(--ou-text-disabled)', flexShrink: 0 }}>
                         {lesson.duration}
                       </span>
                     )}

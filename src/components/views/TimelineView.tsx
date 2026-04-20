@@ -44,7 +44,7 @@ export function TimelineView({ nodes }: ViewProps) {
 
   if (sorted.length === 0) {
     return (
-      <div style={{ padding: 40, textAlign: 'center', color: 'var(--ou-text-dimmed, #888)', fontSize: 13 }}>
+      <div style={{ padding: 40, textAlign: 'center', color: 'var(--ou-text-muted)', fontSize: 13 }}>
         타임라인에 표시할 데이터가 없습니다
       </div>
     );
@@ -74,12 +74,12 @@ export function TimelineView({ nodes }: ViewProps) {
                 }}>
                   <div style={{
                     width: 8, height: 8, borderRadius: '50%',
-                    border: '1.5px solid rgba(255,255,255,0.3)',
-                    background: 'rgba(255,255,255,0.1)',
+                    border: '1.5px solid var(--ou-border-subtle)',
+                    background: 'var(--ou-bg)',
                     flexShrink: 0, marginTop: 6,
                   }} />
                   {i < items.length - 1 && (
-                    <div style={{ width: 1, flex: 1, minHeight: 20, background: 'rgba(255,255,255,0.08)' }} />
+                    <div style={{ width: 1, flex: 1, minHeight: 20, background: 'var(--ou-border-faint)' }} />
                   )}
                 </div>
 
@@ -87,17 +87,17 @@ export function TimelineView({ nodes }: ViewProps) {
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                     <span style={{
                       fontSize: 10, padding: '1px 6px', borderRadius: 4,
-                      border: '0.5px solid rgba(255,255,255,0.1)',
-                      color: 'var(--ou-text-dimmed, #888)',
+                      border: '0.5px solid var(--ou-border-subtle)',
+                      color: 'var(--ou-text-muted)',
                     }}>
                       {DOMAIN_LABELS[node.domain] || node.domain}
                     </span>
-                    <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)' }}>
+                    <span style={{ fontSize: 10, color: 'var(--ou-text-disabled)' }}>
                       {dayjs(node.created_at).format('HH:mm')}
                     </span>
                   </div>
                   <div style={{
-                    fontSize: 13, color: 'var(--ou-text-secondary, #ccc)',
+                    fontSize: 13, color: 'var(--ou-text-body)',
                     lineHeight: 1.6, overflow: 'hidden',
                     display: '-webkit-box', WebkitLineClamp: 2,
                     WebkitBoxOrient: 'vertical' as any,

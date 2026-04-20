@@ -18,7 +18,7 @@ const STAGES = [
   { key: 'harvest', label: '수확', description: '실행 가능' },
 ] as const;
 
-function getStage(node: any): string {
+function getStage(node: ViewProps['nodes'][number]): string {
   // domain_data에 stage가 있으면 사용, 없으면 내용 길이로 추정
   if (node.domain_data?.stage) return node.domain_data.stage;
   const rawLen = (node.raw || '').length;
@@ -56,7 +56,7 @@ export function IdeaView({ nodes }: ViewProps) {
 
   if (ideas.length === 0) {
     return (
-      <div style={{ padding: 40, textAlign: 'center', color: 'var(--ou-text-dimmed, #888)', fontSize: 13 }}>
+      <div style={{ padding: 40, textAlign: 'center', color: 'var(--ou-text-muted)', fontSize: 13 }}>
         아이디어가 없습니다. 채팅에서 아이디어를 말해보세요.
       </div>
     );
@@ -84,7 +84,7 @@ export function IdeaView({ nodes }: ViewProps) {
       {/* Idea cards grid */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(220, 1fr))',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
         gap: 12,
       }}>
         {filtered.map(idea => (
@@ -94,10 +94,9 @@ export function IdeaView({ nodes }: ViewProps) {
             style={{
               padding: 16,
               borderRadius: 12,
-              border: expanded === idea.id
-                ? '1px solid rgba(255,255,255,0.2)'
-                : '1px solid rgba(255,255,255,0.06)',
-              background: 'rgba(255,255,255,0.02)',
+              border: `0.5px solid ${expanded === idea.id ? 'var(--ou-border-subtle)' : 'var(--ou-border-faint)'}`,
+              background: 'var(--ou-bg)',
+              boxShadow: expanded === idea.id ? 'var(--ou-neu-pressed-sm)' : 'var(--ou-neu-raised-sm)',
               cursor: 'pointer',
               transition: '150ms ease',
             }}
@@ -106,8 +105,8 @@ export function IdeaView({ nodes }: ViewProps) {
             <div style={{ marginBottom: 8 }}>
               <span style={{
                 fontSize: 10, padding: '2px 8px', borderRadius: 999,
-                border: '0.5px solid rgba(255,255,255,0.1)',
-                color: 'var(--ou-text-dimmed, #888)',
+                border: '0.5px solid var(--ou-border-faint)',
+                color: 'var(--ou-text-muted)',
               }}>
                 {STAGES.find(s => s.key === idea.stage)?.label || idea.stage}
               </span>
@@ -116,7 +115,7 @@ export function IdeaView({ nodes }: ViewProps) {
             {/* Title */}
             <div style={{
               fontSize: 14, fontWeight: 500,
-              color: 'var(--ou-text-strong, #fff)',
+              color: 'var(--ou-text-heading)',
               marginBottom: 6,
             }}>
               {idea.title}
@@ -124,12 +123,12 @@ export function IdeaView({ nodes }: ViewProps) {
 
             {/* Content */}
             <div style={{
-              fontSize: 12, color: 'var(--ou-text-dimmed, #888)',
+              fontSize: 12, color: 'var(--ou-text-muted)',
               lineHeight: 1.6,
               overflow: 'hidden',
               display: expanded === idea.id ? 'block' : '-webkit-box',
               WebkitLineClamp: expanded === idea.id ? undefined : 3,
-              WebkitBoxOrient: 'vertical' as any,
+              WebkitBoxOrient: 'vertical' as React.CSSProperties['WebkitBoxOrient'],
             }}>
               {idea.content}
             </div>
@@ -137,7 +136,7 @@ export function IdeaView({ nodes }: ViewProps) {
             {/* Date */}
             {idea.createdAt && (
               <div style={{
-                fontSize: 10, color: 'rgba(255,255,255,0.25)',
+                fontSize: 10, color: 'var(--ou-text-disabled)',
                 marginTop: 8,
               }}>
                 {new Date(idea.createdAt).toLocaleDateString('ko-KR')}
@@ -156,9 +155,10 @@ function FilterChip({ label, active, onClick }: { label: string; active: boolean
       onClick={onClick}
       style={{
         padding: '5px 12px', borderRadius: 999, fontSize: 11,
-        border: active ? '1px solid rgba(255,255,255,0.3)' : '1px solid rgba(255,255,255,0.08)',
-        background: active ? 'rgba(255,255,255,0.06)' : 'transparent',
-        color: active ? 'var(--ou-text-strong, #fff)' : 'var(--ou-text-dimmed, #888)',
+        border: `0.5px solid ${active ? 'var(--ou-border-subtle)' : 'var(--ou-border-faint)'}`,
+        background: 'var(--ou-bg)',
+        boxShadow: active ? 'var(--ou-neu-pressed-sm)' : 'var(--ou-neu-raised-sm)',
+        color: active ? 'var(--ou-text-heading)' : 'var(--ou-text-muted)',
         cursor: 'pointer', transition: '150ms ease',
       }}
     >

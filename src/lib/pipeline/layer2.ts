@@ -2,8 +2,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { classifyDomain } from './classifier';
 import { detectUnresolved } from './unresolved';
 import { isAdminEmail } from '@/lib/auth/roles';
-import { extractDomainData } from './extract-domain-data';
-import { completeWithFallback } from '@/lib/llm/router';
+import { extractAll } from './extraction';
 
 // 수정/보충 패턴 감지
 const UPDATE_PATTERNS = [
@@ -73,77 +72,7 @@ async function findNodeToUpdate(
   return bestNode ? { id: bestNode.id, domain_data: bestNode.domain_data as Record<string, any> | null } : null;
 }
 
-// ── 엔티티 추출 (LLM 기반) ──
-
-const ENTITY_EXTRACTION_PROMPT = `사용자의 메시지에서 엔티티(인물, 장소, 사물)를 추출하세요.
-
-규칙:
-1. 인물: 이름, 호칭(엄마, 할머니, 선생님 등), 별명 모두 포함
-2. 장소: 구체적 장소명, "~댁", "~집", 지역명 등
-3. 사물: 구체적 사물이 언급된 경우만 (일반 명사 제외)
-4. 메인 이벤트 자체는 제외 (일정, 감정 등은 메인 노드가 처리)
-5. 엔티티 간 관계도 추출 (호칭에서 추론 가능한 관계 포함)
-6. 화자(나/사용자)와의 관계도 추출
-
-JSON으로만 출력:
-{
-  "entities": [
-    {"name": "엄마", "type": "person", "relationship_to_user": "어머니"},
-    {"name": "할머니", "type": "person", "relationship_to_user": "외할머니"},
-    {"name": "할머니댁", "type": "location", "related_person": "할머니"}
-  ],
-  "relations": [
-    {"from": "엄마", "to": "할머니", "relation": "고부관계"},
-    {"from": "사용자", "to": "엄마", "relation": "모자관계"}
-  ]
-}
-
-엔티티가 없으면 {"entities":[],"relations":[]}`;
-
-interface ExtractedEntity {
-  name: string;
-  type: 'person' | 'location' | 'object';
-  relationship_to_user?: string;
-  related_person?: string;
-}
-
-interface ExtractedRelation {
-  from: string;
-  to: string;
-  relation: string;
-}
-
-async function extractEntities(text: string): Promise<{
-  entities: ExtractedEntity[];
-  relations: ExtractedRelation[];
-}> {
-  try {
-    const result = await completeWithFallback(
-      [{ role: 'user', content: text }],
-      {
-        system: ENTITY_EXTRACTION_PROMPT,
-        maxTokens: 512,
-        operation: 'extract_entities',
-      },
-    );
-
-    // LLM 응답에서 JSON 추출 (설명 텍스트가 붙어있을 수 있음)
-    const cleanText = result.text.replace(/```json?|```/g, '').trim();
-    const jsonMatch = cleanText.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      console.error('[Layer2] No JSON found in entity extraction response:', cleanText.slice(0, 200));
-      return { entities: [], relations: [] };
-    }
-    const parsed = JSON.parse(jsonMatch[0]);
-    return {
-      entities: Array.isArray(parsed.entities) ? parsed.entities : [],
-      relations: Array.isArray(parsed.relations) ? parsed.relations : [],
-    };
-  } catch (e) {
-    console.error('[Layer2] entity extraction failed:', e);
-    return { entities: [], relations: [] };
-  }
-}
+import type { ExtractedEntity, ExtractedRelation } from './extraction';
 
 /**
  * 엔티티별 서브 노드 생성 + 트리플 연결
@@ -163,6 +92,8 @@ async function createEntityNodes(
     // 중복 체크: 같은 사용자의 같은 이름 노드가 있는지
     const domainForType = entity.type === 'person' ? 'relation'
       : entity.type === 'location' ? 'location'
+      : entity.type === 'organization' ? 'relation'
+      : entity.type === 'attribute' ? 'knowledge'
       : 'knowledge';
 
     const { data: existing } = await supabase
@@ -180,14 +111,13 @@ async function createEntityNodes(
       entityNodeId = existing.id;
     } else {
       // 새 노드 생성
-      const domainData: Record<string, any> = {};
+      const domainData: Record<string, any> = { name: entity.name };
       if (entity.type === 'person') {
-        domainData.name = entity.name;
-        if (entity.relationship_to_user) {
-          domainData.relationship = entity.relationship_to_user;
-        }
-      } else if (entity.type === 'location') {
-        domainData.name = entity.name;
+        if (entity.relationship_to_user) domainData.relationship = entity.relationship_to_user;
+      } else if (entity.type === 'organization') {
+        if (entity.subtype) domainData.subtype = entity.subtype;
+      } else if (entity.type === 'attribute') {
+        if (entity.subtype) domainData.subtype = entity.subtype;
       }
 
       const { data: newNode } = await supabase.from('data_nodes').insert({
@@ -210,6 +140,8 @@ async function createEntityNodes(
     // 메인 노드 ↔ 엔티티 노드 트리플 연결
     const predicate = entity.type === 'person' ? 'involves'
       : entity.type === 'location' ? 'located_at'
+      : entity.type === 'organization' ? 'involves'
+      : entity.type === 'attribute' ? 'related_to'
       : 'related_to';
 
     await supabase.from('triples').insert({
@@ -250,13 +182,22 @@ interface SaveMessageInput {
   groupId?: string | null;
   userMessage: string;
   assistantMessage: string;
+  /** Suggestion 답변 시 연결할 기존 노드 ID — 있으면 INSERT 대신 UPDATE */
+  linkedNodeId?: string | null;
+  /** Sonnet의 json:meta에서 파싱한 도메인 힌트 — 있으면 classifyDomain() 스킵 */
+  domainHint?: string;
 }
 
 export async function saveMessageAsync(input: SaveMessageInput) {
   const supabase = createAdminClient();
 
+  const today = new Date().toISOString().slice(0, 10);
+
   // 비로그인은 메시지/노드 저장 스킵 (DB FK 제약)
   if (!input.userId) {
+    if (input.domainHint) {
+      return { node: null, domain: input.domainHint, viewHint: null, confidence: 'high' };
+    }
     const { domain, viewHint, confidence: conf } = await classifyDomain(
       input.userMessage + '\n' + input.assistantMessage
     );
@@ -284,9 +225,72 @@ export async function saveMessageAsync(input: SaveMessageInput) {
     pair_id: userMsg?.id ?? null,
   }).select().single();
 
-  const { domain, viewHint, confidence } = await classifyDomain(
-    input.userMessage + '\n' + input.assistantMessage
-  );
+  // domainHint(Sonnet의 json:meta)가 있으면 분류 스킵 — LLM 1회 절약
+  let domain: string;
+  let viewHint: string | null;
+  let confidence: 'high' | 'medium' | 'low';
+
+  if (input.domainHint) {
+    domain = input.domainHint;
+    viewHint = null;
+    confidence = 'high';
+  } else {
+    const classified = await classifyDomain(
+      input.userMessage + '\n' + input.assistantMessage
+    );
+    domain = classified.domain;
+    viewHint = classified.viewHint;
+    confidence = classified.confidence;
+  }
+
+  // linkedNodeId: suggestion 답변 → 해당 노드에 정보 병합 (새 노드 생성 안 함)
+  if (input.linkedNodeId && input.userId) {
+    try {
+      const { data: existingNode } = await supabase
+        .from('data_nodes')
+        .select('raw, domain, domain_data')
+        .eq('id', input.linkedNodeId)
+        .eq('user_id', input.userId)
+        .single();
+
+      if (existingNode) {
+        const mergedRaw = existingNode.raw
+          ? `${existingNode.raw}\n---\n${input.userMessage}`
+          : input.userMessage;
+
+        // 원래 노드의 도메인으로 추출 (새 분류 domain이 아닌 — 도메인별 필드 정확히 추출)
+        const originalDomain = (existingNode.domain as string) || domain;
+        const extractionResult = await extractAll(input.userMessage, originalDomain, today);
+        const additionalData = extractionResult.domain_data;
+        // date는 기존 값 보존 (새 답변에서 날짜 추출 실패 시 today 기본값으로 덮어쓰기 방지)
+        const existing = existingNode.domain_data as Record<string, any> ?? {};
+        if (existing.date) {
+          delete additionalData.date;
+        }
+        const mergedDomainData = { ...existing, ...additionalData };
+
+        await supabase.from('data_nodes').update({
+          raw: mergedRaw,
+          domain_data: mergedDomainData,
+          updated_at: new Date().toISOString(),
+        }).eq('id', input.linkedNodeId);
+
+        // 엔티티 서브 노드 생성 (extractAll 결과 재활용)
+        if (extractionResult.entities.length > 0) {
+          createEntityNodes(supabase, input.userId!, input.linkedNodeId!, extractionResult.entities, extractionResult.relations)
+            .catch(e => console.error('[Layer2] entity nodes for linked node failed:', e));
+        }
+
+        // 토큰 사용량 기록
+        const estimatedTokens = Math.max(1, Math.ceil((input.userMessage.length + input.assistantMessage.length) / 2));
+        void supabase.from('token_usage').insert({ user_id: input.userId, operation: 'chat', tokens_used: estimatedTokens });
+
+        return { node: { id: input.linkedNodeId } as any, domain: originalDomain, viewHint, confidence };
+      }
+    } catch (e) {
+      console.error('[Layer2] linkedNodeId update failed, falling through:', e);
+    }
+  }
 
   // Update detection: if the user is correcting/supplementing existing data
   if (isUpdateMessage(input.userMessage)) {
@@ -344,10 +348,10 @@ export async function saveMessageAsync(input: SaveMessageInput) {
     }
   }
 
-  const domainDataRaw = extractDomainData(input.userMessage, domain);
-  // DB 저장용: _ 접두사 내부 플래그 제거
+  // LLM 기반 통합 추출 (정규식 제거)
+  const extractionResult = await extractAll(input.userMessage, domain, today);
   const domainData = {
-    ...Object.fromEntries(Object.entries(domainDataRaw).filter(([k]) => !k.startsWith('_'))),
+    ...extractionResult.domain_data,
     ...(adminInternalData ?? {}),
   };
 
@@ -410,31 +414,23 @@ export async function saveMessageAsync(input: SaveMessageInput) {
       nodeId: node.id,
       text: input.userMessage,
       domain,
-      domainData: domainDataRaw,
+      domainData: extractionResult.domain_data,
       contextSnippet: [
         { role: 'user', text: input.userMessage },
         { role: 'assistant', text: input.assistantMessage },
       ],
     }).catch(e => console.error('[Layer2] unresolved failed:', e));
 
-    // 엔티티 추출 + 서브 노드 생성 (비동기, 실패 무시)
-    console.log('[Layer2] Starting entity extraction for:', input.userMessage.slice(0, 50));
-    extractEntities(input.userMessage).then(({ entities, relations }) => {
-      console.log('[Layer2] Entities extracted:', JSON.stringify(entities));
-      console.log('[Layer2] Relations extracted:', JSON.stringify(relations));
-      if (entities.length > 0) {
-        createEntityNodes(supabase, input.userId!, node.id, entities, relations)
-          .then((map) => console.log('[Layer2] Entity nodes created:', JSON.stringify(map)))
-          .catch(e => console.error('[Layer2] entity node creation failed:', e));
-      } else {
-        console.log('[Layer2] No entities found, skipping node creation');
-      }
-    }).catch(e => console.error('[Layer2] entity extraction failed:', e));
+    // 엔티티 서브 노드 생성 (extractAll 결과 재활용 — 추가 LLM 호출 없음)
+    if (extractionResult.entities.length > 0) {
+      createEntityNodes(supabase, input.userId!, node.id, extractionResult.entities, extractionResult.relations)
+        .catch(e => console.error('[Layer2] entity node creation failed:', e));
+    }
 
     // Layer 3: 임베딩 + 트리플 (비동기, 실패 무시)
     import('./layer3').then(({ embedPendingSentences, extractTriples }) => {
       embedPendingSentences(node.id).catch(e => console.error('[Layer3] embed failed:', e));
-      extractTriples(node.id).catch(e => console.error('[Layer3] triple failed:', e));
+      extractTriples(node.id, domain).catch(e => console.error('[Layer3] triple failed:', e));
     }).catch(() => {});
   }
 
