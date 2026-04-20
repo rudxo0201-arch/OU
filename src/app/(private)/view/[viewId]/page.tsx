@@ -111,12 +111,15 @@ export default function ViewPage() {
       {/* View content */}
       <div style={{ flex: 1, overflow: 'auto' }}>
         {ViewComponent ? (
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          <ViewComponent
-            nodes={nodes as any}
-            layoutConfig={viewData?.layout_config as Record<string, unknown>}
-            filters={viewData?.filter_config as Record<string, unknown>}
-          />
+          <>
+            {nodes.length === 0 && <EmptyHint viewType={viewType} onOrb={() => router.push('/orb')} />}
+            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+            <ViewComponent
+              nodes={nodes as any}
+              layoutConfig={viewData?.layout_config as Record<string, unknown>}
+              filters={viewData?.filter_config as Record<string, unknown>}
+            />
+          </>
         ) : (
           <div style={{ padding: 40, textAlign: 'center', color: 'var(--ou-text-muted)', fontSize: 13 }}>
             뷰를 찾을 수 없습니다
@@ -148,6 +151,78 @@ function ShareOption({ label, icon, onClick }: { label: string; icon: string; on
       <span>{icon}</span>
       {label}
     </NeuButton>
+  );
+}
+
+function EmptyHint({ viewType, onOrb }: { viewType: string; onOrb: () => void }) {
+  const hints: Record<string, { example: string; label: string }> = {
+    schedule: { example: '"다음 주 금요일 오후 3시 치과 예약"', label: '일정' },
+    calendar:  { example: '"다음 주 금요일 오후 3시 치과 예약"', label: '일정' },
+    timeline:  { example: '"다음 주 금요일 오후 3시 치과 예약"', label: '일정' },
+    finance:   { example: '"오늘 점심 김치찌개 8,000원"', label: '지출/수입' },
+    chart:     { example: '"이번 달 카페 지출 43,000원"', label: '지출' },
+    task:      { example: '"내일까지 기획서 제출해야 해"', label: '할 일' },
+    todo:      { example: '"내일까지 기획서 제출해야 해"', label: '할 일' },
+    heatmap:   { example: '"오늘 러닝 5km 완료"', label: '습관' },
+    habit:     { example: '"오늘 러닝 5km 완료"', label: '습관' },
+    idea:      { example: '"배달앱 구독모델 아이디어"', label: '아이디어' },
+    profile:   { example: '"김민지, 디자이너, 대학 친구"', label: '인물' },
+    relation:  { example: '"김민지, 디자이너, 대학 친구"', label: '인물' },
+    knowledge: { example: '"React useEffect는 사이드 이펙트 처리에 사용"', label: '지식' },
+    flashcard: { example: '"React useEffect는 사이드 이펙트 처리에 사용"', label: '지식' },
+    curriculum: { example: '"알고리즘 강의 3주차 - 그래프 탐색"', label: '수업' },
+    lecture:   { example: '"알고리즘 강의 3주차 - 그래프 탐색"', label: '강의' },
+    media:     { example: '"어제 본 기생충 9점, 봉준호 감독 최고작"', label: '미디어' },
+    scrap:     { example: '"성수 팝업 스토어 링크 저장"', label: '스크랩' },
+    youtube:   { example: '"유튜브 강의 링크 저장해줘"', label: 'YouTube' },
+    map:       { example: '"성수동 카페 오프닉, 커피 맛집"', label: '장소' },
+    location:  { example: '"성수동 카페 오프닉, 커피 맛집"', label: '장소' },
+    boncho:    { example: '"감초 - 해독, 보비益氣 효능"', label: '약재' },
+    dictionary: { example: '"木 - 나무 목, 부수 木"', label: '한자' },
+    journal:   { example: '"오늘 좀 지쳐있는 것 같아"', label: '기록' },
+  };
+
+  const key = Object.keys(hints).find(k => viewType.startsWith(k)) || '';
+  const hint = hints[key] || { example: '"오늘 있었던 일을 자유롭게 말해보세요"', label: '데이터' };
+
+  return (
+    <div style={{
+      margin: '24px 20px 0',
+      padding: '20px 24px',
+      borderRadius: 16,
+      background: 'var(--ou-bg)',
+      boxShadow: 'var(--ou-neu-raised-sm)',
+    }}>
+      <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ou-text-heading)', marginBottom: 12 }}>
+        아직 {hint.label} 데이터가 없어요
+      </div>
+      <div style={{ fontSize: 12, color: 'var(--ou-text-muted)', marginBottom: 16, lineHeight: 1.6 }}>
+        Orb에서 이렇게 말해보세요
+      </div>
+      <div style={{
+        padding: '12px 16px',
+        borderRadius: 12,
+        background: 'var(--ou-bg)',
+        boxShadow: 'var(--ou-neu-pressed-sm)',
+        fontSize: 13, color: 'var(--ou-text-body)',
+        fontStyle: 'italic', marginBottom: 16,
+      }}>
+        {hint.example}
+      </div>
+      <button
+        onClick={onOrb}
+        style={{
+          padding: '8px 20px', borderRadius: 999, border: 'none',
+          fontFamily: 'inherit', fontSize: 12, fontWeight: 600,
+          cursor: 'pointer',
+          background: 'var(--ou-bg)',
+          boxShadow: 'var(--ou-neu-raised-sm)',
+          color: 'var(--ou-text-strong)',
+        }}
+      >
+        Orb 열기 →
+      </button>
+    </div>
   );
 }
 
