@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { VIEW_LABELS } from '@/components/views/registry';
-import { NeuPageLayout } from '@/components/ds';
+import { NeuPageLayout, NeuModal } from '@/components/ds';
 import {
   MagnifyingGlass, CheckSquare, CalendarBlank, Table, Book, Stack,
   ChartBar, GridFour, NotePencil, UserCircle, Lightbulb, ListBullets,
@@ -115,6 +115,8 @@ export default function OrbitPage() {
   const [installing, setInstalling] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDomain, setSelectedDomain] = useState<string>('all');
+  const [selectedPreset, setSelectedPreset] = useState<ViewPreset | null>(null);
+  const [uninstalling, setUninstalling] = useState<string | null>(null);
 
   useEffect(() => {
     Promise.all([
@@ -151,6 +153,22 @@ export default function OrbitPage() {
       setInstalling(null);
     }
   }, []);
+
+  const uninstall = useCallback(async (presetKey: string) => {
+    const preset = presets.find(p => p.key === presetKey);
+    if (!preset) return;
+    const view = myViews.find(v => v.view_type === preset.view_type && v.name === preset.name);
+    if (!view) return;
+    setUninstalling(presetKey);
+    try {
+      await fetch(`/api/orbit/install?viewId=${view.id}`, { method: 'DELETE' });
+      setInstalledKeys(prev => { const s = new Set(prev); s.delete(presetKey); return s; });
+      setMyViews(prev => prev.filter(v => v.id !== view.id));
+      setSelectedPreset(null);
+    } finally {
+      setUninstalling(null);
+    }
+  }, [presets, myViews]);
 
   const BUILTIN_VIEWS = Object.entries(VIEW_LABELS).map(([key, label]) => ({
     id: `builtin-${key}`, viewType: key, name: label,
@@ -310,6 +328,8 @@ export default function OrbitPage() {
                     key={v.id}
                     view={v}
                     onOpen={() => {
+                      const matchingPreset = presets.find(p => p.view_type === v.viewType);
+                      if (matchingPreset) { setSelectedPreset(matchingPreset); return; }
                       const existing = myViews.find(mv => mv.view_type === v.viewType);
                       if (existing) router.push(`/view/${existing.id}`);
                       else router.push(`/view/builtin-${v.viewType}`);
@@ -335,7 +355,7 @@ export default function OrbitPage() {
                           installed={installedKeys.has(p.key)}
                           installing={installing === p.key}
                           onInstall={() => install(p.key)}
-                          onOpen={() => router.push(`/view/builtin-${p.view_type}`)}
+                          onOpen={() => setSelectedPreset(p)}
                         />
                       ))}
                     </div>
@@ -347,6 +367,8 @@ export default function OrbitPage() {
                     domain={domain}
                     items={items}
                     onOpen={(viewType) => {
+                      const matchingPreset = presets.find(p => p.view_type === viewType);
+                      if (matchingPreset) { setSelectedPreset(matchingPreset); return; }
                       const existing = myViews.find(mv => mv.view_type === viewType);
                       if (existing) router.push(`/view/${existing.id}`);
                       else router.push(`/view/builtin-${viewType}`);
@@ -407,6 +429,25 @@ export default function OrbitPage() {
           </div>
         )}
       </div>
+
+      {/* 프리셋 상세 모달 */}
+      {selectedPreset && (
+        <PresetDetailModal
+          preset={selectedPreset}
+          installed={installedKeys.has(selectedPreset.key)}
+          installing={installing === selectedPreset.key}
+          uninstalling={uninstalling === selectedPreset.key}
+          onClose={() => setSelectedPreset(null)}
+          onInstall={() => install(selectedPreset.key)}
+          onUninstall={() => uninstall(selectedPreset.key)}
+          onOpen={() => {
+            const existing = myViews.find(v => v.view_type === selectedPreset.view_type && v.name === selectedPreset.name);
+            if (existing) router.push(`/view/${existing.id}`);
+            else router.push(`/view/builtin-${selectedPreset.view_type}`);
+            setSelectedPreset(null);
+          }}
+        />
+      )}
     </NeuPageLayout>
   );
 }
@@ -521,8 +562,7 @@ function FeaturedCard({ preset, installed, installing, onInstall, onOpen }: {
         background: 'var(--ou-bg)',
         boxShadow: hovered ? 'var(--ou-neu-raised-lg)' : 'var(--ou-neu-raised-md)',
         overflow: 'hidden',
-        transition: 'box-shadow 200ms ease, transform 200ms ease',
-        transform: hovered ? 'translateY(-3px)' : 'translateY(0)',
+        transition: 'box-shadow 200ms ease',
         cursor: 'pointer',
       }}
       onClick={onOpen}
@@ -599,8 +639,7 @@ function PresetCard({ preset, installed, installing, onInstall, onOpen }: {
         borderRadius: 16, overflow: 'hidden',
         background: 'var(--ou-bg)',
         boxShadow: hovered ? 'var(--ou-neu-raised-md)' : 'var(--ou-neu-raised-sm)',
-        transition: 'box-shadow 200ms ease, transform 200ms ease',
-        transform: hovered ? 'translateY(-2px)' : 'translateY(0)',
+        transition: 'box-shadow 200ms ease',
         cursor: 'pointer',
       }}
       onClick={onOpen}
@@ -654,6 +693,130 @@ function PresetCard({ preset, installed, installing, onInstall, onOpen }: {
   );
 }
 
+// ── 프리셋 상세 모달 ──────────────────────────────────────
+function PresetDetailModal({ preset, installed, installing, uninstalling, onClose, onInstall, onUninstall, onOpen }: {
+  preset: ViewPreset;
+  installed: boolean;
+  installing: boolean;
+  uninstalling: boolean;
+  onClose: () => void;
+  onInstall: () => void;
+  onUninstall: () => void;
+  onOpen: () => void;
+}) {
+  const IconComp = VIEW_ICONS[preset.view_type] || Circle;
+  const categoryLabel = preset.category === 'inline' ? '인라인' : preset.category === 'cross' ? '복합' : '풀뷰';
+
+  return (
+    <NeuModal open onClose={onClose} title={preset.name}>
+      {/* 아이콘 + 뱃지 */}
+      <div style={{
+        display: 'flex', flexDirection: 'column', alignItems: 'center',
+        gap: 16, marginBottom: 24,
+      }}>
+        <div style={{
+          width: 96, height: 96, borderRadius: 24,
+          background: 'var(--ou-bg)',
+          boxShadow: 'var(--ou-neu-pressed-md)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          color: 'var(--ou-text-body)',
+        }}>
+          <IconComp size={44} weight="light" />
+        </div>
+
+        <div style={{ display: 'flex', gap: 8 }}>
+          <span style={{
+            padding: '4px 12px', borderRadius: 999,
+            background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-raised-xs)',
+            fontSize: 11, fontWeight: 600, color: 'var(--ou-text-muted)',
+            letterSpacing: '0.04em',
+          }}>
+            {DOMAIN_LABELS[preset.domain] || preset.domain}
+          </span>
+          <span style={{
+            padding: '4px 12px', borderRadius: 999,
+            background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-pressed-xs)',
+            fontSize: 11, fontWeight: 600, color: 'var(--ou-text-dimmed)',
+            letterSpacing: '0.04em',
+          }}>
+            {categoryLabel}
+          </span>
+        </div>
+      </div>
+
+      {/* 설명 */}
+      {preset.description && (
+        <div style={{
+          fontSize: 14, color: 'var(--ou-text-body)', lineHeight: 1.7,
+          marginBottom: 16,
+        }}>
+          {preset.description}
+        </div>
+      )}
+
+      {/* 언제 사용 */}
+      {preset.when_to_use && (
+        <div style={{
+          padding: '12px 16px', borderRadius: 12,
+          background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-pressed-sm)',
+          fontSize: 12, color: 'var(--ou-text-muted)', lineHeight: 1.7,
+          marginBottom: 24,
+        }}>
+          <span style={{ fontWeight: 600, color: 'var(--ou-text-secondary)', marginRight: 6 }}>사용 시점</span>
+          {preset.when_to_use}
+        </div>
+      )}
+
+      {/* 버튼 영역 */}
+      <div style={{ display: 'flex', gap: 10 }}>
+        {installed ? (
+          <>
+            <button
+              onClick={onOpen}
+              style={{
+                flex: 1, padding: '12px 0', borderRadius: 12, border: 'none',
+                fontFamily: 'inherit', fontSize: 13, fontWeight: 600,
+                cursor: 'pointer', background: 'var(--ou-bg)',
+                boxShadow: 'var(--ou-neu-raised-sm)',
+                color: 'var(--ou-text-strong)',
+              }}
+            >
+              뷰 열기 →
+            </button>
+            <button
+              onClick={onUninstall}
+              disabled={uninstalling}
+              style={{
+                padding: '12px 20px', borderRadius: 12, border: 'none',
+                fontFamily: 'inherit', fontSize: 13, fontWeight: 500,
+                cursor: uninstalling ? 'default' : 'pointer',
+                background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-raised-xs)',
+                color: 'var(--ou-text-muted)',
+              }}
+            >
+              {uninstalling ? '...' : '삭제'}
+            </button>
+          </>
+        ) : (
+          <button
+            onClick={onInstall}
+            disabled={installing}
+            style={{
+              flex: 1, padding: '12px 0', borderRadius: 12, border: 'none',
+              fontFamily: 'inherit', fontSize: 13, fontWeight: 600,
+              cursor: installing ? 'default' : 'pointer',
+              background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-raised-sm)',
+              color: 'var(--ou-text-strong)',
+            }}
+          >
+            {installing ? '설치 중...' : '설치하기'}
+          </button>
+        )}
+      </div>
+    </NeuModal>
+  );
+}
+
 // ── 기존 뷰 카드 (내 뷰 / 기본 내장 탭) ──────────────────
 function ViewCard({ view, onOpen }: {
   view: { id: string; name: string; viewType?: string };
@@ -671,8 +834,7 @@ function ViewCard({ view, onOpen }: {
         padding: '28px 20px 24px', background: 'var(--ou-bg)',
         boxShadow: hovered ? 'var(--ou-neu-raised-lg)' : 'var(--ou-neu-raised-sm)',
         borderRadius: 16, border: 'none', cursor: 'pointer', fontFamily: 'inherit',
-        transform: hovered ? 'translateY(-2px)' : 'translateY(0)',
-        transition: 'box-shadow 200ms ease, transform 200ms ease',
+        transition: 'box-shadow 200ms ease',
         width: '100%',
       }}
     >
