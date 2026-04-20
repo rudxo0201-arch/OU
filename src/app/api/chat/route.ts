@@ -7,7 +7,6 @@ import type { LLMMessage } from '@/lib/llm/types';
 import { buildSystemPrompt } from '@/lib/llm/prompts';
 import { saveMessageAsync } from '@/lib/pipeline/layer2';
 import { searchUserData, searchAdminData, isQuestion, getUserDataCounts } from '@/lib/search/inline';
-import { checkTokenLimit } from '@/lib/utils/token-limit';
 import { stripLLMMeta } from '@/lib/utils/stripLLMMeta';
 import crypto from 'crypto';
 import { generateCacheKey, getCachedResponse, setCachedResponse } from '@/lib/cache/redis';
@@ -104,40 +103,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // 구독 플랜 + 일일 토큰 한도 체크
-    let userPlan = 'free';
-    if (user) {
-      try {
-        const { data: sub, error: subError } = await supabase
-          .from('subscriptions')
-          .select('plan')
-          .eq('user_id', user.id)
-          .single();
-
-        if (!subError && sub?.plan) {
-          userPlan = sub.plan;
-        }
-      } catch {
-        // subscriptions 테이블 없거나 row 없으면 free 폴백
-      }
-
-      try {
-        const { allowed, used, limit } = await checkTokenLimit(supabase, user.id, userPlan);
-        if (!allowed) {
-          return new Response(
-            JSON.stringify({ error: 'TOKEN_LIMIT_EXCEEDED', used, limit, plan: userPlan }),
-            {
-              status: 429,
-              headers: { 'Content-Type': 'application/json' },
-            }
-          );
-        }
-      } catch {
-        // token_usage 테이블 없으면 한도 체크 스킵
-      }
-    } else {
-      userPlan = 'guest';
-    }
+    const userPlan = user ? 'free' : 'guest';
 
     // --- 동적 시스템 프롬프트 구성 ---
     const lastUserMessage = messages[messages.length - 1]?.content ?? '';
@@ -164,8 +130,10 @@ export async function POST(req: NextRequest) {
       // 병렬로 데이터 통계 조회 + 질문 시 RAG 검색
       const dataCountsPromise = getUserDataCounts(supabase, user.id);
 
-      // 모든 메시지에 시맨틱 검색 실행 — 뇌처럼 입력 즉시 연관 기억 활성화
-      const ragPromise = searchUserData(supabase, user.id, lastUserMessage, 5, userIsAdmin)
+      // 질문이거나 긴 메시지(20자↑)일 때만 RAG — 짧은 저장 요청은 스킵 (~800ms 절감)
+      const needsRag = isQuestion(lastUserMessage) || lastUserMessage.length >= 20;
+      const ragPromise = needsRag
+        ? searchUserData(supabase, user.id, lastUserMessage, 5, userIsAdmin)
         .then(results =>
           results.map(r => {
             const date = new Date(r.created_at).toLocaleDateString('ko-KR');
@@ -177,7 +145,8 @@ export async function POST(req: NextRequest) {
             return `[${domainLabel[r.domain] || r.domain}] ${r.raw} (${date})`;
           })
         )
-        .catch(() => []);
+          .catch(() => [])
+        : Promise.resolve([]);
 
       const [countResult, ragResult, adminResult] = await Promise.all([dataCountsPromise, ragPromise, adminDbPromise]);
       dataCounts = countResult.counts;
