@@ -7,9 +7,7 @@ import { createClient } from '@/lib/supabase/client';
 import { useWidgetStore } from '@/stores/widgetStore';
 import { NeuButton, NeuInput, NeuSelect, NeuTable, type NeuTableColumn } from '@/components/ds';
 import { GRID_PRESETS, type GridPreset } from '@/components/widgets/types';
-import { ViewEditorPanel } from '@/components/view-editor/ViewEditorPanel';
-
-type Tab = 'general' | 'display' | 'views' | 'admin';
+type Tab = 'general' | 'display' | 'admin';
 
 export default function SettingsPage() {
   const { user, isLoading, isAdmin } = useAuth();
@@ -41,14 +39,12 @@ export default function SettingsPage() {
   const TAB_ICONS: Record<Tab, React.ReactNode> = {
     general: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 10v6M4.22 4.22l4.24 4.24m7.08 7.08l4.24 4.24M1 12h6m10 0h6M4.22 19.78l4.24-4.24m7.08-7.08l4.24-4.24"/></svg>,
     display: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41"/></svg>,
-    views: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><rect x="3" y="4" width="18" height="4" rx="1"/><rect x="3" y="12" width="12" height="4" rx="1"/><rect x="3" y="20" width="16" height="0.5" rx="0.5"/></svg>,
     admin: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M12 2l8 4v6c0 5-4 9-8 10-4-1-8-5-8-10V6l8-4z"/></svg>,
   };
 
   const tabs: { key: Tab; label: string; adminOnly?: boolean }[] = [
     { key: 'general', label: '일반' },
     { key: 'display', label: '디스플레이' },
-    { key: 'views', label: '뷰 편집' },
     { key: 'admin', label: '관리자', adminOnly: true },
   ];
   const visibleTabs = tabs.filter(t => !t.adminOnly || isAdmin);
@@ -104,7 +100,6 @@ export default function SettingsPage() {
       <main style={{ flex: 1, padding: '40px 60px 80px', maxWidth: 880, overflow: 'auto' }}>
         {activeTab === 'general' && <GeneralTab user={user} />}
         {activeTab === 'display' && <DisplayTab />}
-        {activeTab === 'views' && <ViewsTab />}
         {activeTab === 'admin' && isAdmin && <AdminTab />}
       </main>
     </div>
@@ -509,13 +504,6 @@ function DisplayTab() {
       </Section>
     </div>
   );
-}
-
-// ============================================================
-// 뷰 편집 탭
-// ============================================================
-function ViewsTab() {
-  return <ViewEditorPanel />;
 }
 
 // ============================================================

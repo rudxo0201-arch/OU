@@ -1,13 +1,13 @@
 'use client';
 
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Suspense, useState, useEffect } from 'react';
 
 const NAV_ITEMS = [
   { label: 'Orb', href: '/orb', tab: null },
   { label: 'Universe', href: '/universe', tab: null },
   { label: 'Orbit', href: '/orbit', tab: null },
-  { label: 'View Studio', href: '/settings', tab: 'views' },
+  { label: 'View Studio', href: '/view-studio', tab: null },
 ];
 
 function getTimeLabel() {
@@ -23,10 +23,8 @@ interface TopNavBarProps {
 
 function TopNavBarInner({ userInitial }: TopNavBarProps) {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const router = useRouter();
   const [timeLabel, setTimeLabel] = useState(getTimeLabel());
-  const currentTab = searchParams.get('tab');
 
   useEffect(() => {
     const tick = () => setTimeLabel(getTimeLabel());
@@ -35,20 +33,10 @@ function TopNavBarInner({ userInitial }: TopNavBarProps) {
   }, []);
 
   function isActive(item: typeof NAV_ITEMS[number]) {
-    if (pathname !== item.href) return false;
-    if (item.tab !== null) {
-      // View Studio: /settings?tab=views
-      return currentTab === item.tab;
-    }
-    // Setting: /settings 단독 (tab 파라미터 없거나 views 아닌 경우)
-    if (item.href === '/settings') {
-      return currentTab === null || currentTab === '' || (currentTab !== 'views');
-    }
-    return true;
+    return pathname === item.href;
   }
 
   function getHref(item: typeof NAV_ITEMS[number]) {
-    if (item.tab) return `${item.href}?tab=${item.tab}`;
     return item.href;
   }
 
