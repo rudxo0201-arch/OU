@@ -9,7 +9,7 @@ const VIEW_ICONS: Record<string, string> = {
   todo: '☑', calendar: '▥', table: '▦', task: '▦', dictionary: '本',
   flashcard: '卡', timeline: '─', chart: '₩', heatmap: '▣',
   journal: '◐', profile: '◎', idea: '◈', curriculum: '≡',
-  lecture: '▶', scrap: '◉',
+  lecture: '▶', scrap: '◉', youtube: '▶', map: '◈',
 };
 
 const BUILTIN_VIEWS = Object.entries(VIEW_LABELS).map(([key, label]) => ({

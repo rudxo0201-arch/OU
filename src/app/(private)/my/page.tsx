@@ -1,6 +1,8 @@
 'use client';
 
-import { Suspense, useState, useCallback, useRef, useEffect, useMemo } from 'react';
+'use client';
+
+import { Suspense, useState, useCallback, useRef, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { WidgetGrid, type GridTransition } from '@/components/widgets/WidgetGrid';
@@ -8,11 +10,10 @@ import { DockBar } from '@/components/widgets/DockBar';
 import dynamicImport from 'next/dynamic';
 const UniverseView = dynamicImport(() => import('@/components/widgets/UniverseView').then(m => m.UniverseView), { ssr: false });
 const OrbFullscreen = dynamicImport(() => import('@/components/chat/OrbFullscreen').then(m => m.OrbFullscreen), { ssr: false });
+const TutorialComplete = dynamicImport(() => import('@/components/tutorial/TutorialComplete').then(m => m.TutorialComplete), { ssr: false });
 import { useWidgetStore } from '@/stores/widgetStore';
 import { useTutorialStore } from '@/stores/tutorialStore';
-import { TUTORIAL_STEPS } from '@/data/tutorial';
 import { TUTORIAL_INITIAL_LAYOUT } from '@/components/widgets/presets';
-import { SpeechBubble } from '@/components/tutorial/SpeechBubble';
 import { NeuButton } from '@/components/ds';
 
 type Mode = 'dashboard' | 'to-universe' | 'universe' | 'to-dashboard';
@@ -54,10 +55,9 @@ function MyPage() {
   const timerRef = useRef<NodeJS.Timeout>();
 
   const tutorialPhase = useTutorialStore(s => s.phase);
-  const tutorialStepIndex = useTutorialStore(s => s.stepIndex);
   const startTutorial = useTutorialStore(s => s.startTutorial);
-  const skipAllTutorial = useTutorialStore(s => s.skipAll);
   const prevPhaseRef = useRef(tutorialPhase);
+  const [showTutorialComplete, setShowTutorialComplete] = useState(false);
 
   // 튜토리얼 시작: replay param이면 바로 시작, 아니면 DB 체크
   useEffect(() => {
@@ -85,12 +85,6 @@ function MyPage() {
             } else {
               startTutorial();
               setWidgets(TUTORIAL_INITIAL_LAYOUT);
-              // 베타 가입 보너스 1,000 UNI
-              fetch('/api/uni', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ type: 'signup_bonus', memo: '베타 가입 보너스' }),
-              }).catch(() => {});
             }
           });
       });
@@ -138,10 +132,16 @@ function MyPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inviteToken, user]);
 
-  // 편집 완료 후 Orb 자동 확장 (tutorial edit-mode → active)
+  // 튜토리얼 phase 전환 감지
   useEffect(() => {
-    if (prevPhaseRef.current === 'edit-mode' && tutorialPhase === 'active') {
+    const prev = prevPhaseRef.current;
+    // 편집 완료 후 Orb 자동 확장
+    if (prev === 'edit-mode' && tutorialPhase === 'active') {
       setOrbExpanded(true);
+    }
+    // 튜토리얼 완료 → 축하 모달
+    if (prev !== 'completed' && tutorialPhase === 'completed') {
+      setShowTutorialComplete(true);
     }
     prevPhaseRef.current = tutorialPhase;
   }, [tutorialPhase]);
@@ -158,7 +158,11 @@ function MyPage() {
   }, []);
 
   useEffect(() => {
-    if (isAdmin && !isLoading) initAdminLayout();
+    if (isAdmin && !isLoading) {
+      initAdminLayout();
+      // 전체 뷰 자동 설치 (멱등성 — 이미 있으면 스킵)
+      fetch('/api/views/init-admin', { method: 'POST' }).catch(() => {});
+    }
   }, [isAdmin, isLoading, initAdminLayout]);
 
   useEffect(() => {
@@ -291,22 +295,9 @@ function MyPage() {
         )}
       </div>
 
-      {/* Tutorial Step 0 말풍선 — Orb 입력창 바로 아래 */}
-      {tutorialPhase === 'active' && tutorialStepIndex === 0 && !orbExpanded && (
-        <div style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, 40px)',
-          zIndex: 20,
-          width: 280,
-        }}>
-          <SpeechBubble
-            message={TUTORIAL_STEPS[0].guideMessage}
-            tail="top"
-            onSkip={skipAllTutorial}
-          />
-        </div>
+      {/* 튜토리얼 완료 모달 */}
+      {showTutorialComplete && (
+        <TutorialComplete onClose={() => setShowTutorialComplete(false)} />
       )}
 
       {/* Menu Bar */}

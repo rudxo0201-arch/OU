@@ -31,6 +31,9 @@
   --ou-neu-pressed-md: inset 4px 4px 8px var(--ou-shadow-dark), inset -4px -4px 8px var(--ou-shadow-light);
   --ou-neu-pressed-lg: inset 6px 6px 12px var(--ou-shadow-dark), inset -6px -6px 12px var(--ou-shadow-light);
 
+  /* Inset (속삭임 — 중앙 채팅 패널용, 깊이 암시만) */
+  --ou-neu-inset: inset 1px 1px 3px var(--ou-shadow-dark), inset -1px -1px 3px var(--ou-shadow-light);
+
   /* Glow (하위 호환 — 기존 코드에서 참조) */
   --ou-glow-xs: var(--ou-neu-raised-xs);
   --ou-glow-sm: var(--ou-neu-raised-sm);

@@ -111,7 +111,15 @@ export const useTutorialStore = create<TutorialStore>()(
     }),
     {
       name: 'ou-tutorial',
-      version: 1,
+      version: 2,
+      migrate: (persisted: unknown) => {
+        const s = persisted as { phase?: string; stepIndex?: number };
+        // 완료/스킵된 경우는 유지, 중간 진행 중이면 리셋 (스텝 수 변경)
+        if (s?.phase === 'completed' || s?.phase === 'skipped') {
+          return { phase: s.phase, stepIndex: 0, pendingWidget: null };
+        }
+        return { phase: 'idle', stepIndex: 0, pendingWidget: null };
+      },
     }
   )
 );

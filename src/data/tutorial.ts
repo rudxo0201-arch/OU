@@ -1,8 +1,8 @@
 export interface TutorialStep {
   id: string;
-  /** 말풍선에 표시되는 가이드 메시지 (Step 1~6: /my 위, Step 7: Orb 안) */
+  /** Orb 안에 표시되는 가이드 메시지 */
   guideMessage: string;
-  /** OuViewWidget 또는 ChatInput의 ghost text */
+  /** OuViewWidget의 ghost text */
   ghostText?: string;
   /** 예상 도메인 (DataNode 생성 감지용) */
   domain: string;
@@ -32,36 +32,9 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
     domain: 'finance',
     widgetType: 'view-chart',
   },
-  {
-    id: 'memo',
-    guideMessage: '갑자기 떠오른 생각이 있다면 적어보세요',
-    ghostText: '다음 여행 때 제주도 맛집 리스트 만들기',
-    domain: 'idea',
-    widgetType: 'quick-memo',
-  },
-  {
-    id: 'habit',
-    guideMessage: '매일 하는 루틴이 있다면 기록해보세요',
-    ghostText: '운동 30분 완료',
-    domain: 'habit',
-    widgetType: 'view-heatmap',
-  },
-  {
-    id: 'relation',
-    guideMessage: '주변 사람 정보를 기록해보세요',
-    ghostText: '희민이 생일 5월 3일, 대학 친구',
-    domain: 'relation',
-    widgetType: 'view-relation',
-  },
-  {
-    id: 'profile',
-    guideMessage: '마지막으로, OU가 더 잘 도와드리려면 조금만 알려주세요',
-    domain: 'profile',
-    widgetType: 'view-profile',
-  },
 ];
 
-export const TUTORIAL_STEP_COUNT = TUTORIAL_STEPS.length; // 7
+export const TUTORIAL_STEP_COUNT = TUTORIAL_STEPS.length; // 3
 
 export function getTutorialStep(index: number): TutorialStep | null {
   return TUTORIAL_STEPS[index] ?? null;
@@ -75,6 +48,5 @@ export const DOMAIN_WIDGET_MAP: Record<string, string> = {
   idea: 'quick-memo',
   habit: 'view-heatmap',
   relation: 'view-relation',
-  profile: 'view-profile',
   knowledge: 'recent-nodes',
 };

@@ -70,6 +70,7 @@ export function UniverseView({ visible }: Props) {
   const [confidenceFilter, setConfidenceFilter] = useState<Set<string>>(new Set());
   const [dateFilter, setDateFilter] = useState<DateFilter>('all');
   const [isDark, setIsDark] = useState(false);
+  const [localViewMode, setLocalViewMode] = useState(false);
 
   // ─── Dark mode detection ─────────────────────────────────────────────────
   useEffect(() => {
@@ -144,6 +145,19 @@ export function UniverseView({ visible }: Props) {
     fa2TimerRef.current = setTimeout(() => {
       if (fa2Ref.current?.isRunning()) fa2Ref.current.stop();
     }, FA2_RUN_DURATION_MS);
+
+    // ── Semantic zoom: dynamic label threshold based on camera ratio ────────
+    const updateLabelThreshold = () => {
+      const ratio = sigma.getCamera().ratio;
+      let threshold: number;
+      if (ratio >= 1.0) threshold = 14;
+      else if (ratio >= 0.6) threshold = 9;
+      else if (ratio >= 0.35) threshold = 5;
+      else threshold = 2;
+      sigma.setSetting('labelRenderedSizeThreshold', threshold);
+    };
+    sigma.getCamera().on('updated', updateLabelThreshold);
+    updateLabelThreshold();
 
     // ── Node click → selection + info card ─────────────────────────────────
     sigma.on('clickNode', ({ node, preventSigmaDefault }) => {
@@ -221,6 +235,13 @@ export function UniverseView({ visible }: Props) {
     sigma.setSetting('nodeReducer', (node: string, data: Partial<NodeDisplayData>) => {
       const attrs = graph?.getNodeAttributes(node) ?? {};
 
+      // Local view mode: only show selected node + neighbors
+      if (localViewMode && selectedId) {
+        if (node !== selectedId && !neighborSet?.has(node)) {
+          return { ...data, hidden: true };
+        }
+      }
+
       // Filter check
       const domainOk = domainFilter.size === 0 || domainFilter.has(attrs.domain ?? '');
       const confOk = confidenceFilter.size === 0 || confidenceFilter.has(attrs.confidence ?? '');
@@ -238,7 +259,9 @@ export function UniverseView({ visible }: Props) {
         if (neighborSet?.has(node)) {
           return { ...data };
         }
-        return { ...data, color: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)' };
+        if (!localViewMode) {
+          return { ...data, color: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)' };
+        }
       }
 
       return data;
@@ -254,7 +277,7 @@ export function UniverseView({ visible }: Props) {
 
     sigma.refresh();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedCard?.nodeId, domainFilter, confidenceFilter, dateFilter, isDark, graph]);
+  }, [selectedCard?.nodeId, domainFilter, confidenceFilter, dateFilter, isDark, graph, localViewMode]);
 
   // ─── Keyboard shortcuts ──────────────────────────────────────────────────
   useEffect(() => {
@@ -330,7 +353,33 @@ export function UniverseView({ visible }: Props) {
 
   const deselectNode = useCallback(() => {
     setSelectedCard(null);
+    setLocalViewMode(false);
   }, []);
+
+  const enterLocalView = useCallback(() => {
+    if (!selectedCard || !graph) return;
+    setLocalViewMode(true);
+
+    // Fit camera to the local subgraph (selected + neighbors)
+    const sigma = sigmaRef.current;
+    if (!sigma) return;
+    const nodeIds = [selectedCard.nodeId, ...graph.neighbors(selectedCard.nodeId)];
+    const positions = nodeIds
+      .map(id => sigma.getNodeDisplayData(id))
+      .filter(Boolean) as { x: number; y: number }[];
+    if (positions.length === 0) return;
+
+    const xs = positions.map(p => p.x);
+    const ys = positions.map(p => p.y);
+    const cx = (Math.min(...xs) + Math.max(...xs)) / 2;
+    const cy = (Math.min(...ys) + Math.max(...ys)) / 2;
+    const spanX = Math.max(...xs) - Math.min(...xs);
+    const spanY = Math.max(...ys) - Math.min(...ys);
+    const span = Math.max(spanX, spanY, 0.01);
+    const ratio = Math.min(0.6, span * 0.9);
+
+    sigma.getCamera().animate({ x: cx, y: cy, ratio }, { duration: 700, easing: 'quadraticInOut' });
+  }, [selectedCard, graph]);
 
   const navigateToNode = useCallback((nodeId: string) => {
     selectNode(nodeId);
@@ -618,7 +667,7 @@ export function UniverseView({ visible }: Props) {
               }}
             >&times;</button>
           </div>
-          <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
+          <div style={{ display: 'flex', gap: 6, marginBottom: 8, flexWrap: 'wrap', alignItems: 'center' }}>
             <span style={{
               display: 'inline-block', padding: '2px 8px', borderRadius: 20,
               background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
@@ -630,6 +679,37 @@ export function UniverseView({ visible }: Props) {
               연결 {selectedCard?.degree} · {selectedCard?.confidence}
             </span>
           </div>
+          {!localViewMode ? (
+            <button
+              onClick={enterLocalView}
+              style={{
+                width: '100%', padding: '6px 0', marginBottom: 12,
+                background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
+                border: `1px solid ${borderMuted}`,
+                borderRadius: 8, color: textSecondary, fontSize: 11,
+                cursor: 'pointer', transition: 'all 0.15s',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)'; }}
+            >
+              이 별들만 모아보기 ✦
+            </button>
+          ) : (
+            <button
+              onClick={() => setLocalViewMode(false)}
+              style={{
+                width: '100%', padding: '6px 0', marginBottom: 12,
+                background: isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)',
+                border: `1px solid ${borderMuted}`,
+                borderRadius: 8, color: textPrimary, fontSize: 11,
+                cursor: 'pointer', transition: 'all 0.15s',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)'; }}
+            >
+              ← 전체 보기
+            </button>
+          )}
           <div style={{ height: 1, background: borderSubtle, marginBottom: 14 }} />
         </div>
 

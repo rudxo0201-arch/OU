@@ -79,11 +79,13 @@ export const useWidgetStore = create<WidgetStore>()(
 
       initAdminLayout: () => set((s) => {
         const alreadySet = s.pages[0]?.widgets.some(w => w.type === 'ou-view');
-        if (alreadySet) return s;
-        const pages = [...s.pages];
-        pages[0] = { ...pages[0], widgets: clampToGrid(ADMIN_LAYOUT, s.gridCols, s.gridRows) };
-        if (pages[1]) {
-          pages[1] = { ...pages[1], widgets: clampToGrid(ADMIN_PAGE2_LAYOUT, s.gridCols, s.gridRows) };
+        // Always rename all pages to "Dashboard"
+        const pages = s.pages.map(page => ({ ...page, name: 'Dashboard' }));
+        if (!alreadySet) {
+          pages[0] = { ...pages[0], widgets: clampToGrid(ADMIN_LAYOUT, s.gridCols, s.gridRows) };
+          if (pages[1]) {
+            pages[1] = { ...pages[1], widgets: clampToGrid(ADMIN_PAGE2_LAYOUT, s.gridCols, s.gridRows) };
+          }
         }
         return { pages, currentPageIndex: 0 };
       }),

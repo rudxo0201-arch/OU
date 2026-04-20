@@ -1,9 +1,9 @@
 .bubble {
   position: absolute;
   z-index: 50;
-  background: var(--ou-accent, #e8976b);
-  color: #fff;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  background: var(--ou-bg);
+  color: var(--ou-text-body);
+  box-shadow: var(--ou-neu-raised-md);
   border-radius: var(--ou-radius-lg);
   padding: 16px 20px;
   min-width: 240px;
@@ -25,7 +25,7 @@
   transform: translateX(-50%);
   border-left: 10px solid transparent;
   border-right: 10px solid transparent;
-  border-top: 10px solid var(--ou-accent, #e8976b);
+  border-top: 10px solid var(--ou-bg);
   filter: drop-shadow(0 2px 2px rgba(0,0,0,0.08));
 }
 
@@ -36,7 +36,7 @@
   transform: translateX(-50%);
   border-left: 10px solid transparent;
   border-right: 10px solid transparent;
-  border-bottom: 10px solid var(--ou-accent, #e8976b);
+  border-bottom: 10px solid var(--ou-bg);
   filter: drop-shadow(0 -2px 2px rgba(0,0,0,0.08));
 }
 
@@ -47,13 +47,13 @@
   transform: translateY(-50%);
   border-top: 10px solid transparent;
   border-bottom: 10px solid transparent;
-  border-right: 10px solid var(--ou-accent, #e8976b);
+  border-right: 10px solid var(--ou-bg);
 }
 
 .message {
   font-size: 14px;
   line-height: 1.6;
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--ou-text-body);
   margin-bottom: 12px;
 }
 
@@ -66,7 +66,7 @@
 
 .skipBtn {
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ou-text-muted);
   background: none;
   border: none;
   cursor: pointer;
@@ -75,7 +75,7 @@
 }
 
 .skipBtn:hover {
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ou-text-secondary);
 }
 
 /* 펄스 힌트 — 리사이즈 핸들용 */

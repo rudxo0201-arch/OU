@@ -53,9 +53,23 @@ export function OUChatWindow({ open, onClose }: Props) {
   const requestedViews = useChatStore(s => s.requestedViews);
   const lastRequestedView = requestedViews[requestedViews.length - 1] ?? null;
 
-  const artifacts = messages
+  type ArtifactItem = NonNullable<(typeof messages)[0]['nodeCreated']> & { msgId: string; idx: number };
+  const artifacts: ArtifactItem[] = messages
     .filter(m => m.role === 'assistant' && m.nodeCreated && !m.streaming)
-    .map((m, i) => ({ ...m.nodeCreated!, msgId: m.id, idx: i }));
+    .flatMap((m) => {
+      const nc = m.nodeCreated!;
+      const primary = { ...nc, msgId: m.id };
+      const additional = (nc.additionalNodes ?? []).map(n => ({
+        domain: n.domain,
+        nodeId: n.id,
+        confidence: undefined as string | undefined,
+        domain_data: n.domain_data,
+        additionalNodes: undefined as ArtifactItem['additionalNodes'],
+        msgId: m.id,
+      }));
+      return [primary, ...additional];
+    })
+    .map((a, i) => ({ ...a, idx: i }));
 
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
 

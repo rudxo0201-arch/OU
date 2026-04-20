@@ -3,9 +3,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useChatStore, type ChatMessage } from '@/stores/chatStore';
 import { useTutorialStore } from '@/stores/tutorialStore';
-import { TUTORIAL_STEPS } from '@/data/tutorial';
+import { TUTORIAL_STEPS, TUTORIAL_STEP_COUNT } from '@/data/tutorial';
 import { ChatPanel, InlineView } from './ChatPanel';
-import { ProfileQuestionUI } from './ProfileQuestionUI';
 import { VIEW_REGISTRY, VIEW_LABELS } from '@/components/views/registry';
 import { NeuCard, NeuButton } from '@/components/ds';
 
@@ -20,32 +19,46 @@ export function OrbFullscreen({ open, onClose }: Props) {
   const { messages, clearRequestedViews } = useChatStore();
   const tutorialPhase = useTutorialStore(s => s.phase);
   const tutorialStepIndex = useTutorialStore(s => s.stepIndex);
-  const completeTutorial = useTutorialStore(s => s.completeTutorial);
-  const skipAllTutorial = useTutorialStore(s => s.skipAll);
+  const skipStep = useTutorialStore(s => s.skipStep);
+  const completeStep = useTutorialStore(s => s.completeStep);
 
-  const isProfileStep = tutorialPhase === 'active' && tutorialStepIndex === 6;
-  const currentGuideMessage = (tutorialPhase === 'active' && tutorialStepIndex > 0 && tutorialStepIndex < 6)
+  // 튜토리얼 active 상태이면 모든 스텝에서 가이드 메시지 표시
+  const currentGuideMessage = tutorialPhase === 'active'
     ? TUTORIAL_STEPS[tutorialStepIndex]?.guideMessage
     : undefined;
-  // 패널은 Orb가 열릴 때 기준 스냅샷 — 이후 대화로 누적되도록 messages 직접 참조
   const openedRef = useRef(false);
+  // Orb가 열린 시점에 nodeCreated가 있었는지 추적 (새로 생성된 것만 감지)
+  const nodeCreatedCountRef = useRef(0);
 
   useEffect(() => {
     if (open) {
-      // Orb 열릴 때: 좌우 패널 리셋
       if (!openedRef.current) {
         clearRequestedViews();
         openedRef.current = true;
+        // 현재 nodeCreated 메시지 수 스냅샷
+        nodeCreatedCountRef.current = useChatStore.getState().messages.filter(
+          m => m.role === 'assistant' && m.nodeCreated && !m.streaming
+        ).length;
       }
       setVisible(true);
       requestAnimationFrame(() => setAnimating(true));
     } else {
+      // Orb 닫힐 때: 튜토리얼 active 상태이면 새 nodeCreated가 생겼는지 확인
+      if (tutorialPhase === 'active') {
+        const currentCount = useChatStore.getState().messages.filter(
+          m => m.role === 'assistant' && m.nodeCreated && !m.streaming
+        ).length;
+        if (currentCount > nodeCreatedCountRef.current) {
+          // 새 데이터가 생성됐지만 AddToHomeButton을 안 눌렀을 경우 → 스텝 진행
+          completeStep();
+        }
+      }
       openedRef.current = false;
       setAnimating(false);
       const t = setTimeout(() => setVisible(false), 350);
       return () => clearTimeout(t);
     }
-  }, [open, clearRequestedViews]);
+  }, [open, clearRequestedViews, tutorialPhase, completeStep]);
 
   useEffect(() => {
     if (!open) return;
@@ -157,25 +170,44 @@ export function OrbFullscreen({ open, onClose }: Props) {
             minWidth: 0,
             borderRadius: 'var(--ou-radius-md)',
             background: 'var(--ou-bg)',
-            boxShadow: 'var(--ou-neu-pressed-lg)',
+            boxShadow: 'var(--ou-neu-inset)',
             overflow: 'hidden',
             display: 'flex',
             flexDirection: 'column',
           }}
         >
-          {/* 튜토리얼 가이드 메시지 (Step 2~6) */}
+          {/* 튜토리얼 가이드 메시지 (모든 스텝) */}
           {currentGuideMessage && (
-            <div style={{
-              padding: '10px 16px 0',
-              flexShrink: 0,
-            }}>
+            <div style={{ padding: '10px 16px 0', flexShrink: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 8 }}>
+                {Array.from({ length: TUTORIAL_STEP_COUNT }).map((_, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      width: i === tutorialStepIndex ? 16 : 6,
+                      height: 6,
+                      borderRadius: 99,
+                      background: i === tutorialStepIndex
+                        ? 'var(--ou-text-secondary)'
+                        : i < tutorialStepIndex
+                          ? 'var(--ou-text-muted)'
+                          : 'var(--ou-border-faint)',
+                      transition: 'all 300ms cubic-bezier(0.34, 1.56, 0.64, 1)',
+                    }}
+                  />
+                ))}
+                <span style={{ fontSize: 10, color: 'var(--ou-text-disabled)', marginLeft: 4 }}>
+                  {tutorialStepIndex + 1} / {TUTORIAL_STEP_COUNT}
+                </span>
+              </div>
               <div style={{
-                padding: '10px 16px',
-                borderRadius: 12,
-                background: 'var(--ou-accent, #e8976b)',
-                color: 'rgba(255,255,255,0.9)',
+                padding: '10px 14px',
+                borderRadius: 10,
+                background: 'var(--ou-bg)',
+                boxShadow: 'var(--ou-neu-raised-sm)',
                 fontSize: 13,
                 lineHeight: 1.6,
+                color: 'var(--ou-text-body)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
@@ -183,9 +215,9 @@ export function OrbFullscreen({ open, onClose }: Props) {
               }}>
                 <span>{currentGuideMessage}</span>
                 <button
-                  onClick={skipAllTutorial}
+                  onClick={() => { skipStep(); onClose(); }}
                   style={{
-                    fontSize: 11, color: 'rgba(255,255,255,0.4)',
+                    fontSize: 11, color: 'var(--ou-text-muted)',
                     background: 'none', border: 'none', cursor: 'pointer',
                     whiteSpace: 'nowrap', flexShrink: 0,
                   }}
@@ -196,18 +228,9 @@ export function OrbFullscreen({ open, onClose }: Props) {
             </div>
           )}
 
-          {isProfileStep ? (
-            <div style={{ flex: 1, overflow: 'auto', padding: 16 }}>
-              <ProfileQuestionUI
-                onSubmit={() => { completeTutorial(); onClose(); }}
-                onSkip={() => { skipAllTutorial(); onClose(); }}
-              />
-            </div>
-          ) : (
-            <div style={{ flex: 1, minHeight: 0 }}>
-              <ChatPanel autoSendOnOpen />
-            </div>
-          )}
+          <div style={{ flex: 1, minHeight: 0 }}>
+            <ChatPanel autoSendOnOpen />
+          </div>
         </div>
 
         {/* 우: View 패널 (A/B 뷰 통합) */}
@@ -219,21 +242,28 @@ export function OrbFullscreen({ open, onClose }: Props) {
 
 // ── 생성된 뷰 카드 — ChatPanel의 InlineView를 그대로 재사용 ──
 function CreatedViewCard({ message }: { message: ChatMessage }) {
+  const flatCardStyle = {
+    padding: '12px 14px',
+    borderRadius: 'var(--ou-radius-md)',
+    background: 'var(--ou-surface-faint)',
+    border: '1px solid var(--ou-border-subtle)',
+  };
+
   if (message.nodeCreated) {
     return (
-      <NeuCard variant="raised" size="sm" style={{ padding: '12px 14px' }}>
+      <div style={flatCardStyle}>
         <InlineView
           domain={message.nodeCreated.domain}
           data={message.nodeCreated.domain_data as Record<string, unknown> | undefined}
           content={message.content}
         />
-      </NeuCard>
+      </div>
     );
   }
 
   if (message.hanjaResults && message.hanjaResults.length > 0) {
     return (
-      <NeuCard variant="raised" size="sm" style={{ padding: '12px 14px' }}>
+      <div style={flatCardStyle}>
         <div style={{ fontSize: 10, color: 'var(--ou-text-muted)', letterSpacing: 1, marginBottom: 8 }}>漢 한자 {message.hanjaResults.length}자</div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
           {message.hanjaResults.slice(0, 8).map((h) => (
@@ -243,8 +273,8 @@ function CreatedViewCard({ message }: { message: ChatMessage }) {
                 fontSize: 18,
                 padding: '4px 8px',
                 borderRadius: 'var(--ou-radius-sm)',
-                background: 'var(--ou-bg)',
-                boxShadow: 'var(--ou-neu-raised-xs)',
+                background: 'transparent',
+                border: '1px solid var(--ou-border-subtle)',
                 color: 'var(--ou-text-heading)',
               }}
             >
@@ -257,13 +287,13 @@ function CreatedViewCard({ message }: { message: ChatMessage }) {
             </span>
           )}
         </div>
-      </NeuCard>
+      </div>
     );
   }
 
   if (message.youtubeEmbed) {
     return (
-      <NeuCard variant="raised" size="sm" style={{ padding: 0, overflow: 'hidden' }}>
+      <div style={{ borderRadius: 'var(--ou-radius-md)', border: '1px solid var(--ou-border-subtle)', overflow: 'hidden' }}>
         <div
           style={{
             width: '100%',
@@ -285,7 +315,7 @@ function CreatedViewCard({ message }: { message: ChatMessage }) {
             <span style={{ fontSize: 20, color: '#fff' }}>▶</span>
           </div>
         </div>
-      </NeuCard>
+      </div>
     );
   }
 
@@ -455,8 +485,8 @@ export function ViewOptionsChips() {
         margin: '8px 0 4px',
         padding: '12px 14px',
         borderRadius: 'var(--ou-radius-md)',
-        background: 'var(--ou-surface)',
-        boxShadow: 'var(--ou-neu-raised-sm)',
+        background: 'var(--ou-surface-faint)',
+        border: '1px solid var(--ou-border-subtle)',
         display: 'flex',
         flexDirection: 'column',
         gap: 8,
@@ -476,12 +506,11 @@ export function ViewOptionsChips() {
                 padding: '8px 12px',
                 borderRadius: 'var(--ou-radius-sm)',
                 border: isOn ? '1.5px solid var(--ou-text-heading)' : '1px solid var(--ou-border-subtle)',
-                background: isOn ? 'var(--ou-surface-raised)' : 'transparent',
+                background: isOn ? 'var(--ou-surface-subtle)' : 'transparent',
                 color: isOn ? 'var(--ou-text-heading)' : 'var(--ou-text-muted)',
                 fontSize: 13,
                 cursor: 'pointer',
                 textAlign: 'left',
-                boxShadow: isOn ? 'var(--ou-neu-raised-xs)' : 'none',
                 transition: 'all 0.15s',
               }}
             >

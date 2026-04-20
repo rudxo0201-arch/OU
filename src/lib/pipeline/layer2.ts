@@ -359,6 +359,10 @@ export async function saveMessageAsync(input: SaveMessageInput) {
   ) {
     const segExtraction = await extractAll(segmentText, segmentDomain, today);
     const segDomainData = { ...segExtraction.domain_data, ...(adminData ?? {}) };
+    // title 누락 시 세그먼트 원문으로 보정 (extraction 실패 안전망)
+    if (!segDomainData.title && !segDomainData.name) {
+      segDomainData.title = segmentText.trim();
+    }
 
     const { data: segNode, error: segErr } = await supabase.from('data_nodes').insert({
       user_id: input.userId,

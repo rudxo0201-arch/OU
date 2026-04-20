@@ -18,12 +18,11 @@ export function OuViewWidget() {
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      // 입력이 없으면 ghost text 전송
-      const text = input.trim() || ghostText?.trim() || '';
+      const text = input.trim();
       setInput('');
       openOrb(text || undefined);
     }
-  }, [input, ghostText, openOrb]);
+  }, [input, openOrb]);
 
   // 타이핑 시작하면 ghost text는 사라짐 (input이 있으면 placeholder 숨김)
   const showGhost = !input && !!ghostText;

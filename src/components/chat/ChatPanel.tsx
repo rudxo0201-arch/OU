@@ -3,7 +3,7 @@
 import { useRef, useEffect, useState } from 'react';
 import { useChatStore, type ChatMessage } from '@/stores/chatStore';
 import { ChatInput, type ChatInputHandle } from './ChatInput';
-import { NeuCard, NeuButton, NeuBadge, NeuModal } from '@/components/ds';
+import { NeuButton, NeuBadge, NeuModal } from '@/components/ds';
 import { AddToHomeButton } from './AddToHomeButton';
 import { stripLLMMeta } from '@/lib/utils/stripLLMMeta';
 import { ViewOptionsChips } from './OrbFullscreen';
@@ -160,8 +160,9 @@ function MessageBubble({
           maxWidth: isSearchResult ? '90%' : isUser ? '75%' : '85%',
           padding: '14px 18px',
           borderRadius: isUser ? '20px 20px 4px 20px' : '20px 20px 20px 4px',
-          background: 'var(--ou-bg)',
-          boxShadow: isUser ? 'var(--ou-neu-raised-md)' : 'var(--ou-neu-pressed-sm)',
+          background: isUser ? 'var(--ou-bg)' : 'var(--ou-surface-faint)',
+          boxShadow: isUser ? 'var(--ou-neu-raised-sm)' : 'none',
+          border: isUser ? 'none' : '1px solid var(--ou-border-faint)',
           fontSize: 15,
           lineHeight: isUser ? 1.7 : 1.8,
           color: isUser ? 'var(--ou-text-strong)' : 'var(--ou-text-body)',
@@ -190,12 +191,12 @@ function MessageBubble({
 
         {/* File result */}
         {message.fileResult && (
-          <NeuCard variant="pressed" size="sm" style={{ marginBottom: 8, padding: '8px 12px' }}>
+          <div style={{ marginBottom: 8, padding: '8px 12px', borderRadius: 'var(--ou-radius-sm)', background: 'var(--ou-surface-faint)', border: '1px solid var(--ou-border-subtle)' }}>
             <span style={{ fontSize: 12, color: 'var(--ou-text-body)' }}>{message.fileResult.fileName}</span>
             {message.fileResult.pageCount && (
               <span style={{ fontSize: 12, color: 'var(--ou-text-secondary)' }}> · {message.fileResult.pageCount}페이지</span>
             )}
-          </NeuCard>
+          </div>
         )}
 
         {/* Content */}
@@ -226,9 +227,9 @@ function MessageBubble({
           title={`전체 내용 · ${message.content.length.toLocaleString()}자`}
           maxWidth={500}
         >
-          <NeuCard variant="pressed" style={{ whiteSpace: 'pre-wrap', fontSize: 13, lineHeight: 1.7, color: 'var(--ou-text-body)', maxHeight: '50vh', overflow: 'auto' }}>
+          <div style={{ whiteSpace: 'pre-wrap', fontSize: 13, lineHeight: 1.7, color: 'var(--ou-text-body)', maxHeight: '50vh', overflow: 'auto', padding: '12px 16px', borderRadius: 'var(--ou-radius-sm)', background: 'var(--ou-surface-faint)', border: '1px solid var(--ou-border-faint)' }}>
             {stripLLMMeta(message.content)}
-          </NeuCard>
+          </div>
         </NeuModal>
 
         {/* Node created badges (primary + additional) */}
@@ -306,8 +307,7 @@ function MessageBubble({
             height: 20,
             borderRadius: '50%',
             background: 'var(--ou-bg)',
-            boxShadow: 'var(--ou-neu-raised-sm)',
-            border: 'none',
+            border: '1px solid var(--ou-border-subtle)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -374,14 +374,14 @@ export function InlineView({ domain, data, content }: { domain: string; data?: R
     } catch { /* skip */ }
 
     return (
-      <NeuCard variant="pressed" size="sm" style={{ marginTop: 12, animation: 'ou-fade-in 0.4s ease' }}>
+      <div style={{ marginTop: 12, padding: '10px 14px', borderRadius: 'var(--ou-radius-sm)', background: 'var(--ou-surface-faint)', border: '1px solid var(--ou-border-faint)', animation: 'ou-fade-in 0.4s ease' }}>
         <div style={{ fontSize: 10, color: 'var(--ou-text-muted)', letterSpacing: 1, marginBottom: 10 }}>SCHEDULE</div>
         {displayDate && <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ou-text-secondary)', marginBottom: 6 }}>{displayDate}</div>}
         {time && <div style={{ fontSize: 22, fontWeight: 300, color: 'var(--ou-text-strong)', marginBottom: 4, letterSpacing: -0.5 }}>{time}</div>}
         <div style={{ fontSize: 15, fontWeight: 500, color: 'var(--ou-text-strong)', marginBottom: 4 }}>{title}</div>
         {location && <div style={{ fontSize: 12, color: 'var(--ou-text-secondary)', marginTop: 2 }}>{location}</div>}
         {participants && <div style={{ fontSize: 12, color: 'var(--ou-text-secondary)', marginTop: 2 }}>{participants as string}</div>}
-      </NeuCard>
+      </div>
     );
   }
 
@@ -390,7 +390,7 @@ export function InlineView({ domain, data, content }: { domain: string; data?: R
     const category = (data?.category || '') as string;
     const memo = (data?.memo || data?.title || '') as string;
     return (
-      <NeuCard variant="pressed" size="sm" style={{ marginTop: 12, animation: 'ou-fade-in 0.4s ease' }}>
+      <div style={{ marginTop: 12, padding: '10px 14px', borderRadius: 'var(--ou-radius-sm)', background: 'var(--ou-surface-faint)', border: '1px solid var(--ou-border-faint)', animation: 'ou-fade-in 0.4s ease' }}>
         <div style={{ fontSize: 10, color: 'var(--ou-text-muted)', letterSpacing: 1, marginBottom: 10 }}>FINANCE</div>
         {amount && (
           <div style={{ fontSize: 22, fontWeight: 300, color: 'var(--ou-text-strong)', letterSpacing: -0.5 }}>
@@ -402,7 +402,7 @@ export function InlineView({ domain, data, content }: { domain: string; data?: R
             {[category, memo].filter(Boolean).join(' · ')}
           </div>
         )}
-      </NeuCard>
+      </div>
     );
   }
 
@@ -418,13 +418,13 @@ export function InlineView({ domain, data, content }: { domain: string; data?: R
     const typeLabel: Record<string, string> = { family: '가족', friend: '친구', work: '직장', school: '학교', romantic: '연인', other: '지인' };
     const meta = [relationship || typeLabel[type] || '', birthday ? `🎂 ${birthday}` : '', mbti, job].filter(Boolean).join(' · ');
     return (
-      <NeuCard variant="pressed" size="sm" style={{ marginTop: 12, animation: 'ou-fade-in 0.4s ease' }}>
+      <div style={{ marginTop: 12, padding: '10px 14px', borderRadius: 'var(--ou-radius-sm)', background: 'var(--ou-surface-faint)', border: '1px solid var(--ou-border-faint)', animation: 'ou-fade-in 0.4s ease' }}>
         <div style={{ fontSize: 10, color: 'var(--ou-text-muted)', letterSpacing: 1, marginBottom: 10 }}>PERSON</div>
         {name && <div style={{ fontSize: 15, fontWeight: 500, color: 'var(--ou-text-strong)' }}>{name}</div>}
         {meta && <div style={{ fontSize: 12, color: 'var(--ou-text-secondary)', marginTop: 4 }}>{meta}</div>}
         {contact && <div style={{ fontSize: 12, color: 'var(--ou-text-muted)', marginTop: 2 }}>{contact}</div>}
         {likes && <div style={{ fontSize: 11, color: 'var(--ou-text-muted)', marginTop: 6 }}>좋아하는 것: {likes}</div>}
-      </NeuCard>
+      </div>
     );
   }
 
@@ -432,27 +432,27 @@ export function InlineView({ domain, data, content }: { domain: string; data?: R
     const title = (data?.title || data?.what || safeContent.slice(0, 40)) as string;
     const deadline = (data?.deadline || data?.due || '') as string;
     return (
-      <NeuCard variant="pressed" size="sm" style={{ marginTop: 12, animation: 'ou-fade-in 0.4s ease' }}>
+      <div style={{ marginTop: 12, padding: '10px 14px', borderRadius: 'var(--ou-radius-sm)', background: 'var(--ou-surface-faint)', border: '1px solid var(--ou-border-faint)', animation: 'ou-fade-in 0.4s ease' }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-          <div style={{ width: 16, height: 16, borderRadius: 4, flexShrink: 0, marginTop: 2, border: '1.5px solid var(--ou-text-muted)', boxShadow: 'var(--ou-neu-pressed-sm)' }} />
+          <div style={{ width: 16, height: 16, borderRadius: 4, flexShrink: 0, marginTop: 2, border: '1.5px solid var(--ou-text-muted)' }} />
           <div>
             <div style={{ fontSize: 14, color: 'var(--ou-text-strong)' }}>{title}</div>
             {deadline && <div style={{ fontSize: 11, color: 'var(--ou-text-secondary)', marginTop: 3 }}>{deadline}</div>}
           </div>
         </div>
-      </NeuCard>
+      </div>
     );
   }
 
   if (domain === 'idea' || domain === 'knowledge') {
     const title = (data?.title || safeContent.slice(0, 60)) as string;
     return (
-      <NeuCard variant="pressed" size="sm" style={{ marginTop: 12, animation: 'ou-fade-in 0.4s ease' }}>
+      <div style={{ marginTop: 12, padding: '10px 14px', borderRadius: 'var(--ou-radius-sm)', background: 'var(--ou-surface-faint)', border: '1px solid var(--ou-border-faint)', animation: 'ou-fade-in 0.4s ease' }}>
         <div style={{ fontSize: 10, color: 'var(--ou-text-muted)', letterSpacing: 1, marginBottom: 10 }}>
           {domain.toUpperCase()}
         </div>
         <div style={{ fontSize: 14, color: 'var(--ou-text-body)', lineHeight: 1.6 }}>{title}</div>
-      </NeuCard>
+      </div>
     );
   }
 
@@ -493,12 +493,13 @@ function SuggestionsUI({
           <NeuButton
             key={i}
             size="sm"
-            variant={selected === s ? 'ghost' : 'default'}
+            variant="ghost"
             onClick={() => handleSelect(s)}
             disabled={!!selected && selected !== s}
             style={{
               fontSize: 13,
-              boxShadow: selected === s ? 'var(--ou-neu-pressed-sm)' : undefined,
+              border: selected === s ? '1.5px solid var(--ou-text-heading)' : '1px solid var(--ou-border-subtle)',
+              background: selected === s ? 'var(--ou-surface-subtle)' : 'transparent',
               opacity: selected && selected !== s ? 0.35 : 1,
             }}
           >
@@ -588,9 +589,8 @@ function HanjaInlineCards({
               width: 64,
               minHeight: 72,
               borderRadius: 8,
-              border: 'none',
-              background: 'var(--ou-bg)',
-              boxShadow: selected?.char === h.char ? 'var(--ou-neu-pressed-sm)' : 'var(--ou-neu-raised-sm)',
+              border: selected?.char === h.char ? '1.5px solid var(--ou-border-medium)' : '1px solid var(--ou-border-subtle)',
+              background: selected?.char === h.char ? 'var(--ou-surface-subtle)' : 'transparent',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
@@ -613,9 +613,8 @@ function HanjaInlineCards({
               width: 64,
               minHeight: 72,
               borderRadius: 8,
-              border: 'none',
-              background: 'var(--ou-bg)',
-              boxShadow: 'var(--ou-neu-raised-sm)',
+              background: 'transparent',
+              border: '1px solid var(--ou-border-subtle)',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
@@ -642,7 +641,7 @@ function HanjaDetail({ hanja, onClose }: { hanja: HanjaResult; onClose: () => vo
   const label = hun ? `${hun} ${reading}` : reading;
 
   return (
-    <NeuCard variant="pressed" size="sm" style={{ marginTop: 8, animation: 'ou-fade-in 0.2s ease' }}>
+    <div style={{ marginTop: 8, padding: '10px 14px', borderRadius: 'var(--ou-radius-sm)', background: 'var(--ou-surface-faint)', border: '1px solid var(--ou-border-subtle)', animation: 'ou-fade-in 0.2s ease' }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <span style={{ fontSize: 36, fontWeight: 300, color: 'var(--ou-text-strong)' }}>{hanja.char}</span>
@@ -662,11 +661,11 @@ function HanjaDetail({ hanja, onClose }: { hanja: HanjaResult; onClose: () => vo
         </div>
       )}
       {hanja.composition?.explanation && (
-        <NeuCard variant="raised" size="sm" style={{ marginTop: 10, padding: '8px 12px' }}>
+        <div style={{ marginTop: 10, padding: '8px 12px', borderRadius: 'var(--ou-radius-sm)', background: 'var(--ou-surface-subtle)' }}>
           <span style={{ color: 'var(--ou-text-disabled)', fontSize: 10, marginRight: 6 }}>{hanja.composition.type}</span>
           <span style={{ fontSize: 12, color: 'var(--ou-text-secondary)', lineHeight: 1.6 }}>{hanja.composition.explanation}</span>
-        </NeuCard>
+        </div>
       )}
-    </NeuCard>
+    </div>
   );
 }

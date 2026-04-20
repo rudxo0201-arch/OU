@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { useChatStore } from '@/stores/chatStore';
-import { NeuCard, NeuButton, NeuModal } from '@/components/ds';
+import { NeuButton, NeuModal } from '@/components/ds';
 import { stripLLMMeta } from '@/lib/utils/stripLLMMeta';
 
 interface ChatInputProps {
@@ -388,7 +388,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
     <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
       {/* YouTube preview */}
       {ytPreview && (
-        <NeuCard variant="raised" size="sm" style={{ marginBottom: 8, padding: 0, overflow: 'hidden', animation: 'ou-fade-in 0.2s ease' }}>
+        <div style={{ marginBottom: 8, borderRadius: 'var(--ou-radius-md)', border: '1px solid var(--ou-border-faint)', overflow: 'hidden', animation: 'ou-fade-in 0.2s ease' }}>
           <div style={{ position: 'relative', width: '100%', paddingTop: '56.25%' }}>
             <iframe
               src={`https://www.youtube.com/embed/${ytPreview.videoId}?rel=0`}
@@ -408,7 +408,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
               ✕
             </NeuButton>
           </div>
-        </NeuCard>
+        </div>
       )}
 
       {/* Hidden file input */}
@@ -482,8 +482,8 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
               style={{
                 padding: '6px 14px',
                 borderRadius: 'var(--ou-radius-sm)',
-                background: 'var(--ou-bg)',
-                boxShadow: 'var(--ou-neu-pressed-sm)',
+                background: 'var(--ou-surface-faint)',
+                border: '1px solid var(--ou-border-faint)',
                 fontSize: 13,
                 color: 'var(--ou-text-secondary)',
                 display: 'inline-flex',
@@ -529,9 +529,8 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
               width: 32,
               height: 32,
               borderRadius: '50%',
-              background: 'var(--ou-bg)',
-              boxShadow: 'var(--ou-neu-raised-sm)',
-              border: 'none',
+              background: 'transparent',
+              border: '1px solid var(--ou-border-subtle)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -561,9 +560,9 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
               justifyContent: 'center',
               background: input.trim() && !isStreaming
                 ? 'linear-gradient(135deg, var(--ou-accent), var(--ou-accent-secondary))'
-                : 'var(--ou-bg)',
-              boxShadow: input.trim() && !isStreaming ? 'var(--ou-neu-raised-sm)' : 'var(--ou-neu-raised-xs)',
-              border: 'none',
+                : 'transparent',
+              boxShadow: input.trim() && !isStreaming ? 'var(--ou-neu-raised-sm)' : 'none',
+              border: input.trim() && !isStreaming ? 'none' : '1px solid var(--ou-border-faint)',
               transition: 'all var(--ou-transition)',
               flexShrink: 0,
               cursor: !input.trim() || isStreaming ? 'not-allowed' : 'pointer',

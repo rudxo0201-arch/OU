@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { YoutubeLogo } from '@phosphor-icons/react';
+import { YoutubeLogo, Storefront } from '@phosphor-icons/react';
 
 interface Props {
   onUniverse: () => void;
@@ -12,6 +12,7 @@ interface Props {
 const BASE_ITEMS = [
   { id: 'universe', label: '유니버스', size: 52, icon: null },
   { id: 'youtube', label: 'YouTube', size: 44, icon: <YoutubeLogo size={20} weight="fill" /> },
+  { id: 'orbit', label: 'Orbit', size: 44, icon: <Storefront size={20} /> },
 ];
 
 const BASE_SIZE = 44;
@@ -50,6 +51,7 @@ export function DockBar({ onUniverse, universeActive }: Props) {
   const handleClick = useCallback((id: string) => {
     if (id === 'universe') onUniverse();
     if (id === 'youtube') router.push('/youtube');
+    if (id === 'orbit') router.push('/orbit');
   }, [onUniverse, router]);
 
   return (
