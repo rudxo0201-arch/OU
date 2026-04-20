@@ -1,8 +1,17 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { MagnifyingGlass, MapPin, X } from '@phosphor-icons/react';
-import { loadKakaoMapSDK, type KakaoMap, type KakaoMarker, type KakaoPlaceResult } from '@/lib/kakao-map';
+import { MagnifyingGlass, MapPin, X, Plus, Minus, Crosshair } from '@phosphor-icons/react';
+import {
+  loadKakaoMapSDK,
+  type KakaoMap,
+  type KakaoCustomOverlay,
+  type KakaoPolyline,
+  type KakaoClusterer,
+  type KakaoMarker,
+  type KakaoLatLng,
+  type KakaoPlaceResult,
+} from '@/lib/kakao-map';
 import type { ViewProps } from './registry';
 
 interface GeoNode {
@@ -14,7 +23,33 @@ interface GeoNode {
   lat?: number;
   lng?: number;
   address?: string;
-  markerRef?: KakaoMarker;
+  overlayRef?: KakaoCustomOverlay;
+  cardRef?: KakaoCustomOverlay;
+  markerRef?: KakaoMarker; // clusterer용
+}
+
+export interface RouteData {
+  from: { lat: number; lng: number; label: string };
+  to: { lat: number; lng: number; label: string };
+  waypoints?: { lat: number; lng: number }[];
+  current?: { lat: number; lng: number };
+}
+
+/** OU 스타일 커스텀 마커 HTML */
+function makePinHTML(tracking = false): string {
+  return `<div class="ou-map-pin${tracking ? ' ou-map-pin--tracking' : ''}"><div class="ou-map-pin-inner"></div></div>`;
+}
+
+/** OU 스타일 카드 팝업 HTML */
+function makeCardHTML(node: GeoNode): string {
+  return `
+    <div class="ou-map-card">
+      <button class="ou-map-card-close" data-close="${node.id}" aria-label="닫기">✕</button>
+      <div class="ou-map-card-title">${node.title}</div>
+      ${node.date ? `<div class="ou-map-card-sub">${node.date}</div>` : ''}
+      <div class="ou-map-card-sub">${node.address || node.locationText}</div>
+    </div>
+  `;
 }
 
 /** 인라인 장소 검색 패널 */
@@ -40,7 +75,6 @@ function PlaceSearchPanel({
     if (!query.trim()) return;
     setSearching(true);
     setSearched(false);
-
     try {
       await loadKakaoMapSDK();
       const ps = new window.kakao.maps.services.Places();
@@ -60,7 +94,6 @@ function PlaceSearchPanel({
     }
   }, [query]);
 
-  // 최초 진입 시 자동 검색
   useEffect(() => {
     if (initialQuery) search();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -107,7 +140,6 @@ function PlaceSearchPanel({
           </button>
         </div>
       </div>
-
       <div>
         {searching && (
           <div style={{ padding: '12px 14px', fontSize: 12, color: 'var(--ou-text-muted)' }}>검색 중…</div>
@@ -125,7 +157,7 @@ function PlaceSearchPanel({
               borderBottom: i < results.length - 1 ? '0.5px solid var(--ou-border-faint)' : 'none',
               cursor: 'pointer', transition: '150ms ease',
             }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'var(--ou-bg)')}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--ou-surface-faint)')}
             onMouseLeave={e => (e.currentTarget.style.background = 'none')}
           >
             <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--ou-text-heading)' }}>{r.place_name}</div>
@@ -145,6 +177,11 @@ function PlaceSearchPanel({
 export function MapView({ nodes, inline }: ViewProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<KakaoMap | null>(null);
+  const polylineRef = useRef<KakaoPolyline | null>(null);
+  const clustererRef = useRef<KakaoClusterer | null>(null);
+  const trackingOverlayRef = useRef<KakaoCustomOverlay | null>(null);
+  const openCardRef = useRef<KakaoCustomOverlay | null>(null);
+
   const [geoNodes, setGeoNodes] = useState<GeoNode[]>([]);
   const [sdkReady, setSdkReady] = useState(false);
   const [searchingNodeId, setSearchingNodeId] = useState<string | null>(null);
@@ -158,6 +195,9 @@ export function MapView({ nodes, inline }: ViewProps) {
       locationText: n.domain_data?.location || n.domain_data?.address,
       date: n.domain_data?.date,
       status: 'pending' as const,
+      ...(n.domain_data?.lat && n.domain_data?.lng
+        ? { lat: n.domain_data.lat, lng: n.domain_data.lng, address: n.domain_data.address, status: 'ok' as const }
+        : {}),
     }));
 
   // 지오코딩
@@ -168,6 +208,7 @@ export function MapView({ nodes, inline }: ViewProps) {
     async function geocodeAll() {
       const results = await Promise.all(
         locationNodes.map(async (node) => {
+          if (node.status === 'ok') return node;
           try {
             const res = await fetch(`/api/geocode?query=${encodeURIComponent(node.locationText)}`);
             if (!res.ok) return { ...node, status: 'failed' as const };
@@ -191,7 +232,7 @@ export function MapView({ nodes, inline }: ViewProps) {
     loadKakaoMapSDK().then(() => setSdkReady(true)).catch(() => {});
   }, []);
 
-  // 지도 렌더링
+  // 지도 렌더링 (커스텀 오버레이 + 클러스터링)
   useEffect(() => {
     const validNodes = geoNodes.filter(n => n.status === 'ok' && n.lat && n.lng);
     if (!sdkReady || validNodes.length === 0 || !mapRef.current) return;
@@ -207,23 +248,88 @@ export function MapView({ nodes, inline }: ViewProps) {
 
     const map = mapInstanceRef.current;
 
-    validNodes.forEach((node) => {
-      if (node.markerRef) return; // 이미 찍힌 핀 스킵
-      const position = new kakao.maps.LatLng(node.lat!, node.lng!);
-      const marker = new kakao.maps.Marker({ map, position, title: node.title });
-      node.markerRef = marker;
+    // 클러스터러 초기화
+    if (!clustererRef.current) {
+      clustererRef.current = new kakao.maps.MarkerClusterer({
+        map,
+        averageCenter: true,
+        minLevel: 5,
+        styles: [{
+          width: '36px',
+          height: '36px',
+          background: 'var(--ou-bg, #e8ecf1)',
+          borderRadius: '50%',
+          color: 'var(--ou-text-heading, #1a1a2e)',
+          textAlign: 'center',
+          lineHeight: '36px',
+          fontSize: '11px',
+          fontWeight: '600',
+          boxShadow: '4px 4px 8px rgba(163,177,198,0.5),-4px -4px 8px rgba(255,255,255,0.8)',
+        }],
+      });
+    }
 
-      const infoContent = `
-        <div style="padding:10px 14px;min-width:140px;font-size:12px;line-height:1.6;">
-          <div style="font-weight:600;margin-bottom:2px;">${node.title}</div>
-          ${node.date ? `<div style="color:#888;font-size:11px;">${node.date}</div>` : ''}
-          <div style="color:#888;font-size:11px;margin-top:2px;">${node.address || node.locationText}</div>
-        </div>
-      `;
-      const infoWindow = new kakao.maps.InfoWindow({ content: infoContent });
-      kakao.maps.event.addListener(marker, 'click', () => infoWindow.open(map, marker));
+    const newMarkers: KakaoMarker[] = [];
+
+    validNodes.forEach((node) => {
+      if (node.overlayRef) return;
+      const position = new kakao.maps.LatLng(node.lat!, node.lng!);
+
+      // 커스텀 핀 오버레이
+      const pinEl = document.createElement('div');
+      pinEl.innerHTML = makePinHTML();
+      const pinOverlay = new kakao.maps.CustomOverlay({
+        position,
+        content: pinEl,
+        yAnchor: 1,
+        zIndex: 3,
+      });
+      pinOverlay.setMap(map);
+      node.overlayRef = pinOverlay;
+
+      // 카드 팝업 (클릭 시 표시)
+      const cardEl = document.createElement('div');
+      cardEl.innerHTML = makeCardHTML(node);
+      const cardOverlay = new kakao.maps.CustomOverlay({
+        position,
+        content: cardEl,
+        yAnchor: 1,
+        zIndex: 4,
+      });
+      node.cardRef = cardOverlay;
+
+      // 닫기 버튼 이벤트
+      cardEl.querySelector(`[data-close="${node.id}"]`)?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        cardOverlay.setMap(null);
+        openCardRef.current = null;
+      });
+
+      // 핀 클릭 → 카드 표시
+      pinEl.addEventListener('click', () => {
+        if (openCardRef.current && openCardRef.current !== cardOverlay) {
+          openCardRef.current.setMap(null);
+        }
+        if (openCardRef.current === cardOverlay) {
+          cardOverlay.setMap(null);
+          openCardRef.current = null;
+        } else {
+          cardOverlay.setMap(map);
+          openCardRef.current = cardOverlay;
+        }
+      });
+
+      // 클러스터용 더미 마커 (invisible)
+      const dummyMarker = new kakao.maps.Marker({ position }) as KakaoMarker & { setVisible?: (v: boolean) => void };
+      newMarkers.push(dummyMarker);
+      node.markerRef = dummyMarker;
     });
 
+    if (newMarkers.length > 0) {
+      clustererRef.current.addMarkers(newMarkers);
+    }
+
+    // 여러 노드 → bounds 자동 조정
     if (validNodes.length > 1) {
       const bounds = new kakao.maps.LatLngBounds();
       validNodes.forEach(n => bounds.extend(new kakao.maps.LatLng(n.lat!, n.lng!)));
@@ -231,43 +337,122 @@ export function MapView({ nodes, inline }: ViewProps) {
     }
   }, [geoNodes, sdkReady]);
 
+  // 경로(폴리라인) 렌더링
+  const drawRoute = useCallback((route: RouteData) => {
+    if (!sdkReady || !mapInstanceRef.current) return;
+    const kakao = window.kakao;
+    const map = mapInstanceRef.current;
+
+    const path: KakaoLatLng[] = [
+      new kakao.maps.LatLng(route.from.lat, route.from.lng),
+      ...(route.waypoints ?? []).map(w => new kakao.maps.LatLng(w.lat, w.lng)),
+      ...(route.current ? [new kakao.maps.LatLng(route.current.lat, route.current.lng)] : []),
+      new kakao.maps.LatLng(route.to.lat, route.to.lng),
+    ];
+
+    if (polylineRef.current) {
+      polylineRef.current.setPath(path);
+    } else {
+      polylineRef.current = new kakao.maps.Polyline({
+        map,
+        path,
+        strokeWeight: 3,
+        strokeColor: '#8b8b8b',
+        strokeOpacity: 0.7,
+        strokeStyle: 'solid',
+      });
+    }
+  }, [sdkReady]);
+  void drawRoute; // 외부에서 props로 route 전달 시 활용
+
+  // 실시간 위치 업데이트 (tracking)
+  const updateTracking = useCallback((lat: number, lng: number) => {
+    if (!sdkReady || !mapInstanceRef.current) return;
+    const kakao = window.kakao;
+    const map = mapInstanceRef.current;
+    const position = new kakao.maps.LatLng(lat, lng);
+
+    if (trackingOverlayRef.current) {
+      trackingOverlayRef.current.setPosition(position);
+    } else {
+      const el = document.createElement('div');
+      el.innerHTML = makePinHTML(true);
+      trackingOverlayRef.current = new kakao.maps.CustomOverlay({
+        position,
+        content: el,
+        yAnchor: 1,
+        zIndex: 10,
+      });
+      trackingOverlayRef.current.setMap(map);
+    }
+
+    map.setCenter(position);
+  }, [sdkReady]);
+  void updateTracking; // 외부에서 Supabase Realtime 연동 시 활용
+
+  // 줌 컨트롤
+  const handleZoom = useCallback((direction: 'in' | 'out') => {
+    if (!mapInstanceRef.current) return;
+    const map = mapInstanceRef.current as KakaoMap & { getLevel: () => number; setLevel: (l: number) => void };
+    const current = map.getLevel();
+    map.setLevel(direction === 'in' ? current - 1 : current + 1);
+  }, []);
+
+  // 내 위치
+  const handleMyLocation = useCallback(() => {
+    if (!navigator.geolocation || !mapInstanceRef.current) return;
+    navigator.geolocation.getCurrentPosition((pos) => {
+      const kakao = window.kakao;
+      const latlng = new kakao.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
+      mapInstanceRef.current!.setCenter(latlng);
+    });
+  }, []);
+
   // 장소 선택 확정
   const handlePlaceSelect = useCallback(async (nodeId: string, lat: number, lng: number, address: string, name: string) => {
     setSearchingNodeId(null);
 
-    // 지도에 핀 추가
     if (sdkReady && mapInstanceRef.current) {
       const kakao = window.kakao;
       const position = new kakao.maps.LatLng(lat, lng);
-      const marker = new kakao.maps.Marker({ map: mapInstanceRef.current, position });
-      const node = geoNodes.find(n => n.id === nodeId);
-      const title = node?.title ?? '';
-      const infoContent = `<div style="padding:10px 14px;min-width:140px;font-size:12px;"><div style="font-weight:600;">${name}</div><div style="color:#888;font-size:11px;">${address}</div></div>`;
-      const infoWindow = new kakao.maps.InfoWindow({ content: infoContent });
-      kakao.maps.event.addListener(marker, 'click', () => infoWindow.open(mapInstanceRef.current!, marker));
+      const node = geoNodes.find(n => n.id === nodeId) ?? { id: nodeId, title: name, locationText: name, status: 'ok' as const, lat, lng, address };
+
+      // 핀 오버레이
+      const pinEl = document.createElement('div');
+      pinEl.innerHTML = makePinHTML();
+      const pinOverlay = new kakao.maps.CustomOverlay({ position, content: pinEl, yAnchor: 1, zIndex: 3 });
+      pinOverlay.setMap(mapInstanceRef.current);
+
+      // 카드
+      const updatedNode = { ...node, lat, lng, address, locationText: name, status: 'ok' as const };
+      const cardEl = document.createElement('div');
+      cardEl.innerHTML = makeCardHTML(updatedNode);
+      const cardOverlay = new kakao.maps.CustomOverlay({ position, content: cardEl, yAnchor: 1, zIndex: 4 });
+      cardEl.querySelector(`[data-close="${nodeId}"]`)?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        cardOverlay.setMap(null);
+        openCardRef.current = null;
+      });
+      pinEl.addEventListener('click', () => {
+        if (openCardRef.current && openCardRef.current !== cardOverlay) openCardRef.current.setMap(null);
+        if (openCardRef.current === cardOverlay) { cardOverlay.setMap(null); openCardRef.current = null; }
+        else { cardOverlay.setMap(mapInstanceRef.current!); openCardRef.current = cardOverlay; }
+      });
+
       mapInstanceRef.current.setCenter(position);
-      void title;
     }
 
-    // geoNodes 업데이트
     setGeoNodes(prev => prev.map(n =>
       n.id === nodeId ? { ...n, status: 'ok', lat, lng, address, locationText: name } : n
     ));
 
-    // domain_data 저장 — 기존 domain_data 가져와서 병합
     const targetNode = nodes.find(n => n.id === nodeId);
     if (targetNode) {
       await fetch(`/api/nodes/${nodeId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          domain_data: {
-            ...targetNode.domain_data,
-            location: name,
-            address,
-            lat,
-            lng,
-          },
+          domain_data: { ...targetNode.domain_data, location: name, address, lat, lng },
         }),
       });
     }
@@ -283,26 +468,43 @@ export function MapView({ nodes, inline }: ViewProps) {
 
   const failedNodes = geoNodes.filter(n => n.status === 'failed');
   const isLoading = geoNodes.length === 0 || geoNodes.some(n => n.status === 'pending');
-  const height = inline ? 200 : '100%';
-  const minHeight = inline ? undefined : 360;
+  const mapHeight = inline ? 200 : '100%';
+  const mapMinHeight = inline ? undefined : 360;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 10, height: inline ? 'auto' : '100%' }}>
       {/* 지도 */}
-      <div style={{ position: 'relative', width: '100%', height, minHeight, borderRadius: 'var(--ou-radius-md)', overflow: 'hidden', flexShrink: 0 }}>
+      <div style={{ position: 'relative', width: '100%', height: mapHeight, minHeight: mapMinHeight, borderRadius: 'var(--ou-radius-md)', overflow: 'hidden', flexShrink: 0 }}>
         <div ref={mapRef} style={{ width: '100%', height: '100%' }} />
+
+        {/* 로딩 오버레이 */}
         {isLoading && (
           <div style={{
             position: 'absolute', inset: 0, display: 'flex', alignItems: 'center',
-            justifyContent: 'center', background: 'var(--ou-bg)', opacity: 0.85,
+            justifyContent: 'center', background: 'var(--ou-bg)', opacity: 0.9,
             fontSize: 12, color: 'var(--ou-text-muted)',
           }}>
             지도 불러오는 중…
           </div>
         )}
+
+        {/* OU 커스텀 컨트롤 */}
+        {!inline && !isLoading && (
+          <div className="ou-map-control" style={{ bottom: 16, right: 16 }}>
+            <button className="ou-map-control-btn" onClick={() => handleZoom('in')} aria-label="줌 인">
+              <Plus size={14} />
+            </button>
+            <button className="ou-map-control-btn" onClick={() => handleZoom('out')} aria-label="줌 아웃">
+              <Minus size={14} />
+            </button>
+            <button className="ou-map-control-btn" onClick={handleMyLocation} aria-label="내 위치" style={{ marginTop: 4 }}>
+              <Crosshair size={14} />
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* 위치 확인 필요 목록 (inline 모드에서는 숨김) */}
+      {/* 위치 확인 필요 목록 */}
       {!inline && failedNodes.length > 0 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {failedNodes.map(node => (

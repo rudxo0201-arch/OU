@@ -16,12 +16,61 @@ export interface KakaoPlaceResult {
   category_name: string;
 }
 
+export interface KakaoCustomOverlayOptions {
+  position: KakaoLatLng;
+  content: string | HTMLElement;
+  map?: KakaoMap;
+  zIndex?: number;
+  yAnchor?: number;
+  xAnchor?: number;
+}
+
+export interface KakaoCustomOverlay {
+  setMap: (map: KakaoMap | null) => void;
+  getPosition: () => KakaoLatLng;
+  setContent: (content: string | HTMLElement) => void;
+  setPosition: (position: KakaoLatLng) => void;
+}
+
+export interface KakaoPolylineOptions {
+  map?: KakaoMap;
+  path: KakaoLatLng[];
+  strokeWeight?: number;
+  strokeColor?: string;
+  strokeOpacity?: number;
+  strokeStyle?: string;
+}
+
+export interface KakaoPolyline {
+  setMap: (map: KakaoMap | null) => void;
+  setPath: (path: KakaoLatLng[]) => void;
+  getPath: () => KakaoLatLng[];
+}
+
+export interface KakaoClustererOptions {
+  map: KakaoMap;
+  averageCenter?: boolean;
+  minLevel?: number;
+  disableClickZoom?: boolean;
+  calculator?: number[];
+  styles?: Record<string, string>[];
+}
+
+export interface KakaoClusterer {
+  addMarkers: (markers: KakaoMarker[], redraw?: boolean) => void;
+  removeMarkers: (markers: KakaoMarker[], redraw?: boolean) => void;
+  clear: () => void;
+  redraw: () => void;
+}
+
 export interface KakaoMaps {
   maps: {
     load: (callback: () => void) => void;
     Map: new (container: HTMLElement, options: KakaoMapOptions) => KakaoMap;
     Marker: new (options: KakaoMarkerOptions) => KakaoMarker;
+    CustomOverlay: new (options: KakaoCustomOverlayOptions) => KakaoCustomOverlay;
     InfoWindow: new (options: KakaoInfoWindowOptions) => KakaoInfoWindow;
+    Polyline: new (options: KakaoPolylineOptions) => KakaoPolyline;
     LatLng: new (lat: number, lng: number) => KakaoLatLng;
     LatLngBounds: new () => KakaoBounds;
     event: {
@@ -40,6 +89,7 @@ export interface KakaoMaps {
         ERROR: string;
       };
     };
+    MarkerClusterer: new (options: KakaoClustererOptions) => KakaoClusterer;
   };
 }
 
@@ -107,7 +157,7 @@ export function loadKakaoMapSDK(): Promise<void> {
     }
 
     const script = document.createElement('script');
-    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${key}&libraries=services&autoload=false`;
+    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${key}&libraries=services,clusterer&autoload=false`;
     script.async = true;
 
     script.onload = () => {

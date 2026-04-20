@@ -293,3 +293,137 @@ input, textarea {
   from { opacity: 0; transform: scale(0.96) translateY(8px); }
   to { opacity: 1; transform: scale(1) translateY(0); }
 }
+
+/* ===== 지도뷰 전용 ===== */
+.ou-map-pin {
+  width: 28px;
+  height: 28px;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  background: var(--ou-bg);
+  box-shadow: var(--ou-neu-raised-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+.ou-map-pin:hover {
+  box-shadow: var(--ou-neu-raised-md);
+}
+.ou-map-pin-inner {
+  transform: rotate(45deg);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ou-text-secondary);
+}
+.ou-map-pin--tracking .ou-map-pin-inner {
+  background: var(--ou-accent-primary, #6366f1);
+  animation: ou-map-pulse 1.4s ease infinite;
+}
+@keyframes ou-map-pulse {
+  0%, 100% { opacity: 1; transform: rotate(45deg) scale(1); }
+  50% { opacity: 0.5; transform: rotate(45deg) scale(1.4); }
+}
+
+.ou-map-card {
+  background: var(--ou-bg);
+  box-shadow: var(--ou-neu-raised-md);
+  border-radius: var(--ou-radius-md);
+  padding: 12px 14px;
+  min-width: 160px;
+  max-width: 240px;
+  font-family: var(--ou-font-body);
+  position: relative;
+  margin-bottom: 8px;
+}
+.ou-map-card::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid var(--ou-bg);
+  filter: drop-shadow(0 2px 2px rgba(0,0,0,0.06));
+}
+.ou-map-card-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ou-text-heading);
+  margin-bottom: 2px;
+}
+.ou-map-card-sub {
+  font-size: 11px;
+  color: var(--ou-text-muted);
+  line-height: 1.5;
+}
+.ou-map-card-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--ou-text-disabled);
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: color 150ms ease;
+}
+.ou-map-card-close:hover {
+  color: var(--ou-text-muted);
+}
+
+.ou-map-control {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: absolute;
+  z-index: 10;
+}
+.ou-map-control-btn {
+  width: 34px;
+  height: 34px;
+  border: none;
+  cursor: pointer;
+  background: var(--ou-bg);
+  box-shadow: var(--ou-neu-raised-sm);
+  border-radius: var(--ou-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ou-text-body);
+  font-size: 16px;
+  font-weight: 500;
+  transition: box-shadow 120ms ease;
+}
+.ou-map-control-btn:hover {
+  box-shadow: var(--ou-neu-raised-md);
+}
+.ou-map-control-btn:active {
+  box-shadow: var(--ou-neu-pressed-sm);
+}
+
+.ou-map-cluster {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--ou-bg);
+  box-shadow: var(--ou-neu-raised-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ou-text-heading);
+  cursor: pointer;
+  transition: box-shadow 120ms ease;
+}
+.ou-map-cluster:hover {
+  box-shadow: var(--ou-neu-raised-lg);
+}
