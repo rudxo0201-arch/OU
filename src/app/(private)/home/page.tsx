@@ -1,31 +1,10 @@
 'use client';
 
-import { Suspense, useState, useCallback, useRef, useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { DockBar } from '@/components/widgets/DockBar';
 import { QSDTabs } from '@/components/qsd/QSDTabs';
-import {
-  Note, CalendarBlank, CheckSquare, CurrencyKrw, Fire, Lightbulb,
-} from '@phosphor-icons/react';
-import dynamicImport from 'next/dynamic';
-const UniverseView = dynamicImport(() => import('@/components/widgets/UniverseView').then(m => m.UniverseView), { ssr: false });
-
-type Mode = 'dashboard' | 'to-universe' | 'universe' | 'to-dashboard';
-
-const SPHERE_DURATION = 600;
-const WIDGET_EXIT_DURATION = 600;
-const WIDGET_ENTER_DURATION = 600;
-
-// 설치된 앱 목록 (완성된 것부터)
-const INSTALLED_APPS = [
-  { slug: 'note',     label: 'Note',     icon: Note,          route: '/note/new' },
-  { slug: 'calendar', label: 'Calendar', icon: CalendarBlank, route: '/app/calendar' },
-  { slug: 'todo',     label: 'Todo',     icon: CheckSquare,   route: '/app/todo' },
-  { slug: 'finance',  label: 'Finance',  icon: CurrencyKrw,   route: '/app/finance' },
-  { slug: 'habit',    label: 'Habit',    icon: Fire,          route: '/app/habit' },
-  { slug: 'idea',     label: 'Idea',     icon: Lightbulb,     route: '/app/idea' },
-];
 
 export default function HomeWrapper() {
   return (
@@ -44,8 +23,6 @@ function HomePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const inviteToken = searchParams.get('invite');
-  const [mode, setMode] = useState<Mode>('dashboard');
-  const timerRef = useRef<NodeJS.Timeout>();
 
   // 초대 토큰 처리
   useEffect(() => {
@@ -91,20 +68,6 @@ function HomePage() {
     return () => window.removeEventListener('orb-expand', orbHandler);
   }, [router]);
 
-  const toggleUniverse = useCallback(() => {
-    if (mode === 'to-universe' || mode === 'to-dashboard') return;
-    clearTimeout(timerRef.current);
-    if (mode === 'dashboard') {
-      setMode('to-universe');
-      window.dispatchEvent(new CustomEvent('universe-mode-change', { detail: { active: true } }));
-      timerRef.current = setTimeout(() => setMode('universe'), WIDGET_EXIT_DURATION + SPHERE_DURATION);
-    } else {
-      setMode('to-dashboard');
-      window.dispatchEvent(new CustomEvent('universe-mode-change', { detail: { active: false } }));
-      timerRef.current = setTimeout(() => setMode('dashboard'), SPHERE_DURATION + WIDGET_ENTER_DURATION);
-    }
-  }, [mode]);
-
   if (isLoading) {
     return (
       <div style={{ minHeight: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--ou-bg)' }}>
@@ -113,100 +76,29 @@ function HomePage() {
     );
   }
 
-  const showDashboard = mode === 'dashboard' || mode === 'to-universe' || mode === 'to-dashboard';
-  const showUniverse  = mode === 'universe'   || mode === 'to-universe' || mode === 'to-dashboard';
-  const universeActive = mode === 'universe'  || mode === 'to-universe';
-
   return (
     <div style={{ position: 'relative', height: '100dvh', overflow: 'hidden', background: 'var(--ou-bg)' }}>
-
-      {/* Universe */}
-      {showUniverse && <UniverseView visible={universeActive} />}
-
-      {/* Dashboard */}
-      {showDashboard && (
-        <div
-          style={{
-            position: 'absolute', inset: 0,
-            display: 'flex', flexDirection: 'column',
-            alignItems: 'center', justifyContent: 'center',
-            gap: 32, padding: '0 24px 120px',
-            opacity: mode === 'to-universe' ? 0 : mode === 'to-dashboard' ? 1 : 1,
-            transition: 'opacity 400ms ease',
-            pointerEvents: mode === 'dashboard' ? 'auto' : 'none',
-          }}
-        >
-          {/* QSD */}
-          <div style={{ width: '100%', maxWidth: 560 }}>
-            <QSDTabs data-tutorial-target="ou-view-input" />
-          </div>
-
-          {/* 앱 아이콘 */}
-          <AppGrid />
+      {/* QSD — 중앙 */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: '0 24px 120px',
+      }}>
+        <div style={{ width: '100%', maxWidth: 560 }}>
+          <QSDTabs data-tutorial-target="ou-view-input" />
         </div>
-      )}
+      </div>
 
-      {/* Universe 전환 구체 */}
-      {(mode === 'to-universe' || mode === 'to-dashboard') && (
-        <ExpandingSphere expanding={mode === 'to-universe'} />
-      )}
-
-      {/* DockBar */}
+      {/* DockBar — 하단 */}
       <div style={{
         position: 'absolute', bottom: 40, left: 0, right: 0,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         zIndex: 10, pointerEvents: 'none',
       }}>
         <div style={{ pointerEvents: 'auto' }}>
-          <DockBar
-            onUniverse={toggleUniverse}
-            universeActive={universeActive}
-          />
+          <DockBar />
         </div>
       </div>
-    </div>
-  );
-}
-
-// ── 앱 아이콘 그리드 ──────────────────────────────────────────
-function AppGrid() {
-  const router = useRouter();
-  return (
-    <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', justifyContent: 'center' }}>
-      {INSTALLED_APPS.map(({ slug, label, icon: Icon, route }) => (
-        <button
-          key={slug}
-          onClick={() => router.push(route)}
-          style={{
-            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
-            padding: '12px 10px', border: 'none', borderRadius: 'var(--ou-radius-lg)',
-            background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-raised-sm)',
-            cursor: 'pointer', width: 72, transition: 'box-shadow 150ms ease',
-          }}
-          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.boxShadow = 'var(--ou-neu-raised-md)'; }}
-          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.boxShadow = 'var(--ou-neu-raised-sm)'; }}
-        >
-          <Icon size={22} weight="regular" style={{ color: 'var(--ou-text-muted)' }} />
-          <span style={{ fontSize: 10, color: 'var(--ou-text-disabled)', letterSpacing: '0.3px' }}>
-            {label}
-          </span>
-        </button>
-      ))}
-    </div>
-  );
-}
-
-function ExpandingSphere({ expanding }: { expanding: boolean }) {
-  return (
-    <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', zIndex: 5 }}>
-      <div style={{
-        width: 48, height: 48, borderRadius: '50%',
-        background: 'radial-gradient(circle at 35% 35%, var(--ou-text-muted), var(--ou-border-faint) 70%)',
-        boxShadow: '0 0 40px 10px var(--ou-border-faint)',
-        animation: expanding
-          ? 'sphere-expand 600ms cubic-bezier(0, 0, 0.2, 1) forwards'
-          : 'sphere-collapse 600ms cubic-bezier(0.4, 0, 1, 1) forwards',
-      }} />
     </div>
   );
 }

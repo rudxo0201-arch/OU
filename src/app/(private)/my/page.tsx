@@ -132,10 +132,7 @@ export default function MyPage() {
         zIndex: 10, pointerEvents: 'none',
       }}>
         <div style={{ pointerEvents: 'auto' }}>
-          <DockBar
-            onUniverse={toggleUniverse}
-            universeActive={universeActive}
-          />
+          <DockBar />
         </div>
       </div>
     </div>
