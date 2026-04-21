@@ -4,10 +4,9 @@ import { usePathname, useRouter } from 'next/navigation';
 import { Suspense, useState, useEffect } from 'react';
 
 const NAV_ITEMS = [
-  { label: 'Orb', href: '/orb', adminOnly: false },
   { label: 'Universe', href: '/universe', adminOnly: false },
   { label: 'Orbit', href: '/orbit', adminOnly: true },
-  { label: 'View Studio', href: '/view-studio', adminOnly: true },
+  { label: 'Orb Studio', href: '/orb-studio', adminOnly: true },
 ];
 
 function getTimeLabel() {

@@ -171,16 +171,9 @@ function MyPage() {
   }, [isAdmin, isLoading, initAdminLayout]);
 
   useEffect(() => {
-    const keyHandler = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); router.push('/orb'); }
-    };
     const orbHandler = () => router.push('/orb');
-    window.addEventListener('keydown', keyHandler);
     window.addEventListener('orb-expand', orbHandler);
-    return () => {
-      window.removeEventListener('keydown', keyHandler);
-      window.removeEventListener('orb-expand', orbHandler);
-    };
+    return () => window.removeEventListener('orb-expand', orbHandler);
   }, [router]);
 
   const toggleUniverse = useCallback(() => {
