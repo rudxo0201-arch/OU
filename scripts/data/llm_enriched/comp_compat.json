@@ -1,0 +1,128 @@
+[
+  {
+    "char": "金",
+    "components": [
+      {
+        "char": "人",
+        "role": "뜻"
+      },
+      {
+        "char": "王",
+        "role": "뜻"
+      },
+      {
+        "char": "土",
+        "role": "뜻"
+      }
+    ]
+  },
+  {
+    "char": "車",
+    "components": [
+      {
+        "char": "車",
+        "role": "뜻+음"
+      }
+    ]
+  },
+  {
+    "char": "不",
+    "components": [
+      {
+        "char": "不",
+        "role": "뜻+음"
+      }
+    ]
+  },
+  {
+    "char": "樂",
+    "components": [
+      {
+        "char": "木",
+        "role": "뜻"
+      },
+      {
+        "char": "白",
+        "role": "음"
+      }
+    ]
+  },
+  {
+    "char": "宅",
+    "components": [
+      {
+        "char": "宀",
+        "role": "뜻"
+      },
+      {
+        "char": "乇",
+        "role": "음"
+      }
+    ]
+  },
+  {
+    "char": "率",
+    "components": [
+      {
+        "char": "率",
+        "role": "뜻+음"
+      }
+    ]
+  },
+  {
+    "char": "塞",
+    "components": [
+      {
+        "char": "宀",
+        "role": "뜻"
+      },
+      {
+        "char": "土",
+        "role": "뜻"
+      },
+      {
+        "char": "工",
+        "role": "음"
+      }
+    ]
+  },
+  {
+    "char": "串",
+    "components": [
+      {
+        "char": "口",
+        "role": "뜻"
+      },
+      {
+        "char": "丨",
+        "role": "뜻"
+      }
+    ]
+  },
+  {
+    "char": "泌",
+    "components": [
+      {
+        "char": "氵",
+        "role": "뜻"
+      },
+      {
+        "char": "必",
+        "role": "음"
+      }
+    ]
+  },
+  {
+    "char": "杻",
+    "components": [
+      {
+        "char": "木",
+        "role": "뜻"
+      },
+      {
+        "char": "丑",
+        "role": "음"
+      }
+    ]
+  }
+]

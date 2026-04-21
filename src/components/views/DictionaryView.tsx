@@ -264,13 +264,19 @@ function DetailPanel({ node, nodes, onClose, onSelect }: { node: any; nodes: any
 
 const PAGE_SIZE = 100;
 
+interface AllFilters {
+  grades: [string, number][];
+  radicals: [string, number][];
+}
+
 interface DictionaryViewProps extends ViewProps {
   onSearch?: (params: { query?: string; radical?: string; grade?: string; strokeMin?: string; strokeMax?: string; char_type?: string; page?: number }) => void;
   total?: number;
   loading?: boolean;
+  allFilters?: AllFilters;
 }
 
-export function DictionaryView({ nodes, onSearch, total, loading }: DictionaryViewProps) {
+export function DictionaryView({ nodes, onSearch, total, loading, allFilters }: DictionaryViewProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedQuery = useDebouncedValue(searchQuery, 200);
   const [filters, setFilters] = useState<Filters>({});
@@ -315,7 +321,10 @@ export function DictionaryView({ nodes, onSearch, total, loading }: DictionaryVi
     return result;
   }, [nodes, debouncedQuery, hanjaChars, filters]);
 
-  const availableFilters = useMemo(() => getAvailableFilters((nodes ?? []).filter(n => getNodeDomainData(n).type === 'hanja')), [nodes]);
+  const availableFilters = useMemo(() => {
+    if (allFilters) return allFilters;
+    return getAvailableFilters((nodes ?? []).filter(n => getNodeDomainData(n).type === 'hanja'));
+  }, [nodes, allFilters]);
 
   const totalCount = isServerMode ? (filters.choseong ? filteredNodes.length : (total ?? nodes.length)) : filteredNodes.length;
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);

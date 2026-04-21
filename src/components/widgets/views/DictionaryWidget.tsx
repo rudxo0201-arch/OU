@@ -11,8 +11,21 @@ export function DictionaryWidget() {
   const [nodes, setNodes] = useState<any[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [allFilters, setAllFilters] = useState<{ grades: [string, number][]; radicals: [string, number][] } | undefined>(undefined);
   const cachedTotal = useRef(0);
   const prevFilters = useRef<string>('');
+
+  useEffect(() => {
+    fetch('/api/hanja/filters')
+      .then(r => r.json())
+      .then(data => {
+        setAllFilters({
+          grades: (data.grades ?? []).map((g: any) => [g.grade, g.count] as [string, number]),
+          radicals: (data.radicals ?? []).map((r: any) => [r.char, r.count] as [string, number]),
+        });
+      })
+      .catch(() => {});
+  }, []);
 
   const fetchHanja = useCallback(async (
     params: Record<string, string | number | undefined> = {},
@@ -75,6 +88,7 @@ export function DictionaryWidget() {
       onSearch={handleSearch}
       total={total}
       loading={loading}
+      allFilters={allFilters}
     />
   );
 }
