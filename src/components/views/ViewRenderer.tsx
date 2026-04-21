@@ -62,8 +62,9 @@ export function ViewRenderer({ viewType, nodes, filters, onSave, inline, layoutC
   const resolvedType = viewType === 'pdf' || viewType === 'export' ? 'document' : viewType;
   const View = VIEW_REGISTRY[resolvedType];
 
-  // 필터 원칙: 빈 뷰 표시 금지
-  if (!nodes || nodes.length === 0) return null;
+  // 필터 원칙: 빈 뷰 표시 금지 + 배열 보장
+  const safeNodes = Array.isArray(nodes) ? nodes : [];
+  if (safeNodes.length === 0) return null;
 
   if (!View) {
     if (process.env.NODE_ENV === 'development') {
@@ -85,7 +86,7 @@ export function ViewRenderer({ viewType, nodes, filters, onSave, inline, layoutC
           maxHeight: 400,
         } : undefined}
       >
-        <View nodes={nodes} filters={filters} onSave={onSave} layoutConfig={layoutConfig} />
+        <View nodes={safeNodes} filters={filters} onSave={onSave} layoutConfig={layoutConfig} />
       </div>
     </ViewErrorBoundary>
   );

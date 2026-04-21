@@ -90,7 +90,10 @@ function HomeWidget({ label, domain, viewType, orbSlug }: {
   useEffect(() => {
     fetch(`/api/nodes?domain=${domain}&limit=10`)
       .then((r) => r.ok ? r.json() : { data: [] })
-      .then((json) => setNodes(json.data ?? json ?? []))
+      .then((json) => {
+        const raw = json.data ?? json;
+        setNodes(Array.isArray(raw) ? raw : []);
+      })
       .catch(() => setNodes([]))
       .finally(() => setLoading(false));
   }, [domain]);
