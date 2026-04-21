@@ -12,7 +12,7 @@ export async function GET() {
       .from('data_nodes')
       .select('id, domain, raw, confidence, created_at, domain_data, is_admin_node')
       .or(`user_id.eq.${user.id},is_admin_node.eq.true`)
-      .not('system_tags', 'cs', '{"archived"}')
+      .or('system_tags.is.null,system_tags.not.cs.{"archived"}')
       .order('created_at', { ascending: false })
       .limit(2000);
 
@@ -25,19 +25,25 @@ export async function GET() {
       return NextResponse.json({ nodes: [], edges: [] });
     }
 
-    const nodeIds = nodes.map(n => n.id);
+    const nodeIdSet = new Set(nodes.map(n => n.id));
 
-    // Fetch relations between these nodes (limit 5000)
-    const { data: relations, error: relErr } = await supabase
+    // Fetch relations — only filter by source, then client-filter target
+    // (double .in() with 2000 UUIDs can exceed PostgREST URL limit)
+    const { data: rawRelations, error: relErr } = await supabase
       .from('node_relations')
       .select('source_node_id, target_node_id, relation_type, weight')
-      .in('source_node_id', nodeIds)
-      .in('target_node_id', nodeIds)
-      .limit(5000);
+      .in('source_node_id', Array.from(nodeIdSet))
+      .limit(10000);
 
     if (relErr) {
       console.error('[Graph] Relations error:', relErr.message);
     }
+
+    // Client-side filter: keep only edges where both endpoints exist
+    const relations = (rawRelations ?? []).filter(
+      r => nodeIdSet.has(r.source_node_id) && nodeIdSet.has(r.target_node_id)
+    );
+    console.log(`[Graph] nodes=${nodes.length}, rawEdges=${(rawRelations ?? []).length}, filteredEdges=${relations.length}`);
 
     const graphNodes = nodes.map(n => ({
       id: n.id,

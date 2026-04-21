@@ -50,6 +50,20 @@ interface Relation {
 
 type DateFilter = 'all' | '1d' | '1w' | '1m';
 
+interface PhysicsSettings {
+  gravity: number;       // 0.1 – 5.0  중심 중력
+  repulsion: number;     // 1 – 30     반발력 (scalingRatio)
+  linkForce: number;     // 0 – 2      연결력 (edgeWeightInfluence)
+  slowDown: number;      // 1 – 20     감속 (높을수록 안정적)
+}
+
+const DEFAULT_PHYSICS: PhysicsSettings = {
+  gravity: 1.0,
+  repulsion: 10.0,
+  linkForce: 1.0,
+  slowDown: 5.0,
+};
+
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export function UniverseView({ visible }: Props) {
@@ -71,6 +85,8 @@ export function UniverseView({ visible }: Props) {
   const [dateFilter, setDateFilter] = useState<DateFilter>('all');
   const [isDark, setIsDark] = useState(false);
   const [localViewMode, setLocalViewMode] = useState(false);
+  const [physics, setPhysics] = useState<PhysicsSettings>(DEFAULT_PHYSICS);
+  const [physicsOpen, setPhysicsOpen] = useState(false);
 
   // ─── Dark mode detection ─────────────────────────────────────────────────
   useEffect(() => {
@@ -111,7 +127,7 @@ export function UniverseView({ visible }: Props) {
       edgeProgramClasses: { line: EdgeLineProgram },
       defaultNodeType: 'circle',
       defaultEdgeType: 'line',
-      defaultEdgeColor: `rgba(100,116,139,${dark ? '0.15' : '0.10'})`,
+      defaultEdgeColor: `rgba(100,116,139,${dark ? '0.30' : '0.25'})`,
       labelFont: 'var(--ou-font-body, system-ui)',
       labelSize: 11,
       labelWeight: '400',
@@ -356,6 +372,29 @@ export function UniverseView({ visible }: Props) {
     setLocalViewMode(false);
   }, []);
 
+  const applyPhysics = useCallback((next: PhysicsSettings) => {
+    setPhysics(next);
+    if (!graph) return;
+    if (fa2TimerRef.current) clearTimeout(fa2TimerRef.current);
+    fa2Ref.current?.kill();
+    fa2Ref.current = null;
+    const fa2 = new FA2LayoutSupervisor(graph, {
+      settings: {
+        ...FA2_SETTINGS,
+        gravity: next.gravity,
+        scalingRatio: next.repulsion,
+        edgeWeightInfluence: next.linkForce,
+        slowDown: next.slowDown,
+      },
+      getEdgeWeight: 'weight',
+    });
+    fa2Ref.current = fa2;
+    fa2.start();
+    fa2TimerRef.current = setTimeout(() => {
+      if (fa2Ref.current?.isRunning()) fa2Ref.current.stop();
+    }, FA2_RUN_DURATION_MS);
+  }, [graph]);
+
   const enterLocalView = useCallback(() => {
     if (!selectedCard || !graph) return;
     setLocalViewMode(true);
@@ -461,13 +500,13 @@ export function UniverseView({ visible }: Props) {
       {/* ── Control Panel ──────────────────────────────────────────────── */}
       {graph && graph.order > 0 && (
         <div style={{
-          position: 'absolute', top: 20, left: 20,
+          position: 'absolute', top: 68, left: 20,
           background: isDark ? 'rgba(0,0,0,0.55)' : 'rgba(255,255,255,0.72)',
           backdropFilter: 'blur(16px) saturate(180%)',
           border: `1px solid ${borderMuted}`,
           borderRadius: 14,
           padding: 16, width: 220, zIndex: 100,
-          maxHeight: 'calc(100vh - 80px)', overflowY: 'auto',
+          maxHeight: 'calc(100vh - 88px)', overflowY: 'auto',
           boxShadow: isDark
             ? '6px 6px 12px rgba(0,0,0,0.55), -6px -6px 12px rgba(255,255,255,0.04)'
             : '6px 6px 12px rgba(163,177,198,0.6), -6px -6px 12px rgba(255,255,255,0.6)',
@@ -615,7 +654,7 @@ export function UniverseView({ visible }: Props) {
           </div>
 
           {/* Date filter */}
-          <div>
+          <div style={{ marginBottom: 12 }}>
             <div style={{ fontSize: 9, color: textMuted, marginBottom: 6, textTransform: 'uppercase', letterSpacing: 1 }}>기간</div>
             <div style={{ display: 'flex', gap: 4 }}>
               {([['all', '전체'], ['1d', '1일'], ['1w', '1주'], ['1m', '1달']] as const).map(([val, label]) => (
@@ -631,6 +670,80 @@ export function UniverseView({ visible }: Props) {
                 >{label}</button>
               ))}
             </div>
+          </div>
+
+          {/* Physics controls */}
+          <div>
+            <button
+              onClick={() => setPhysicsOpen(p => !p)}
+              style={{
+                width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                background: 'none', border: 'none', padding: '2px 0', cursor: 'pointer',
+                marginBottom: physicsOpen ? 10 : 0,
+              }}
+            >
+              <span style={{ fontSize: 9, color: textMuted, textTransform: 'uppercase', letterSpacing: 1 }}>물리</span>
+              <span style={{ fontSize: 9, color: textMuted, transition: 'transform 0.2s', display: 'inline-block', transform: physicsOpen ? 'rotate(180deg)' : 'none' }}>▾</span>
+            </button>
+
+            {physicsOpen && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {([
+                  ['gravity', '중력', 0.1, 5, 0.1] as const,
+                  ['repulsion', '반발력', 1, 30, 0.5] as const,
+                  ['linkForce', '연결력', 0, 2, 0.1] as const,
+                  ['slowDown', '감속', 1, 20, 0.5] as const,
+                ]).map(([key, label, min, max, step]) => (
+                  <div key={key}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                      <span style={{ fontSize: 9, color: textSecondary }}>{label}</span>
+                      <span style={{ fontSize: 9, color: textMuted, fontFamily: 'var(--ou-font-mono)', minWidth: 28, textAlign: 'right' }}>
+                        {physics[key].toFixed(1)}
+                      </span>
+                    </div>
+                    <div style={{ position: 'relative', height: 4 }}>
+                      <div style={{
+                        position: 'absolute', inset: 0, borderRadius: 999,
+                        background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)',
+                        boxShadow: 'var(--ou-neu-pressed-sm)',
+                      }} />
+                      <div style={{
+                        position: 'absolute', top: 0, left: 0, height: '100%',
+                        width: `${((physics[key] - min) / (max - min)) * 100}%`,
+                        borderRadius: 999,
+                        background: isDark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.28)',
+                        transition: 'width 0.05s',
+                        pointerEvents: 'none',
+                      }} />
+                      <input
+                        type="range"
+                        min={min} max={max} step={step}
+                        value={physics[key]}
+                        onChange={e => applyPhysics({ ...physics, [key]: parseFloat(e.target.value) })}
+                        style={{
+                          position: 'absolute', inset: 0, width: '100%', height: '100%',
+                          opacity: 0, cursor: 'pointer', margin: 0,
+                        }}
+                      />
+                    </div>
+                  </div>
+                ))}
+
+                <button
+                  onClick={() => applyPhysics(DEFAULT_PHYSICS)}
+                  style={{
+                    padding: '4px 0', fontSize: 9, borderRadius: 6, cursor: 'pointer',
+                    background: 'transparent', color: textMuted,
+                    border: `1px solid ${borderSubtle}`, marginTop: 2,
+                    transition: 'all 0.12s',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.color = textSecondary; e.currentTarget.style.borderColor = borderMuted; }}
+                  onMouseLeave={e => { e.currentTarget.style.color = textMuted; e.currentTarget.style.borderColor = borderSubtle; }}
+                >
+                  초기화
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}

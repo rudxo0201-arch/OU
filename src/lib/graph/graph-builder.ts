@@ -76,7 +76,7 @@ export function buildGraph(nodes: GraphNode[], edges: GraphEdge[]): Graph {
       relationType: edge.relationType,
       weight: edge.weight,
       // color for edge - rgba via CSS string
-      color: `rgba(${edgeGray},${edgeGray},${edgeGray},0.12)`,
+      color: `rgba(${edgeGray},${edgeGray},${edgeGray},0.35)`,
       size: 1,
     });
   }

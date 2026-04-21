@@ -34,7 +34,7 @@ export const WidgetCard = memo(function WidgetCard({ widgetId, type, removable, 
 
   function handleAppOpen(e: React.MouseEvent) {
     e.stopPropagation();
-    if (appSlug) router.push(`/app/${appSlug}`);
+    if (appSlug) router.push(`/orb/${appSlug}`);
   }
 
   return (

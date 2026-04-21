@@ -33,6 +33,8 @@ export interface ChatMessage {
   ocrResult?: { text: string; imageType: string };
   /** LLM intent — conversation이면 "뷰 생성하기" 버튼 표시 조건 */
   intent?: string;
+  /** LLM meta에서 추출한 대화 주제 요약 (세션 제목으로 사용) */
+  title?: string;
   /** 파일 업로드 결과 */
   fileResult?: {
     fileType: 'pdf' | 'text' | 'ou' | 'ppt' | 'hwp' | 'docx' | 'xlsx' | 'video' | 'audio';

@@ -47,6 +47,29 @@ export async function GET(
     }
   }
 
+  // 컬럼별 필터 (filter.{column}=value)
+  if (schema) {
+    for (const [key, value] of Array.from(searchParams.entries())) {
+      if (!key.startsWith('filter.')) continue;
+      const colName = key.slice('filter.'.length);
+      const col = schema.columns.find(c => c.name === colName);
+      if (!col || !value) continue;
+
+      if (col.type === 'enum' || col.type === 'text') {
+        query = query.eq(colName, value);
+      } else if (col.type === 'boolean') {
+        query = query.eq(colName, value === 'true');
+      } else if (colName.endsWith('_from')) {
+        // 날짜 범위: filter.created_at_from=2024-01-01
+        const baseCol = colName.slice(0, -'_from'.length);
+        query = query.gte(baseCol, value);
+      } else if (colName.endsWith('_to')) {
+        const baseCol = colName.slice(0, -'_to'.length);
+        query = query.lte(baseCol, value + 'T23:59:59');
+      }
+    }
+  }
+
   const { data, count, error } = await query;
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 

@@ -81,7 +81,7 @@ function HomePage() {
 
   // Orb 전체화면 이벤트
   useEffect(() => {
-    const orbHandler = () => router.push('/orb');
+    const orbHandler = () => router.push('/orb/deep-talk');
     window.addEventListener('orb-expand', orbHandler);
     return () => window.removeEventListener('orb-expand', orbHandler);
   }, [router]);
@@ -270,7 +270,7 @@ function AppIconCell({
 }) {
   const app = item.slug ? getAppDef(item.slug) : null;
   const Icon = app ? resolveAppIcon(app.icon) : null;
-  const route = app?.route ?? (app ? `/app/${app.slug}` : '/home');
+  const route = app?.route ?? (app ? `/orb/${app.slug}` : '/home');
 
   const handleDragStart = (e: React.DragEvent) => {
     e.dataTransfer.setData('application/ou-app', JSON.stringify({

@@ -143,7 +143,7 @@ export default function ViewPage() {
       <div style={{ flex: 1, overflow: 'auto' }}>
         {ViewComponent ? (
           <>
-            {nodes.length === 0 && <EmptyHint viewType={viewType} onOrb={() => router.push('/orb')} />}
+            {nodes.length === 0 && <EmptyHint viewType={viewType} onOrb={() => router.push('/orb/deep-talk')} />}
             {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
             <ViewComponent
               nodes={nodes as any}

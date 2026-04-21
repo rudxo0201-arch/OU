@@ -31,7 +31,7 @@ export function AppView({ appDef, nodes, activeView: initialView }: Props) {
 
   function switchView(viewKey: string) {
     setActiveView(viewKey);
-    router.replace(`/app/${appDef.slug}?view=${viewKey}`, { scroll: false });
+    router.replace(`/orb/${appDef.slug}?view=${viewKey}`, { scroll: false });
   }
 
   // ── 도메인별 필터링 ──────────────────────────────────────────────────

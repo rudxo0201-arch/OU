@@ -198,20 +198,24 @@ cards: [{"front":"질문","back":"답변"},...] (최소 3개, 최대 10개)
 
 ### 형식
 
+**title 필드 (모든 meta에 필수)**
+현재 대화의 주제를 한국어 5~15자로 요약. 대화가 이어질수록 갱신 가능.
+예: "귀비탕 설명", "이번 주 일정", "할 일 목록", "오늘 지출 기록"
+
 단일 메시지:
-\`\`\`json:meta {"domain":"도메인명","intent":"data_input","viewOptions":["calendar","timeline"]}\`\`\`
+\`\`\`json:meta {"title":"주제요약","domain":"도메인명","intent":"data_input","viewOptions":["calendar","timeline"]}\`\`\`
 
 단일 + suggestions (data_input / conversation, 선택적, 최대 1개):
-\`\`\`json:meta {"domain":"schedule","intent":"data_input","viewOptions":["calendar","table"],"suggestions":[{"question":"몇 시에요?","options":["오전","오후","저녁"]}]}\`\`\`
+\`\`\`json:meta {"title":"일요일 약속","domain":"schedule","intent":"data_input","viewOptions":["calendar","table"],"suggestions":[{"question":"몇 시에요?","options":["오전","오후","저녁"]}]}\`\`\`
 
 단일 data_query + filter:
-\`\`\`json:meta {"domain":"finance","intent":"data_query","viewOptions":["chart","table"],"filter":{"days":30}}\`\`\`
+\`\`\`json:meta {"title":"이번 달 지출","domain":"finance","intent":"data_query","viewOptions":["chart","table"],"filter":{"days":30}}\`\`\`
 
 플래시카드:
-\`\`\`json:meta {"domain":"knowledge","intent":"data_query","viewOptions":["flashcard"],"cards":[{"front":"질문","back":"답변"}]}\`\`\`
+\`\`\`json:meta {"title":"지식 카드","domain":"knowledge","intent":"data_query","viewOptions":["flashcard"],"cards":[{"front":"질문","back":"답변"}]}\`\`\`
 
 복수 segments (2개 이상일 때):
-\`\`\`json:meta {"domain":"첫번째도메인","intent":"첫번째intent","segments":[{"text":"커피 5000원","domain":"finance","intent":"data_input","viewOptions":["chart","table"]},{"text":"이번달 지출 보여줘","domain":"finance","intent":"data_query","viewOptions":["chart","timeline"],"filter":{"days":30}}]}\`\`\`
+\`\`\`json:meta {"title":"커피값+지출현황","domain":"첫번째도메인","intent":"첫번째intent","segments":[{"text":"커피 5000원","domain":"finance","intent":"data_input","viewOptions":["chart","table"]},{"text":"이번달 지출 보여줘","domain":"finance","intent":"data_query","viewOptions":["chart","timeline"],"filter":{"days":30}}]}\`\`\`
 
 segments 있을 때: domain/intent는 첫 번째 segment 기준. suggestions 생략.
 conversation intent: viewOptions 생략 가능.

@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useWidgetStore } from '@/stores/widgetStore';
 import { useTutorialStore } from '@/stores/tutorialStore';
@@ -16,6 +17,7 @@ export function AddToHomeButton({ domain }: Props) {
   const widgets = useWidgetStore(s => s.pages[s.currentPageIndex]?.widgets ?? []);
   const addWidget = useWidgetStore(s => s.addWidget);
   const { isActive, completeStep } = useTutorialStore();
+  const [added, setAdded] = useState(false);
 
   const widgetType = DOMAIN_WIDGET_MAP[domain];
   if (!widgetType) return null;
@@ -35,23 +37,33 @@ export function AddToHomeButton({ domain }: Props) {
       return;
     }
 
-    if (alreadyAdded) return;
+    if (alreadyAdded || added) return;
+
     const id = `${widgetType}-${Date.now()}`;
     addWidget({ id, type: widgetType, x: 0, y: 0, w: 2, h: 2 });
-    window.dispatchEvent(new CustomEvent('orb-close'));
-    window.dispatchEvent(new CustomEvent('widget-edit-mode-enter'));
+    setAdded(true);
+    // 페이지 이동 없이 인라인 피드백만
   };
 
-  // 튜토리얼 중이 아니고 위젯이 이미 있으면 숨김
-  if (alreadyAdded && !isActive()) return null;
+  // 이미 추가됐으면 상태 표시
+  const isDone = alreadyAdded || added;
 
   return (
     <NeuButton
       size="sm"
       onClick={handleAdd}
-      style={{ marginTop: 10, fontSize: 13, width: '100%' }}
+      disabled={isDone && !isActive()}
+      style={{
+        marginTop: 10, fontSize: 13, width: '100%',
+        opacity: isDone && !isActive() ? 0.6 : 1,
+        cursor: isDone && !isActive() ? 'default' : 'pointer',
+      }}
     >
-      {alreadyAdded ? '배치 조정하기' : '홈 화면에 추가하기'}
+      {isActive() && alreadyAdded
+        ? '배치 조정하기'
+        : isDone
+          ? '홈에 추가됨 ✓'
+          : '홈 화면에 추가하기'}
     </NeuButton>
   );
 }

@@ -11,6 +11,7 @@ import { useViewport } from './hooks/useViewport';
 import { useKeyboard } from './hooks/useKeyboard';
 import type { ResizeHandle } from './types';
 import styles from './StudioCanvas.module.css';
+import '@/components/widgets/views/register';
 
 interface Props {
   width?: number;

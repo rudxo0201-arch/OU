@@ -12,7 +12,7 @@ export const DEFAULT_UX_FLOW: UXFlowData = {
 
     // Private pages
     { id: 'home', type: 'page', label: '홈 (로그인)', route: '/home', position: { x: 250, y: 200 }, description: '개인 데이터 대시보드' },
-    { id: 'orb', type: 'page', label: 'Orb', route: '/orb', position: { x: 0, y: 200 }, description: '대화 → 데이터 생성' },
+    { id: 'orb', type: 'page', label: 'Deep Talk Orb', route: '/orb/deep-talk', position: { x: 0, y: 200 }, description: '대화 → 데이터 생성' },
     { id: 'accuracy', type: 'page', label: '정확도 높이기', route: '/accuracy', position: { x: 500, y: 200 }, description: '미확인 항목 해결' },
     { id: 'feed', type: 'page', label: 'SNS 채널', route: '/feed', position: { x: 0, y: 400 }, description: '페르소나 기반 피드' },
     { id: 'messages', type: 'page', label: 'OU 채팅', route: '/messages', position: { x: 250, y: 400 }, description: '1:1, 그룹 채팅' },

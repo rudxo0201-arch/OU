@@ -297,6 +297,7 @@ export async function POST(req: NextRequest) {
               let domainHint: string | undefined;
               let llmSuggestions: string[] | undefined;
               let intent: string | undefined;
+              let titleHint: string | undefined;
               let viewOptions: string[] | undefined;
               let viewFilter: Record<string, unknown> | undefined;
               let viewCards: Array<{ front: string; back: string }> | undefined;
@@ -306,6 +307,7 @@ export async function POST(req: NextRequest) {
                   const meta = JSON.parse(metaMatch[1].trim());
                   domainHint = meta.domain;
                   intent = meta.intent;
+                  if (typeof meta.title === 'string' && meta.title) titleHint = meta.title;
                   if (Array.isArray(meta.viewOptions) && meta.viewOptions.length > 0) {
                     viewOptions = meta.viewOptions;
                   }
@@ -359,7 +361,7 @@ export async function POST(req: NextRequest) {
 
               // done 즉시 전송 — 텍스트 완료 알림 (인라인 뷰는 저장 후 별도 전송)
               controller.enqueue(encoder.encode(
-                `data: ${JSON.stringify({ done: true, fullText: cleanText, provider, suggestions: llmSuggestions, viewData, domain: domainHint, intent })}\n\n`
+                `data: ${JSON.stringify({ done: true, fullText: cleanText, provider, suggestions: llmSuggestions, viewData, domain: domainHint, intent, title: titleHint })}\n\n`
               ));
 
               // Layer 2: conversation intent는 fire-and-forget (스트림 즉시 종료)

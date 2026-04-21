@@ -44,7 +44,7 @@ function buildItems(dockSlugs: string[]): DockItem[] {
         slug: def.slug,
         label: def.label.replace('OU ', ''),
         icon: def.icon,
-        route: def.route ?? `/app/${def.slug}`,
+        route: def.route ?? `/orb/${def.slug}`,
       };
     })
     .filter((x): x is DockItem & { kind: 'app' } => x !== null);
@@ -118,9 +118,26 @@ export function DockBar({ onDropToGrid }: { onDropToGrid?: (slug: string) => voi
     rafRef.current = requestAnimationFrame(() => {
       rafRef.current = null;
       if (!dockRef.current) return;
-      const rect = dockRef.current.getBoundingClientRect();
-      const x = mouseXRef.current - rect.left;
-      updateMagnification(x / (rect.width / items.length));
+      // 각 아이템의 중심 좌표와 비교하여 정확한 mouseIndex 계산
+      const els = itemRefs.current;
+      const mx = mouseXRef.current;
+      let closest = -1;
+      let minDist = Infinity;
+      for (let i = 0; i < els.length; i++) {
+        const el = els[i];
+        if (!el) continue;
+        const r = el.getBoundingClientRect();
+        const cx = r.left + r.width / 2;
+        const d = Math.abs(mx - cx);
+        if (d < minDist) { minDist = d; closest = i; }
+      }
+      // 가장 가까운 아이템 기준 보간
+      const el = els[closest];
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const cx = r.left + r.width / 2;
+      const frac = (mx - cx) / r.width;
+      updateMagnification(closest + Math.max(-0.5, Math.min(0.5, frac)));
     });
   }, [items.length, updateMagnification]);
 
@@ -139,7 +156,7 @@ export function DockBar({ onDropToGrid }: { onDropToGrid?: (slug: string) => voi
   }, [items.length, updateMagnification]);
 
   const handleClick = useCallback((item: DockItem) => {
-    if (item.kind === 'orb') router.push('/orb');
+    if (item.kind === 'orb') router.push('/orb/deep-talk');
     else router.push(item.route);
   }, [router]);
 

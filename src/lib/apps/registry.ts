@@ -9,7 +9,7 @@
 export type AppInputType = 'record' | 'editor' | 'search' | 'none';
 
 export interface AppDef {
-  slug: string;            // URL: /app/{slug}
+  slug: string;            // URL: /orb/{slug}
   label: string;           // 표시 이름: 'OU Calendar'
   domain: string;          // data_nodes.domain 필터
   icon: string;            // Phosphor icon name

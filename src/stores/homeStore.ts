@@ -82,5 +82,19 @@ export const useHomeStore = createSafeStore<HomeState>(
       return null;
     },
   }),
-  { name: 'ou-home-layout' },
+  {
+    name: 'ou-home-layout',
+    merge: (persisted: any, current: any) => {
+      const merged = { ...current, ...persisted };
+      // QSD가 없으면 기본 위치(row 0)에 복구
+      const hasQSD = merged.gridItems?.some((i: GridItem) => i.type === 'qsd');
+      if (!hasQSD) {
+        merged.gridItems = [
+          { id: 'qsd-default', type: 'qsd', col: 0, row: 0 },
+          ...(merged.gridItems ?? []),
+        ];
+      }
+      return merged;
+    },
+  },
 );

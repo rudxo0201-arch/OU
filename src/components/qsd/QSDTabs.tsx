@@ -2,14 +2,17 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useChatStore } from '@/stores/chatStore';
 
-type Tab = 'Q' | 'S' | 'D';
+type Tab = 'Q' | 'S';
 
 const PLACEHOLDERS: Record<Tab, string> = {
-  Q: '무엇이든 기록하세요',
-  S: '무엇을 찾을까요?',
-  D: '무엇에 대해 이야기할까요?',
+  Q: '무엇이든 말하면 자동으로 기록됩니다',
+  S: '기록된 데이터를 검색해보세요',
+};
+
+const TAB_LABELS: Record<Tab, string> = {
+  Q: '기록',
+  S: '검색',
 };
 
 interface QSDTabsProps {
@@ -66,11 +69,7 @@ export function QSDTabs({ 'data-tutorial-target': tutorialTarget }: QSDTabsProps
       }
     }
 
-    if (tab === 'D') {
-      useChatStore.getState().setPendingMessage(text);
-      router.push('/orb');
-    }
-  }, [tab, input, router]);
+  }, [tab, input]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
@@ -91,26 +90,26 @@ export function QSDTabs({ 'data-tutorial-target': tutorialTarget }: QSDTabsProps
       <div style={{ width: '100%', maxWidth: 560, position: 'relative' }}>
         {/* 탭 헤더 */}
         <div style={{ display: 'flex', gap: 2, marginBottom: 0, paddingLeft: 4 }}>
-          {(['Q', 'S', 'D'] as Tab[]).map(t => (
+          {(['Q', 'S'] as Tab[]).map(t => (
             <button
               key={t}
               onClick={() => setTab(t)}
               style={{
-                padding: '4px 12px',
+                padding: '5px 14px',
                 borderRadius: 'var(--ou-radius-sm) var(--ou-radius-sm) 0 0',
                 border: 'none',
                 background: tab === t ? 'var(--ou-bg)' : 'transparent',
                 boxShadow: tab === t ? 'var(--ou-neu-raised-xs)' : 'none',
                 color: tab === t ? 'var(--ou-text-strong)' : 'var(--ou-text-disabled)',
-                fontSize: 11,
+                fontSize: 12,
                 fontWeight: tab === t ? 600 : 400,
-                fontFamily: 'var(--ou-font-mono)',
+                fontFamily: 'inherit',
                 cursor: 'pointer',
-                letterSpacing: '0.05em',
+                letterSpacing: '0.02em',
                 transition: 'all 150ms ease',
               }}
             >
-              {t}
+              {TAB_LABELS[t]}
             </button>
           ))}
         </div>
