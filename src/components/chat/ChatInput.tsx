@@ -30,6 +30,11 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
   const { addMessage, updateMessage, isStreaming, setStreaming, setLastCreatedNodeId, setLastIntent } = useChatStore();
   const autoSentRef = useRef(false);
 
+  // Fast Refresh / 페이지 재진입 시 isStreaming stuck 방지
+  useEffect(() => {
+    return () => { useChatStore.getState().setStreaming(false); };
+  }, []);
+
   // ---- Hanja detection ----
   const CJK_REGEX = /[\u4E00-\u9FFF\u3400-\u4DBF\uF900-\uFAFF]/g;
 
@@ -521,7 +526,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
               }
             }}
             rows={rows}
-            placeholder="Just talk..."
+            placeholder="일정, 할 일, 지출, 습관을 기록해보세요"
             style={{
               width: '100%',
               border: 'none',

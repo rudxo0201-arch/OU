@@ -71,7 +71,7 @@ export function OuViewWidget() {
           value={input}
           onChange={e => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder={showGhost ? '' : 'Just talk...'}
+          placeholder={showGhost ? '' : '일정, 할 일, 지출, 습관을 기록해보세요'}
           style={{
             width: '100%', border: 'none', outline: 'none',
             background: 'transparent',

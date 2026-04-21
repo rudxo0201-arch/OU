@@ -40,7 +40,7 @@ export const WidgetCard = memo(function WidgetCard({ widgetId, type, removable, 
 
       {/* Body */}
       <div className={styles.body} style={overflowStyle}>
-        {Comp ? <Comp widgetId={widgetId} /> : <FallbackWidget type={type} />}
+        {Comp ? <Comp widgetId={widgetId} widgetType={type} /> : <FallbackWidget type={type} />}
       </div>
     </div>
   );

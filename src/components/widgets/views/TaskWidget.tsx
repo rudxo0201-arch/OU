@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { cleanDisplayText } from '@/lib/utils/cleanDisplayText';
 
 interface TaskNode {
   id: string;
@@ -83,7 +84,9 @@ export function TaskWidget() {
                 color: 'var(--ou-text-strong)',
                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               }}>
-                {t.domain_data.title || t.raw?.slice(0, 30) || '할 일'}
+                {t.domain_data.title
+                  ? cleanDisplayText(t.domain_data.title)
+                  : cleanDisplayText(t.raw?.slice(0, 50) ?? '') || '할 일'}
               </div>
               {t.domain_data.deadline && (
                 <div style={{ fontSize: 10, color: 'var(--ou-text-dimmed)', marginTop: 1 }}>

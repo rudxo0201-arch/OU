@@ -47,6 +47,42 @@ function clampToGrid(widgets: WidgetInstance[], cols: number = GRID_COLS, rows: 
   }));
 }
 
+/** 기존 위젯과 겹치지 않는 첫 번째 빈 자리 탐색 */
+function findFreePosition(
+  existing: WidgetInstance[],
+  w: number,
+  h: number,
+  cols: number,
+  rows: number,
+): { x: number; y: number } | null {
+  // 점유 셀 집합
+  const occupied = new Set<string>();
+  for (const widget of existing) {
+    for (let dy = 0; dy < widget.h; dy++) {
+      for (let dx = 0; dx < widget.w; dx++) {
+        occupied.add(`${widget.x + dx},${widget.y + dy}`);
+      }
+    }
+  }
+
+  // 행 우선 탐색
+  for (let y = 0; y <= rows - h; y++) {
+    for (let x = 0; x <= cols - w; x++) {
+      let fits = true;
+      outer: for (let dy = 0; dy < h; dy++) {
+        for (let dx = 0; dx < w; dx++) {
+          if (occupied.has(`${x + dx},${y + dy}`)) {
+            fits = false;
+            break outer;
+          }
+        }
+      }
+      if (fits) return { x, y };
+    }
+  }
+  return null;
+}
+
 const DEFAULT_PAGES: WidgetPage[] = [
   { id: 'main', name: '안녕하세요. OU에 오신 것을 환영합니다', widgets: DEFAULT_LAYOUT },
   { id: 'page2', name: '기억 · 활동', widgets: DEFAULT_PAGE2_LAYOUT },
@@ -138,12 +174,26 @@ export const useWidgetStore = create<WidgetStore>()(
 
       addWidget: (widget) => set((s) => {
         const pages = [...s.pages];
-        const page = pages[s.currentPageIndex];
-        pages[s.currentPageIndex] = {
-          ...page,
-          widgets: clampToGrid([...page.widgets, widget], s.gridCols, s.gridRows),
+        const pageIdx = s.currentPageIndex;
+        const page = pages[pageIdx];
+        const w = Math.min(widget.w, s.gridCols);
+        const h = Math.min(widget.h, s.gridRows);
+
+        // 현재 페이지에서 빈 자리 탐색
+        const pos = findFreePosition(page.widgets, w, h, s.gridCols, s.gridRows);
+        if (pos) {
+          const placed = { ...widget, x: pos.x, y: pos.y, w, h };
+          pages[pageIdx] = { ...page, widgets: [...page.widgets, placed] };
+          return { pages };
+        }
+
+        // 빈 자리 없으면 새 페이지 추가
+        const newPage: WidgetPage = {
+          id: `page-${Date.now()}`,
+          name: `페이지 ${pages.length + 1}`,
+          widgets: [{ ...widget, x: 0, y: 0, w, h }],
         };
-        return { pages };
+        return { pages: [...pages, newPage], currentPageIndex: pages.length };
       }),
 
       removeWidget: (id) => set((s) => {

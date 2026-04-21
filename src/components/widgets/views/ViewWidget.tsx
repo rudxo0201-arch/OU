@@ -7,8 +7,8 @@ import { VIEW_REGISTRY, VIEW_LABELS } from '@/components/views/registry';
  * 범용 뷰 위젯 — 아무 뷰든 위젯으로 /my 홈에 표시
  * widgetId에서 뷰 타입을 추출: "view-boncho" → boncho
  */
-export function ViewWidget({ widgetId }: { widgetId: string }) {
-  const viewType = widgetId.replace('view-', '');
+export function ViewWidget({ widgetId, widgetType }: { widgetId: string; widgetType?: string }) {
+  const viewType = (widgetType ?? widgetId).replace('view-', '');
   const ViewComponent = VIEW_REGISTRY[viewType];
   const [nodes, setNodes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);

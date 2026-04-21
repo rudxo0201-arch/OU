@@ -16,7 +16,7 @@ export const SIZE_PRESETS: Record<SizePreset, [cols: number, rows: number]> = {
 export interface WidgetDef {
   type: string;
   label: string;
-  component: ComponentType<{ widgetId: string }>;
+  component: ComponentType<{ widgetId: string; widgetType?: string }>;
   scrollable: ScrollPolicy;
   minSize: [cols: number, rows: number];
   defaultSize: [cols: number, rows: number];
@@ -33,13 +33,13 @@ export interface WidgetInstance {
   h: number;
 }
 
-export const GRID_COLS = 10;
-export const GRID_ROWS = 6;
+export const GRID_COLS = 16;
+export const GRID_ROWS = 9;
 
-export type GridPreset = 'fine' | 'medium' | 'coarse';
+export type GridPreset = 'large' | 'medium' | 'small';
 
 export const GRID_PRESETS: Record<GridPreset, { label: string; sub: string; cols: number; rows: number }> = {
-  fine:   { label: '많은 그리드', sub: '세밀한 배치',   cols: 10, rows: 6 },
-  medium: { label: '중간 그리드', sub: '기본 크기',     cols: 6,  rows: 4 },
-  coarse: { label: '적은 그리드', sub: '간단한 배치',   cols: 4,  rows: 3 },
+  large:  { label: '큰 아이콘',   sub: '적은 그리드',   cols: 10, rows: 6  },
+  medium: { label: '중간 아이콘', sub: '기본',          cols: 16, rows: 9  },
+  small:  { label: '작은 아이콘', sub: '촘촘한 그리드', cols: 20, rows: 12 },
 };
