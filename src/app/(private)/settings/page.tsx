@@ -66,75 +66,127 @@ export default function SettingsPage() {
 
   const visibleTabs = TABS.filter(t => !t.adminOnly || isAdmin);
 
+  const NAV_HEIGHT = 52;
+
+  if (isMobile) {
+    return (
+      <div style={{ minHeight: '100dvh', paddingTop: NAV_HEIGHT, display: 'flex', flexDirection: 'column', background: 'var(--ou-bg)' }}>
+        {/* Mobile: 상단 탭바 */}
+        <div style={{
+          display: 'flex', gap: 4, padding: '12px 16px',
+          borderBottom: '1px solid var(--ou-border-subtle)',
+          overflowX: 'auto',
+        }}>
+          {visibleTabs.map(tab => (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              style={{
+                padding: '8px 14px', borderRadius: 10, cursor: 'pointer',
+                fontFamily: 'inherit', fontSize: 13, whiteSpace: 'nowrap',
+                fontWeight: activeTab === tab.key ? 600 : 500,
+                background: activeTab === tab.key ? 'var(--ou-surface-faint)' : 'transparent',
+                border: activeTab === tab.key ? '1px solid var(--ou-border-subtle)' : '1px solid transparent',
+                color: activeTab === tab.key ? 'var(--ou-text-bright)' : 'var(--ou-text-secondary)',
+                display: 'flex', alignItems: 'center', gap: 6,
+              }}
+            >
+              <span style={{ opacity: 0.7, display: 'flex', alignItems: 'center' }}>{TAB_ICONS[tab.key]}</span>
+              {tab.label}
+            </button>
+          ))}
+        </div>
+        <main style={{ flex: 1, padding: '24px 20px 80px' }}>
+          {activeTab === 'general' && <GeneralTab user={user} />}
+          {activeTab === 'display' && <DisplayTab isMobile={true} />}
+          {activeTab === 'tutorial' && <TutorialTab />}
+          {activeTab === 'admin' && isAdmin && <AdminTab />}
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div style={{
       minHeight: '100dvh',
+      paddingTop: NAV_HEIGHT,
       display: 'flex',
-      flexDirection: isMobile ? 'column' : 'row',
       background: 'var(--ou-bg)',
-      padding: isMobile ? 0 : '0 clamp(24px, 8vw, 116px)',
     }}>
-      {/* Sidebar */}
+      {/* Sidebar — 화면 왼쪽 고정 */}
       <aside style={{
-        width: isMobile ? '100%' : 260,
+        width: 220,
         flexShrink: 0,
-        padding: isMobile ? '16px 16px 0' : '40px 20px',
+        padding: '32px 16px',
         display: 'flex',
-        flexDirection: isMobile ? 'row' : 'column',
-        gap: isMobile ? 4 : 6,
-        borderBottom: isMobile ? '1px solid var(--ou-border-subtle)' : 'none',
+        flexDirection: 'column',
+        gap: 4,
+        borderRight: '1px solid var(--ou-border-subtle)',
       }}>
-        {!isMobile && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 28, padding: '0 6px' }}>
-            <button
-              onClick={() => router.back()}
-              style={{
-                width: 36, height: 36, borderRadius: '50%',
-                background: 'transparent', border: '1px solid var(--ou-border-subtle)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                cursor: 'pointer', color: 'var(--ou-text-secondary)',
-              }}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </button>
-            <span style={{ fontSize: 22, fontWeight: 700, color: 'var(--ou-text-bright)', letterSpacing: '-0.01em' }}>설정</span>
-          </div>
-        )}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 24, padding: '0 8px' }}>
+          <button
+            onClick={() => router.back()}
+            style={{
+              width: 32, height: 32, borderRadius: '50%',
+              background: 'transparent', border: '1px solid var(--ou-border-subtle)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer', color: 'var(--ou-text-secondary)', flexShrink: 0,
+            }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+              <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+          <span style={{ fontSize: 18, fontWeight: 700, color: 'var(--ou-text-bright)', letterSpacing: '-0.01em' }}>설정</span>
+        </div>
 
-        {visibleTabs.map(tab => (
+        {visibleTabs.filter(t => !t.adminOnly).map(tab => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
             style={{
-              padding: isMobile ? '10px 14px' : '14px 18px',
-              fontSize: isMobile ? 13 : 15,
-              fontWeight: activeTab === tab.key ? 600 : 500,
-              borderRadius: isMobile ? 10 : 12,
-              cursor: 'pointer',
-              textAlign: 'left',
+              padding: '10px 14px', fontSize: 14,
+              fontWeight: activeTab === tab.key ? 600 : 400,
+              borderRadius: 10, cursor: 'pointer', textAlign: 'left',
               fontFamily: 'inherit',
               background: activeTab === tab.key ? 'var(--ou-surface-faint)' : 'transparent',
               border: activeTab === tab.key ? '1px solid var(--ou-border-subtle)' : '1px solid transparent',
               color: activeTab === tab.key ? 'var(--ou-text-bright)' : 'var(--ou-text-secondary)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: isMobile ? 6 : 12,
-              ...(tab.adminOnly && !isMobile ? { marginTop: 'auto', fontSize: 13, color: activeTab === tab.key ? 'var(--ou-text-bright)' : 'var(--ou-text-dimmed)' } : {}),
+              display: 'flex', alignItems: 'center', gap: 10,
             }}
           >
-            <span style={{ opacity: 0.7, display: 'flex', alignItems: 'center' }}>{TAB_ICONS[tab.key]}</span>
-            {!isMobile && tab.label}
-            {isMobile && <span style={{ fontSize: 12 }}>{tab.label}</span>}
+            <span style={{ opacity: 0.6, display: 'flex', alignItems: 'center' }}>{TAB_ICONS[tab.key]}</span>
+            {tab.label}
           </button>
         ))}
+
+        {/* 관리자 탭 — 하단 분리 */}
+        {isAdmin && (
+          <div style={{ marginTop: 'auto', paddingTop: 12, borderTop: '1px solid var(--ou-border-subtle)' }}>
+            <button
+              onClick={() => setActiveTab('admin')}
+              style={{
+                width: '100%', padding: '10px 14px', fontSize: 13,
+                fontWeight: activeTab === 'admin' ? 600 : 400,
+                borderRadius: 10, cursor: 'pointer', textAlign: 'left',
+                fontFamily: 'inherit',
+                background: activeTab === 'admin' ? 'var(--ou-surface-faint)' : 'transparent',
+                border: activeTab === 'admin' ? '1px solid var(--ou-border-subtle)' : '1px solid transparent',
+                color: activeTab === 'admin' ? 'var(--ou-text-bright)' : 'var(--ou-text-dimmed)',
+                display: 'flex', alignItems: 'center', gap: 10,
+              }}
+            >
+              <span style={{ opacity: 0.6, display: 'flex', alignItems: 'center' }}>{TAB_ICONS['admin']}</span>
+              관리자
+            </button>
+          </div>
+        )}
       </aside>
 
       {/* Content */}
-      <main style={{ flex: 1, padding: isMobile ? '24px 20px 80px' : '40px 60px 80px', maxWidth: isMobile ? '100%' : 880, overflow: 'auto' }}>
+      <main style={{ flex: 1, padding: '40px 48px 80px', maxWidth: 760, overflow: 'auto' }}>
         {activeTab === 'general' && <GeneralTab user={user} />}
-        {activeTab === 'display' && <DisplayTab isMobile={isMobile} />}
+        {activeTab === 'display' && <DisplayTab isMobile={false} />}
         {activeTab === 'tutorial' && <TutorialTab />}
         {activeTab === 'admin' && isAdmin && <AdminTab />}
       </main>
