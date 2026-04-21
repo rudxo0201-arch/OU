@@ -316,6 +316,21 @@ function MessageBubble({
           <InlineView key={n.id} domain={n.domain} data={n.domain_data} content={message.content} viewType={DOMAIN_VIEW_MAP[n.domain]} />
         ))}
 
+        {/* 노트 열기 링크 */}
+        {message.nodeCreated && !message.streaming && message.nodeCreated.domain === 'note' && message.nodeCreated.nodeId && (
+          <a
+            href={`/note/${message.nodeCreated.nodeId}`}
+            style={{
+              display: 'inline-block', marginTop: 8,
+              padding: '5px 12px', borderRadius: 'var(--ou-radius-pill)',
+              background: 'var(--ou-surface-muted)', boxShadow: 'var(--ou-neu-raised-sm)',
+              fontSize: 12, color: 'var(--ou-text-bright)', textDecoration: 'none',
+            }}
+          >
+            노트 열기 →
+          </a>
+        )}
+
         {/* 홈 화면에 추가하기 */}
         {message.nodeCreated && !message.streaming && (
           <AddToHomeButton domain={message.nodeCreated.domain} nodeId={message.nodeCreated.nodeId} />

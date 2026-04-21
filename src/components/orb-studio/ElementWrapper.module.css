@@ -1,0 +1,27 @@
+.wrapper {
+  position: absolute;
+  left: 0;
+  top: 0;
+  box-sizing: border-box;
+  will-change: transform;
+  user-select: none;
+}
+
+.wrapper.selected {
+  outline: 1.5px solid var(--ou-accent, #888);
+  outline-offset: 1px;
+}
+
+.content {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: var(--ou-neu-raised-sm);
+  background: var(--ou-bg);
+}
+
+/* 드래그/리사이즈 중 자식 클릭 방지 */
+.wrapper.interacting .content {
+  pointer-events: none;
+}

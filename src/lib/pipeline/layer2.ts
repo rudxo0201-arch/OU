@@ -378,15 +378,15 @@ export async function saveMessageAsync(input: SaveMessageInput) {
     adminData: Record<string, any> | undefined,
     assistantContext?: string,
   ) {
-    // assistant 답변 포함 combined text — 문서 파싱과 동일 원칙
-    const segCombined = assistantContext
-      ? `${segmentText}\n\n${assistantContext}`
-      : segmentText;
+    // 세그먼트는 LLM이 이미 분리한 단위 — assistant 컨텍스트 포함 시 다른 세그먼트 정보까지 추출되어 중복 노드 생성됨
+    const segCombined = segmentText;
     const segExtraction = await extractAll(segCombined, segmentDomain, today);
     const segDomainData = { ...segExtraction.domain_data, ...(adminData ?? {}) };
-    // title 누락 시 세그먼트 원문으로 보정 (extraction 실패 안전망)
-    if (!segDomainData.title && !segDomainData.name) {
-      segDomainData.title = segmentText.trim();
+
+    // confidence low = 필수 필드 누락 → INSERT 중단
+    if (segExtraction.confidence === 'low') {
+      console.warn('[Layer2] segment extraction confidence low, skipping insert:', segmentDomain, segCombined.slice(0, 80));
+      return null;
     }
 
     const { data: segNode, error: segErr } = await supabase.from('data_nodes').insert({
@@ -505,6 +505,12 @@ export async function saveMessageAsync(input: SaveMessageInput) {
     ...extractionResult.domain_data,
     ...(adminInternalData ?? {}),
   };
+
+  // confidence low = 필수 필드 누락 → INSERT 중단
+  if (extractionResult.confidence === 'low') {
+    console.warn('[Layer2] extraction confidence low, skipping insert:', domain, combinedForExtraction.slice(0, 80));
+    return { node: null, domain, viewHint, confidence: 'low' };
+  }
 
   const { data: node, error: nodeErr } = await supabase.from('data_nodes').insert({
     user_id: input.userId,

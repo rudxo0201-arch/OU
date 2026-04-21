@@ -26,7 +26,14 @@ export function TodayScheduleWidget() {
       .then(r => r.json())
       .then(d => {
         const nodes: ScheduleNode[] = d.nodes || [];
-        const sorted = nodes.sort((a, b) => (a.domain_data.time || '').localeCompare(b.domain_data.time || ''));
+        const deduplicated = nodes.filter((e, i, arr) =>
+          arr.findIndex(x =>
+            x.domain_data.title === e.domain_data.title &&
+            x.domain_data.date === e.domain_data.date &&
+            x.domain_data.time === e.domain_data.time
+          ) === i
+        );
+        const sorted = deduplicated.sort((a, b) => (a.domain_data.time || '').localeCompare(b.domain_data.time || ''));
         setEvents(sorted);
         setLoading(false);
       })

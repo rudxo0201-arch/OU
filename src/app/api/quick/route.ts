@@ -14,13 +14,12 @@ export async function POST(req: NextRequest) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
-    // 클라이언트는 이미 "기록됨" 표시 — 서버는 백그라운드에서 처리
-    // saveMessageAsync를 awaiting하되 클라이언트는 응답을 기다리지 않음 (fire-and-forget fetch)
-    saveMessageAsync({
+    // 클라이언트는 낙관적으로 "기록됨" 표시 — 서버는 완전히 처리 후 응답
+    await saveMessageAsync({
       userId: user?.id,
       userMessage: text.trim(),
-      assistantMessage: '', // Quick 채널: 어시스턴트 응답 없음
-    }).catch(e => console.error('[Quick] saveMessageAsync failed:', e));
+      assistantMessage: '',
+    });
 
     return NextResponse.json({ ok: true });
   } catch (e) {

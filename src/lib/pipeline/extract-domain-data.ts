@@ -414,6 +414,33 @@ function extractDevelopment(raw: string): Record<string, any> {
   return result;
 }
 
+// ── note ──
+
+function extractNote(raw: string): Record<string, any> {
+  // 제목: 첫 줄 (최대 60자)
+  const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
+  const title = (lines[0] ?? raw.slice(0, 30))
+    .replace(/^(노트|메모|기록|글)\s*(:|：|—)?\s*/i, '')
+    .slice(0, 60);
+
+  // Tiptap JSON blocks 생성 — 각 문단을 paragraph 노드로
+  const bodyLines = lines.slice(1).length > 0 ? lines.slice(1) : lines;
+  const blocks = {
+    type: 'doc',
+    content: bodyLines.map(line => ({
+      type: 'paragraph',
+      content: [{ type: 'text', text: line }],
+    })),
+  };
+
+  return {
+    title,
+    blocks,
+    content: raw,
+    date: today(),
+  };
+}
+
 // ── 기본 (knowledge, idea 등) ──
 
 function extractDefault(raw: string): Record<string, any> {
@@ -433,6 +460,7 @@ const EXTRACTORS: Record<string, (raw: string) => Record<string, any>> = {
   relation: extractRelation,
   habit: extractHabit,
   development: extractDevelopment,
+  note: extractNote,
 };
 
 export function extractDomainData(raw: string, domain: string): Record<string, any> {

@@ -18,6 +18,7 @@ const VIEW_HINT_MAP: Record<string, string> = {
   relation: 'relation',
   media: 'scrap',
   development: 'dev_workspace',
+  note: 'note',
   // 하위 호환 alias (기존 데이터 대응)
   health: 'heatmap',
   relationship: 'relation',
@@ -47,6 +48,7 @@ export async function classifyDomain(text: string) {
 - relation: 사람 이름이나 관계가 언급된 것 (엄마, 친구, 동료 등)
 - media: 영화, 드라마, 음악, 책, 게임
 - development: 개발, 코딩, 기술
+- note: 노트 작성, 메모, 기록, 글쓰기, 정리 요청 ("~노트 만들어줘", "~메모해줘", "~기록해줘")
 
 규칙:
 - 해당하는 도메인을 모두 선택 (복수 가능)

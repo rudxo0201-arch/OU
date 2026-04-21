@@ -51,6 +51,9 @@ export const VIEW_REGISTRY: Record<string, ComponentType<ViewProps>> = {
   // ── Wave 6: 위치 ──
   map:        dynamic(() => import('./MapView').then(m => m.MapView), { ssr: false }),
 
+  // ── Wave 7 (추가): 노트/문서 ──
+  note:       dynamic(() => import('./NoteView').then(m => m.NoteView), { ssr: false }),
+
   // ── Wave 7: 인라인 — 일정 ──
   'schedule-time':     dynamic(() => import('./inline/ScheduleTimeView').then(m => m.ScheduleTimeView), { ssr: false }),
   'schedule-date':     dynamic(() => import('./inline/ScheduleDateView').then(m => m.ScheduleDateView), { ssr: false }),
@@ -117,6 +120,7 @@ export const VIEW_META: Record<string, ViewMeta> = {
   scrap:      { previewOnClick: true },
   youtube:    { previewOnClick: false },
   map:        { previewOnClick: false },
+  note:       { previewOnClick: false },
   // inline views — no preview overlay
   'schedule-time':     { previewOnClick: false },
   'schedule-date':     { previewOnClick: false },
@@ -169,6 +173,7 @@ export const DOMAIN_VIEW_MAP: Record<string, string> = {
   education:   'edu-lesson',
   location:    'location-pin',
   development: 'dev-note',
+  note:        'note',
 };
 
 /** 뷰 라벨 (한국어) */
@@ -193,6 +198,7 @@ export const VIEW_LABELS: Record<string, string> = {
   scrap:      '스크랩',
   youtube:    'YouTube',
   map:        '지도',
+  note:       '노트',
   // 인라인 — 일정
   'schedule-time':     '시간 강조 일정',
   'schedule-date':     '날짜 강조 일정',
