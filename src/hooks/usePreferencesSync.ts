@@ -11,6 +11,7 @@ import { useEffect, useRef, useCallback } from 'react';
 import { useAuthStore } from '@/stores/authStore';
 import { useWidgetStore, type WidgetPage } from '@/stores/widgetStore';
 import { useNavigationStore } from '@/stores/navigationStore';
+import { useHomeStore } from '@/stores/homeStore';
 
 const SAVE_DEBOUNCE_MS = 800;
 
@@ -18,6 +19,8 @@ const SAVE_DEBOUNCE_MS = 800;
 function collectPreferences() {
   const widgetState = useWidgetStore.getState();
   const navState = useNavigationStore.getState();
+
+  const homeState = useHomeStore.getState();
 
   return {
     widget: {
@@ -31,6 +34,10 @@ function collectPreferences() {
       pinnedViewIds: navState.pinnedViewIds,
       chatPanelOpen: navState.chatPanelOpen,
       collapsed: navState.collapsed,
+    },
+    home: {
+      gridItems: homeState.gridItems,
+      dockSlugs: homeState.dockSlugs,
     },
     display: {
       theme: typeof window !== 'undefined' ? localStorage.getItem('ou-theme') : null,
@@ -64,6 +71,13 @@ function applyPreferences(prefs: ReturnType<typeof collectPreferences>) {
     if (prefs.navigation.pinnedViewIds?.length) {
       ns.setPinnedViewIds(prefs.navigation.pinnedViewIds);
     }
+  }
+
+  // Home layout 복원
+  if ((prefs as any).home?.gridItems?.length) {
+    const hs = useHomeStore.getState();
+    hs.reorderDock((prefs as any).home.dockSlugs ?? []);
+    // gridItems는 persist로 이미 복원되므로 필요 시만 적용
   }
 
   // Display 복원
@@ -157,6 +171,7 @@ export function usePreferencesSync() {
 
     const unsubWidget = useWidgetStore.subscribe(scheduleSave);
     const unsubNav = useNavigationStore.subscribe(scheduleSave);
+    const unsubHome = useHomeStore.subscribe(scheduleSave);
 
     // theme/palette는 storage event로 감지
     const handleStorage = (e: StorageEvent) => {
@@ -181,6 +196,7 @@ export function usePreferencesSync() {
     return () => {
       unsubWidget();
       unsubNav();
+      unsubHome();
       window.removeEventListener('storage', handleStorage);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       // cleanup 시 저장 (in-app navigation 대비)
