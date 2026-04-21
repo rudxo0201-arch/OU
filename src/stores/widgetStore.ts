@@ -214,10 +214,18 @@ export const useWidgetStore = createSafeStore<WidgetStore>(
   {
     name: 'ou-widget-layout',
     version: LAYOUT_VERSION,
-    migrate: () => ({
-      pages: DEFAULT_PAGES,
-      currentPageIndex: 0,
-    }),
+    migrate: (persisted: any) => {
+      // 버전 업 시에도 기존 pages 데이터 최대한 보존
+      if (persisted?.pages?.length) {
+        return {
+          pages: persisted.pages,
+          currentPageIndex: persisted.currentPageIndex ?? 0,
+          gridCols: persisted.gridCols,
+          gridRows: persisted.gridRows,
+        };
+      }
+      return { pages: DEFAULT_PAGES, currentPageIndex: 0 };
+    },
     merge: (persisted: any, current: any) => {
       const state = { ...current, ...(persisted as object) };
       if (!state.pages || !Array.isArray(state.pages) || state.pages.length === 0) {
