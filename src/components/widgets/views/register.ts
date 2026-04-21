@@ -201,6 +201,7 @@ registerWidget({
   defaultSize: [5, 3],
   removable: true,
   needsCard: false,
+  appSlug: 'calendar',
 });
 
 registerWidget({
@@ -234,6 +235,7 @@ registerWidget({
   defaultSize: [5, 3],
   removable: true,
   needsCard: false,
+  appSlug: 'todo',
 });
 
 registerWidget({
@@ -245,6 +247,7 @@ registerWidget({
   defaultSize: [5, 3],
   removable: true,
   needsCard: false,
+  appSlug: 'habit',
 });
 
 registerWidget({
@@ -256,22 +259,23 @@ registerWidget({
   defaultSize: [5, 3],
   removable: true,
   needsCard: false,
+  appSlug: 'idea',
 });
 
 // ── 시안 위젯 (design drafts) ─────────────────────────────────────────
 
-registerWidget({ type: 'schedule-a', label: '일정 A — 날짜 히어로', component: ScheduleWidgetA, scrollable: 'vertical', minSize: [3, 3], defaultSize: [5, 4], removable: true, needsCard: false });
-registerWidget({ type: 'schedule-b', label: '일정 B — 주간 스트립', component: ScheduleWidgetB, scrollable: 'none', minSize: [4, 3], defaultSize: [6, 4], removable: true, needsCard: false });
-registerWidget({ type: 'schedule-c', label: '일정 C — 미니 월달력', component: ScheduleWidgetC, scrollable: 'none', minSize: [4, 4], defaultSize: [5, 5], removable: true, needsCard: false });
+registerWidget({ type: 'schedule-a', label: '일정 A — 날짜 히어로', component: ScheduleWidgetA, scrollable: 'vertical', minSize: [3, 3], defaultSize: [5, 4], removable: true, needsCard: false, appSlug: 'calendar' });
+registerWidget({ type: 'schedule-b', label: '일정 B — 주간 스트립', component: ScheduleWidgetB, scrollable: 'none', minSize: [4, 3], defaultSize: [6, 4], removable: true, needsCard: false, appSlug: 'calendar' });
+registerWidget({ type: 'schedule-c', label: '일정 C — 미니 월달력', component: ScheduleWidgetC, scrollable: 'none', minSize: [4, 4], defaultSize: [5, 5], removable: true, needsCard: false, appSlug: 'calendar' });
 
-registerWidget({ type: 'task-a', label: '할 일 A — 진행률 히어로', component: TaskWidgetA, scrollable: 'vertical', minSize: [3, 3], defaultSize: [5, 4], removable: true, needsCard: false });
-registerWidget({ type: 'task-b', label: '할 일 B — 클린 체크리스트', component: TaskWidgetB, scrollable: 'vertical', minSize: [3, 3], defaultSize: [5, 4], removable: true, needsCard: false });
-registerWidget({ type: 'task-c', label: '할 일 C — 오늘/이후 분리', component: TaskWidgetC, scrollable: 'vertical', minSize: [3, 3], defaultSize: [5, 4], removable: true, needsCard: false });
+registerWidget({ type: 'task-a', label: '할 일 A — 진행률 히어로', component: TaskWidgetA, scrollable: 'vertical', minSize: [3, 3], defaultSize: [5, 4], removable: true, needsCard: false, appSlug: 'todo' });
+registerWidget({ type: 'task-b', label: '할 일 B — 클린 체크리스트', component: TaskWidgetB, scrollable: 'vertical', minSize: [3, 3], defaultSize: [5, 4], removable: true, needsCard: false, appSlug: 'todo' });
+registerWidget({ type: 'task-c', label: '할 일 C — 오늘/이후 분리', component: TaskWidgetC, scrollable: 'vertical', minSize: [3, 3], defaultSize: [5, 4], removable: true, needsCard: false, appSlug: 'todo' });
 
-registerWidget({ type: 'finance-a', label: '지출 A — 금액 히어로', component: FinanceWidgetA, scrollable: 'vertical', minSize: [3, 3], defaultSize: [5, 4], removable: true, needsCard: false });
-registerWidget({ type: 'finance-b', label: '지출 B — 7일 바 차트', component: FinanceWidgetB, scrollable: 'none', minSize: [4, 3], defaultSize: [5, 4], removable: true, needsCard: false });
-registerWidget({ type: 'finance-c', label: '지출 C — 카테고리 분류', component: FinanceWidgetC, scrollable: 'vertical', minSize: [3, 3], defaultSize: [5, 4], removable: true, needsCard: false });
+registerWidget({ type: 'finance-a', label: '지출 A — 금액 히어로', component: FinanceWidgetA, scrollable: 'vertical', minSize: [3, 3], defaultSize: [5, 4], removable: true, needsCard: false, appSlug: 'finance' });
+registerWidget({ type: 'finance-b', label: '지출 B — 7일 바 차트', component: FinanceWidgetB, scrollable: 'none', minSize: [4, 3], defaultSize: [5, 4], removable: true, needsCard: false, appSlug: 'finance' });
+registerWidget({ type: 'finance-c', label: '지출 C — 카테고리 분류', component: FinanceWidgetC, scrollable: 'vertical', minSize: [3, 3], defaultSize: [5, 4], removable: true, needsCard: false, appSlug: 'finance' });
 
-registerWidget({ type: 'habit-a', label: '습관 A — 스트릭 히어로', component: HabitWidgetA, scrollable: 'vertical', minSize: [3, 3], defaultSize: [5, 4], removable: true, needsCard: false });
-registerWidget({ type: 'habit-b', label: '습관 B — 원형 그리드', component: HabitWidgetB, scrollable: 'vertical', minSize: [3, 3], defaultSize: [5, 4], removable: true, needsCard: false });
-registerWidget({ type: 'habit-c', label: '습관 C — 30일 히트맵', component: HabitWidgetC, scrollable: 'none', minSize: [4, 3], defaultSize: [6, 4], removable: true, needsCard: false });
+registerWidget({ type: 'habit-a', label: '습관 A — 스트릭 히어로', component: HabitWidgetA, scrollable: 'vertical', minSize: [3, 3], defaultSize: [5, 4], removable: true, needsCard: false, appSlug: 'habit' });
+registerWidget({ type: 'habit-b', label: '습관 B — 원형 그리드', component: HabitWidgetB, scrollable: 'vertical', minSize: [3, 3], defaultSize: [5, 4], removable: true, needsCard: false, appSlug: 'habit' });
+registerWidget({ type: 'habit-c', label: '습관 C — 30일 히트맵', component: HabitWidgetC, scrollable: 'none', minSize: [4, 3], defaultSize: [6, 4], removable: true, needsCard: false, appSlug: 'habit' });

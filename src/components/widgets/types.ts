@@ -22,6 +22,7 @@ export interface WidgetDef {
   defaultSize: [cols: number, rows: number];
   removable: boolean;
   needsCard: boolean;
+  appSlug?: string; // 클릭 시 /app/{appSlug}로 이동
 }
 
 export interface WidgetInstance {
