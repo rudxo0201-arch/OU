@@ -3,95 +3,51 @@
 import { Suspense, useState, useCallback, useRef, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
-import { WidgetGrid, type GridTransition } from '@/components/widgets/WidgetGrid';
 import { DockBar } from '@/components/widgets/DockBar';
+import { QSDTabs } from '@/components/qsd/QSDTabs';
+import {
+  Note, CalendarBlank, CheckSquare, CurrencyKrw, Fire, Lightbulb,
+} from '@phosphor-icons/react';
 import dynamicImport from 'next/dynamic';
 const UniverseView = dynamicImport(() => import('@/components/widgets/UniverseView').then(m => m.UniverseView), { ssr: false });
-const TutorialComplete = dynamicImport(() => import('@/components/tutorial/TutorialComplete').then(m => m.TutorialComplete), { ssr: false });
-const SpeechBubble = dynamicImport(() => import('@/components/tutorial/SpeechBubble').then(m => m.SpeechBubble), { ssr: false });
-import { useWidgetStore } from '@/stores/widgetStore';
-import { useTutorialStore } from '@/stores/tutorialStore';
-import { ViewPickerPanel } from '@/components/widgets/ViewPickerPanel';
-import { TUTORIAL_INITIAL_LAYOUT } from '@/components/widgets/presets';
-
 
 type Mode = 'dashboard' | 'to-universe' | 'universe' | 'to-dashboard';
 
-const WIDGET_EXIT_DURATION = 600;
 const SPHERE_DURATION = 600;
+const WIDGET_EXIT_DURATION = 600;
 const WIDGET_ENTER_DURATION = 600;
 
-export default function MyPageWrapper() {
+// 설치된 앱 목록 (완성된 것부터)
+const INSTALLED_APPS = [
+  { slug: 'note',     label: 'Note',     icon: Note,          route: '/note/new' },
+  { slug: 'calendar', label: 'Calendar', icon: CalendarBlank, route: '/app/calendar' },
+  { slug: 'todo',     label: 'Todo',     icon: CheckSquare,   route: '/app/todo' },
+  { slug: 'finance',  label: 'Finance',  icon: CurrencyKrw,   route: '/app/finance' },
+  { slug: 'habit',    label: 'Habit',    icon: Fire,          route: '/app/habit' },
+  { slug: 'idea',     label: 'Idea',     icon: Lightbulb,     route: '/app/idea' },
+];
+
+export default function HomeWrapper() {
   return (
     <Suspense fallback={
       <div style={{ minHeight: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--ou-bg)' }}>
         <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--ou-text-disabled)', animation: 'blink 1s ease-in-out infinite' }} />
       </div>
     }>
-      <MyPage />
+      <HomePage />
     </Suspense>
   );
 }
 
-function MyPage() {
-  const { user, isLoading, isAdmin } = useAuth();
+function HomePage() {
+  const { user, isLoading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const isReplay = searchParams.get('tutorial') === 'replay';
   const inviteToken = searchParams.get('invite');
   const [mode, setMode] = useState<Mode>('dashboard');
-  const currentPageIndex = useWidgetStore(s => s.currentPageIndex);
-  const pages = useWidgetStore(s => s.pages);
-  const setCurrentPage = useWidgetStore(s => s.setCurrentPage);
-  const initAdminLayout = useWidgetStore(s => s.initAdminLayout);
-  const setWidgets = useWidgetStore(s => s.setWidgets);
   const timerRef = useRef<NodeJS.Timeout>();
-  const initAdminCalled = useRef(false);
 
-  const tutorialPhase = useTutorialStore(s => s.phase);
-  const tutorialStepIndex = useTutorialStore(s => s.stepIndex);
-  const startTutorial = useTutorialStore(s => s.startTutorial);
-  const skipStep = useTutorialStore(s => s.skipStep);
-  const celebrated = useTutorialStore(s => s.celebrated);
-  const markCelebrated = useTutorialStore(s => s.markCelebrated);
-  const [showTutorialComplete, setShowTutorialComplete] = useState(false);
-  const [showViewPicker, setShowViewPicker] = useState(false);
-  const [targetRect, setTargetRect] = useState<{ top: number; left: number; width: number; height: number } | null>(null);
-
-  // 튜토리얼 시작: replay param이면 바로 시작, 아니면 DB 체크
-  useEffect(() => {
-    if (isReplay) {
-      // 설정에서 "다시 보기" 클릭한 경우 — DB 체크 없이 바로 시작
-      startTutorial();
-      setWidgets(TUTORIAL_INITIAL_LAYOUT);
-      router.replace('/home'); // query param 제거
-      return;
-    }
-    if (tutorialPhase !== 'idle') return;
-    import('@/lib/supabase/client').then(({ createClient }) => {
-      const supabase = createClient();
-      supabase.auth.getUser().then(({ data: { user } }) => {
-        if (!user) return;
-        supabase
-          .from('profiles')
-          .select('tutorial_completed_at')
-          .eq('id', user.id)
-          .single()
-          .then(({ data }) => {
-            if (data?.tutorial_completed_at) {
-              // 이미 완료한 회원 — 로컬 상태만 completed로 (DB 호출 없음)
-              useTutorialStore.setState({ phase: 'completed' });
-            } else {
-              startTutorial();
-              setWidgets(TUTORIAL_INITIAL_LAYOUT);
-            }
-          });
-      });
-    });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isReplay]);
-
-  // 초대 토큰 처리: 가입 직후 A가 공유한 팩트 정보를 B의 프로필에 자동 등록 + A에게 유니 보상
+  // 초대 토큰 처리
   useEffect(() => {
     if (!inviteToken || !user) return;
     import('@/lib/supabase/client').then(({ createClient }) => {
@@ -105,19 +61,16 @@ function MyPage() {
         .single()
         .then(async ({ data: share }) => {
           if (!share) return;
-          // B의 profiles에 공유된 팩트 필드 반영
           const fields = share.shared_fields as Record<string, string>;
           const profileUpdate: Record<string, string> = {};
           if (fields.name) profileUpdate.display_name = fields.name;
           if (Object.keys(profileUpdate).length > 0) {
             await supabase.from('profiles').update(profileUpdate).eq('id', user.id);
           }
-          // 토큰 사용 처리
           await supabase
             .from('profile_shares')
             .update({ used_by: user.id, used_at: new Date().toISOString() })
             .eq('id', share.id);
-          // A(sharer)에게 초대 성공 보상 300 UNI (서버사이드 API 호출)
           if (share.sharer_id) {
             fetch('/api/profile-card/invite-reward', {
               method: 'POST',
@@ -131,45 +84,7 @@ function MyPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inviteToken, user]);
 
-  // 튜토리얼 완료/스킵 → 축하 모달 (celebrated 플래그로 중복 방지)
-  useEffect(() => {
-    if ((tutorialPhase === 'completed' || tutorialPhase === 'skipped') && !celebrated) {
-      setShowTutorialComplete(true);
-    }
-  }, [tutorialPhase, celebrated]);
-
-  // 스포트라이트 + SpeechBubble 위치 추적 (rAF 재시도 — 페이지 네비 후 안정적)
-  useEffect(() => {
-    if (tutorialPhase !== 'active') { setTargetRect(null); return; }
-    let cancelled = false;
-    let retries = 0;
-    const tryUpdate = () => {
-      if (cancelled) return;
-      const el = document.querySelector('[data-tutorial-target="ou-view-input"]');
-      if (el) {
-        const r = el.getBoundingClientRect();
-        if (r.width > 0 && r.height > 0) {
-          setTargetRect({ top: r.top, left: r.left, width: r.width, height: r.height });
-          return;
-        }
-      }
-      if (retries++ < 30) requestAnimationFrame(tryUpdate);
-    };
-    requestAnimationFrame(tryUpdate);
-    const onResize = () => { retries = 0; tryUpdate(); };
-    window.addEventListener('resize', onResize);
-    return () => { cancelled = true; window.removeEventListener('resize', onResize); };
-  }, [tutorialPhase, tutorialStepIndex]);
-
-
-  useEffect(() => {
-    if (isAdmin && !isLoading && !initAdminCalled.current) {
-      initAdminCalled.current = true;
-      initAdminLayout();
-      fetch('/api/views/init-admin', { method: 'POST' }).catch(console.warn);
-    }
-  }, [isAdmin, isLoading, initAdminLayout]);
-
+  // Orb 전체화면 이벤트
   useEffect(() => {
     const orbHandler = () => router.push('/orb');
     window.addEventListener('orb-expand', orbHandler);
@@ -198,115 +113,85 @@ function MyPage() {
     );
   }
 
-  const showWidgets = mode === 'dashboard' || mode === 'to-universe' || mode === 'to-dashboard';
-  const showUniverse = mode === 'universe' || mode === 'to-universe' || mode === 'to-dashboard';
-  const universeActive = mode === 'universe' || mode === 'to-universe';
-
-  let gridTransition: GridTransition = 'idle';
-  if (mode === 'to-universe') gridTransition = 'exiting';
-  if (mode === 'to-dashboard') gridTransition = 'entering';
+  const showDashboard = mode === 'dashboard' || mode === 'to-universe' || mode === 'to-dashboard';
+  const showUniverse  = mode === 'universe'   || mode === 'to-universe' || mode === 'to-dashboard';
+  const universeActive = mode === 'universe'  || mode === 'to-universe';
 
   return (
     <div style={{ position: 'relative', height: '100dvh', overflow: 'hidden', background: 'var(--ou-bg)' }}>
-      {/* Full-bleed content area */}
-      <div style={{ position: 'absolute', inset: 0 }}>
 
-        <div style={{
-          position: 'absolute',
-          top: 52, bottom: 148, left: 40, right: 40,
-          visibility: showWidgets ? 'visible' : 'hidden',
-          pointerEvents: mode === 'dashboard' ? 'auto' : 'none',
-        }}>
-          <WidgetGrid transition={gridTransition} />
-        </div>
+      {/* Universe */}
+      {showUniverse && <UniverseView visible={universeActive} />}
 
-        {showUniverse && <UniverseView visible={mode === 'universe' || mode === 'to-universe'} />}
+      {/* Dashboard */}
+      {showDashboard && (
+        <div
+          style={{
+            position: 'absolute', inset: 0,
+            display: 'flex', flexDirection: 'column',
+            alignItems: 'center', justifyContent: 'center',
+            gap: 32, padding: '0 24px 120px',
+            opacity: mode === 'to-universe' ? 0 : mode === 'to-dashboard' ? 1 : 1,
+            transition: 'opacity 400ms ease',
+            pointerEvents: mode === 'dashboard' ? 'auto' : 'none',
+          }}
+        >
+          {/* QSD */}
+          <div style={{ width: '100%', maxWidth: 560 }}>
+            <QSDTabs data-tutorial-target="ou-view-input" />
+          </div>
 
-        {(mode === 'to-universe' || mode === 'to-dashboard') && (
-          <ExpandingSphere expanding={mode === 'to-universe'} />
-        )}
-      </div>
-
-      {/* 튜토리얼 완료 모달 */}
-      {showTutorialComplete && (
-        <TutorialComplete onClose={() => { setShowTutorialComplete(false); markCelebrated(); }} />
-      )}
-
-      {/* 튜토리얼 스포트라이트 + SpeechBubble */}
-      {targetRect && tutorialPhase === 'active' && (
-        <>
-          {/* 스포트라이트 오버레이 — 타겟만 밝게, 나머지 dim */}
-          <div
-            style={{
-              position: 'fixed',
-              top: targetRect.top - 12,
-              left: targetRect.left - 12,
-              width: targetRect.width + 24,
-              height: targetRect.height + 24,
-              borderRadius: 'var(--ou-radius-lg)',
-              boxShadow: '0 0 0 9999px rgba(0,0,0,0.25)',
-              zIndex: 90,
-              pointerEvents: 'none',
-              transition: 'all 400ms cubic-bezier(0.34, 1.56, 0.64, 1)',
-              animation: 'ou-fade-in 0.4s ease',
-            }}
-          />
-          {/* SpeechBubble — 타겟 아래, 센터 정렬 */}
-          <SpeechBubble
-            message={tutorialStepIndex === 0
-              ? 'Orb를 눌러서 시작해보세요!'
-              : '잘했어요! 다음도 해볼까요?'}
-            tail="top"
-            style={{
-              position: 'fixed',
-              top: targetRect.top + targetRect.height + 24,
-              left: targetRect.left + targetRect.width / 2,
-              transform: 'translateX(-50%)',
-              zIndex: 100,
-            }}
-            onSkip={skipStep}
-          />
-        </>
-      )}
-
-      {/* Page indicator dots */}
-      {mode === 'dashboard' && pages.length > 1 && (
-        <div style={{
-          position: 'absolute', bottom: 136, left: 0, right: 0,
-          display: 'flex', justifyContent: 'center', gap: 8,
-          zIndex: 10, pointerEvents: 'auto',
-        }}>
-          {pages.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setCurrentPage(i)}
-              style={{
-                width: currentPageIndex === i ? 20 : 8,
-                height: 8,
-                borderRadius: 999,
-                background: currentPageIndex === i ? 'var(--ou-text-muted)' : 'var(--ou-text-disabled)',
-                transition: 'all 300ms cubic-bezier(0.34, 1.56, 0.64, 1)',
-              }}
-            />
-          ))}
+          {/* 앱 아이콘 */}
+          <AppGrid />
         </div>
       )}
 
-      {/* View picker panel */}
-      <ViewPickerPanel open={showViewPicker} onClose={() => setShowViewPicker(false)} />
+      {/* Universe 전환 구체 */}
+      {(mode === 'to-universe' || mode === 'to-dashboard') && (
+        <ExpandingSphere expanding={mode === 'to-universe'} />
+      )}
 
-      {/* Dock bar */}
+      {/* DockBar */}
       <div style={{
-        position: 'absolute', bottom: 40, left: 0, right: 0, height: 88,
+        position: 'absolute', bottom: 40, left: 0, right: 0,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         zIndex: 10, pointerEvents: 'none',
       }}>
         <div style={{ pointerEvents: 'auto' }}>
           <DockBar
-            onAddWidget={() => setShowViewPicker(v => !v)}
+            onUniverse={toggleUniverse}
+            universeActive={universeActive}
           />
         </div>
       </div>
+    </div>
+  );
+}
+
+// ── 앱 아이콘 그리드 ──────────────────────────────────────────
+function AppGrid() {
+  const router = useRouter();
+  return (
+    <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', justifyContent: 'center' }}>
+      {INSTALLED_APPS.map(({ slug, label, icon: Icon, route }) => (
+        <button
+          key={slug}
+          onClick={() => router.push(route)}
+          style={{
+            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+            padding: '12px 10px', border: 'none', borderRadius: 'var(--ou-radius-lg)',
+            background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-raised-sm)',
+            cursor: 'pointer', width: 72, transition: 'box-shadow 150ms ease',
+          }}
+          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.boxShadow = 'var(--ou-neu-raised-md)'; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.boxShadow = 'var(--ou-neu-raised-sm)'; }}
+        >
+          <Icon size={22} weight="regular" style={{ color: 'var(--ou-text-muted)' }} />
+          <span style={{ fontSize: 10, color: 'var(--ou-text-disabled)', letterSpacing: '0.3px' }}>
+            {label}
+          </span>
+        </button>
+      ))}
     </div>
   );
 }
