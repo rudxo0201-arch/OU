@@ -31,6 +31,8 @@ export interface ChatMessage {
   imagePreview?: string;
   /** OCR 결과 (이미지 업로드 시) */
   ocrResult?: { text: string; imageType: string };
+  /** LLM intent — conversation이면 "뷰 생성하기" 버튼 표시 조건 */
+  intent?: string;
   /** 파일 업로드 결과 */
   fileResult?: {
     fileType: 'pdf' | 'text' | 'ou' | 'ppt' | 'hwp' | 'docx' | 'xlsx' | 'video' | 'audio';

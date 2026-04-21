@@ -321,6 +321,11 @@ function MessageBubble({
           <AddToHomeButton domain={message.nodeCreated.domain} nodeId={message.nodeCreated.nodeId} />
         )}
 
+        {/* 뷰 생성하기 — conversation intent, 아직 nodeCreated 없음 */}
+        {!isUser && !message.streaming && message.intent === 'conversation' && !message.nodeCreated && (
+          <CreateViewButton message={message} onNodeSelect={onNodeSelect} />
+        )}
+
         {/* Follow-up suggestions */}
         {message.suggestions && message.suggestions.length > 0 && !message.streaming && (
           <SuggestionsUI
@@ -363,6 +368,52 @@ function MessageBubble({
           ×
         </button>
       )}
+    </div>
+  );
+}
+
+// ---- 뷰 생성하기 버튼 (conversation intent) ----
+function CreateViewButton({
+  message,
+  onNodeSelect,
+}: {
+  message: ChatMessage;
+  onNodeSelect?: (payload: NodeSelectPayload) => void;
+}) {
+  const [loading, setLoading] = useState(false);
+
+  const handleCreate = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/nodes?limit=1');
+      if (!res.ok) return;
+      const data = await res.json();
+      const node = data.nodes?.[0];
+      if (node && onNodeSelect) {
+        onNodeSelect({
+          nodeId: node.id,
+          title: node.domain_data?.title || message.content.slice(0, 40),
+          domain: node.domain,
+          data: node.domain_data,
+        });
+      }
+    } catch {
+      // 실패 시 무시
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div style={{ marginTop: 10, display: 'flex', gap: 6 }}>
+      <NeuButton
+        variant="ghost"
+        size="sm"
+        onClick={handleCreate}
+        style={{ fontSize: 11, padding: '3px 10px', opacity: loading ? 0.5 : 1 }}
+      >
+        {loading ? '생성 중...' : '뷰 생성하기'}
+      </NeuButton>
     </div>
   );
 }

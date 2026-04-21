@@ -359,28 +359,41 @@ export async function POST(req: NextRequest) {
 
               // done 즉시 전송 — 텍스트 완료 알림 (인라인 뷰는 저장 후 별도 전송)
               controller.enqueue(encoder.encode(
-                `data: ${JSON.stringify({ done: true, fullText: cleanText, provider, suggestions: llmSuggestions, viewData, domain: domainHint })}\n\n`
+                `data: ${JSON.stringify({ done: true, fullText: cleanText, provider, suggestions: llmSuggestions, viewData, domain: domainHint, intent })}\n\n`
               ));
 
-              // Layer 2: 저장 완료 후 nodeId 전송 → 인라인 뷰 렌더링
-              try {
-                const result = await saveMessageAsync({
+              // Layer 2: conversation intent는 fire-and-forget (스트림 즉시 종료)
+              // data_input 등 인라인 뷰가 필요한 경우만 await
+              if (intent === 'conversation') {
+                controller.close();
+                saveMessageAsync({
                   userId: user?.id,
                   userMessage: messages[messages.length - 1]?.content ?? '',
                   assistantMessage: fullText,
                   linkedNodeId: linkedNodeId ?? null,
                   domainHint,
                   segments,
-                });
-                if (result?.domain) {
-                  controller.enqueue(encoder.encode(
-                    `data: ${JSON.stringify({ nodeCreated: true, domain: result.domain, nodeId: result.node?.id, confidence: result.confidence, domain_data: result.node?.domain_data, additionalNodes: result.additionalNodes })}\n\n`
-                  ));
+                }).catch(err => console.error('[Layer2] saveMessageAsync failed:', err));
+              } else {
+                try {
+                  const result = await saveMessageAsync({
+                    userId: user?.id,
+                    userMessage: messages[messages.length - 1]?.content ?? '',
+                    assistantMessage: fullText,
+                    linkedNodeId: linkedNodeId ?? null,
+                    domainHint,
+                    segments,
+                  });
+                  if (result?.domain) {
+                    controller.enqueue(encoder.encode(
+                      `data: ${JSON.stringify({ nodeCreated: true, domain: result.domain, nodeId: result.node?.id, confidence: result.confidence, domain_data: result.node?.domain_data, additionalNodes: result.additionalNodes })}\n\n`
+                    ));
+                  }
+                } catch (err) {
+                  console.error('[Layer2] saveMessageAsync failed:', err);
                 }
-              } catch (err) {
-                console.error('[Layer2] saveMessageAsync failed:', err);
+                controller.close();
               }
-              controller.close();
             },
             onError: (error) => {
               controller.enqueue(encoder.encode(

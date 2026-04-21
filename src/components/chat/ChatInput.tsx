@@ -178,6 +178,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
             if (data.done) {
               nodeInfo = { domain: data.domain, nodeId: data.nodeId, confidence: data.confidence, domain_data: data.domain_data, suggestions: data.suggestions, additionalNodes: data.additionalNodes, viewType: data.viewData?.viewOptions?.[0] };
               setLastIntent(data.viewData?.intent ?? null);
+              if (data.intent) updateMessage(assistantId, { intent: data.intent });
             }
             if (data.nodeCreated) {
               nodeInfo = { ...nodeInfo, domain: data.domain, nodeId: data.nodeId, confidence: data.confidence, domain_data: data.domain_data, additionalNodes: data.additionalNodes };
@@ -269,6 +270,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
             if (data.done) {
               nodeInfo = { domain: data.domain, nodeId: data.nodeId, confidence: data.confidence, domain_data: data.domain_data, suggestions: data.suggestions, additionalNodes: data.additionalNodes, viewType: data.viewData?.viewOptions?.[0] };
               setLastIntent(data.viewData?.intent ?? null);
+              if (data.intent) updateMessage(assistantId, { intent: data.intent });
             }
           } catch {}
         }
