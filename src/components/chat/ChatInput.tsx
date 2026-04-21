@@ -25,6 +25,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
   const [longTextCollapsed, setLongTextCollapsed] = useState(false);
   const [longTextEditorOpen, setLongTextEditorOpen] = useState(false);
   const [dragOver, setDragOver] = useState(false);
+  const [sendPressed, setSendPressed] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const { addMessage, updateMessage, isStreaming, setStreaming, setLastCreatedNodeId, setLastIntent } = useChatStore();
@@ -551,15 +552,16 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
               width: 32,
               height: 32,
               borderRadius: '50%',
-              background: 'transparent',
-              border: '1px solid var(--ou-border-subtle)',
+              background: 'var(--ou-bg)',
+              border: 'none',
+              boxShadow: isStreaming ? 'var(--ou-neu-inset)' : 'var(--ou-neu-raised-xs)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               flexShrink: 0,
-              opacity: isStreaming ? 0.3 : 1,
+              opacity: isStreaming ? 0.4 : 1,
               cursor: isStreaming ? 'default' : 'pointer',
-              transition: 'all var(--ou-transition)',
+              transition: 'box-shadow 120ms ease',
               fontSize: 18,
               fontWeight: 300,
               color: 'var(--ou-text-secondary)',
@@ -572,29 +574,35 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
 
           <button
             onClick={send}
+            onMouseDown={() => { if (input.trim() && !isStreaming) setSendPressed(true); }}
+            onMouseUp={() => setSendPressed(false)}
+            onMouseLeave={() => setSendPressed(false)}
             disabled={!input.trim() || isStreaming}
             style={{
-              width: 36,
-              height: 36,
+              width: 44,
+              height: 44,
               borderRadius: '50%',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              background: input.trim() && !isStreaming
-                ? 'linear-gradient(135deg, var(--ou-accent), var(--ou-accent-secondary))'
-                : 'transparent',
-              boxShadow: input.trim() && !isStreaming ? 'var(--ou-neu-raised-sm)' : 'none',
-              border: input.trim() && !isStreaming ? 'none' : '1px solid var(--ou-border-faint)',
-              transition: 'all var(--ou-transition)',
+              background: 'var(--ou-bg)',
+              boxShadow: !input.trim() || isStreaming
+                ? 'var(--ou-neu-inset)'
+                : sendPressed
+                  ? 'var(--ou-neu-pressed-md)'
+                  : 'var(--ou-neu-raised-md)',
+              border: 'none',
+              transition: 'box-shadow 80ms ease, transform 80ms ease',
+              transform: sendPressed && input.trim() && !isStreaming ? 'scale(0.92)' : 'scale(1)',
               flexShrink: 0,
-              cursor: !input.trim() || isStreaming ? 'not-allowed' : 'pointer',
+              cursor: !input.trim() || isStreaming ? 'default' : 'pointer',
             }}
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
               <path
                 d="M5 12h14M12 5l7 7-7 7"
-                stroke={input.trim() && !isStreaming ? '#fff' : 'var(--ou-text-disabled)'}
-                strokeWidth="2"
+                stroke={!input.trim() || isStreaming ? 'var(--ou-text-disabled)' : 'var(--ou-text-strong)'}
+                strokeWidth="2.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />

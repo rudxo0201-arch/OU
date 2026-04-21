@@ -24,9 +24,10 @@ interface TopNavBarProps {
 function TopNavBarInner({ userInitial, isAdmin }: TopNavBarProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const [timeLabel, setTimeLabel] = useState(getTimeLabel());
+  const [timeLabel, setTimeLabel] = useState('');
 
   useEffect(() => {
+    setTimeLabel(getTimeLabel());
     const tick = () => setTimeLabel(getTimeLabel());
     const id = setInterval(tick, 60000);
     return () => clearInterval(id);
