@@ -45,6 +45,7 @@ interface NavigationStore {
   pinView: (viewId: string) => void;
   unpinView: (viewId: string) => void;
   reorderPinnedViews: (ids: string[]) => void;
+  setPinnedViewIds: (ids: string[]) => void;
 }
 
 export const useNavigationStore = createSafeStore<NavigationStore>(
@@ -85,6 +86,7 @@ export const useNavigationStore = createSafeStore<NavigationStore>(
         pinnedViewIds: s.pinnedViewIds.filter(id => id !== viewId),
       })),
       reorderPinnedViews: ids => set({ pinnedViewIds: ids }),
+      setPinnedViewIds: (ids: string[]) => set({ pinnedViewIds: ids }),
   }),
   { name: 'ou-navigation' },
 );

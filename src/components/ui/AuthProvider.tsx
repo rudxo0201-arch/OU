@@ -2,9 +2,11 @@
 import { useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useAuthStore } from '@/stores/authStore';
+import { usePreferencesSync } from '@/hooks/usePreferencesSync';
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { setUser, setLoading } = useAuthStore();
+  usePreferencesSync();
 
   useEffect(() => {
     const supabase = createClient();

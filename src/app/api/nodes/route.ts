@@ -13,6 +13,8 @@ export async function GET(req: NextRequest) {
     const limitParam = searchParams.get('limit');
     const limit = Math.min(parseInt(limitParam ?? '200', 10) || 200, 500);
     const domainsOnly = searchParams.get('domains') === 'true';
+    const dateFrom = searchParams.get('date_from'); // YYYY-MM-DD
+    const dateTo = searchParams.get('date_to');     // YYYY-MM-DD
 
     // ?domains=true: 사용자가 보유한 고유 도메인 목록 반환
     if (domainsOnly) {
@@ -46,6 +48,17 @@ export async function GET(req: NextRequest) {
 
     if (domain) {
       query = query.eq('domain', domain);
+    }
+
+    // 날짜 필터: schedule은 domain_data->>'date', 나머지는 created_at::date 기준
+    if (dateFrom || dateTo) {
+      if (domain === 'schedule') {
+        if (dateFrom) query = query.gte('domain_data->>date', dateFrom);
+        if (dateTo)   query = query.lte('domain_data->>date', dateTo);
+      } else {
+        if (dateFrom) query = query.gte('created_at', `${dateFrom}T00:00:00`);
+        if (dateTo)   query = query.lte('created_at', `${dateTo}T23:59:59`);
+      }
     }
 
     const { data, error } = await query;

@@ -213,7 +213,7 @@ function MyPage() {
 
         <div style={{
           position: 'absolute',
-          top: 0, bottom: 148, left: 40, right: 40,
+          top: 52, bottom: 148, left: 40, right: 40,
           visibility: showWidgets ? 'visible' : 'hidden',
           pointerEvents: mode === 'dashboard' ? 'auto' : 'none',
         }}>

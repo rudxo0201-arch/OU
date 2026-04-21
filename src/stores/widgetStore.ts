@@ -28,6 +28,9 @@ interface WidgetStore {
   // Admin layout init (idempotent)
   initAdminLayout: () => void;
 
+  // Bulk set (for DB sync)
+  setPages: (pages: WidgetPage[]) => void;
+
   // Widget operations (on current page)
   setWidgets: (widgets: WidgetInstance[]) => void;
   updateLayout: (layouts: Array<{ i: string; x: number; y: number; w: number; h: number }>) => void;
@@ -149,6 +152,8 @@ export const useWidgetStore = createSafeStore<WidgetStore>(
           currentPageIndex: Math.min(s.currentPageIndex, newPages.length - 1),
         };
       }),
+
+      setPages: (pages) => set({ pages }),
 
       setWidgets: (widgets) => set((s) => {
         const pages = [...s.pages];
