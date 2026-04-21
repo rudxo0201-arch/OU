@@ -4,10 +4,10 @@ import { usePathname, useRouter } from 'next/navigation';
 import { Suspense, useState, useEffect } from 'react';
 
 const NAV_ITEMS = [
-  { label: 'Orb', href: '/orb', tab: null },
-  { label: 'Universe', href: '/universe', tab: null },
-  { label: 'Orbit', href: '/orbit', tab: null },
-  { label: 'View Studio', href: '/view-studio', tab: null },
+  { label: 'Orb', href: '/orb', adminOnly: false },
+  { label: 'Universe', href: '/universe', adminOnly: false },
+  { label: 'Orbit', href: '/orbit', adminOnly: true },
+  { label: 'View Studio', href: '/view-studio', adminOnly: true },
 ];
 
 function getTimeLabel() {
@@ -19,9 +19,10 @@ function getTimeLabel() {
 
 interface TopNavBarProps {
   userInitial?: string;
+  isAdmin?: boolean;
 }
 
-function TopNavBarInner({ userInitial }: TopNavBarProps) {
+function TopNavBarInner({ userInitial, isAdmin }: TopNavBarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [timeLabel, setTimeLabel] = useState(getTimeLabel());
@@ -77,7 +78,7 @@ function TopNavBarInner({ userInitial }: TopNavBarProps) {
 
       {/* 탭 네비게이션 */}
       <nav style={{ display: 'flex', alignItems: 'center', gap: 4, flex: 1 }}>
-        {NAV_ITEMS.map((item) => {
+        {NAV_ITEMS.filter(item => !item.adminOnly || isAdmin).map((item) => {
           const active = isActive(item);
           return (
             <button
@@ -134,10 +135,10 @@ function TopNavBarInner({ userInitial }: TopNavBarProps) {
 }
 
 // useSearchParams는 Suspense 경계 필요
-export function TopNavBar({ userInitial }: TopNavBarProps) {
+export function TopNavBar({ userInitial, isAdmin }: TopNavBarProps) {
   return (
     <Suspense fallback={null}>
-      <TopNavBarInner userInitial={userInitial} />
+      <TopNavBarInner userInitial={userInitial} isAdmin={isAdmin} />
     </Suspense>
   );
 }

@@ -2,6 +2,13 @@ import { create } from 'zustand';
 
 const GUEST_STORAGE_KEY = 'ou-guest-chat';
 
+export interface SuggestionItem {
+  question: string;
+  options: string[];
+}
+
+export type Suggestion = string | SuggestionItem;
+
 export interface ChatMessage {
   id: string;
   role: 'user' | 'assistant';
@@ -9,7 +16,7 @@ export interface ChatMessage {
   createdAt: Date;
   streaming?: boolean;
   isStatus?: boolean; // LLM 처리 중 상태 메시지 (실제 응답과 구분)
-  suggestions?: string[];
+  suggestions?: Suggestion[];
   viewHints?: string[];
   nodeCreated?: {
     domain: string;
@@ -39,15 +46,18 @@ export interface ChatMessage {
   hanjaResults?: Array<{
     char: string;
     nodeId: string;
-    hangul_reading?: string;
-    readings_ko: string[];
-    ko_hun?: string[];
-    definition_en?: string;
-    radical_char: string;
-    radical_name_ko: string;
-    stroke_count: number;
-    grade?: number;
-    composition?: { type: string; explanation: string; mnemonic: string };
+    sound?: string;
+    hun?: string;
+    meaning?: string;
+    radical?: string;
+    stroke_count?: number;
+    grade?: string;
+    etymology?: string;
+    mnemonic?: string;
+    compounds?: string;
+    domain?: string;
+    char_type?: string;
+    pinyin?: string;
   }>;
 }
 

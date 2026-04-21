@@ -11,6 +11,9 @@ import { StreakWidget } from './StreakWidget';
 import { TodayScheduleWidget } from './TodayScheduleWidget';
 import { ChatHeatmapWidget } from './ChatHeatmapWidget';
 import { ApiTokenWidget } from './ApiTokenWidget';
+import { TaskWidget } from './TaskWidget';
+import { HabitWidget } from './HabitWidget';
+import { IdeaWidget } from './IdeaWidget';
 
 registerWidget({
   type: 'ou-view',
@@ -206,6 +209,39 @@ registerWidget({
   scrollable: 'none',
   minSize: [2, 1],
   defaultSize: [2, 2],
+  removable: true,
+  needsCard: false,
+});
+
+registerWidget({
+  type: 'today-tasks',
+  label: '할 일',
+  component: TaskWidget,
+  scrollable: 'vertical',
+  minSize: [2, 1],
+  defaultSize: [3, 2],
+  removable: true,
+  needsCard: false,
+});
+
+registerWidget({
+  type: 'habit-log',
+  label: '습관',
+  component: HabitWidget,
+  scrollable: 'vertical',
+  minSize: [2, 1],
+  defaultSize: [3, 2],
+  removable: true,
+  needsCard: false,
+});
+
+registerWidget({
+  type: 'idea-notes',
+  label: '아이디어',
+  component: IdeaWidget,
+  scrollable: 'vertical',
+  minSize: [2, 1],
+  defaultSize: [3, 2],
   removable: true,
   needsCard: false,
 });

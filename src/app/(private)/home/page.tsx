@@ -1,7 +1,5 @@
 'use client';
 
-'use client';
-
 import { Suspense, useState, useCallback, useRef, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
@@ -51,10 +49,11 @@ function MyPage() {
   const router = useRouter();
   const [displayName, setDisplayName] = useState('');
   const [isEditMode, setIsEditMode] = useState(false);
+  const [greetingDate, setGreetingDate] = useState('');
   const [greetingText, setGreetingText] = useState('');
   const [editingGreeting, setEditingGreeting] = useState(false);
   const greetingInputRef = useRef<HTMLInputElement>(null);
-  const [greetingPos, setGreetingPos] = useState<{ top: number; left: number }>({ top: 64, left: 20 });
+  const [greetingPos, setGreetingPos] = useState<{ top: number; left: number }>({ top: 64, left: 40 });
   const dragState = useRef<{ startX: number; startY: number; origTop: number; origLeft: number } | null>(null);
   const searchParams = useSearchParams();
   const isReplay = searchParams.get('tutorial') === 'replay';
@@ -109,6 +108,9 @@ function MyPage() {
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isReplay]);
+
+  // 날짜 — 클라이언트에서만 세팅 (hydration 안전)
+  useEffect(() => { setGreetingDate(getGreetingDate()); }, []);
 
   // display_name 패칭
   useEffect(() => {
@@ -325,7 +327,7 @@ function MyPage() {
               fontFamily: 'var(--ou-font-logo)',
               marginBottom: 8,
             }}>
-              {getGreetingDate()}
+              {greetingDate}
             </div>
 
             {/* 인사 텍스트 */}
@@ -380,7 +382,7 @@ function MyPage() {
 
         <div style={{
           position: 'absolute',
-          top: 52, bottom: 148, left: 16, right: 16,
+          top: 52, bottom: 148, left: 40, right: 40,
           visibility: showWidgets ? 'visible' : 'hidden',
           pointerEvents: mode === 'dashboard' ? 'auto' : 'none',
         }}>

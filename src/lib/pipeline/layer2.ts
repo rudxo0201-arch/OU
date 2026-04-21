@@ -376,8 +376,13 @@ export async function saveMessageAsync(input: SaveMessageInput) {
     segmentDomain: string,
     messageId: string | undefined,
     adminData: Record<string, any> | undefined,
+    assistantContext?: string,
   ) {
-    const segExtraction = await extractAll(segmentText, segmentDomain, today);
+    // assistant 답변 포함 combined text — 문서 파싱과 동일 원칙
+    const segCombined = assistantContext
+      ? `${segmentText}\n\n${assistantContext}`
+      : segmentText;
+    const segExtraction = await extractAll(segCombined, segmentDomain, today);
     const segDomainData = { ...segExtraction.domain_data, ...(adminData ?? {}) };
     // title 누락 시 세그먼트 원문으로 보정 (extraction 실패 안전망)
     if (!segDomainData.title && !segDomainData.name) {
@@ -389,7 +394,7 @@ export async function saveMessageAsync(input: SaveMessageInput) {
       group_id: input.groupId ?? null,
       message_id: messageId ?? null,
       domain: segmentDomain,
-      raw: segmentText,
+      raw: segCombined,
       source_type: 'chat',
       confidence: segExtraction.confidence,
       resolution: 'resolved',
@@ -404,7 +409,7 @@ export async function saveMessageAsync(input: SaveMessageInput) {
 
     // Section + Sentences (문단별 섹션 분리)
     try {
-      const segSectionParts = splitIntoSections(segmentText);
+      const segSectionParts = splitIntoSections(segCombined);
 
       for (let i = 0; i < segSectionParts.length; i++) {
         const { heading, body } = segSectionParts[i];
@@ -460,11 +465,12 @@ export async function saveMessageAsync(input: SaveMessageInput) {
       primarySeg.domain,
       assistantMsg?.id,
       adminInternalData,
+      input.assistantMessage,
     );
 
     const additionalResults = await Promise.all(
       restSegs.map(seg =>
-        createNodeForSegment(seg.text, seg.domain, assistantMsg?.id, adminInternalData)
+        createNodeForSegment(seg.text, seg.domain, assistantMsg?.id, adminInternalData, input.assistantMessage)
       )
     );
 
@@ -490,7 +496,11 @@ export async function saveMessageAsync(input: SaveMessageInput) {
   }
 
   // ── 단일 세그먼트 (기존 경로) ──
-  const extractionResult = await extractAll(input.userMessage, domain, today);
+  // assistant 답변을 포함한 combined text로 추출 — 문서 파싱과 동일 원칙 (문단→문장)
+  const combinedForExtraction = input.assistantMessage
+    ? `${input.userMessage}\n\n${input.assistantMessage}`
+    : input.userMessage;
+  const extractionResult = await extractAll(combinedForExtraction, domain, today);
   const domainData = {
     ...extractionResult.domain_data,
     ...(adminInternalData ?? {}),
@@ -501,7 +511,7 @@ export async function saveMessageAsync(input: SaveMessageInput) {
     group_id: input.groupId ?? null,
     message_id: assistantMsg?.id,
     domain,
-    raw: input.userMessage,
+    raw: combinedForExtraction,
     source_type: 'chat',
     confidence,
     resolution: 'resolved',
@@ -518,8 +528,7 @@ export async function saveMessageAsync(input: SaveMessageInput) {
   if (node) {
     // Section + Sentences 생성 (userMessage + assistantMessage 합쳐서 문단별 섹션 분리)
     try {
-      const combinedText = `${input.userMessage}\n\n${input.assistantMessage}`;
-      const sectionParts = splitIntoSections(combinedText);
+      const sectionParts = splitIntoSections(combinedForExtraction);
 
       for (let i = 0; i < sectionParts.length; i++) {
         const { heading, body } = sectionParts[i];

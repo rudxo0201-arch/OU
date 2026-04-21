@@ -18,7 +18,8 @@ export async function GET(req: NextRequest) {
     const grade = params.get('grade') || '';
     const strokeMin = params.get('stroke_min') || '';
     const strokeMax = params.get('stroke_max') || '';
-    const compType = params.get('comp_type') || '';
+    const charType = params.get('char_type') || '';
+    const domain = params.get('domain') || '';
     const page = Math.max(1, parseInt(params.get('page') || '1'));
     const limit = Math.min(200, Math.max(1, parseInt(params.get('limit') || '100')));
     const offset = (page - 1) * limit;
@@ -29,7 +30,7 @@ export async function GET(req: NextRequest) {
     const isHanjaSearch = hanjaChars.length > 0;
     const isKoreanSearch = !isHanjaSearch && q.length > 0;
 
-    // ─── count 쿼리 (필터 변경 시만) ────────────────────────────────────────
+    // ─── count 쿼리 ────────────────────────────────────────────────────────
     let total = 0;
     if (!skipCount) {
       let countQ = supabase
@@ -43,11 +44,14 @@ export async function GET(req: NextRequest) {
         const cf = hanjaChars.map(c => `domain_data->>char.eq.${c}`).join(',');
         countQ = countQ.or(cf);
       } else if (isKoreanSearch) {
-        countQ = countQ.or(`domain_data->>hangul_reading.ilike.%${q}%,domain_data->>definition_en.ilike.%${q}%`);
+        countQ = countQ.or(
+          `domain_data->>sound.ilike.%${q}%,domain_data->>hun.ilike.%${q}%,domain_data->>meaning.ilike.%${q}%`
+        );
       }
-      if (radical) countQ = countQ.filter('domain_data->>radical_char', 'eq', radical);
+      if (radical) countQ = countQ.filter('domain_data->>radical', 'eq', radical);
       if (grade) countQ = countQ.filter('domain_data->>grade', 'eq', grade);
-      if (compType) countQ = countQ.filter('domain_data->composition->>type', 'eq', compType);
+      if (charType) countQ = countQ.filter('domain_data->>char_type', 'eq', charType);
+      if (domain) countQ = countQ.filter('domain_data->>domain', 'ilike', `%${domain}%`);
 
       const { count } = await countQ;
       total = count ?? 0;
@@ -65,11 +69,14 @@ export async function GET(req: NextRequest) {
       const cf = hanjaChars.map(c => `domain_data->>char.eq.${c}`).join(',');
       dataQ = dataQ.or(cf);
     } else if (isKoreanSearch) {
-      dataQ = dataQ.or(`domain_data->>hangul_reading.ilike.%${q}%,domain_data->>definition_en.ilike.%${q}%`);
+      dataQ = dataQ.or(
+        `domain_data->>sound.ilike.%${q}%,domain_data->>hun.ilike.%${q}%,domain_data->>meaning.ilike.%${q}%`
+      );
     }
-    if (radical) dataQ = dataQ.filter('domain_data->>radical_char', 'eq', radical);
+    if (radical) dataQ = dataQ.filter('domain_data->>radical', 'eq', radical);
     if (grade) dataQ = dataQ.filter('domain_data->>grade', 'eq', grade);
-    if (compType) dataQ = dataQ.filter('domain_data->composition->>type', 'eq', compType);
+    if (charType) dataQ = dataQ.filter('domain_data->>char_type', 'eq', charType);
+    if (domain) dataQ = dataQ.filter('domain_data->>domain', 'ilike', `%${domain}%`);
     if (!isHanjaSearch) dataQ = dataQ.order('id', { ascending: true });
     dataQ = dataQ.range(offset, offset + limit - 1);
 
@@ -98,11 +105,11 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    if (q || radical || grade || compType) {
+    if (q || radical || grade || charType || domain) {
       void logSearch({
         searchContext: 'dictionary',
         query: q,
-        filters: { radical, grade, compType, strokeMin, strokeMax },
+        filters: { radical, grade, charType, strokeMin, strokeMax },
         resultCount: total,
         searchMode: 'server',
         page,

@@ -2,10 +2,10 @@
  * 한자 데이터 시딩 CLI 스크립트
  *
  * Usage:
- *   npx tsx scripts/seed-hanja-cli.ts                  # graded (~1,400자)
- *   npx tsx scripts/seed-hanja-cli.ts radicals          # 부수만 (214자)
- *   npx tsx scripts/seed-hanja-cli.ts all               # 전체 (~98,000자)
- *   npx tsx scripts/seed-hanja-cli.ts graded --index     # 시딩 후 인덱스 생성
+ *   npx tsx scripts/seed-hanja-cli.ts                  # all (전체 ~6,193자)
+ *   npx tsx scripts/seed-hanja-cli.ts graded            # 급수 있는 한자만 (~6,158자)
+ *   npx tsx scripts/seed-hanja-cli.ts medical           # 한의학 도메인만 (~174자)
+ *   npx tsx scripts/seed-hanja-cli.ts all --index       # 시딩 후 인덱스 생성
  */
 
 import { createClient } from '@supabase/supabase-js';
@@ -28,7 +28,7 @@ const supabase = createClient(
 
 async function main() {
   const args = process.argv.slice(2);
-  const scope = (['radicals', 'graded', 'all'].includes(args[0]) ? args[0] : 'graded') as 'radicals' | 'graded' | 'all';
+  const scope = (['graded', 'medical', 'all'].includes(args[0]) ? args[0] : 'all') as 'graded' | 'medical' | 'all';
   const shouldIndex = args.includes('--index');
 
   console.log(`\n🔤 한자 시딩 시작 (scope: ${scope})\n`);

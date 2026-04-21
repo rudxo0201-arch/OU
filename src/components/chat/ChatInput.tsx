@@ -24,6 +24,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
   const [rows, setRows] = useState(1);
   const [longTextCollapsed, setLongTextCollapsed] = useState(false);
   const [longTextEditorOpen, setLongTextEditorOpen] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const { addMessage, updateMessage, isStreaming, setStreaming, setLastCreatedNodeId, setLastIntent } = useChatStore();
@@ -42,15 +43,18 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
       const results = data.nodes.map((n: any) => ({
         char: n.domain_data.char,
         nodeId: n.id,
-        hangul_reading: n.domain_data.hangul_reading,
-        readings_ko: n.domain_data.readings?.ko || [],
-        ko_hun: n.domain_data.readings?.ko_hun,
-        definition_en: n.domain_data.definition_en,
-        radical_char: n.domain_data.radical_char,
-        radical_name_ko: n.domain_data.radical_name_ko,
+        sound: n.domain_data.sound,
+        hun: n.domain_data.hun,
+        meaning: n.domain_data.meaning,
+        radical: n.domain_data.radical,
         stroke_count: n.domain_data.stroke_count,
         grade: n.domain_data.grade,
-        composition: n.domain_data.composition,
+        etymology: n.domain_data.etymology,
+        mnemonic: n.domain_data.mnemonic,
+        compounds: n.domain_data.compounds,
+        domain: n.domain_data.domain,
+        char_type: n.domain_data.char_type,
+        pinyin: n.domain_data.pinyin,
       }));
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       results.sort((a: any, b: any) => text.indexOf(a.char) - text.indexOf(b.char));
@@ -175,6 +179,11 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
               nodeInfo = { domain: data.domain, nodeId: data.nodeId, confidence: data.confidence, domain_data: data.domain_data, suggestions: data.suggestions, additionalNodes: data.additionalNodes, viewType: data.viewData?.viewOptions?.[0] };
               setLastIntent(data.viewData?.intent ?? null);
             }
+            if (data.nodeCreated) {
+              nodeInfo = { ...nodeInfo, domain: data.domain, nodeId: data.nodeId, confidence: data.confidence, domain_data: data.domain_data, additionalNodes: data.additionalNodes };
+              updateMessage(assistantId, { nodeCreated: nodeInfo });
+              if (data.nodeId) setLastCreatedNodeId(data.nodeId);
+            }
           } catch { /* skip */ }
         }
       }
@@ -286,17 +295,13 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
 
   useImperativeHandle(ref, () => ({ sendMessage: (text: string, linkedNodeId?: string) => sendWithText(text, linkedNodeId) }), [sendWithText]);
 
-  const handleFile = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    e.target.value = '';
-
+  const processFile = useCallback(async (file: File) => {
     const isImage = file.type.startsWith('image/');
     const isPDF = file.type === 'application/pdf';
 
     if (isImage) {
       const preview = URL.createObjectURL(file);
-      addMessage({ id: `u-${Date.now()}`, role: 'user', content: `[이미지: ${file.name}]`, createdAt: new Date(), imagePreview: preview });
+      addMessage({ id: `u-${Date.now()}`, role: 'user', content: '', createdAt: new Date(), imagePreview: preview });
       const assistantId = `a-${Date.now()}`;
       addMessage({ id: assistantId, role: 'assistant', content: '이미지를 분석하고 있어요...', createdAt: new Date(), streaming: true });
       setStreaming(true);
@@ -307,12 +312,14 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
         const data = await res.json();
         if (data.text) {
           updateMessage(assistantId, { content: data.text, streaming: false, ocrResult: { text: data.text, imageType: data.imageType || 'general' } });
+          setStreaming(false);
+          await sendWithText(`[이미지 내용]\n${data.text}`);
         } else {
           updateMessage(assistantId, { content: '이미지에서 텍스트를 추출하지 못했어요.', streaming: false });
+          setStreaming(false);
         }
-      } catch {
-        updateMessage(assistantId, { content: '이미지 분석에 실패했어요.', streaming: false });
-      } finally {
+      } catch (e) {
+        updateMessage(assistantId, { content: `이미지 분석 실패: ${(e as Error).message}`, streaming: false });
         setStreaming(false);
       }
     } else if (isPDF || file.name.match(/\.(docx?|xlsx?|pptx?|hwp|hwpx|txt|md)$/i)) {
@@ -336,7 +343,14 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
         setStreaming(false);
       }
     }
-  }, [addMessage, updateMessage, setStreaming]);
+  }, [addMessage, updateMessage, setStreaming, sendWithText]);
+
+  const handleFile = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    e.target.value = '';
+    await processFile(file);
+  }, [processFile]);
 
   // ---- YouTube link detection (realtime) ----
   const [ytPreview, setYtPreview] = useState<{ videoId: string; url: string } | null>(null);
@@ -449,14 +463,23 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
 
       {/* Input bar */}
       <div
+        onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+        onDragLeave={() => setDragOver(false)}
+        onDrop={(e) => {
+          e.preventDefault();
+          setDragOver(false);
+          const file = e.dataTransfer.files?.[0];
+          if (file) processFile(file);
+        }}
         style={{
           background: 'var(--ou-bg)',
           borderRadius: 'var(--ou-radius-lg)',
-          boxShadow: 'var(--ou-neu-raised-md)',
+          boxShadow: dragOver ? 'var(--ou-neu-pressed-md)' : 'var(--ou-neu-raised-md)',
           padding: '16px 20px 12px',
           display: 'flex',
           flexDirection: 'column',
           transition: 'all var(--ou-transition)',
+          outline: dragOver ? '2px dashed var(--ou-border-subtle)' : 'none',
         }}
       >
         {longTextCollapsed ? (
@@ -488,6 +511,13 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
             value={input}
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
+            onPaste={(e) => {
+              const file = e.clipboardData.files?.[0];
+              if (file?.type.startsWith('image/')) {
+                e.preventDefault();
+                processFile(file);
+              }
+            }}
             rows={rows}
             placeholder="Just talk..."
             style={{

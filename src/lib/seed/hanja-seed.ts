@@ -4,62 +4,53 @@ import { join } from 'path';
 
 const ADMIN_EMAIL = 'rudxo0201@gmail.com';
 
-type HanjaScope = 'radicals' | 'graded' | 'all';
+type HanjaScope = 'all' | 'graded' | 'medical';
 
-interface HanjaEntry {
-  type: 'hanja';
+export interface HanjaComponent {
   char: string;
-  unicode: string;
-  radical_number: number;
-  radical_char: string;
-  radical_name_ko: string;
-  stroke_count: number;
-  additional_strokes: number;
-  is_radical: boolean;
-  readings: {
-    ko: string[];
-    ko_hun?: string[];
-    cn_pinyin?: string;
-    cn_cantonese?: string;
-    jp_on?: string;
-    jp_kun?: string;
-  };
-  hangul_reading?: string;
-  definition_en?: string;
-  grade?: number;
-  composition?: {
-    type: string;
-    components: string[];
-    explanation: string;
-    mnemonic: string;
-  };
+  role: '뜻' | '음' | '뜻+음';
 }
 
-/** 32MB JSON을 호출 시점에만 로드 (번들에 포함하지 않음) */
+export interface HanjaEntry {
+  type: 'hanja';
+  char: string;
+  hun?: string;
+  meaning?: string;
+  sound?: string;
+  pinyin?: string;
+  radical?: string;
+  etymology?: string;
+  mnemonic?: string;
+  compounds?: string;
+  components?: HanjaComponent[];
+  importance?: string;
+  domain?: string;
+  char_type?: string;
+  grade?: string;
+  stroke_count?: number | null;
+}
+
 function loadHanjaData(): HanjaEntry[] {
-  const filePath = join(process.cwd(), 'scripts/data/hanja_enriched.json');
+  const filePath = join(process.cwd(), 'scripts/data/hanja_merged.json');
   const raw = readFileSync(filePath, 'utf-8');
   return JSON.parse(raw);
 }
 
 function filterByScope(entries: HanjaEntry[], scope: HanjaScope): HanjaEntry[] {
   switch (scope) {
-    case 'radicals':
-      return entries.filter(e => e.is_radical);
     case 'graded':
-      return entries.filter(e => e.grade != null);
+      return entries.filter(e => e.grade && e.grade !== '');
+    case 'medical':
+      return entries.filter(e => e.domain && e.domain.includes('한의학'));
     case 'all':
+    default:
       return entries;
   }
 }
 
-/**
- * 한자 DataNode 시드
- * @param scope 'radicals' = 214 부수, 'graded' = 급수 있는 한자 ~1,400, 'all' = 전체 ~98,000
- */
 export async function seedHanjaData(
   supabaseAdmin: SupabaseClient,
-  scope: HanjaScope = 'graded',
+  scope: HanjaScope = 'all',
 ): Promise<{ created: number; skipped: number; adminUserId: string }> {
   // 1. 관리자 유저 조회
   const { data: adminUsers } = await supabaseAdmin
@@ -81,12 +72,12 @@ export async function seedHanjaData(
   }
 
   // 2. 데이터 로드 + scope 필터
-  console.log(`[HanjaSeed] Loading hanja_enriched.json...`);
+  console.log(`[HanjaSeed] Loading hanja_merged.json...`);
   const allEntries = loadHanjaData();
   const entries = filterByScope(allEntries, scope);
   console.log(`[HanjaSeed] Scope: ${scope}, filtered: ${entries.length} / ${allEntries.length}`);
 
-  // 3. 기존 노드 중복 체크 (char 기준, 페이지네이션)
+  // 3. 기존 노드 중복 체크 (char 기준)
   const existingChars = new Set<string>();
   let from = 0;
   const FETCH_SIZE = 1000;
@@ -151,7 +142,6 @@ export async function seedHanjaData(
 
     created += batch.length;
 
-    // 진행률 로그 (10배치마다)
     if (Math.floor(i / BATCH_SIZE) % 10 === 0) {
       console.log(`[HanjaSeed] Progress: ${created}/${newEntries.length}`);
     }
@@ -166,28 +156,32 @@ export async function seedHanjaData(
   };
 }
 
-/** 한자 엔트리를 사람이 읽을 수 있는 텍스트로 변환 */
 function buildRawText(entry: HanjaEntry): string {
   const parts: string[] = [];
 
-  const readings = entry.readings.ko.length > 0
-    ? entry.readings.ko.join(', ')
-    : entry.hangul_reading ?? '(미상)';
+  const reading = entry.sound || '';
+  const hun = entry.hun || '';
 
-  parts.push(`${entry.char}은(는) '${readings}'(으)로 읽는 한자이다.`);
-
-  if (entry.definition_en) {
-    parts.push(`뜻: ${entry.definition_en}.`);
+  if (reading) {
+    parts.push(`${entry.char}은(는) '${reading}'(으)로 읽는 한자이다.`);
   }
-
-  parts.push(`부수: ${entry.radical_char}(${entry.radical_name_ko}), 총 ${entry.stroke_count}획.`);
-
+  if (hun) {
+    parts.push(`훈: ${hun}.`);
+  }
+  if (entry.meaning) {
+    parts.push(`뜻: ${entry.meaning}.`);
+  }
+  if (entry.radical) {
+    parts.push(`부수: ${entry.radical}.`);
+  }
+  if (entry.stroke_count) {
+    parts.push(`총 ${entry.stroke_count}획.`);
+  }
   if (entry.grade) {
-    parts.push(`한자능력검정 ${entry.grade}급.`);
+    parts.push(`한자능력검정 ${entry.grade}.`);
   }
-
-  if (entry.composition?.explanation) {
-    parts.push(entry.composition.explanation);
+  if (entry.etymology) {
+    parts.push(entry.etymology);
   }
 
   return parts.join(' ');

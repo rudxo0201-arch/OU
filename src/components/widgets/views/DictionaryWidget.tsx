@@ -48,13 +48,12 @@ export function DictionaryWidget() {
     grade?: string;
     strokeMin?: string;
     strokeMax?: string;
-    compType?: string;
+    char_type?: string;
     page?: number;
   }) => {
-    // 필터 변경 여부 판단 (page 제외)
     const filterKey = JSON.stringify({
       q: params.query, radical: params.radical, grade: params.grade,
-      strokeMin: params.strokeMin, strokeMax: params.strokeMax, compType: params.compType,
+      strokeMin: params.strokeMin, strokeMax: params.strokeMax, char_type: params.char_type,
     });
     const isPageOnly = filterKey === prevFilters.current;
     prevFilters.current = filterKey;
@@ -65,7 +64,7 @@ export function DictionaryWidget() {
       grade: params.grade,
       stroke_min: params.strokeMin,
       stroke_max: params.strokeMax,
-      comp_type: params.compType,
+      char_type: params.char_type,
       page: params.page,
     }, isPageOnly && (params.page ?? 1) > 1);
   }, [fetchHanja]);

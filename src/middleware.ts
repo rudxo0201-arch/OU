@@ -4,6 +4,15 @@ import { NextResponse, type NextRequest } from 'next/server';
 const PUBLIC_ROUTES = ['/', '/login', '/signup', '/forgot-password', '/auth/confirm', '/auth/callback', '/ds', '/invite'];
 const GUEST_ALLOWED: string[] = [];
 const ADMIN_ROUTES = ['/admin'];
+// 관리자 전용 private 라우트 (일반 회원 접근 불가)
+const ADMIN_ONLY_ROUTES = ['/orbit', '/youtube', '/accuracy', '/view-studio', '/view'];
+
+function isAdminEmail(email: string): boolean {
+  const adminEmails = process.env.ADMIN_EMAILS?.split(',').map(e => e.trim()).filter(Boolean) ?? [];
+  if (adminEmails.includes(email)) return true;
+  const adminDomain = process.env.ADMIN_EMAIL_DOMAIN || 'ouuniverse.com';
+  return email.endsWith(`@${adminDomain}`);
+}
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request });
@@ -81,11 +90,17 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(redirectUrl);
   }
 
+  // 관리자 전용 라우트: 일반 회원 → /home
+  const isAdminOnly = ADMIN_ONLY_ROUTES.some(r => path === r || path.startsWith(r + '/'));
+  if (isAdminOnly && !isAdminEmail(user.email ?? '')) {
+    return NextResponse.redirect(new URL('/home', request.url));
+  }
+
   return response;
 }
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|manifest\\.json|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 };

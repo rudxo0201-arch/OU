@@ -34,7 +34,7 @@ export async function extractAll(
       [{ role: 'user', content: text }],
       {
         system: systemPrompt,
-        maxTokens: 1024,
+        maxTokens: 1536,
         operation: 'extract_all',
       },
     );

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface ScheduleNode {
   id: string;
@@ -16,6 +17,7 @@ interface ScheduleNode {
 export function TodayScheduleWidget() {
   const [events, setEvents] = useState<ScheduleNode[]>([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const today = new Date().toISOString().slice(0, 10);
@@ -54,9 +56,17 @@ export function TodayScheduleWidget() {
         {loading ? (
           <div style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>불러오는 중...</div>
         ) : events.length === 0 ? (
-          <div style={{ fontSize: 11, color: 'var(--ou-text-muted)', paddingTop: 4 }}>
-            오늘 일정이 없어요
-          </div>
+          <button
+            onClick={() => router.push('/orb')}
+            style={{
+              background: 'none', border: 'none', cursor: 'pointer',
+              textAlign: 'left', padding: 0,
+              fontSize: 11, color: 'var(--ou-text-muted)',
+              lineHeight: 1.6,
+            }}
+          >
+            Orb에서 일정을 말해보세요 →
+          </button>
         ) : events.map(e => (
           <div key={e.id} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             {/* 시간 박스 */}

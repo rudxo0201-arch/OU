@@ -1,7 +1,9 @@
 'use client';
 
 import { useRef, useEffect, useState, Component, type ReactNode } from 'react';
-import { useChatStore, type ChatMessage } from '@/stores/chatStore';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { useChatStore, type ChatMessage, type Suggestion, type SuggestionItem } from '@/stores/chatStore';
 import { ChatInput, type ChatInputHandle } from './ChatInput';
 import { NeuButton, NeuBadge, NeuModal } from '@/components/ds';
 import { AddToHomeButton } from './AddToHomeButton';
@@ -201,9 +203,31 @@ function MessageBubble({
         {/* Content */}
         {message.isStatus
           ? <span style={{ color: 'var(--ou-text-muted)', fontStyle: 'italic', fontSize: 14 }}>{message.content}</span>
-          : isLong && !expanded
-            ? <span>{stripLLMMeta(message.content.slice(0, BUBBLE_COLLAPSE_THRESHOLD))}…</span>
-            : stripLLMMeta(message.content)
+          : isUser
+            ? (isLong && !expanded
+                ? <span>{stripLLMMeta(message.content.slice(0, BUBBLE_COLLAPSE_THRESHOLD))}…</span>
+                : stripLLMMeta(message.content))
+            : <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                components={{
+                  p: ({ children }) => <span style={{ display: 'block', marginBottom: '0.4em' }}>{children}</span>,
+                  strong: ({ children }) => <strong style={{ fontWeight: 600 }}>{children}</strong>,
+                  em: ({ children }) => <em style={{ fontStyle: 'italic', color: 'var(--ou-text-secondary)' }}>{children}</em>,
+                  ul: ({ children }) => <ul style={{ paddingLeft: 16, margin: '4px 0' }}>{children}</ul>,
+                  ol: ({ children }) => <ol style={{ paddingLeft: 16, margin: '4px 0' }}>{children}</ol>,
+                  li: ({ children }) => <li style={{ marginBottom: 2, fontSize: 14 }}>{children}</li>,
+                  table: ({ children }) => <table style={{ width: '100%', borderCollapse: 'collapse', margin: '8px 0', fontSize: 13 }}>{children}</table>,
+                  th: ({ children }) => <th style={{ textAlign: 'left', padding: '4px 8px', borderBottom: '1px solid var(--ou-border-faint)', fontWeight: 600, fontSize: 12, color: 'var(--ou-text-muted)' }}>{children}</th>,
+                  td: ({ children }) => <td style={{ padding: '4px 8px', borderBottom: '1px solid var(--ou-border-faint)', fontSize: 13 }}>{children}</td>,
+                  a: ({ children }) => <span>{children}</span>,
+                  img: () => null,
+                  code: ({ children }) => <code style={{ fontFamily: 'monospace', fontSize: 13, background: 'var(--ou-surface-subtle)', padding: '1px 4px', borderRadius: 3 }}>{children}</code>,
+                }}
+              >
+                {isLong && !expanded
+                  ? stripLLMMeta(message.content.slice(0, BUBBLE_COLLAPSE_THRESHOLD)) + '…'
+                  : stripLLMMeta(message.content)}
+              </ReactMarkdown>
         }
         {message.streaming && <StreamingDots />}
 
@@ -228,8 +252,26 @@ function MessageBubble({
           title={`전체 내용 · ${message.content.length.toLocaleString()}자`}
           maxWidth={500}
         >
-          <div style={{ whiteSpace: 'pre-wrap', fontSize: 13, lineHeight: 1.7, color: 'var(--ou-text-body)', maxHeight: '50vh', overflow: 'auto', padding: '12px 16px', borderRadius: 'var(--ou-radius-sm)', background: 'var(--ou-surface-faint)', border: '1px solid var(--ou-border-faint)' }}>
-            {stripLLMMeta(message.content)}
+          <div style={{ fontSize: 13, lineHeight: 1.7, color: 'var(--ou-text-body)', maxHeight: '50vh', overflow: 'auto', padding: '12px 16px', borderRadius: 'var(--ou-radius-sm)', background: 'var(--ou-surface-faint)', border: '1px solid var(--ou-border-faint)' }}>
+            {isUser
+              ? <span style={{ whiteSpace: 'pre-wrap' }}>{stripLLMMeta(message.content)}</span>
+              : <ReactMarkdown
+                  components={{
+                    p: ({ children }) => <span style={{ display: 'block', marginBottom: '0.5em' }}>{children}</span>,
+                    strong: ({ children }) => <strong style={{ fontWeight: 600 }}>{children}</strong>,
+                    ul: ({ children }) => <ul style={{ paddingLeft: 16, margin: '4px 0' }}>{children}</ul>,
+                    ol: ({ children }) => <ol style={{ paddingLeft: 16, margin: '4px 0' }}>{children}</ol>,
+                    li: ({ children }) => <li style={{ marginBottom: 2 }}>{children}</li>,
+                    table: ({ children }) => <table style={{ width: '100%', borderCollapse: 'collapse', margin: '8px 0', fontSize: 13 }}>{children}</table>,
+                    th: ({ children }) => <th style={{ textAlign: 'left', padding: '4px 8px', borderBottom: '1px solid var(--ou-border-faint)', fontWeight: 600, fontSize: 12 }}>{children}</th>,
+                    td: ({ children }) => <td style={{ padding: '4px 8px', borderBottom: '1px solid var(--ou-border-faint)' }}>{children}</td>,
+                    a: ({ children }) => <span>{children}</span>,
+                    img: () => null,
+                  }}
+                >
+                  {stripLLMMeta(message.content)}
+                </ReactMarkdown>
+            }
           </div>
         </NeuModal>
 
@@ -387,7 +429,7 @@ function SuggestionsUI({
   linkedNodeId,
   onSelect,
 }: {
-  suggestions: string[];
+  suggestions: Suggestion[];
   linkedNodeId?: string;
   onSelect?: (text: string, linkedNodeId?: string) => void;
 }) {
@@ -396,40 +438,105 @@ function SuggestionsUI({
   const [customSent, setCustomSent] = useState(false);
 
   const handleSelect = (text: string) => {
-    if (selected) return;
+    if (selected || customSent) return;
     setSelected(text);
     onSelect?.(text, linkedNodeId);
   };
 
   const handleCustomSend = () => {
-    if (!customInput.trim() || customSent) return;
+    if (!customInput.trim() || customSent || selected) return;
     setCustomSent(true);
     onSelect?.(customInput.trim(), linkedNodeId);
     setCustomInput('');
   };
 
+  const isDone = !!selected || customSent;
+
+  // 새 포맷: {question, options}
+  const firstItem = suggestions[0];
+  const isStructured = firstItem && typeof firstItem === 'object' && 'question' in firstItem;
+
+  if (isStructured) {
+    const item = firstItem as SuggestionItem;
+    return (
+      <div style={{ marginTop: 14, display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <span style={{ fontSize: 13, color: 'var(--ou-text-muted)', lineHeight: 1.5 }}>
+          {item.question}
+        </span>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+          {item.options.map((opt, i) => (
+            <NeuButton
+              key={i}
+              size="sm"
+              variant="ghost"
+              onClick={() => handleSelect(opt)}
+              disabled={isDone && selected !== opt}
+              style={{
+                fontSize: 13,
+                border: selected === opt ? '1.5px solid var(--ou-text-heading)' : '1px solid var(--ou-border-subtle)',
+                background: selected === opt ? 'var(--ou-surface-subtle)' : 'transparent',
+                opacity: isDone && selected !== opt ? 0.35 : 1,
+              }}
+            >
+              {opt}
+            </NeuButton>
+          ))}
+        </div>
+        {!isDone && (
+          <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+            <input
+              value={customInput}
+              onChange={(e) => setCustomInput(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') handleCustomSend(); }}
+              placeholder="직접 입력..."
+              style={{
+                flex: 1,
+                padding: '7px 12px',
+                borderRadius: 20,
+                border: 'none',
+                background: 'var(--ou-bg)',
+                boxShadow: 'var(--ou-neu-pressed-sm)',
+                fontSize: 13,
+                color: 'var(--ou-text-body)',
+                outline: 'none',
+                fontFamily: 'inherit',
+              }}
+            />
+            {customInput.trim() && (
+              <NeuButton variant="ghost" size="sm" onClick={handleCustomSend} style={{ padding: '5px 10px' }}>
+                →
+              </NeuButton>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // 기존 포맷: string[]
+  const strSuggestions = suggestions as string[];
   return (
     <div style={{ marginTop: 14, display: 'flex', flexDirection: 'column', gap: 8 }}>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-        {suggestions.map((s, i) => (
+        {strSuggestions.map((s, i) => (
           <NeuButton
             key={i}
             size="sm"
             variant="ghost"
             onClick={() => handleSelect(s)}
-            disabled={!!selected && selected !== s}
+            disabled={isDone && selected !== s}
             style={{
               fontSize: 13,
               border: selected === s ? '1.5px solid var(--ou-text-heading)' : '1px solid var(--ou-border-subtle)',
               background: selected === s ? 'var(--ou-surface-subtle)' : 'transparent',
-              opacity: selected && selected !== s ? 0.35 : 1,
+              opacity: isDone && selected !== s ? 0.35 : 1,
             }}
           >
             {s}
           </NeuButton>
         ))}
       </div>
-      {!selected && !customSent && (
+      {!isDone && (
         <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
           <input
             value={customInput}
@@ -493,15 +600,14 @@ function HanjaInlineCards({
               if (next && onNodeSelect) {
                 onNodeSelect({
                   nodeId: next.nodeId,
-                  title: `${next.char}(${next.readings_ko[0] || next.hangul_reading || ''})`,
+                  title: `${next.char}(${next.sound || ''})`,
                   domain: 'knowledge',
                   data: {
                     type: 'hanja', char: next.char,
-                    readings_ko: next.readings_ko, ko_hun: next.ko_hun,
-                    definition_en: next.definition_en,
-                    radical: `${next.radical_char}(${next.radical_name_ko})`,
+                    sound: next.sound, hun: next.hun, meaning: next.meaning,
+                    radical: next.radical,
                     stroke_count: next.stroke_count, grade: next.grade,
-                    composition: next.composition,
+                    char_type: next.char_type,
                   },
                 });
               }
@@ -523,9 +629,9 @@ function HanjaInlineCards({
           >
             <span style={{ fontSize: 24, fontWeight: 300, color: 'var(--ou-text-strong)', lineHeight: 1.2 }}>{h.char}</span>
             <span style={{ fontSize: 10, color: 'var(--ou-text-secondary)', lineHeight: 1.2 }}>
-              {h.readings_ko[0] || h.hangul_reading || ''}
+              {h.sound || ''}
             </span>
-            {h.grade && <span style={{ fontSize: 9, color: 'var(--ou-text-muted)' }}>{h.grade}급</span>}
+            {h.grade && <span style={{ fontSize: 9, color: 'var(--ou-text-muted)' }}>{h.grade}</span>}
           </button>
         ))}
         {hasMore && !expandAll && (
@@ -558,9 +664,7 @@ function HanjaInlineCards({
 }
 
 function HanjaDetail({ hanja, onClose }: { hanja: HanjaResult; onClose: () => void }) {
-  const reading = hanja.readings_ko[0] || hanja.hangul_reading || '';
-  const hun = hanja.ko_hun?.[0] || '';
-  const label = hun ? `${hun} ${reading}` : reading;
+  const label = hanja.hun && hanja.sound ? `${hanja.hun} ${hanja.sound}` : (hanja.hun || hanja.sound || '');
 
   return (
     <div style={{ marginTop: 8, padding: '10px 14px', borderRadius: 'var(--ou-radius-sm)', background: 'var(--ou-surface-faint)', border: '1px solid var(--ou-border-subtle)', animation: 'ou-fade-in 0.2s ease' }}>
@@ -570,22 +674,22 @@ function HanjaDetail({ hanja, onClose }: { hanja: HanjaResult; onClose: () => vo
           <div>
             <div style={{ fontSize: 14, color: 'var(--ou-text-strong)' }}>{label}</div>
             <div style={{ fontSize: 11, color: 'var(--ou-text-secondary)', marginTop: 2 }}>
-              부수 {hanja.radical_char}({hanja.radical_name_ko}) · {hanja.stroke_count}획
-              {hanja.grade ? ` · ${hanja.grade}급` : ''}
+              {hanja.radical ? `부수 ${hanja.radical}` : ''}{hanja.stroke_count ? ` · ${hanja.stroke_count}획` : ''}
+              {hanja.grade ? ` · ${hanja.grade}` : ''}
             </div>
           </div>
         </div>
         <NeuButton variant="ghost" size="sm" onClick={onClose} style={{ padding: '4px 8px', minWidth: 0 }}>×</NeuButton>
       </div>
-      {hanja.definition_en && (
+      {hanja.meaning && (
         <div style={{ marginTop: 10, fontSize: 12, color: 'var(--ou-text-secondary)', lineHeight: 1.6 }}>
-          {hanja.definition_en}
+          {hanja.meaning}
         </div>
       )}
-      {hanja.composition?.explanation && (
+      {hanja.etymology && (
         <div style={{ marginTop: 10, padding: '8px 12px', borderRadius: 'var(--ou-radius-sm)', background: 'var(--ou-surface-subtle)' }}>
-          <span style={{ color: 'var(--ou-text-disabled)', fontSize: 10, marginRight: 6 }}>{hanja.composition.type}</span>
-          <span style={{ fontSize: 12, color: 'var(--ou-text-secondary)', lineHeight: 1.6 }}>{hanja.composition.explanation}</span>
+          {hanja.char_type && <span style={{ color: 'var(--ou-text-disabled)', fontSize: 10, marginRight: 6 }}>{hanja.char_type}</span>}
+          <span style={{ fontSize: 12, color: 'var(--ou-text-secondary)', lineHeight: 1.6 }}>{hanja.etymology}</span>
         </div>
       )}
     </div>

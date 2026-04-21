@@ -10,7 +10,7 @@ const HIDE_TOPNAV_PATHS = ['/universe'];
 
 export default function PrivateLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const [universeActive, setUniverseActive] = useState(false);
 
   useEffect(() => {
@@ -30,7 +30,7 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
 
   return (
     <>
-      {showTopNav && <TopNavBar userInitial={userInitial} />}
+      {showTopNav && <TopNavBar userInitial={userInitial} isAdmin={isAdmin} />}
       {children}
     </>
   );

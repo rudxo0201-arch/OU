@@ -128,7 +128,7 @@ export async function extractTriples(nodeId: string, domain = 'knowledge') {
     .from('sentences')
     .select('id, text')
     .eq('node_id', nodeId)
-    .limit(20);
+    .limit(50);
 
   if (!sentences?.length) return;
 
@@ -157,7 +157,7 @@ export async function extractTriples(nodeId: string, domain = 'knowledge') {
       [{ role: 'user', content: text }],
       {
         model: 'claude-haiku-4-5-latest',
-        maxTokens: 1024,
+        maxTokens: 2048,
         system: buildTriplePrompt(domain, domainData),
         operation: 'extract_triple',
         nodeId,

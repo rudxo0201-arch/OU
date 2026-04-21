@@ -288,12 +288,20 @@ const VIEW_DOMAIN_MAP: Record<string, string> = {
   idea: 'idea',
 };
 
+// data_input 시 좌측 패널에 표시하지 않을 뷰 타입 (인라인 뷰로 충분)
+const DATA_INPUT_BLOCKED_VIEWS = ['table'];
+
 function RequestedViewPanel() {
-  const { requestedViews } = useChatStore();
+  const { requestedViews, lastIntent } = useChatStore();
   const [nodesByView, setNodesByView] = useState<Record<number, any[]>>({});
 
+  // data_input intent 시 raw 테이블 뷰 등 차단
+  const visibleViews = lastIntent === 'data_input'
+    ? requestedViews.filter(rv => !DATA_INPUT_BLOCKED_VIEWS.includes(rv.viewType))
+    : requestedViews;
+
   useEffect(() => {
-    requestedViews.forEach((rv, idx) => {
+    visibleViews.forEach((rv, idx) => {
       if (rv.cards || nodesByView[idx] !== undefined) return;
       const domain = VIEW_DOMAIN_MAP[rv.viewType];
       if (domain === undefined) return;
@@ -310,11 +318,11 @@ function RequestedViewPanel() {
         .catch(() => setNodesByView(prev => ({ ...prev, [idx]: [] })));
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [requestedViews]);
+  }, [visibleViews]);
 
   return (
     <>
-      {requestedViews.map((rv, idx) => {
+      {visibleViews.map((rv, idx) => {
         const ViewComponent = VIEW_REGISTRY[rv.viewType];
         if (!ViewComponent) return null;
         const viewLabel = VIEW_LABELS[rv.viewType] || rv.viewType;

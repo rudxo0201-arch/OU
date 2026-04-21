@@ -35,12 +35,17 @@ function parseCards(nodes: ViewProps['nodes']): Flashcard[] {
     // 한자 데이터
     if (n.domain_data?.type === 'hanja') {
       const d = n.domain_data;
-      const reading = d.readings?.ko?.[0] || d.hangul_reading || '';
-      const hun = d.readings?.ko_hun?.[0] || '';
+      const parts = [
+        d.hun && d.sound ? `${d.hun} ${d.sound}` : (d.hun || d.sound || ''),
+        d.meaning || '',
+        d.radical ? `부수: ${d.radical}` : '',
+        d.stroke_count ? `${d.stroke_count}획` : '',
+        d.grade || '',
+      ].filter(Boolean);
       return {
         id: n.id,
         front: d.char,
-        back: `${hun ? hun + ' ' : ''}${reading}\n${d.definition_en || ''}\n부수: ${d.radical_char}(${d.radical_name_ko}) · ${d.stroke_count}획${d.grade ? ` · ${d.grade}급` : ''}`,
+        back: parts.join(' · '),
       };
     }
     return {

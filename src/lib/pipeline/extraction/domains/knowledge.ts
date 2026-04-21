@@ -5,6 +5,7 @@ export const config: DomainExtractionConfig = {
   schema: {
     title: '핵심 주제 또는 개념명',
     content: '핵심 내용 요약 (1~3문장)',
+    key_points: '주요 포인트 배열 (문자열 3~7개). 입력이 3문장 이상이고 구조화된 설명이 있을 때만 추출. 없으면 생략.',
     topic: '상위 분야/주제 (예: 경제학, 한의학, 역사)',
     subtype: 'academic | general | professional (학업 맥락이면 academic)',
     source: '출처 또는 학습 경로 (있으면)',

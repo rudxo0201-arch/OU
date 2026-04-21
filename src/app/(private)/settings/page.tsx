@@ -616,7 +616,7 @@ function TutorialSection() {
   const router = useRouter();
 
   const handleRestart = () => {
-    router.push('/my?tutorial=replay');
+    router.push('/home?tutorial=replay');
   };
 
   return (

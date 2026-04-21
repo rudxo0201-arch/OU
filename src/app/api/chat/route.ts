@@ -346,11 +346,23 @@ export async function POST(req: NextRequest) {
                 onChunkBuf = '';
               }
 
-              // 최종 텍스트 보정: 클라이언트가 누적한 토큰과 정확히 일치시킴
+              // 최종 텍스트 보정: 클라이언트가 누락한 토큰과 정확히 일치시킴
               controller.enqueue(encoder.encode(`data: ${JSON.stringify({ textFinal: cleanText })}\n\n`));
 
-              // Layer 2: 비동기 DataNode 저장 (domainHint 전달 → classifyDomain 스킵)
-              let saveError = false;
+              // viewData: 뷰 선택지 (회원이 선택 후 View 패널에 렌더링)
+              const viewData = (viewOptions && viewOptions.length > 0) ? {
+                viewOptions,
+                filter: viewFilter,
+                cards: viewCards,
+                intent,
+              } : undefined;
+
+              // done 즉시 전송 — 텍스트 완료 알림 (인라인 뷰는 저장 후 별도 전송)
+              controller.enqueue(encoder.encode(
+                `data: ${JSON.stringify({ done: true, fullText: cleanText, provider, suggestions: llmSuggestions, viewData, domain: domainHint })}\n\n`
+              ));
+
+              // Layer 2: 저장 완료 후 nodeId 전송 → 인라인 뷰 렌더링
               try {
                 const result = await saveMessageAsync({
                   userId: user?.id,
@@ -361,30 +373,13 @@ export async function POST(req: NextRequest) {
                   segments,
                 });
                 if (result?.domain) {
-                  savedData = {
-                    domain: result.domain,
-                    nodeId: result.node?.id,
-                    confidence: result.confidence,
-                    domain_data: result.node?.domain_data,
-                    additionalNodes: result.additionalNodes,
-                  };
+                  controller.enqueue(encoder.encode(
+                    `data: ${JSON.stringify({ nodeCreated: true, domain: result.domain, nodeId: result.node?.id, confidence: result.confidence, domain_data: result.node?.domain_data, additionalNodes: result.additionalNodes })}\n\n`
+                  ));
                 }
               } catch (err) {
                 console.error('[Layer2] saveMessageAsync failed:', err);
-                saveError = true;
               }
-
-              // viewData: 뷰 선택지 (회원이 선택 후 View 패널에 렌더링)
-              const viewData = (viewOptions && viewOptions.length > 0) ? {
-                viewOptions,
-                filter: viewFilter,
-                cards: viewCards,
-                intent,
-              } : undefined;
-
-              controller.enqueue(encoder.encode(
-                `data: ${JSON.stringify({ done: true, fullText: cleanText, provider, suggestions: llmSuggestions, viewData, ...savedData, ...(saveError ? { saveError: true } : {}) })}\n\n`
-              ));
               controller.close();
             },
             onError: (error) => {

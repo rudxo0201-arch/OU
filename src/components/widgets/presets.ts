@@ -6,10 +6,10 @@ export const TUTORIAL_INITIAL_LAYOUT: WidgetInstance[] = [
 ];
 
 /**
- * 기본 레이아웃 — 디자인 시안 기반 (10×6 그리드)
+ * 기본 레이아웃 — MVP 4도메인 (10×6 그리드)
  *
- * 페이지 1: ORB(3×3) + TODAY(5×3) + STREAK(2×3)
- *           오늘일정(5×3) + API토큰(5×3)
+ * 페이지 1: ORB(3×3) + CLOCK(5×3) + STREAK(2×3)
+ *           오늘일정(5×3) + 할일(5×3)
  */
 export const DEFAULT_LAYOUT: WidgetInstance[] = [
   // Row 0-2
@@ -18,16 +18,17 @@ export const DEFAULT_LAYOUT: WidgetInstance[] = [
   { id: 'streak',         type: 'streak',         x: 8, y: 0, w: 2, h: 3 },
   // Row 3-5
   { id: 'today-schedule', type: 'today-schedule', x: 0, y: 3, w: 5, h: 3 },
-  { id: 'api-token',      type: 'api-token',      x: 5, y: 3, w: 5, h: 3 },
+  { id: 'today-tasks',    type: 'today-tasks',    x: 5, y: 3, w: 5, h: 3 },
 ];
 
 /**
- * 기본 2페이지: 최근기억 + 히트맵 + 요약 (10×6 기준)
+ * 기본 2페이지: 습관 + 아이디어 + 히트맵 (10×6 기준)
  */
 export const DEFAULT_PAGE2_LAYOUT: WidgetInstance[] = [
-  { id: 'recent-nodes',  type: 'recent-nodes',  x: 0, y: 0, w: 5, h: 4 },
-  { id: 'chat-heatmap',  type: 'chat-heatmap',  x: 5, y: 0, w: 5, h: 2 },
-  { id: 'today-summary', type: 'today-summary', x: 5, y: 2, w: 5, h: 2 },
+  { id: 'habit-log',     type: 'habit-log',     x: 0, y: 0, w: 5, h: 3 },
+  { id: 'idea-notes',    type: 'idea-notes',    x: 5, y: 0, w: 5, h: 3 },
+  { id: 'chat-heatmap',  type: 'chat-heatmap',  x: 0, y: 3, w: 5, h: 2 },
+  { id: 'today-summary', type: 'today-summary', x: 5, y: 3, w: 5, h: 2 },
 ];
 
 /** 관리자 전용 레이아웃 (10×6) */

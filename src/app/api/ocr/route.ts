@@ -45,19 +45,40 @@ export async function POST(req: NextRequest) {
 
     const { GoogleGenerativeAI } = await import('@google/generative-ai');
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
-    const result = await model.generateContent([
-      '이 이미지의 모든 텍스트를 추출해주세요. 표 구조가 있다면 구조를 유지해주세요. 줄바꿈을 활용해 가독성 있게 정리해주세요.',
-      { inlineData: { data: base64, mimeType: file.type } },
-    ]);
+    const PROMPT = `이 이미지에서 텍스트와 내용을 모두 추출해주세요.
+- 시간표/달력: 날짜, 시간, 과목/일정명을 표 형식으로
+- 영수증: 항목, 금액, 합계를 목록으로
+- 일반 문서: 단락 구조 유지
+- 표가 있으면 마크다운 테이블로 변환
+- 한국어, 영어 모두 인식
+- 텍스트가 없는 사진/일러스트라면 이미지에 보이는 것을 간략히 설명`;
 
-    const text = result.response.text();
+    // gemini-2.0-flash → gemini-1.5-flash → gemini-1.5-pro 순서로 시도
+    let text = '';
+    for (const modelName of ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-pro']) {
+      try {
+        const model = genAI.getGenerativeModel({ model: modelName });
+        const result = await model.generateContent([
+          PROMPT,
+          { inlineData: { data: base64, mimeType: file.type } },
+        ]);
+        text = result.response.text().trim();
+        if (text) break;
+      } catch (modelErr) {
+        console.warn(`[OCR] ${modelName} failed:`, (modelErr as Error).message);
+      }
+    }
+
+    if (!text) {
+      return NextResponse.json({ error: '이미지에서 텍스트를 인식하지 못했어요.' }, { status: 422 });
+    }
+
     const imageType = detectImageType(text);
-
     return NextResponse.json({ text, imageType });
   } catch (e) {
-    console.error('[OCR] Gemini Vision failed:', e);
-    return NextResponse.json({ error: 'OCR failed' }, { status: 500 });
+    const msg = (e as Error).message || 'OCR failed';
+    console.error('[OCR] failed:', msg);
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
