@@ -1,144 +1,182 @@
 'use client';
 
+import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Suspense, useState, useEffect } from 'react';
+import { CSSProperties, useState } from 'react';
+import { GlassAvatar } from '@/components/ds';
+import { useAuthStore } from '@/stores/authStore';
+import { createClient } from '@/lib/supabase/client';
+import { useEffect } from 'react';
 
-const NAV_ITEMS = [
-  { label: 'Universe', href: '/universe', adminOnly: false },
-  { label: 'Orbit', href: '/orbit', adminOnly: true },
-  { label: 'Orb Studio', href: '/orb-studio', adminOnly: true },
+interface NavItem {
+  label: string;
+  href: string;
+}
+
+const NAV_ITEMS: NavItem[] = [
+  { label: 'Universe', href: '/universe' },
+  { label: 'Orbit', href: '/orbit' },
 ];
 
-function getTimeLabel() {
-  const now = new Date();
-  const h = String(now.getHours()).padStart(2, '0');
-  const m = String(now.getMinutes()).padStart(2, '0');
-  return `${h}:${m}`;
-}
-
-interface TopNavBarProps {
-  userInitial?: string;
-  isAdmin?: boolean;
-}
-
-function TopNavBarInner({ userInitial, isAdmin }: TopNavBarProps) {
+export function TopNavBar() {
   const pathname = usePathname();
   const router = useRouter();
-  const [timeLabel, setTimeLabel] = useState('');
+  const { user } = useAuthStore();
+  const [avatarHovered, setAvatarHovered] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
 
-  useEffect(() => {
-    setTimeLabel(getTimeLabel());
-    const tick = () => setTimeLabel(getTimeLabel());
-    const id = setInterval(tick, 60000);
-    return () => clearInterval(id);
-  }, []);
-
-  function isActive(item: typeof NAV_ITEMS[number]) {
-    return pathname === item.href;
+  async function handleSignOut() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push('/');
   }
 
-  function getHref(item: typeof NAV_ITEMS[number]) {
-    return item.href;
-  }
+  const navStyle: CSSProperties = {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 200,
+    height: 56,
+    display: 'flex',
+    alignItems: 'center',
+    padding: '0 24px',
+    gap: 'var(--ou-space-4)',
+    background: 'rgba(11,11,17,0.75)',
+    backdropFilter: 'blur(24px)',
+    WebkitBackdropFilter: 'blur(24px)',
+    borderBottom: '1px solid var(--ou-glass-border)',
+  };
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        height: 52,
-        zIndex: 50,
-        background: 'var(--ou-bg)',
-        borderBottom: '1px solid var(--ou-border-faint)',
-        display: 'flex',
-        alignItems: 'center',
-        padding: '0 40px',
-        gap: 24,
-      }}
-    >
-      {/* OU 로고 → /home */}
-      <button
-        onClick={() => router.push('/home')}
-        style={{
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
-          padding: '4px 0',
-          display: 'flex',
-          alignItems: 'center',
-          flexShrink: 0,
-          width: 36,
-        }}
-      >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/logo-ou.svg" alt="OU" style={{ width: 36, height: 'auto', opacity: pathname === '/home' ? 1 : 0.5 }} />
-      </button>
+    <nav style={navStyle}>
+      {/* 로고 */}
+      <Link href="/home" style={{ marginRight: 8, display: 'flex', alignItems: 'center' }}>
+        <span style={{
+          fontFamily: 'var(--ou-font-logo)',
+          fontSize: 16,
+          fontWeight: 700,
+          color: 'var(--ou-text-heading)',
+          letterSpacing: '-0.02em',
+          textShadow: 'var(--ou-accent-glow)',
+        }}>
+          OU
+        </span>
+      </Link>
 
-      {/* 탭 네비게이션 */}
-      <nav style={{ display: 'flex', alignItems: 'center', gap: 4, flex: 1 }}>
-        {NAV_ITEMS.filter(item => !item.adminOnly || isAdmin).map((item) => {
-          const active = isActive(item);
+      {/* 네비 아이템 */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+        {NAV_ITEMS.map((item) => {
+          const isActive = pathname.startsWith(item.href);
           return (
-            <button
-              key={item.label}
-              onClick={() => router.push(getHref(item))}
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                padding: '6px 16px',
-                borderRadius: 8,
-                fontSize: 14,
-                fontWeight: active ? 600 : 400,
-                color: active ? 'var(--ou-text-bright)' : 'var(--ou-text-secondary)',
-                fontFamily: 'inherit',
-                transition: 'color 0.15s',
-                letterSpacing: active ? '-0.01em' : 0,
-              }}
-            >
-              {item.label}
-            </button>
+            <Link key={item.href} href={item.href}>
+              <span style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                height: 32,
+                padding: '0 12px',
+                borderRadius: 'var(--ou-radius-pill)',
+                fontSize: 'var(--ou-text-sm)',
+                fontWeight: isActive ? 600 : 400,
+                color: isActive ? 'var(--ou-text-heading)' : 'var(--ou-text-secondary)',
+                background: isActive ? 'var(--ou-glass-strong)' : 'transparent',
+                transition: 'all var(--ou-transition-fast)',
+              }}>
+                {item.label}
+              </span>
+            </Link>
           );
         })}
-      </nav>
-
-      {/* 우측: 날짜 + 아바타 */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexShrink: 0 }}>
-        <span style={{ fontSize: 13, color: 'var(--ou-text-muted)', letterSpacing: '1px', fontVariantNumeric: 'tabular-nums' }}>
-          {timeLabel}
-        </span>
-        {userInitial && (
-          <div
-            onClick={() => router.push('/settings')}
-            style={{
-              width: 32,
-              height: 32,
-              borderRadius: '50%',
-              background: 'var(--ou-border-muted)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 13,
-              fontWeight: 600,
-              color: 'var(--ou-text-secondary)',
-              cursor: 'pointer',
-            }}
-          >
-            {userInitial}
-          </div>
-        )}
       </div>
-    </div>
+
+      {/* 우측 영역 */}
+      <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12 }}>
+        {/* 시계 */}
+        <Clock />
+
+        {/* 아바타 */}
+        <div style={{ position: 'relative' }}>
+          <button
+            onClick={() => setShowMenu((v) => !v)}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex' }}
+          >
+            <GlassAvatar
+              name={user?.email ?? ''}
+              size={32}
+              glow={avatarHovered}
+            />
+          </button>
+
+          {showMenu && (
+            <div style={{
+              position: 'absolute',
+              top: '100%',
+              right: 0,
+              marginTop: 8,
+              background: 'var(--ou-glass-elevated)',
+              backdropFilter: 'var(--ou-blur)',
+              WebkitBackdropFilter: 'var(--ou-blur)',
+              border: '1px solid var(--ou-glass-border-hover)',
+              borderRadius: 'var(--ou-radius-md)',
+              boxShadow: 'var(--ou-shadow-lg)',
+              padding: '4px',
+              minWidth: 160,
+              animation: 'ou-slide-down 150ms ease-out',
+            }}>
+              <div style={{
+                padding: '8px 12px 6px',
+                fontSize: 'var(--ou-text-xs)',
+                color: 'var(--ou-text-muted)',
+                borderBottom: '1px solid var(--ou-glass-border)',
+                marginBottom: 4,
+              }}>
+                {user?.email}
+              </div>
+              <button
+                onClick={handleSignOut}
+                style={{
+                  width: '100%',
+                  padding: '8px 12px',
+                  textAlign: 'left',
+                  fontSize: 'var(--ou-text-sm)',
+                  color: 'var(--ou-error)',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  borderRadius: 'var(--ou-radius-xs)',
+                  transition: 'background var(--ou-transition-fast)',
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(248,113,113,0.1)')}
+                onMouseLeave={(e) => (e.currentTarget.style.background = 'none')}
+              >
+                로그아웃
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </nav>
   );
 }
 
-// useSearchParams는 Suspense 경계 필요
-export function TopNavBar({ userInitial, isAdmin }: TopNavBarProps) {
+function Clock() {
+  const [time, setTime] = useState(() => new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }));
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setTime(new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }));
+    }, 30000);
+    return () => clearInterval(id);
+  }, []);
+
   return (
-    <Suspense fallback={null}>
-      <TopNavBarInner userInitial={userInitial} isAdmin={isAdmin} />
-    </Suspense>
+    <span style={{
+      fontSize: 'var(--ou-text-sm)',
+      color: 'var(--ou-text-muted)',
+      fontVariantNumeric: 'tabular-nums',
+      fontFamily: 'var(--ou-font-mono)',
+    }}>
+      {time}
+    </span>
   );
 }

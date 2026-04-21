@@ -2,38 +2,44 @@
 
 /**
  * 인라인 뷰 공통 베이스 컴포넌트
- * 뉴모피즘 + 모던 미니멀 디자인 시스템
+ * 글래스모피즘 + 다크 테크 디자인 시스템
  */
 
 import React from 'react';
 
-// ── 토큰 ──────────────────────────────────────────────────
+// ── 글래스 토큰 ───────────────────────────────────────────
 export const NEU = {
   card: {
-    background: 'var(--ou-bg-secondary, #f0f0f3)',
-    borderRadius: '16px',
-    boxShadow: '6px 6px 14px rgba(0,0,0,0.07), -6px -6px 14px rgba(255,255,255,0.85)',
+    background: 'var(--ou-glass)',
+    backdropFilter: 'var(--ou-blur-light)',
+    WebkitBackdropFilter: 'var(--ou-blur-light)',
+    borderRadius: 'var(--ou-radius-card)',
+    boxShadow: 'var(--ou-shadow-sm)',
     padding: '20px 22px',
-    border: '1px solid rgba(255,255,255,0.6)',
+    border: '1px solid var(--ou-glass-border)',
   } as React.CSSProperties,
 
   cardPressed: {
-    background: 'var(--ou-bg-secondary, #f0f0f3)',
-    borderRadius: '16px',
-    boxShadow: 'inset 3px 3px 7px rgba(0,0,0,0.07), inset -3px -3px 7px rgba(255,255,255,0.85)',
+    background: 'var(--ou-glass-active)',
+    backdropFilter: 'var(--ou-blur-light)',
+    WebkitBackdropFilter: 'var(--ou-blur-light)',
+    borderRadius: 'var(--ou-radius-card)',
+    boxShadow: 'none',
     padding: '20px 22px',
-    border: '1px solid rgba(255,255,255,0.4)',
+    border: '1px solid var(--ou-glass-border-hover)',
   } as React.CSSProperties,
 
   pill: {
-    background: 'var(--ou-bg-secondary, #f0f0f3)',
+    background: 'var(--ou-glass)',
+    backdropFilter: 'var(--ou-blur-light)',
+    WebkitBackdropFilter: 'var(--ou-blur-light)',
     borderRadius: '999px',
-    boxShadow: '3px 3px 8px rgba(0,0,0,0.06), -3px -3px 8px rgba(255,255,255,0.85)',
+    boxShadow: 'none',
     padding: '4px 12px',
     display: 'inline-flex',
     alignItems: 'center',
     gap: '5px',
-    border: '1px solid rgba(255,255,255,0.55)',
+    border: '1px solid var(--ou-glass-border)',
   } as React.CSSProperties,
 } as const;
 
@@ -44,13 +50,13 @@ export const TYPE = {
     fontWeight: 700,
     textTransform: 'uppercase' as const,
     letterSpacing: '0.1em',
-    color: 'var(--ou-text-tertiary, #aaa)',
+    color: 'var(--ou-text-muted)',
   } as React.CSSProperties,
 
   emphasis: {
     fontSize: '34px',
     fontWeight: 800,
-    color: 'var(--ou-text-primary, #1a1a1a)',
+    color: 'var(--ou-text-heading)',
     letterSpacing: '-0.03em',
     lineHeight: 1,
   } as React.CSSProperties,
@@ -58,7 +64,7 @@ export const TYPE = {
   emphasisMd: {
     fontSize: '24px',
     fontWeight: 700,
-    color: 'var(--ou-text-primary, #1a1a1a)',
+    color: 'var(--ou-text-heading)',
     letterSpacing: '-0.02em',
     lineHeight: 1.1,
   } as React.CSSProperties,
@@ -66,20 +72,20 @@ export const TYPE = {
   title: {
     fontSize: '15px',
     fontWeight: 600,
-    color: 'var(--ou-text-primary, #1a1a1a)',
+    color: 'var(--ou-text-strong)',
     letterSpacing: '-0.01em',
   } as React.CSSProperties,
 
   sub: {
     fontSize: '13px',
     fontWeight: 400,
-    color: 'var(--ou-text-secondary, #666)',
+    color: 'var(--ou-text-secondary)',
   } as React.CSSProperties,
 
   meta: {
     fontSize: '11px',
     fontWeight: 400,
-    color: 'var(--ou-text-tertiary, #aaa)',
+    color: 'var(--ou-text-muted)',
   } as React.CSSProperties,
 } as const;
 

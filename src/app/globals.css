@@ -1,429 +1,244 @@
-/* ===== OU Neumorphism Design Tokens ===== */
+/* ──────────────────────────────────────────
+   OU Design System — Glassmorphism Dark Tech
+   "Own Universe" — 다크 스페이스 위 유리 패널
+   ────────────────────────────────────────── */
 
-/* --- Accent Palettes --- */
-[data-palette="sunrise"] { --palette-primary: #e8976b; --palette-secondary: #f5c16c; }
-[data-palette="arctic"]  { --palette-primary: #6b9de8; --palette-secondary: #6bcbdb; }
-[data-palette="blossom"] { --palette-primary: #d4849a; --palette-secondary: #e8a4b8; }
-[data-palette="forest"]  { --palette-primary: #6bc49a; --palette-secondary: #a4d4a8; }
-[data-palette="dusk"]    { --palette-primary: #8b7ec8; --palette-secondary: #b4a8e8; }
-[data-palette="stone"]   { --palette-primary: #9a9a9a; --palette-secondary: #b8b8b8; }
-
-/* --- Light Mode (기본) --- */
+/* ── 1. CSS 토큰 ── */
 :root {
-  /* Base */
-  --ou-bg: #e8ecf1;
-  --ou-bg-alt: #dde1e8;
-  --ou-space: var(--ou-bg);
-  --ou-space-alt: var(--ou-bg-alt);
+  /* Space (배경) */
+  --ou-space:              #0b0b11;
+  --ou-space-subtle:       #10101a;
+  --ou-space-gradient:     linear-gradient(145deg, #0b0b11 0%, #141420 50%, #0d0d18 100%);
 
-  /* Neumorphism shadows */
-  --ou-shadow-dark: rgba(163,177,198,0.6);
-  --ou-shadow-light: rgba(255,255,255,0.6);
+  /* Glass Surface */
+  --ou-glass:              rgba(255, 255, 255, 0.04);
+  --ou-glass-hover:        rgba(255, 255, 255, 0.07);
+  --ou-glass-active:       rgba(255, 255, 255, 0.10);
+  --ou-glass-elevated:     rgba(255, 255, 255, 0.08);
+  --ou-glass-strong:       rgba(255, 255, 255, 0.12);
 
-  /* Raised (볼록 — 액션 가능, "눌러") */
-  --ou-neu-raised-xs: 2px 2px 4px var(--ou-shadow-dark), -2px -2px 4px var(--ou-shadow-light);
-  --ou-neu-raised-sm: 3px 3px 6px var(--ou-shadow-dark), -3px -3px 6px var(--ou-shadow-light);
-  --ou-neu-raised-md: 6px 6px 12px var(--ou-shadow-dark), -6px -6px 12px var(--ou-shadow-light);
-  --ou-neu-raised-lg: 10px 10px 20px var(--ou-shadow-dark), -10px -10px 20px var(--ou-shadow-light);
+  /* Glass Border */
+  --ou-glass-border:       rgba(255, 255, 255, 0.06);
+  --ou-glass-border-hover: rgba(255, 255, 255, 0.12);
+  --ou-glass-border-focus: rgba(108, 140, 255, 0.4);
 
-  /* Pressed (오목 — 완료/활성, "이미 됨") */
-  --ou-neu-pressed-sm: inset 2px 2px 5px var(--ou-shadow-dark), inset -2px -2px 5px var(--ou-shadow-light);
-  --ou-neu-pressed-md: inset 4px 4px 8px var(--ou-shadow-dark), inset -4px -4px 8px var(--ou-shadow-light);
-  --ou-neu-pressed-lg: inset 6px 6px 12px var(--ou-shadow-dark), inset -6px -6px 12px var(--ou-shadow-light);
+  /* Blur */
+  --ou-blur:               blur(24px) saturate(180%);
+  --ou-blur-light:         blur(12px) saturate(150%);
 
-  /* Inset (속삭임 — 중앙 채팅 패널용, 깊이 암시만) */
-  --ou-neu-inset: inset 1px 1px 3px var(--ou-shadow-dark), inset -1px -1px 3px var(--ou-shadow-light);
+  /* Text (6단계) */
+  --ou-text-heading:       rgba(255, 255, 255, 0.95);
+  --ou-text-strong:        rgba(255, 255, 255, 0.85);
+  --ou-text-body:          rgba(255, 255, 255, 0.72);
+  --ou-text-secondary:     rgba(255, 255, 255, 0.48);
+  --ou-text-muted:         rgba(255, 255, 255, 0.28);
+  --ou-text-disabled:      rgba(255, 255, 255, 0.14);
 
-  /* Glow (하위 호환 — 기존 코드에서 참조) */
-  --ou-glow-xs: var(--ou-neu-raised-xs);
-  --ou-glow-sm: var(--ou-neu-raised-sm);
-  --ou-glow-md: var(--ou-neu-raised-md);
-  --ou-glow-lg: var(--ou-neu-raised-lg);
-  --ou-glow-hover: var(--ou-neu-raised-lg);
-  --ou-glow-important: var(--ou-neu-raised-lg);
+  /* Accent — 팔레트로 교체 가능 */
+  --ou-accent:             #6c8cff;
+  --ou-accent-hover:       #8aa4ff;
+  --ou-accent-rgb:         108, 140, 255;
+  --ou-accent-glow:        0 0 24px rgba(108, 140, 255, 0.25);
+  --ou-accent-glow-lg:     0 0 48px rgba(108, 140, 255, 0.15);
 
-  /* Accent */
-  --ou-accent: var(--palette-primary, #e8976b);
-  --ou-accent-secondary: var(--palette-secondary, #f5c16c);
-  --ou-accent-glow: 0 0 16px 4px color-mix(in srgb, var(--ou-accent) 40%, transparent);
+  /* Semantic */
+  --ou-success:            #34d399;
+  --ou-warning:            #fbbf24;
+  --ou-error:              #f87171;
+  --ou-info:               #60a5fa;
 
-  /* Border */
-  --ou-border-faint: rgba(0,0,0,0.04);
-  --ou-border-subtle: rgba(0,0,0,0.06);
-  --ou-border-muted: rgba(0,0,0,0.10);
-  --ou-border-medium: rgba(0,0,0,0.14);
-  --ou-border-hover: rgba(0,0,0,0.20);
-  --ou-border-strong: rgba(0,0,0,0.26);
+  /* Shadow (깊이 3단계) */
+  --ou-shadow-sm:          0 2px 8px rgba(0, 0, 0, 0.3);
+  --ou-shadow-md:          0 8px 32px rgba(0, 0, 0, 0.4);
+  --ou-shadow-lg:          0 16px 64px rgba(0, 0, 0, 0.5);
 
-  /* Surface */
-  --ou-surface-faint: rgba(255,255,255,0.3);
-  --ou-surface-subtle: rgba(255,255,255,0.5);
-  --ou-surface-muted: rgba(255,255,255,0.7);
-  --ou-surface-hover: rgba(255,255,255,0.9);
+  /* Border Radius */
+  --ou-radius-xs:          6px;
+  --ou-radius-sm:          8px;
+  --ou-radius-md:          12px;
+  --ou-radius-card:        16px;
+  --ou-radius-lg:          20px;
+  --ou-radius-xl:          24px;
+  --ou-radius-pill:        999px;
 
-  /* Text */
-  --ou-text-disabled: rgba(0,0,0,0.18);
-  --ou-text-faint: rgba(0,0,0,0.15);
-  --ou-text-muted: rgba(0,0,0,0.32);
-  --ou-text-dimmed: rgba(0,0,0,0.42);
-  --ou-text-secondary: rgba(0,0,0,0.48);
-  --ou-text-body: rgba(0,0,0,0.58);
-  --ou-text-strong: rgba(0,0,0,0.76);
-  --ou-text-bright: rgba(0,0,0,0.88);
-  --ou-text-heading: rgba(0,0,0,0.88);
+  /* Spacing (8px 베이스) */
+  --ou-space-1:   4px;
+  --ou-space-2:   8px;
+  --ou-space-3:   12px;
+  --ou-space-4:   16px;
+  --ou-space-5:   20px;
+  --ou-space-6:   24px;
+  --ou-space-8:   32px;
+  --ou-space-10:  40px;
+  --ou-space-12:  48px;
+  --ou-space-16:  64px;
+  --ou-space-20:  80px;
 
-  /* Shape */
-  --ou-radius-pill: 999px;
-  --ou-radius-chat: 24px;
-  --ou-radius-card: 16px;
-  --ou-radius-lg: 20px;
-  --ou-radius-md: 12px;
-  --ou-radius-sm: 8px;
-
-  /* Motion */
-  --ou-transition: 200ms ease;
+  /* Max Width */
+  --ou-max-sm:    640px;
+  --ou-max-md:    768px;
+  --ou-max-lg:    1024px;
+  --ou-max-xl:    1280px;
 
   /* Typography */
-  --ou-font-logo: 'Orbitron', sans-serif;
+  --ou-font-logo:    'Orbitron', sans-serif;
   --ou-font-display: 'DM Sans', sans-serif;
-  --ou-font-body: 'Pretendard Variable', 'DM Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  --ou-font-mono: 'JetBrains Mono', monospace;
+  --ou-font-body:    'Pretendard Variable', -apple-system, BlinkMacSystemFont, sans-serif;
+  --ou-font-mono:    'JetBrains Mono', monospace;
+
+  /* Font Size */
+  --ou-text-xs:   12px;
+  --ou-text-sm:   14px;
+  --ou-text-base: 16px;
+  --ou-text-lg:   18px;
+  --ou-text-xl:   24px;
+  --ou-text-2xl:  32px;
+  --ou-text-3xl:  48px;
+  --ou-text-hero: 64px;
+
+  /* Transition */
+  --ou-transition-fast:   120ms ease-out;
+  --ou-transition:        200ms ease;
+  --ou-transition-slow:   400ms cubic-bezier(0.16, 1, 0.3, 1);
+  --ou-transition-spring: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* --- Dark Mode --- */
-[data-theme="dark"] {
-  --ou-bg: #2a2d3e;
-  --ou-bg-alt: #232636;
-  --ou-space: var(--ou-bg);
-  --ou-space-alt: var(--ou-bg-alt);
+/* ── 팔레트 시스템 ── */
+[data-palette="cosmos"], :root { --ou-accent: #6c8cff; --ou-accent-hover: #8aa4ff; --ou-accent-rgb: 108, 140, 255; }
+[data-palette="nebula"]        { --ou-accent: #a78bfa; --ou-accent-hover: #c4b5fd; --ou-accent-rgb: 167, 139, 250; }
+[data-palette="aurora"]        { --ou-accent: #34d399; --ou-accent-hover: #6ee7b7; --ou-accent-rgb: 52, 211, 153; }
+[data-palette="solar"]         { --ou-accent: #fbbf24; --ou-accent-hover: #fcd34d; --ou-accent-rgb: 251, 191, 36; }
 
-  --ou-shadow-dark: rgba(0,0,0,0.55);
-  --ou-shadow-light: rgba(255,255,255,0.04);
-
-  --ou-border-faint: rgba(255,255,255,0.06);
-  --ou-border-subtle: rgba(255,255,255,0.08);
-  --ou-border-muted: rgba(255,255,255,0.12);
-  --ou-border-medium: rgba(255,255,255,0.16);
-  --ou-border-hover: rgba(255,255,255,0.22);
-  --ou-border-strong: rgba(255,255,255,0.28);
-
-  --ou-surface-faint: rgba(255,255,255,0.02);
-  --ou-surface-subtle: rgba(255,255,255,0.04);
-  --ou-surface-muted: rgba(255,255,255,0.06);
-  --ou-surface-hover: rgba(255,255,255,0.08);
-
-  --ou-text-disabled: rgba(255,255,255,0.18);
-  --ou-text-faint: rgba(255,255,255,0.15);
-  --ou-text-muted: rgba(255,255,255,0.32);
-  --ou-text-dimmed: rgba(255,255,255,0.42);
-  --ou-text-secondary: rgba(255,255,255,0.52);
-  --ou-text-body: rgba(255,255,255,0.64);
-  --ou-text-strong: rgba(255,255,255,0.86);
-  --ou-text-bright: rgba(255,255,255,0.92);
-  --ou-text-heading: rgba(255,255,255,0.92);
+/* ── 2. CSS 리셋 ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-/* ===== Reset ===== */
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
 
 body {
   font-family: var(--ou-font-body);
-  background: var(--ou-bg);
+  font-size: var(--ou-text-base);
+  line-height: 1.5;
   color: var(--ou-text-body);
+  background: var(--ou-space);
   min-height: 100vh;
-  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  transition: background 0.4s ease, color 0.3s ease;
 }
 
-a { color: inherit; text-decoration: none; }
+a {
+  color: inherit;
+  text-decoration: none;
+}
 
 button {
-  font-family: inherit;
   cursor: pointer;
   border: none;
   background: none;
-  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
 }
 
-input, textarea {
+input, textarea, select {
   font-family: inherit;
-  color: inherit;
-  background: transparent;
+  font-size: inherit;
   outline: none;
   border: none;
+  background: none;
 }
 
-/* ===== Neumorphism Utility Classes ===== */
-
-.ou-raised-xs { box-shadow: var(--ou-neu-raised-xs); }
-.ou-raised-sm { box-shadow: var(--ou-neu-raised-sm); }
-.ou-raised, .ou-raised-md { box-shadow: var(--ou-neu-raised-md); }
-.ou-raised-lg { box-shadow: var(--ou-neu-raised-lg); }
-
-.ou-pressed-sm { box-shadow: var(--ou-neu-pressed-sm); }
-.ou-pressed, .ou-pressed-md { box-shadow: var(--ou-neu-pressed-md); }
-.ou-pressed-lg { box-shadow: var(--ou-neu-pressed-lg); }
-
-.ou-flat { box-shadow: none; }
-
-.ou-card {
-  background: var(--ou-bg);
-  border-radius: var(--ou-radius-md);
-  box-shadow: var(--ou-neu-raised-md);
-  padding: 20px;
-  transition: all var(--ou-transition);
-}
-.ou-card:hover { box-shadow: var(--ou-neu-raised-lg); }
-
-.ou-input {
-  background: var(--ou-bg);
-  border-radius: var(--ou-radius-sm);
-  box-shadow: var(--ou-neu-pressed-md);
-  padding: 12px 16px;
-  font-size: 14px;
-  color: var(--ou-text-strong);
-  width: 100%;
-  transition: all var(--ou-transition);
-}
-.ou-input:focus {
-  box-shadow: var(--ou-neu-pressed-md), 0 0 0 2px color-mix(in srgb, var(--ou-accent) 45%, transparent);
+img, video {
+  max-width: 100%;
+  display: block;
 }
 
-.ou-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 10px 24px;
-  border-radius: var(--ou-radius-pill);
-  font-size: 13px;
-  font-weight: 600;
-  background: var(--ou-bg);
-  color: var(--ou-text-strong);
-  box-shadow: var(--ou-neu-raised-md);
-  transition: all var(--ou-transition);
-}
-.ou-btn:hover { box-shadow: var(--ou-neu-raised-lg); }
-.ou-btn:active { box-shadow: var(--ou-neu-pressed-md); }
-
-.ou-btn-accent {
-  background: linear-gradient(135deg, var(--ou-accent), var(--ou-accent-secondary));
-  color: #fff;
-}
-.ou-btn-accent:hover {
-  box-shadow: var(--ou-neu-raised-lg), var(--ou-accent-glow);
-}
-
-/* ===== Animations ===== */
+/* ── 3. 애니메이션 ── */
 @keyframes ou-fade-in {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes ou-scale-in {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
 }
 
-@keyframes ou-loader-pulse {
-  0% { filter: drop-shadow(0 0 0px currentColor); }
-  10% { filter: drop-shadow(0 0 12px currentColor) drop-shadow(0 0 24px currentColor); }
-  18% { filter: drop-shadow(0 0 2px currentColor); }
-  26% { filter: drop-shadow(0 0 10px currentColor) drop-shadow(0 0 20px currentColor); }
-  36% { filter: drop-shadow(0 0 0px currentColor); }
-  100% { filter: drop-shadow(0 0 0px currentColor); }
+@keyframes ou-slide-down {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+@keyframes ou-glow-pulse {
+  0%, 100% { box-shadow: 0 0 12px rgba(var(--ou-accent-rgb), 0.15); }
+  50%       { box-shadow: 0 0 32px rgba(var(--ou-accent-rgb), 0.35); }
 }
 
-@keyframes spin {
-  from { transform: rotate(0deg); }
+@keyframes ou-shimmer {
+  from { background-position: -200% center; }
+  to   { background-position: 200% center; }
+}
+
+@keyframes ou-spin {
   to { transform: rotate(360deg); }
 }
 
-@keyframes wiggle {
-  0%, 100% { transform: rotate(-0.15deg); }
-  50% { transform: rotate(0.15deg); }
+/* ── 4. 유틸 클래스 ── */
+
+/* 페이지 진입 */
+.ou-fade-in {
+  animation: ou-fade-in 200ms ease-out both;
 }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(8px); }
+/* stagger 자식 요소 */
+.ou-stagger > * {
+  animation: ou-fade-in 200ms ease-out both;
 }
+.ou-stagger > *:nth-child(1) { animation-delay: 0ms; }
+.ou-stagger > *:nth-child(2) { animation-delay: 50ms; }
+.ou-stagger > *:nth-child(3) { animation-delay: 100ms; }
+.ou-stagger > *:nth-child(4) { animation-delay: 150ms; }
+.ou-stagger > *:nth-child(5) { animation-delay: 200ms; }
+.ou-stagger > *:nth-child(6) { animation-delay: 250ms; }
 
-/* ===== UX Utilities ===== */
-
+/* 스크롤 숨기기 */
 .ou-scroll {
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;
+  overflow: auto;
   scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 .ou-scroll::-webkit-scrollbar { display: none; }
 
-.ou-pressable {
-  transition: transform 120ms cubic-bezier(0.25, 0.1, 0.25, 1), opacity 120ms ease;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
+/* 글로우 펄스 */
+.ou-glow-pulse {
+  animation: ou-glow-pulse 2s ease-in-out infinite;
+}
+
+/* 스피너 */
+.ou-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(var(--ou-accent-rgb), 0.2);
+  border-top-color: var(--ou-accent);
+  border-radius: 50%;
+  animation: ou-spin 0.7s linear infinite;
+}
+
+/* 텍스트 생략 */
+.ou-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 선택 불가 */
+.ou-no-select {
   user-select: none;
-}
-.ou-pressable:active {
-  transform: scale(0.97);
-  opacity: 0.85;
-}
-
-.ou-spring {
-  transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.ou-backdrop {
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-}
-
-.ou-page-enter {
-  animation: ou-page-in 350ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
-}
-@keyframes ou-page-in {
-  from { opacity: 0; transform: scale(0.96) translateY(8px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
-}
-
-/* ===== 지도뷰 전용 ===== */
-.ou-map-pin {
-  width: 28px;
-  height: 28px;
-  border-radius: 50% 50% 50% 0;
-  transform: rotate(-45deg);
-  background: var(--ou-bg);
-  box-shadow: var(--ou-neu-raised-sm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: transform 120ms ease, box-shadow 120ms ease;
-}
-.ou-map-pin:hover {
-  box-shadow: var(--ou-neu-raised-md);
-}
-.ou-map-pin-inner {
-  transform: rotate(45deg);
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--ou-text-secondary);
-}
-.ou-map-pin--tracking .ou-map-pin-inner {
-  background: var(--ou-accent-primary, #6366f1);
-  animation: ou-map-pulse 1.4s ease infinite;
-}
-@keyframes ou-map-pulse {
-  0%, 100% { opacity: 1; transform: rotate(45deg) scale(1); }
-  50% { opacity: 0.5; transform: rotate(45deg) scale(1.4); }
-}
-
-.ou-map-card {
-  background: var(--ou-bg);
-  box-shadow: var(--ou-neu-raised-md);
-  border-radius: var(--ou-radius-md);
-  padding: 12px 14px;
-  min-width: 160px;
-  max-width: 240px;
-  font-family: var(--ou-font-body);
-  position: relative;
-  margin-bottom: 8px;
-}
-.ou-map-card::after {
-  content: '';
-  position: absolute;
-  bottom: -6px;
-  left: 50%;
-  transform: translateX(-50%);
-  border-left: 6px solid transparent;
-  border-right: 6px solid transparent;
-  border-top: 6px solid var(--ou-bg);
-  filter: drop-shadow(0 2px 2px rgba(0,0,0,0.06));
-}
-.ou-map-card-title {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--ou-text-heading);
-  margin-bottom: 2px;
-}
-.ou-map-card-sub {
-  font-size: 11px;
-  color: var(--ou-text-muted);
-  line-height: 1.5;
-}
-.ou-map-card-close {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--ou-text-disabled);
-  padding: 2px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 4px;
-  transition: color 150ms ease;
-}
-.ou-map-card-close:hover {
-  color: var(--ou-text-muted);
-}
-
-.ou-map-control {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  position: absolute;
-  z-index: 10;
-}
-.ou-map-control-btn {
-  width: 34px;
-  height: 34px;
-  border: none;
-  cursor: pointer;
-  background: var(--ou-bg);
-  box-shadow: var(--ou-neu-raised-sm);
-  border-radius: var(--ou-radius-sm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--ou-text-body);
-  font-size: 16px;
-  font-weight: 500;
-  transition: box-shadow 120ms ease;
-}
-.ou-map-control-btn:hover {
-  box-shadow: var(--ou-neu-raised-md);
-}
-.ou-map-control-btn:active {
-  box-shadow: var(--ou-neu-pressed-sm);
-}
-
-.ou-map-cluster {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: var(--ou-bg);
-  box-shadow: var(--ou-neu-raised-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--ou-text-heading);
-  cursor: pointer;
-  transition: box-shadow 120ms ease;
-}
-.ou-map-cluster:hover {
-  box-shadow: var(--ou-neu-raised-lg);
+  -webkit-user-select: none;
 }

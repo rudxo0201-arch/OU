@@ -1,35 +1,28 @@
 'use client';
-import { useEffect } from 'react';
+
+import { ReactNode, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useAuthStore } from '@/stores/authStore';
-import { usePreferencesSync } from '@/hooks/usePreferencesSync';
+import { ToastProvider } from '@/components/ds/GlassToast';
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+export function AuthProvider({ children }: { children: ReactNode }) {
   const { setUser, setLoading } = useAuthStore();
-  usePreferencesSync();
 
   useEffect(() => {
     const supabase = createClient();
 
-    supabase.auth.getUser()
-      .then(({ data: { user } }) => {
-        setUser(user);
-        setLoading(false);
-      })
-      .catch(() => {
-        setUser(null);
-        setLoading(false);
-      });
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_, session) => {
-        setUser(session?.user ?? null);
-        setLoading(false);
-      }
-    );
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
 
     return () => subscription.unsubscribe();
   }, [setUser, setLoading]);
 
-  return <>{children}</>;
+  return <ToastProvider>{children}</ToastProvider>;
 }

@@ -1,139 +1,202 @@
 'use client';
 
 import Link from 'next/link';
+import { CSSProperties } from 'react';
+import { PageLayout, GlassCard, GlassButton } from '@/components/ds';
 
-export default function Home() {
+const features = [
+  {
+    icon: '✦',
+    title: '대화가 곧 입력',
+    desc: '키보드, 마우스, 폼이 아니라 말로 데이터를 만든다. 대충 말해도 알아듣는다.',
+  },
+  {
+    icon: '⬡',
+    title: '구조화는 AI가',
+    desc: 'LLM이 자동으로 도메인을 분류하고 DataNode를 만든다. 당신은 그냥 말하면 된다.',
+  },
+  {
+    icon: '◈',
+    title: '뷰는 무한',
+    desc: '같은 데이터를 캘린더, 그래프, 카드, 차트 등 어떤 형태로든 꺼내 볼 수 있다.',
+  },
+];
+
+export default function LandingPage() {
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--ou-bg)' }}>
-      {/* Nav */}
+    <PageLayout>
+      {/* 네비바 */}
       <nav style={{
-        position: 'sticky', top: 0, zIndex: 100,
-        padding: '0 24px', height: 56,
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        background: 'var(--ou-bg)',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 100,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '0 32px',
+        height: 56,
+        background: 'rgba(11,11,17,0.7)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        borderBottom: '1px solid var(--ou-glass-border)',
       }}>
         <span style={{
           fontFamily: 'var(--ou-font-logo)',
-          fontSize: 15, fontWeight: 700,
-          letterSpacing: '0.18em',
-          color: 'var(--ou-text-bright)',
+          fontSize: 18,
+          fontWeight: 700,
+          color: 'var(--ou-text-heading)',
+          letterSpacing: '-0.02em',
         }}>
           OU
         </span>
+        <Link href="/login">
+          <GlassButton size="sm">Log in</GlassButton>
+        </Link>
       </nav>
 
-      {/* Hero */}
-      <div style={{
-        minHeight: 'calc(100vh - 56px)',
-        background: 'var(--ou-bg)',
-        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-        position: 'relative', padding: 40, overflow: 'hidden',
+      {/* 히어로 */}
+      <section style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '100vh',
+        padding: '80px 24px 64px',
+        textAlign: 'center',
       }}>
-        {/* 640px raised outer halo */}
+        {/* OU 로고 오브 */}
         <div style={{
-          position: 'absolute', width: 640, height: 640, borderRadius: '50%',
-          background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-raised-lg)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          position: 'relative',
+          marginBottom: 40,
         }}>
-          {/* 520px pressed inner */}
           <div style={{
-            width: 520, height: 520, borderRadius: '50%',
-            background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-pressed-lg)',
+            width: 96,
+            height: 96,
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(var(--ou-accent-rgb), 0.2) 0%, rgba(var(--ou-accent-rgb), 0.05) 60%, transparent 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            border: '1px solid rgba(var(--ou-accent-rgb), 0.2)',
+          }}>
+            <span style={{
+              fontFamily: 'var(--ou-font-logo)',
+              fontSize: 36,
+              fontWeight: 800,
+              color: 'var(--ou-text-heading)',
+              letterSpacing: '-0.03em',
+              textShadow: `0 0 32px rgba(var(--ou-accent-rgb), 0.6)`,
+            }}>
+              OU
+            </span>
+          </div>
+          {/* 글로우 링 */}
+          <div style={{
+            position: 'absolute',
+            inset: -8,
+            borderRadius: '50%',
+            border: '1px solid rgba(var(--ou-accent-rgb), 0.1)',
+            animation: 'ou-glow-pulse 3s ease-in-out infinite',
           }} />
         </div>
 
-        {/* Content */}
-        <div style={{ position: 'relative', textAlign: 'center', zIndex: 1 }}>
-          <div style={{
-            fontFamily: 'var(--ou-font-logo)', fontWeight: 600,
-            fontSize: 'clamp(48px, 8vw, 64px)', color: 'var(--ou-text-bright)',
-            letterSpacing: '0.02em',
-          }}>
-            Just talk.
-          </div>
-          <div style={{
-            fontFamily: 'var(--ou-font-logo)', fontSize: 13,
-            color: 'var(--ou-text-dimmed)', letterSpacing: '0.28em',
-            textTransform: 'lowercase', marginTop: 14,
-          }}>
-            own universe
-          </div>
-          <div style={{
-            marginTop: 32, fontSize: 16,
-            color: 'var(--ou-text-body)', lineHeight: 1.6,
-            maxWidth: 420, marginLeft: 'auto', marginRight: 'auto',
-          }}>
-            대화로 만드는 나만의 우주.<br />말하세요. OU가 기록하고, 정리합니다.
-          </div>
-          <div style={{ display: 'flex', gap: 14, justifyContent: 'center', marginTop: 36, flexWrap: 'wrap' }}>
-            <Link href="/login" style={{ textDecoration: 'none' }}>
-              <button style={{
-                padding: '13px 30px', borderRadius: 999,
-                fontFamily: 'var(--ou-font-logo)', fontSize: 13, fontWeight: 500,
-                background: 'var(--ou-bg)', border: 'none',
-                boxShadow: 'var(--ou-neu-raised-sm)',
-                color: 'var(--ou-text-strong)', cursor: 'pointer',
-              }}>
-                Log in
-              </button>
-            </Link>
-            <Link href="/login?tab=signup" style={{ textDecoration: 'none' }}>
-              <button style={{
-                padding: '13px 30px', borderRadius: 999,
-                fontFamily: 'var(--ou-font-logo)', fontSize: 13, fontWeight: 600,
-                background: 'var(--ou-bg)', border: 'none',
-                boxShadow: 'var(--ou-neu-raised-md), inset 0 0 0 1.5px color-mix(in srgb, var(--ou-accent) 60%, transparent)',
-                color: 'var(--ou-text-bright)', cursor: 'pointer',
-              }}>
-                sign up
-              </button>
-            </Link>
-          </div>
-        </div>
-      </div>
+        {/* 헤드라인 */}
+        <h1 style={{
+          fontFamily: 'var(--ou-font-logo)',
+          fontSize: 'clamp(40px, 8vw, 72px)',
+          fontWeight: 700,
+          color: 'var(--ou-text-heading)',
+          letterSpacing: '-0.04em',
+          lineHeight: 1.1,
+          marginBottom: 20,
+        }}>
+          Just talk.
+        </h1>
 
-      {/* About */}
-      <div style={{
-        padding: '64px 24px',
-        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 32,
-        background: 'var(--ou-bg)',
+        <p style={{
+          fontSize: 'clamp(16px, 2.5vw, 20px)',
+          color: 'var(--ou-text-secondary)',
+          lineHeight: 1.5,
+          maxWidth: 480,
+          marginBottom: 40,
+          letterSpacing: '-0.01em',
+        }}>
+          대화로 만드는 나만의 우주.<br />
+          말하는 순간 데이터가 된다.
+        </p>
+
+        <Link href="/login?tab=signup">
+          <GlassButton variant="accent" size="lg">
+            시작하기 →
+          </GlassButton>
+        </Link>
+      </section>
+
+      {/* Features */}
+      <section style={{
+        padding: '0 24px 96px',
+        maxWidth: 1024,
+        margin: '0 auto',
       }}>
-        <div style={{ maxWidth: 560, textAlign: 'center' }}>
-          <div style={{ fontSize: 13, color: 'var(--ou-text-dimmed)', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 16 }}>
-            What is OU?
-          </div>
-          <div style={{ fontSize: 15, color: 'var(--ou-text-body)', lineHeight: 1.8 }}>
-            OU는 대화를 통해 데이터를 수집하고 구조화하는 개인 데이터 플랫폼입니다.
-            YouTube 구독, 메모, 학습 자료 등을 연결하여 나만의 데이터 우주를 만들어 보세요.
-          </div>
-        </div>
-        <div style={{ display: 'flex', gap: 40, flexWrap: 'wrap', justifyContent: 'center' }}>
-          {[
-            { title: 'Just talk', desc: '대화로 데이터를 입력합니다' },
-            { title: 'Structured', desc: 'OU가 자동으로 정리합니다' },
-            { title: 'Your views', desc: '원하는 형태로 꺼내 씁니다' },
-          ].map(({ title, desc }) => (
-            <div key={title} style={{ textAlign: 'center', minWidth: 120 }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ou-text-strong)', marginBottom: 4 }}>{title}</div>
-              <div style={{ fontSize: 12, color: 'var(--ou-text-dimmed)' }}>{desc}</div>
-            </div>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+          gap: 16,
+        }}>
+          {features.map((f) => (
+            <GlassCard key={f.title} hoverable style={{ animationDelay: '0.1s' }}>
+              <div style={{
+                fontSize: 24,
+                marginBottom: 16,
+                color: 'var(--ou-accent)',
+              }}>
+                {f.icon}
+              </div>
+              <h3 style={{
+                fontSize: 'var(--ou-text-base)',
+                fontWeight: 600,
+                color: 'var(--ou-text-heading)',
+                marginBottom: 8,
+                letterSpacing: '-0.02em',
+              }}>
+                {f.title}
+              </h3>
+              <p style={{
+                fontSize: 'var(--ou-text-sm)',
+                color: 'var(--ou-text-secondary)',
+                lineHeight: 1.6,
+              }}>
+                {f.desc}
+              </p>
+            </GlassCard>
           ))}
         </div>
-      </div>
+      </section>
 
-      {/* Footer */}
-      <div style={{
-        padding: '20px 24px',
-        display: 'flex', justifyContent: 'center', gap: 24,
-        borderTop: '1px solid var(--ou-border-faint)',
+      {/* 푸터 */}
+      <footer style={{
+        textAlign: 'center',
+        padding: '24px',
+        borderTop: '1px solid var(--ou-glass-border)',
+        display: 'flex',
+        gap: 24,
+        justifyContent: 'center',
       }}>
-        <Link href="/privacy" style={{ fontSize: 12, color: 'var(--ou-text-disabled)', textDecoration: 'none' }}>
-          개인정보처리방침
-        </Link>
-        <Link href="/terms" style={{ fontSize: 12, color: 'var(--ou-text-disabled)', textDecoration: 'none' }}>
-          이용약관
-        </Link>
-      </div>
-    </div>
+        {[
+          { label: 'Privacy', href: '/privacy' },
+          { label: 'Terms', href: '/terms' },
+        ].map(({ label, href }) => (
+          <Link key={href} href={href} style={{
+            fontSize: 'var(--ou-text-sm)',
+            color: 'var(--ou-text-muted)',
+            transition: 'color var(--ou-transition-fast)',
+          }}>
+            {label}
+          </Link>
+        ))}
+      </footer>
+    </PageLayout>
   );
 }

@@ -92,5 +92,16 @@ export const useHomeStore = createSafeStore<HomeState>(
       }
     },
   }),
-  { name: 'ou-home-layout' },
+  {
+    name: 'ou-home-layout',
+    version: 2,
+    migrate: (persisted: any) => {
+      // QSD 없는 구 버전 데이터 → 기본 레이아웃으로 초기화
+      const hasQSD = persisted?.gridItems?.some((i: GridItem) => i.type === 'qsd');
+      if (!hasQSD) {
+        return { ...persisted, gridItems: DEFAULT_GRID_ITEMS };
+      }
+      return persisted;
+    },
+  },
 );

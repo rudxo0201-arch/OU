@@ -94,10 +94,6 @@
   opacity: 1;
 }
 
-.cardNormal:hover .appOpenBtn {
-  opacity: 1 !important;
-}
-
 .removeBtn:hover {
   box-shadow: var(--ou-neu-raised-sm);
   color: #d43030;

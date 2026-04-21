@@ -17,24 +17,21 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ko" className={orbitron.variable} data-theme="light" data-palette="sunrise" suppressHydrationWarning>
+    <html lang="ko" className={orbitron.variable} data-palette="cosmos" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: `
           try{
-            var t=localStorage.getItem('ou-theme');
             var p=localStorage.getItem('ou-palette');
-            if(t)document.documentElement.setAttribute('data-theme',t);
             if(p)document.documentElement.setAttribute('data-palette',p);
           }catch(e){}
         `}} />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" sizes="any" />
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#e8ecf1" />
+        <meta name="theme-color" content="#0b0b11" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css" rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet" />
       </head>
       <body>
         <AuthProvider>

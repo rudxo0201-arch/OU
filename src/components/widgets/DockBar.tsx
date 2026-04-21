@@ -1,16 +1,18 @@
 'use client';
 
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { type Icon as PhosphorIcon } from '@phosphor-icons/react';
-import { useHomeStore } from '@/stores/homeStore';
-import { getAppDef } from '@/lib/apps/registry';
-import { resolveAppIcon } from '@/lib/apps/icon-map';
 
-const BASE_SIZE = 40;
-const ORB_SIZE  = 52;
-const MAX_SCALE = 1.45;
-const SPREAD    = 2.2;
+interface Props {
+  onAddWidget?: () => void;
+  onUniverse?: () => void;
+  universeActive?: boolean;
+}
+
+const BASE_SIZE = 44;
+const ORB_SIZE = 52;
+const MAX_SCALE = 1.5;
+const SPREAD = 2;
 
 function getMagnification(index: number, mouseIndex: number): number {
   if (mouseIndex < 0) return 1;
@@ -20,6 +22,50 @@ function getMagnification(index: number, mouseIndex: number): number {
   return 1 + (MAX_SCALE - 1) * Math.cos((1 - t) * Math.PI / 2) ** 2;
 }
 
+// 아이콘 SVG (인라인)
+function GearIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <circle cx="12" cy="12" r="3"/>
+      <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+    </svg>
+  );
+}
+
+function GraphIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/>
+      <line x1="8.5" y1="10.5" x2="15.5" y2="7.5"/><line x1="8.5" y1="13.5" x2="15.5" y2="16.5"/>
+    </svg>
+  );
+}
+
+function BookIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/>
+    </svg>
+  );
+}
+
+function ClockIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/>
+    </svg>
+  );
+}
+
+function PlusIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+    </svg>
+  );
+}
+
+// ORB 중앙 아이콘 (accent dot)
 function OrbIcon() {
   return (
     <div style={{
@@ -30,236 +76,138 @@ function OrbIcon() {
   );
 }
 
-type DockItem =
-  | { kind: 'app'; slug: string; label: string; icon: string; route: string }
-  | { kind: 'orb' };
+export function DockBar({ onAddWidget, onUniverse, universeActive }: Props) {
+  const [mouseIndex, setMouseIndex] = useState(-1);
+  const dockRef = useRef<HTMLDivElement>(null);
+  const rafRef = useRef<number | null>(null);
+  const router = useRouter();
 
-function buildItems(dockSlugs: string[]): DockItem[] {
-  const apps: DockItem[] = dockSlugs
-    .map(slug => {
-      const def = getAppDef(slug);
-      if (!def) return null;
-      return {
-        kind: 'app' as const,
-        slug: def.slug,
-        label: def.label.replace('OU ', ''),
-        icon: def.icon,
-        route: def.route ?? `/orb/${def.slug}`,
-      };
-    })
-    .filter((x): x is DockItem & { kind: 'app' } => x !== null);
-
-  const mid = Math.floor(apps.length / 2);
-  return [...apps.slice(0, mid), { kind: 'orb' as const }, ...apps.slice(mid)];
-}
-
-export function DockBar({ onDropToGrid }: { onDropToGrid?: (slug: string) => void }) {
-  const [isDragOver, setIsDragOver] = useState(false);
-  const dockRef   = useRef<HTMLDivElement>(null);
-  const itemRefs  = useRef<(HTMLDivElement | null)[]>([]);
-  const rafRef    = useRef<number | null>(null);
-  const mouseXRef = useRef(-1);
-  const router    = useRouter();
-
-  const dockSlugs = useHomeStore(s => s.dockSlugs);
-  const hydrated  = useHomeStore(s => s._hasHydrated);
-  const addToDock = useHomeStore(s => s.addToDock);
-
-  const items = hydrated
-    ? buildItems(dockSlugs)
-    : buildItems(['note', 'calendar', 'todo', 'finance', 'habit', 'idea']);
-
-  // DOM 직접 조작으로 magnification 업데이트 (React re-render 없음)
-  const updateMagnification = useCallback((mouseIndex: number) => {
-    itemRefs.current.forEach((el, i) => {
-      if (!el) return;
-      const item = items[i];
-      const isOrb = item?.kind === 'orb';
-      const baseSize = isOrb ? ORB_SIZE : BASE_SIZE;
-      const scale = getMagnification(i, mouseIndex);
-      const size = baseSize * scale;
-      const isHovered = Math.abs(i - mouseIndex) < 0.5;
-      const liftY = isHovered && mouseIndex >= 0
-        ? -4 * (scale - 1) / (MAX_SCALE - 1)
-        : 0;
-
-      // 래퍼 div transform
-      el.style.transform = `translateY(${liftY}px)`;
-
-      // 버튼 크기
-      const btn = el.querySelector('button') as HTMLButtonElement | null;
-      if (btn) {
-        btn.style.width  = `${size}px`;
-        btn.style.height = `${size}px`;
-        btn.style.boxShadow = isHovered && mouseIndex >= 0
-          ? 'var(--ou-neu-raised-lg)'
-          : 'var(--ou-neu-raised-md)';
-      }
-
-      // 아이콘 크기 (svg)
-      const svg = el.querySelector('svg') as SVGElement | null;
-      if (svg) {
-        const iconSize = Math.round(size * 0.42);
-        svg.setAttribute('width', String(iconSize));
-        svg.setAttribute('height', String(iconSize));
-      }
-
-      // 툴팁 표시
-      const tooltip = el.querySelector('[data-tooltip]') as HTMLElement | null;
-      if (tooltip) {
-        tooltip.style.opacity = isHovered && mouseIndex >= 0 ? '1' : '0';
-      }
-    });
-  }, [items]);
+  const ITEMS = useMemo(() => [
+    { id: 'settings', label: '설정', isOrb: false, disabled: false },
+    { id: 'universe', label: '우주', isOrb: false, disabled: false },
+    { id: 'orb', label: 'ORB', isOrb: true, disabled: false },
+    { id: 'add', label: '추가', isOrb: false, disabled: false },
+  ], []);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    mouseXRef.current = e.clientX;
-    if (rafRef.current !== null) return;
+    if (!dockRef.current || rafRef.current !== null) return;
+    const clientX = e.clientX;
     rafRef.current = requestAnimationFrame(() => {
       rafRef.current = null;
       if (!dockRef.current) return;
-      // 각 아이템의 중심 좌표와 비교하여 정확한 mouseIndex 계산
-      const els = itemRefs.current;
-      const mx = mouseXRef.current;
-      let closest = -1;
-      let minDist = Infinity;
-      for (let i = 0; i < els.length; i++) {
-        const el = els[i];
-        if (!el) continue;
-        const r = el.getBoundingClientRect();
-        const cx = r.left + r.width / 2;
-        const d = Math.abs(mx - cx);
-        if (d < minDist) { minDist = d; closest = i; }
-      }
-      // 가장 가까운 아이템 기준 보간
-      const el = els[closest];
-      if (!el) return;
-      const r = el.getBoundingClientRect();
-      const cx = r.left + r.width / 2;
-      const frac = (mx - cx) / r.width;
-      updateMagnification(closest + Math.max(-0.5, Math.min(0.5, frac)));
+      const rect = dockRef.current.getBoundingClientRect();
+      const x = clientX - rect.left;
+      const itemWidth = rect.width / ITEMS.length;
+      setMouseIndex(x / itemWidth);
     });
-  }, [items.length, updateMagnification]);
+  }, [ITEMS.length]);
 
-  const handleMouseLeave = useCallback(() => {
-    mouseXRef.current = -1;
-    if (rafRef.current !== null) {
-      cancelAnimationFrame(rafRef.current);
-      rafRef.current = null;
+  const handleClick = useCallback((id: string) => {
+    switch (id) {
+      case 'settings': router.push('/settings'); break;
+      case 'universe': onUniverse?.(); break;
+      case 'orb': router.push('/orb'); break;
+      case 'add': onAddWidget?.() ?? window.dispatchEvent(new CustomEvent('dock-add-widget')); break;
     }
-    updateMagnification(-1);
-  }, [updateMagnification]);
+  }, [onAddWidget, onUniverse, router]);
 
-  // items 변경 시 초기 크기 설정
-  useEffect(() => {
-    updateMagnification(-1);
-  }, [items.length, updateMagnification]);
-
-  const handleClick = useCallback((item: DockItem) => {
-    if (item.kind === 'orb') router.push('/orb/deep-talk');
-    else router.push(item.route);
-  }, [router]);
-
-  const handleDockDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-    const raw = e.dataTransfer.getData('application/ou-app');
-    if (!raw) return;
-    const { slug, source } = JSON.parse(raw) as { slug?: string; source: 'dock' | 'grid' };
-    if (source === 'grid' && slug) addToDock(slug);
-  }, [addToDock]);
+  function renderIcon(id: string) {
+    switch (id) {
+      case 'settings': return <GearIcon />;
+      case 'universe': return <GraphIcon />;
+      case 'orb': return <OrbIcon />;
+      case 'dictionary': return <BookIcon />;
+      case 'memory': return <ClockIcon />;
+      case 'add': return <PlusIcon />;
+      default: return null;
+    }
+  }
 
   return (
     <div
       ref={dockRef}
       onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      onDragOver={e => { e.preventDefault(); setIsDragOver(true); }}
-      onDragLeave={() => setIsDragOver(false)}
-      onDrop={handleDockDrop}
+      onMouseLeave={() => setMouseIndex(-1)}
       style={{
         display: 'inline-flex',
-        alignItems: 'flex-end',
+        alignItems: 'center',
         gap: 6,
-        padding: '10px 20px 12px',
+        padding: '8px 20px 10px',
         borderRadius: 'var(--ou-radius-lg)',
         background: 'var(--ou-bg)',
-        boxShadow: isDragOver
-          ? 'var(--ou-neu-raised-lg), 0 0 0 2px var(--ou-border-subtle)'
-          : 'var(--ou-neu-raised-lg)',
-        transition: 'box-shadow 150ms ease',
+        boxShadow: 'var(--ou-neu-raised-lg)',
       }}
     >
-      {items.map((item, i) => {
-        const isOrb  = item.kind === 'orb';
-        const slug   = item.kind === 'app' ? item.slug : undefined;
-        const Icon: PhosphorIcon | null = item.kind === 'app' ? resolveAppIcon(item.icon) : null;
-        const label  = item.kind === 'app' ? item.label : 'ORB';
-        const baseSize = isOrb ? ORB_SIZE : BASE_SIZE;
+      {ITEMS.map((item, i) => {
+        const scale = getMagnification(i, mouseIndex);
+        const baseSize = item.isOrb ? ORB_SIZE : BASE_SIZE;
+        const size = baseSize * scale;
+        const isHovered = Math.abs(i - mouseIndex) < 0.5;
 
         return (
           <div
-            key={isOrb ? 'orb' : item.slug}
-            ref={el => { itemRefs.current[i] = el; }}
+            key={item.id}
             style={{
-              display: 'flex', flexDirection: 'column', alignItems: 'center',
-              position: 'relative',
-              // transition은 CSS로 — transform에만 적용 (width/height는 버튼에서)
-              transition: 'transform 120ms cubic-bezier(0.34, 1.56, 0.64, 1)',
-              willChange: 'transform',
+              display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative',
+              transform: item.disabled && isHovered && mouseIndex >= 0 ? 'translateY(-5px)' : 'translateY(0)',
+              transition: 'transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1)',
             }}
           >
-            {/* 툴팁 — 항상 DOM에 존재, opacity로 토글 */}
-            <div
-              data-tooltip
-              style={{
-                position: 'absolute', bottom: '100%', left: '50%',
-                transform: 'translateX(-50%)', marginBottom: 8,
-                padding: '3px 9px', borderRadius: 6,
-                background: 'var(--ou-bg)', border: '1px solid var(--ou-border-subtle)',
-                fontSize: 11, color: 'var(--ou-text-body)', whiteSpace: 'nowrap',
+            {/* Tooltip */}
+            {isHovered && mouseIndex >= 0 && (
+              <div style={{
+                position: 'absolute',
+                bottom: '100%',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                marginBottom: 8,
+                padding: '4px 10px',
+                borderRadius: 6,
+                background: 'var(--ou-bg)',
+                border: '1px solid var(--ou-border-subtle)',
+                fontSize: 11,
+                color: 'var(--ou-text-body)',
+                whiteSpace: 'nowrap',
                 pointerEvents: 'none',
-                opacity: 0,
-                transition: 'opacity 80ms ease',
-              }}
-            >
-              {label}
-            </div>
+              }}>
+                {item.disabled ? '준비중입니다' : item.label}
+              </div>
+            )}
 
             <button
-              draggable={!isOrb}
-              onDragStart={!isOrb && slug ? (e) => {
-                e.dataTransfer.setData('application/ou-app', JSON.stringify({ slug, source: 'dock' }));
-                e.dataTransfer.effectAllowed = 'copy';
-              } : undefined}
-              onClick={() => handleClick(item)}
+              onClick={item.disabled ? undefined : () => handleClick(item.id)}
               style={{
-                width: baseSize, height: baseSize,
+                width: size,
+                height: size,
                 borderRadius: '50%',
                 background: 'var(--ou-bg)',
                 border: 'none',
-                boxShadow: 'var(--ou-neu-raised-md)',
-                // width/height transition은 DOM 직접 조작과 일치하도록 여기서 선언
-                transition: 'width 120ms cubic-bezier(0.34,1.56,0.64,1), height 120ms cubic-bezier(0.34,1.56,0.64,1), box-shadow 120ms ease',
-                cursor: 'pointer',
+                boxShadow: (item.id === 'universe' && universeActive)
+                  ? 'var(--ou-neu-pressed-md)'
+                  : isHovered && mouseIndex >= 0
+                    ? 'var(--ou-neu-raised-lg)'
+                    : 'var(--ou-neu-raised-md)',
+                transition: 'width 150ms cubic-bezier(0.34, 1.56, 0.64, 1), height 150ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 150ms ease',
+                cursor: item.disabled ? 'default' : 'pointer',
                 flexShrink: 0,
                 color: 'var(--ou-text-muted)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                willChange: 'width, height',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                opacity: item.disabled ? 0.5 : 1,
               }}
             >
-              {isOrb
-                ? <OrbIcon />
-                : Icon && <Icon size={Math.round(baseSize * 0.42)} weight="regular" />
-              }
+              {renderIcon(item.id)}
             </button>
 
+            {/* 라벨 */}
             <span style={{
-              fontSize: 9,
-              color: isOrb ? 'var(--ou-text-muted)' : 'var(--ou-text-disabled)',
-              marginTop: 3, letterSpacing: '0.3px',
+              fontSize: 10,
+              color: item.id === 'orb' ? 'var(--ou-text-muted)' : 'var(--ou-text-disabled)',
+              marginTop: 3,
+              letterSpacing: '0.5px',
             }}>
-              {label}
+              {item.label}
             </span>
           </div>
         );

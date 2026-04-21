@@ -76,8 +76,11 @@ export function ViewRenderer({ viewType, nodes, filters, onSave, inline, layoutC
     <ViewErrorBoundary viewType={resolvedType}>
       <div
         style={inline ? {
-          border: '0.5px solid var(--ou-border-subtle)',
-          borderRadius: 8,
+          background: 'var(--ou-glass)',
+          backdropFilter: 'var(--ou-blur-light)',
+          WebkitBackdropFilter: 'var(--ou-blur-light)',
+          border: '1px solid var(--ou-glass-border)',
+          borderRadius: 'var(--ou-radius-card)',
           overflow: 'hidden',
           maxHeight: 400,
         } : undefined}

@@ -8,7 +8,8 @@
 
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { VIEW_LABELS } from '@/components/views/registry';
+// TODO: VIEW_LABELS will be restored when views are rebuilt
+const VIEW_LABELS: Record<string, string> = {};
 
 const ADMIN_EMAILS = (process.env.ADMIN_EMAILS ?? process.env.NEXT_PUBLIC_ADMIN_EMAILS ?? '').split(',').map(e => e.trim()).filter(Boolean);
 

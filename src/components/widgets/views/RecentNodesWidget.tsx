@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { WidgetEmptyState } from '../WidgetEmptyState';
 
 interface DataNode {
   id: string;
@@ -74,7 +73,9 @@ export function RecentNodesWidget() {
         {loading ? (
           <div style={{ fontSize: 12, color: 'var(--ou-text-muted)', paddingTop: 8 }}>불러오는 중...</div>
         ) : nodes.length === 0 ? (
-          <WidgetEmptyState skeleton="list" />
+          <div style={{ fontSize: 12, color: 'var(--ou-text-muted)', paddingTop: 8 }}>
+            아직 기억이 없어요. Orb에서 말해보세요.
+          </div>
         ) : nodes.map(node => (
           <div key={node.id} style={{
             display: 'flex', alignItems: 'center', gap: 10,

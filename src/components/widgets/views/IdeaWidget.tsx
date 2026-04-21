@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { WidgetEmptyState } from '../WidgetEmptyState';
+import { useRouter } from 'next/navigation';
 
 interface IdeaNode {
   id: string;
@@ -16,6 +16,8 @@ interface IdeaNode {
 export function IdeaWidget() {
   const [ideas, setIdeas] = useState<IdeaNode[]>([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
   useEffect(() => {
     fetch('/api/nodes?domain=idea&limit=10')
       .then(r => r.json())
@@ -47,7 +49,17 @@ export function IdeaWidget() {
         {loading ? (
           <div style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>불러오는 중...</div>
         ) : ideas.length === 0 ? (
-          <WidgetEmptyState skeleton="idea" />
+          <button
+            onClick={() => router.push('/orb')}
+            style={{
+              background: 'none', border: 'none', cursor: 'pointer',
+              textAlign: 'left', padding: 0,
+              fontSize: 11, color: 'var(--ou-text-muted)',
+              lineHeight: 1.6,
+            }}
+          >
+            Orb에서 아이디어를 기록해보세요 →
+          </button>
         ) : ideas.map(idea => (
           <div key={idea.id} style={{
             padding: '8px 10px',
