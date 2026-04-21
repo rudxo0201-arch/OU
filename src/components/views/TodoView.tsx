@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { CaretDown, CaretRight } from '@phosphor-icons/react';
 import dayjs from 'dayjs';
 import { stripLLMMeta } from '@/lib/utils/stripLLMMeta';
 import { cleanDisplayText } from '@/lib/utils/cleanDisplayText';
@@ -10,12 +11,11 @@ import type { ViewProps } from './registry';
 dayjs.locale('ko');
 
 /**
- * 투두 리스트 뷰
- * 참고: Apple 리마인더, Todoist, Things 3
- * - 날짜별 그룹핑
- * - 체크박스 토글
- * - 완료 항목 접기
- * - 우선순위 표시 (도트 색상)
+ * Todo 리스트 뷰 — Todoist / Things 3 참고
+ * - 날짜별 그룹핑 (오늘 / 내일 / M월 D일)
+ * - 44px 아이템 높이, 18px 체크박스
+ * - 마감일 배지, 우선순위 도트
+ * - 완료 섹션 접기/펼치기
  */
 
 type TodoItem = {
@@ -44,7 +44,7 @@ function parseTodos(nodes: ViewProps['nodes']): TodoItem[] {
     }));
 }
 
-function groupByDate(items: TodoItem[]): { label: string; items: TodoItem[] }[] {
+function groupByDate(items: TodoItem[]): { label: string; isToday: boolean; items: TodoItem[] }[] {
   const groups = new Map<string, TodoItem[]>();
   const today = dayjs().format('YYYY-MM-DD');
   const tomorrow = dayjs().add(1, 'day').format('YYYY-MM-DD');
@@ -66,6 +66,7 @@ function groupByDate(items: TodoItem[]): { label: string; items: TodoItem[] }[] 
         : dateStr === tomorrow ? '내일'
         : dateStr === 'no-date' ? '날짜 없음'
         : dayjs(dateStr).format('M월 D일 (ddd)'),
+      isToday: dateStr === today,
       items,
     }));
 }
@@ -95,19 +96,14 @@ export function TodoView({ nodes, inline }: ViewProps) {
   if (inline) {
     const items = allTodos.slice(0, 5);
     return (
-      <div style={{
-        padding: '10px 14px',
-        border: 'none',
-        borderRadius: 'var(--ou-radius-md, 8px)',
-        boxShadow: 'var(--ou-neu-raised-sm)',
-        display: 'flex', flexDirection: 'column', gap: 6,
-      }}>
-        <span style={{ fontSize: 11, color: 'var(--ou-text-muted)', letterSpacing: 1 }}>TODO</span>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
         {items.map(item => (
           <TodoRow key={item.id} item={item} isDone={getIsDone(item)} onToggle={() => toggle(item.id)} compact />
         ))}
         {allTodos.length > 5 && (
-          <span style={{ fontSize: 10, color: 'var(--ou-text-muted)' }}>+{allTodos.length - 5}개 더</span>
+          <span style={{ fontSize: 11, color: 'var(--ou-text-muted)', paddingLeft: 28 }}>
+            +{allTodos.length - 5}개 더
+          </span>
         )}
       </div>
     );
@@ -115,59 +111,87 @@ export function TodoView({ nodes, inline }: ViewProps) {
 
   // 전체 뷰
   return (
-    <div style={{ padding: 20, maxWidth: 600, margin: '0 auto' }}>
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-        <h2 style={{ fontSize: 18, fontWeight: 600, color: 'var(--ou-text-heading)', margin: 0 }}>
-          할 일
-        </h2>
-        <span style={{ fontSize: 12, color: 'var(--ou-text-muted)' }}>
-          {activeTodos.length}개 남음
-        </span>
-      </div>
+    <div style={{ maxWidth: 680, paddingBottom: 40 }}>
 
-      {/* Active groups */}
+      {/* 날짜 그룹 */}
       {activeGroups.map(group => (
-        <div key={group.label} style={{ marginBottom: 20 }}>
-          <span style={{
-            fontSize: 12, fontWeight: 600,
-            color: group.label === '오늘' ? 'var(--ou-text-strong, #fff)' : 'var(--ou-text-dimmed, #888)',
-            display: 'block', marginBottom: 8,
+        <div key={group.label} style={{ marginBottom: 32 }}>
+          {/* 그룹 헤더 */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 8,
+            marginBottom: 4,
+            paddingBottom: 8,
+            borderBottom: '1px solid var(--ou-border-faint)',
           }}>
-            {group.label}
-          </span>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <span style={{
+              fontSize: 13,
+              fontWeight: 600,
+              color: group.isToday ? 'var(--ou-text-strong)' : 'var(--ou-text-secondary)',
+              letterSpacing: '-0.01em',
+            }}>
+              {group.label}
+            </span>
+            <span style={{
+              fontSize: 11,
+              color: 'var(--ou-text-disabled)',
+              fontFamily: 'var(--ou-font-mono)',
+            }}>
+              {group.items.length}
+            </span>
+          </div>
+
+          {/* 아이템 */}
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
             {group.items.map(item => (
-              <TodoRow key={item.id} item={item} isDone={getIsDone(item)} onToggle={() => toggle(item.id)} />
+              <TodoRow
+                key={item.id}
+                item={item}
+                isDone={getIsDone(item)}
+                onToggle={() => toggle(item.id)}
+              />
             ))}
           </div>
         </div>
       ))}
 
       {activeTodos.length === 0 && (
-        <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--ou-text-muted)', fontSize: 13 }}>
-          모든 할 일을 완료했어요
+        <div style={{
+          textAlign: 'center',
+          padding: '64px 0',
+          color: 'var(--ou-text-disabled)',
+          fontSize: 14,
+        }}>
+          모든 할 일을 완료했어요 ✓
         </div>
       )}
 
-      {/* Done section */}
+      {/* 완료 섹션 */}
       {doneTodos.length > 0 && (
-        <div style={{ marginTop: 16 }}>
+        <div style={{ marginTop: 8 }}>
           <button
             onClick={() => setDoneVisible(!doneVisible)}
             style={{
-              fontSize: 12, color: 'var(--ou-text-muted)',
-              cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
-              marginBottom: 8, border: 'none', background: 'none',
-              padding: '6px 12px', borderRadius: 8,
-              boxShadow: doneVisible ? 'var(--ou-neu-pressed-sm)' : 'var(--ou-neu-raised-sm)',
+              display: 'flex', alignItems: 'center', gap: 6,
+              padding: '8px 12px',
+              border: 'none', borderRadius: 8,
+              background: 'transparent',
+              cursor: 'pointer',
+              color: 'var(--ou-text-secondary)',
+              fontSize: 13,
+              fontWeight: 500,
             }}
           >
-            <span style={{ fontSize: 10 }}>{doneVisible ? '▼' : '▶'}</span>
-            완료됨 ({doneTodos.length})
+            {doneVisible
+              ? <CaretDown size={14} weight="bold" />
+              : <CaretRight size={14} weight="bold" />
+            }
+            완료됨
+            <span style={{ fontSize: 11, color: 'var(--ou-text-disabled)', fontFamily: 'var(--ou-font-mono)' }}>
+              {doneTodos.length}
+            </span>
           </button>
           {doneVisible && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 2, opacity: 0.5 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', opacity: 0.5, marginTop: 4 }}>
               {doneTodos.map(item => (
                 <TodoRow key={item.id} item={item} isDone onToggle={() => toggle(item.id)} />
               ))}
@@ -179,7 +203,8 @@ export function TodoView({ nodes, inline }: ViewProps) {
   );
 }
 
-// ---- Todo Row ----
+// ── Todo Row ───────────────────────────────────────────────────────────
+
 function TodoRow({ item, isDone, onToggle, compact }: {
   item: TodoItem;
   isDone: boolean;
@@ -187,57 +212,74 @@ function TodoRow({ item, isDone, onToggle, compact }: {
   compact?: boolean;
 }) {
   const priorityColor = item.priority && item.priority >= 3
-    ? 'rgba(255,120,100,0.8)'
+    ? 'rgba(255,100,80,0.9)'
     : item.priority === 2
-    ? 'rgba(255,200,100,0.8)'
+    ? 'rgba(255,180,60,0.9)'
     : 'var(--ou-border-muted)';
+
+  const isOverdue = !isDone && item.deadline
+    && dayjs(item.deadline).isBefore(dayjs(), 'day');
 
   return (
     <div
       onClick={onToggle}
       style={{
-        display: 'flex', alignItems: 'center', gap: compact ? 8 : 10,
-        padding: compact ? '3px 4px' : '8px 10px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: compact ? 8 : 12,
+        height: compact ? 32 : 44,
+        padding: compact ? '0 4px' : '0 12px',
         cursor: 'pointer',
         borderRadius: 8,
-        transition: '150ms ease',
-        boxShadow: isDone ? 'var(--ou-neu-pressed-sm)' : 'var(--ou-neu-raised-sm)',
-        marginBottom: compact ? 0 : 2,
+        transition: 'background 100ms ease',
+      }}
+      onMouseEnter={e => {
+        (e.currentTarget as HTMLDivElement).style.background = 'var(--ou-surface-hover)';
+      }}
+      onMouseLeave={e => {
+        (e.currentTarget as HTMLDivElement).style.background = 'transparent';
       }}
     >
-      {/* Checkbox */}
+      {/* 체크박스 */}
       <div style={{
-        width: compact ? 14 : 18,
-        height: compact ? 14 : 18,
-        borderRadius: compact ? 3 : 5,
-        border: isDone
-          ? `1.5px solid var(--ou-text-muted)`
-          : `1.5px solid ${priorityColor}`,
-        background: isDone ? 'var(--ou-text-muted)' : 'transparent',
+        width: compact ? 15 : 18,
+        height: compact ? 15 : 18,
+        borderRadius: compact ? 4 : 5,
+        border: isDone ? '1.5px solid var(--ou-text-disabled)' : `1.5px solid ${priorityColor}`,
+        background: isDone ? 'var(--ou-surface-muted)' : 'transparent',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         flexShrink: 0,
         transition: '150ms ease',
       }}>
         {isDone && (
           <svg width={compact ? 8 : 10} height={compact ? 8 : 10} viewBox="0 0 10 10" fill="none">
-            <path d="M2 5.5L4 7.5L8 3" stroke="#111" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M2 5.5L4 7.5L8 3" stroke="var(--ou-text-muted)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         )}
       </div>
 
-      {/* Title */}
+      {/* 제목 */}
       <span style={{
-        fontSize: compact ? 12 : 13,
-        color: isDone ? 'var(--ou-text-dimmed, #888)' : 'var(--ou-text-strong, #fff)',
+        fontSize: compact ? 13 : 14,
+        color: isDone ? 'var(--ou-text-disabled)' : 'var(--ou-text-body)',
         textDecoration: isDone ? 'line-through' : 'none',
-        flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+        flex: 1,
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+        letterSpacing: '-0.01em',
       }}>
         {item.title}
       </span>
 
-      {/* Deadline */}
+      {/* 마감일 */}
       {item.deadline && !compact && (
-        <span style={{ fontSize: 10, color: 'var(--ou-text-muted)', flexShrink: 0 }}>
+        <span style={{
+          fontSize: 12,
+          color: isOverdue ? 'rgba(255,100,80,0.8)' : 'var(--ou-text-disabled)',
+          flexShrink: 0,
+          fontFamily: 'var(--ou-font-mono)',
+        }}>
           {dayjs(item.deadline).format('M/D')}
         </span>
       )}
