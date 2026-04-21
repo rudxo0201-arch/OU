@@ -19,7 +19,9 @@ export function OrbView({ domain, viewType, orbSlug }: OrbViewProps) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // 도메인 없는 Orb (time 등)는 데이터 불필요
     if (!domain) {
+      setNodes(['__no_domain__'] as any); // ViewRenderer가 nodes 체크하므로 dummy
       setLoading(false);
       return;
     }
@@ -47,7 +49,7 @@ export function OrbView({ domain, viewType, orbSlug }: OrbViewProps) {
     );
   }
 
-  if (nodes.length === 0) {
+  if (nodes.length === 0 && domain) {
     return (
       <div style={{
         display: 'flex',

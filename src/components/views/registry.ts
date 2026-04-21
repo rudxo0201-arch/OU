@@ -22,6 +22,7 @@ export interface ViewMeta {
 export const VIEW_REGISTRY: Record<string, ComponentType<ViewProps>> = {
   // ── Wave 1: 기본 내장 ──
   note:       dynamic(() => import('./NoteView').then(m => m.NoteView), { ssr: false }),
+  time:       dynamic(() => import('./TimeView').then(m => m.TimeView), { ssr: false }),
   todo:       dynamic(() => import('./TodoView').then(m => m.TodoView), { ssr: false }),
   calendar:   dynamic(() => import('./CalendarView').then(m => m.CalendarView), { ssr: false }),
   table:      dynamic(() => import('./TableView').then(m => m.TableView), { ssr: false }),

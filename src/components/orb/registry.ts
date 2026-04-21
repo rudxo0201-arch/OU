@@ -18,6 +18,7 @@ export const ORB_REGISTRY: Record<string, OrbDef> = {
   youtube:  { slug: 'youtube',  title: 'YouTube', icon: '▶', domain: 'media',    viewType: 'youtube',  placeholder: 'YouTube 영상을 기록해보세요...' },
   map:      { slug: 'map',      title: '지도',     icon: '◎', domain: 'location', viewType: 'map',      placeholder: '장소를 기록해보세요...' },
   people:   { slug: 'people',   title: '피플',     icon: '◯', domain: 'relation', viewType: 'profile',  placeholder: '사람이나 관계를 기록해보세요...' },
+  time:     { slug: 'time',     title: '시계',     icon: '◷', viewType: 'time',    placeholder: '' },
   /** Deep Talk: viewType 없음 = LLM 대화창 */
   'deep-talk': { slug: 'deep-talk', title: 'Deep Talk', icon: '◉', placeholder: '무엇이든 깊이 이야기해보세요...' },
 };
