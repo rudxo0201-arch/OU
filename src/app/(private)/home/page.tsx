@@ -34,7 +34,13 @@ function HomePage() {
   const moveOnGrid = useHomeStore(s => s.moveOnGrid);
   const removeFromGrid = useHomeStore(s => s.removeFromGrid);
   const findFreeCell = useHomeStore(s => s.findFreeCell);
+  const ensureDefaults = useHomeStore(s => s.ensureDefaults);
   const hydrated = useHomeStore(s => s._hasHydrated);
+
+  // hydration 후 QSD 등 기본 아이템 보장
+  useEffect(() => {
+    if (hydrated) ensureDefaults();
+  }, [hydrated, ensureDefaults]);
 
   // 드래그 오버 중인 셀
   const [dragOverCell, setDragOverCell] = useState<{ col: number; row: number } | null>(null);

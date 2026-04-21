@@ -18,6 +18,7 @@ type HomeState = {
   removeFromDock: (slug: string) => void;
   reorderDock: (slugs: string[]) => void;
   findFreeCell: () => { col: number; row: number } | null;
+  ensureDefaults: () => void;
 };
 
 // 기본 레이아웃: QSD (행0, 전체 너비로 논리상 col=0) + 6앱 아이콘 (2행 × 3열)
@@ -81,20 +82,15 @@ export const useHomeStore = createSafeStore<HomeState>(
       }
       return null;
     },
-  }),
-  {
-    name: 'ou-home-layout',
-    merge: (persisted: any, current: any) => {
-      const merged = { ...current, ...persisted };
-      // QSD가 없으면 기본 위치(row 0)에 복구
-      const hasQSD = merged.gridItems?.some((i: GridItem) => i.type === 'qsd');
+
+    ensureDefaults: () => {
+      const { gridItems } = get();
+      const hasQSD = gridItems.some(i => i.type === 'qsd');
       if (!hasQSD) {
-        merged.gridItems = [
-          { id: 'qsd-default', type: 'qsd', col: 0, row: 0 },
-          ...(merged.gridItems ?? []),
-        ];
+        // QSD 없으면 기본 레이아웃 전체 복구
+        set(s => ({ ...s, gridItems: DEFAULT_GRID_ITEMS }));
       }
-      return merged;
     },
-  },
+  }),
+  { name: 'ou-home-layout' },
 );
