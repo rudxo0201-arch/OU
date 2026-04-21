@@ -1,5 +1,4 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { createSafeStore } from '@/lib/createSafeStore';
 import type { WidgetInstance } from '@/components/widgets/types';
 import { GRID_COLS, GRID_ROWS } from '@/components/widgets/types';
 import { DEFAULT_LAYOUT, DEFAULT_PAGE2_LAYOUT, ADMIN_LAYOUT, ADMIN_PAGE2_LAYOUT } from '@/components/widgets/presets';
@@ -89,9 +88,8 @@ const DEFAULT_PAGES: WidgetPage[] = [
   { id: 'page3', name: '페이지 3', widgets: [] },
 ];
 
-export const useWidgetStore = create<WidgetStore>()(
-  persist(
-    (set, get) => ({
+export const useWidgetStore = createSafeStore<WidgetStore>(
+  (set, get) => ({
       pages: DEFAULT_PAGES,
       currentPageIndex: 0,
       gridCols: GRID_COLS,
@@ -207,22 +205,21 @@ export const useWidgetStore = create<WidgetStore>()(
       }),
 
       resetLayout: () => set({ pages: DEFAULT_PAGES, currentPageIndex: 0 }),
+  }),
+  {
+    name: 'ou-widget-layout',
+    version: LAYOUT_VERSION,
+    migrate: () => ({
+      pages: DEFAULT_PAGES,
+      currentPageIndex: 0,
     }),
-    {
-      name: 'ou-widget-layout',
-      version: LAYOUT_VERSION,
-      migrate: () => ({
-        pages: DEFAULT_PAGES,
-        currentPageIndex: 0,
-      }),
-      merge: (persisted, current) => {
-        const state = { ...current, ...(persisted as object) };
-        if (!state.pages || !Array.isArray(state.pages) || state.pages.length === 0) {
-          state.pages = DEFAULT_PAGES;
-          state.currentPageIndex = 0;
-        }
-        return state;
-      },
+    merge: (persisted: any, current: any) => {
+      const state = { ...current, ...(persisted as object) };
+      if (!state.pages || !Array.isArray(state.pages) || state.pages.length === 0) {
+        state.pages = DEFAULT_PAGES;
+        state.currentPageIndex = 0;
+      }
+      return state;
     },
-  ),
+  },
 );

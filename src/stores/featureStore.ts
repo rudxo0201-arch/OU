@@ -1,5 +1,4 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { createSafeStore } from '@/lib/createSafeStore';
 import { getDefaultUnlockedIds } from '@/lib/features/registry';
 
 interface FeatureStore {
@@ -20,9 +19,8 @@ interface FeatureStore {
   setHydrated: (hydrated: boolean) => void;
 }
 
-export const useFeatureStore = create<FeatureStore>()(
-  persist(
-    (set, get) => ({
+export const useFeatureStore = createSafeStore<FeatureStore>(
+  (set, get) => ({
       unlockedFeatures: getDefaultUnlockedIds(),
       hydrated: false,
 
@@ -41,11 +39,10 @@ export const useFeatureStore = create<FeatureStore>()(
 
       setHydrated: (hydrated) => set({ hydrated }),
     }),
-    {
-      name: 'ou-features',
-      partialize: (state) => ({
-        unlockedFeatures: state.unlockedFeatures,
-      }),
-    }
-  )
+  {
+    name: 'ou-features',
+    partialize: (state: any) => ({
+      unlockedFeatures: state.unlockedFeatures,
+    }),
+  },
 );

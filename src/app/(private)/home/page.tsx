@@ -13,16 +13,7 @@ import { useWidgetStore } from '@/stores/widgetStore';
 import { useTutorialStore } from '@/stores/tutorialStore';
 import { ViewPickerPanel } from '@/components/widgets/ViewPickerPanel';
 import { TUTORIAL_INITIAL_LAYOUT } from '@/components/widgets/presets';
-import { TUTORIAL_STEPS } from '@/data/tutorial';
 
-function getGreetingDate() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  const weekdays = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
-  return `${year} · ${month} · ${day} · ${weekdays[now.getDay()]}`;
-}
 
 type Mode = 'dashboard' | 'to-universe' | 'universe' | 'to-dashboard';
 
@@ -42,19 +33,9 @@ export default function MyPageWrapper() {
   );
 }
 
-const GREETING_STORAGE_KEY = 'ou-custom-greeting';
-
 function MyPage() {
   const { user, isLoading, isAdmin } = useAuth();
   const router = useRouter();
-  const [displayName, setDisplayName] = useState('');
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [greetingDate, setGreetingDate] = useState('');
-  const [greetingText, setGreetingText] = useState('');
-  const [editingGreeting, setEditingGreeting] = useState(false);
-  const greetingInputRef = useRef<HTMLInputElement>(null);
-  const [greetingPos, setGreetingPos] = useState<{ top: number; left: number }>({ top: 64, left: 40 });
-  const dragState = useRef<{ startX: number; startY: number; origTop: number; origLeft: number } | null>(null);
   const searchParams = useSearchParams();
   const isReplay = searchParams.get('tutorial') === 'replay';
   const inviteToken = searchParams.get('invite');
@@ -65,6 +46,7 @@ function MyPage() {
   const initAdminLayout = useWidgetStore(s => s.initAdminLayout);
   const setWidgets = useWidgetStore(s => s.setWidgets);
   const timerRef = useRef<NodeJS.Timeout>();
+  const initAdminCalled = useRef(false);
 
   const tutorialPhase = useTutorialStore(s => s.phase);
   const tutorialStepIndex = useTutorialStore(s => s.stepIndex);
@@ -108,48 +90,6 @@ function MyPage() {
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isReplay]);
-
-  // 날짜 — 클라이언트에서만 세팅 (hydration 안전)
-  useEffect(() => { setGreetingDate(getGreetingDate()); }, []);
-
-  // display_name 패칭
-  useEffect(() => {
-    if (!user?.id) return;
-    import('@/lib/supabase/client').then(({ createClient }) => {
-      createClient().from('profiles').select('display_name').eq('id', user.id).single()
-        .then(({ data }) => {
-          const name = data?.display_name ?? user?.email?.split('@')[0] ?? '회원';
-          if (data?.display_name) setDisplayName(data.display_name);
-          // 커스텀 인사 없으면 기본값 설정
-          const saved = localStorage.getItem(GREETING_STORAGE_KEY);
-          setGreetingText(saved ?? `안녕하세요, ${name}님.`);
-        });
-    });
-  }, [user?.id]);
-
-  // 인사 헤더 위치 복원
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem('ou-greeting-pos');
-      if (saved) setGreetingPos(JSON.parse(saved));
-    } catch { /* ignore */ }
-  }, []);
-
-  // 편집 모드 이벤트 구독
-  useEffect(() => {
-    const handler = (e: Event) => {
-      const { editMode } = (e as CustomEvent).detail;
-      setIsEditMode(editMode);
-      if (!editMode) setEditingGreeting(false);
-    };
-    window.addEventListener('widget-edit-mode-change', handler);
-    return () => window.removeEventListener('widget-edit-mode-change', handler);
-  }, []);
-
-  // 편집 모드 진입 시 인풋 포커스
-  useEffect(() => {
-    if (editingGreeting) greetingInputRef.current?.focus();
-  }, [editingGreeting]);
 
   // 초대 토큰 처리: 가입 직후 A가 공유한 팩트 정보를 B의 프로필에 자동 등록 + A에게 유니 보상
   useEffect(() => {
@@ -223,10 +163,10 @@ function MyPage() {
 
 
   useEffect(() => {
-    if (isAdmin && !isLoading) {
+    if (isAdmin && !isLoading && !initAdminCalled.current) {
+      initAdminCalled.current = true;
       initAdminLayout();
-      // 전체 뷰 자동 설치 (멱등성 — 이미 있으면 스킵)
-      fetch('/api/views/init-admin', { method: 'POST' }).catch(() => {});
+      fetch('/api/views/init-admin', { method: 'POST' }).catch(console.warn);
     }
   }, [isAdmin, isLoading, initAdminLayout]);
 
@@ -278,111 +218,9 @@ function MyPage() {
       {/* Full-bleed content area */}
       <div style={{ position: 'absolute', inset: 0 }}>
 
-        {/* 인사 헤더 */}
-        {showWidgets && (
-          <div
-            style={{
-              position: 'absolute',
-              top: greetingPos.top,
-              left: greetingPos.left,
-              display: 'flex', flexDirection: 'column',
-              padding: isEditMode ? '6px 8px' : 0,
-              borderRadius: isEditMode ? 8 : 0,
-              outline: isEditMode ? '1.5px dashed var(--ou-border-subtle)' : 'none',
-              zIndex: 5,
-              cursor: isEditMode ? 'grab' : 'default',
-              pointerEvents: isEditMode ? 'auto' : 'none',
-              userSelect: 'none',
-              transition: 'outline 150ms, padding 150ms',
-            }}
-            onPointerDown={isEditMode ? (e) => {
-              if (editingGreeting) return;
-              e.currentTarget.setPointerCapture(e.pointerId);
-              dragState.current = {
-                startX: e.clientX, startY: e.clientY,
-                origTop: greetingPos.top, origLeft: greetingPos.left,
-              };
-            } : undefined}
-            onPointerMove={isEditMode ? (e) => {
-              if (!dragState.current) return;
-              const { startX, startY, origTop, origLeft } = dragState.current;
-              setGreetingPos({
-                top: origTop + (e.clientY - startY),
-                left: origLeft + (e.clientX - startX),
-              });
-            } : undefined}
-            onPointerUp={isEditMode ? (e) => {
-              if (!dragState.current) return;
-              dragState.current = null;
-              (e.currentTarget as HTMLElement).style.cursor = 'grab';
-              try {
-                localStorage.setItem('ou-greeting-pos', JSON.stringify(greetingPos));
-              } catch { /* ignore */ }
-            } : undefined}
-          >
-            {/* 날짜 */}
-            <div style={{
-              fontSize: 12, letterSpacing: '2px',
-              color: 'var(--ou-text-muted)',
-              fontFamily: 'var(--ou-font-logo)',
-              marginBottom: 8,
-            }}>
-              {greetingDate}
-            </div>
-
-            {/* 인사 텍스트 */}
-            {editingGreeting ? (
-              <input
-                ref={greetingInputRef}
-                value={greetingText}
-                onChange={e => setGreetingText(e.target.value)}
-                onPointerDown={e => e.stopPropagation()}
-                onBlur={() => {
-                  localStorage.setItem(GREETING_STORAGE_KEY, greetingText);
-                  setEditingGreeting(false);
-                }}
-                onKeyDown={e => {
-                  if (e.key === 'Enter' || e.key === 'Escape') {
-                    localStorage.setItem(GREETING_STORAGE_KEY, greetingText);
-                    setEditingGreeting(false);
-                  }
-                }}
-                style={{
-                  fontSize: 30, fontWeight: 700,
-                  color: 'var(--ou-text-bright)',
-                  letterSpacing: '-0.02em',
-                  lineHeight: 1.2,
-                  background: 'transparent',
-                  border: 'none',
-                  borderBottom: '1.5px solid var(--ou-border-subtle)',
-                  outline: 'none',
-                  width: '100%',
-                  minWidth: 200,
-                  padding: '2px 0',
-                  fontFamily: 'inherit',
-                }}
-              />
-            ) : (
-              <div
-                onClick={() => isEditMode && setEditingGreeting(true)}
-                style={{
-                  fontSize: 30, fontWeight: 700,
-                  color: 'var(--ou-text-bright)',
-                  letterSpacing: '-0.02em',
-                  lineHeight: 1.2,
-                  cursor: isEditMode ? 'text' : 'default',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {greetingText || `안녕하세요, ${displayName || user?.email?.split('@')[0] || '회원'}님.`}
-              </div>
-            )}
-          </div>
-        )}
-
         <div style={{
           position: 'absolute',
-          top: 52, bottom: 148, left: 40, right: 40,
+          top: 0, bottom: 148, left: 40, right: 40,
           visibility: showWidgets ? 'visible' : 'hidden',
           pointerEvents: mode === 'dashboard' ? 'auto' : 'none',
         }}>

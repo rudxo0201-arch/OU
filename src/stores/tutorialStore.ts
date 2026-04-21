@@ -1,5 +1,4 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { createSafeStore } from '@/lib/createSafeStore';
 import { TUTORIAL_STEP_COUNT } from '@/data/tutorial';
 
 type TutorialPhase = 'idle' | 'active' | 'edit-mode' | 'completed' | 'skipped';
@@ -34,9 +33,8 @@ function recordTutorialComplete() {
   fetch('/api/tutorial/complete', { method: 'POST' }).catch(() => {});
 }
 
-export const useTutorialStore = create<TutorialStore>()(
-  persist(
-    (set, get) => ({
+export const useTutorialStore = createSafeStore<TutorialStore>(
+  (set, get) => ({
       phase: 'idle',
       stepIndex: 0,
       celebrated: false,
@@ -113,18 +111,16 @@ export const useTutorialStore = create<TutorialStore>()(
         const { getTutorialStep } = require('@/data/tutorial');
         return getTutorialStep(stepIndex)?.ghostText;
       },
-    }),
-    {
-      name: 'ou-tutorial',
-      version: 3,
-      migrate: (persisted: unknown) => {
-        const s = persisted as { phase?: string; stepIndex?: number; celebrated?: boolean };
-        // 완료/스킵된 경우는 유지, 중간 진행 중이면 리셋 (스텝 수 변경)
-        if (s?.phase === 'completed' || s?.phase === 'skipped') {
-          return { phase: s.phase, stepIndex: 0, celebrated: s.celebrated ?? false, pendingWidget: null };
-        }
-        return { phase: 'idle', stepIndex: 0, celebrated: false, pendingWidget: null };
-      },
-    }
-  )
+  }),
+  {
+    name: 'ou-tutorial',
+    version: 3,
+    migrate: (persisted: unknown) => {
+      const s = persisted as { phase?: string; stepIndex?: number; celebrated?: boolean };
+      if (s?.phase === 'completed' || s?.phase === 'skipped') {
+        return { phase: s.phase, stepIndex: 0, celebrated: s.celebrated ?? false, pendingWidget: null };
+      }
+      return { phase: 'idle', stepIndex: 0, celebrated: false, pendingWidget: null };
+    },
+  },
 );

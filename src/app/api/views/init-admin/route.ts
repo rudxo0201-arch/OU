@@ -44,10 +44,12 @@ export async function POST() {
     return NextResponse.json({ ok: true, installed: 0, message: '이미 전체 설치됨' });
   }
 
-  const { error } = await supabase.from('saved_views').insert(toInsert);
+  const { error } = await supabase
+    .from('saved_views')
+    .upsert(toInsert, { onConflict: 'user_id,view_type', ignoreDuplicates: true });
 
   if (error) {
-    console.error('[init-admin] insert error:', error.message);
+    console.error('[init-admin] upsert error:', error.message);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 

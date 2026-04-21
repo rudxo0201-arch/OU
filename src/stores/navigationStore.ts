@@ -1,5 +1,4 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { createSafeStore } from '@/lib/createSafeStore';
 
 export interface SavedView {
   id: string;
@@ -48,9 +47,8 @@ interface NavigationStore {
   reorderPinnedViews: (ids: string[]) => void;
 }
 
-export const useNavigationStore = create<NavigationStore>()(
-  persist(
-    set => ({
+export const useNavigationStore = createSafeStore<NavigationStore>(
+  set => ({
       collapsed: false,
       savedViews: [],
       activeViewId: null,
@@ -87,7 +85,6 @@ export const useNavigationStore = create<NavigationStore>()(
         pinnedViewIds: s.pinnedViewIds.filter(id => id !== viewId),
       })),
       reorderPinnedViews: ids => set({ pinnedViewIds: ids }),
-    }),
-    { name: 'ou-navigation' }
-  )
+  }),
+  { name: 'ou-navigation' },
 );
