@@ -70,14 +70,24 @@ export function AppView({ appDef, nodes, activeView: initialView }: Props) {
 
   // ── 뷰 전환 탭 ───────────────────────────────────────────────────────
   const viewSwitcher = allViews.length > 1 ? (
-    <div style={{ display: 'flex', gap: 2, background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-pressed-sm)', borderRadius: 8, padding: 3 }}>
+    <div style={{
+      display: 'flex', gap: 2,
+      background: 'var(--ou-bg)',
+      boxShadow: 'var(--ou-neu-pressed-sm)',
+      borderRadius: 8,
+      padding: 3,
+    }}>
       {allViews.map(v => (
         <button
           key={v}
           onClick={() => switchView(v)}
           style={{
-            padding: '4px 12px', fontSize: 12, fontWeight: 500,
-            border: 'none', borderRadius: 6, cursor: 'pointer',
+            padding: '6px 14px',
+            fontSize: 13,
+            fontWeight: 500,
+            border: 'none',
+            borderRadius: 6,
+            cursor: 'pointer',
             background: v === activeView ? 'var(--ou-bg)' : 'transparent',
             boxShadow: v === activeView ? 'var(--ou-neu-raised-sm)' : 'none',
             color: v === activeView ? 'var(--ou-text-strong)' : 'var(--ou-text-muted)',
@@ -96,20 +106,18 @@ export function AppView({ appDef, nodes, activeView: initialView }: Props) {
 
   return (
     <BaseAppLayout appLabel={appDef.label} sidebar={sidebar} headerRight={viewSwitcher}>
-      {/* 뷰 콘텐츠 */}
-      <div style={{ padding: '28px 32px', paddingBottom: showInputBar ? 8 : 28 }}>
+      <div style={{ padding: '24px 32px', paddingBottom: showInputBar ? 8 : 24 }}>
         {filteredNodes.length === 0 ? (
           <EmptyState domain={appDef.domain} />
         ) : ViewComp ? (
           <ViewComp nodes={filteredNodes} />
         ) : (
-          <div style={{ color: 'var(--ou-text-muted)', fontSize: 13 }}>
+          <div style={{ color: 'var(--ou-text-muted)', fontSize: 14 }}>
             뷰를 불러올 수 없습니다 ({activeView})
           </div>
         )}
       </div>
 
-      {/* 기록형 AI 입력바 */}
       {showInputBar && (
         <AppInputBar
           domain={appDef.domain}
@@ -158,34 +166,50 @@ function CalendarSidebar({ nodes }: { nodes: any[] }) {
   ).length;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       <SidebarLabel>OU Calendar</SidebarLabel>
 
-      {/* Stats */}
-      <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 24 }}>
         <StatBadge value={nodes.length} label="전체" />
         <StatBadge value={thisMonth} label="이번달" />
       </div>
 
-      {/* Upcoming events */}
       <SidebarSection title="다가오는 일정">
         {upcoming.length === 0 ? (
-          <div style={{ fontSize: 11, color: 'var(--ou-text-disabled)', padding: '4px 0' }}>일정 없음</div>
+          <div style={{ fontSize: 12, color: 'var(--ou-text-disabled)', padding: '4px 0' }}>일정 없음</div>
         ) : upcoming.map(n => {
           const d = dayjs(n.domain_data.date);
           const isToday = d.format('YYYY-MM-DD') === today.format('YYYY-MM-DD');
           return (
-            <div key={n.id} style={{ display: 'flex', gap: 10, padding: '6px 0', borderBottom: '1px solid var(--ou-border-faint)' }}>
-              <div style={{ textAlign: 'center', flexShrink: 0, minWidth: 28 }}>
-                <div style={{ fontSize: 10, color: 'var(--ou-text-dimmed)', lineHeight: 1 }}>{d.format('M/D')}</div>
-                <div style={{ fontSize: 11, fontWeight: isToday ? 700 : 500, color: isToday ? 'var(--ou-text-bright)' : 'var(--ou-text-muted)', lineHeight: 1.4 }}>{d.format('ddd')}</div>
+            <div key={n.id} style={{
+              display: 'flex', gap: 12, padding: '8px 0',
+              borderBottom: '1px solid var(--ou-border-faint)',
+            }}>
+              <div style={{ textAlign: 'center', flexShrink: 0, minWidth: 32 }}>
+                <div style={{ fontSize: 11, color: 'var(--ou-text-dimmed)', lineHeight: 1, marginBottom: 2 }}>
+                  {d.format('M/D')}
+                </div>
+                <div style={{
+                  fontSize: 12,
+                  fontWeight: isToday ? 700 : 500,
+                  color: isToday ? 'var(--ou-text-bright)' : 'var(--ou-text-muted)',
+                  lineHeight: 1.4,
+                }}>
+                  {d.format('ddd')}
+                </div>
               </div>
               <div style={{ flex: 1, overflow: 'hidden' }}>
-                <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--ou-text-body)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <div style={{
+                  fontSize: 13, fontWeight: 500,
+                  color: 'var(--ou-text-body)',
+                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                }}>
                   {n.domain_data.title ?? '일정'}
                 </div>
                 {n.domain_data.time && (
-                  <div style={{ fontSize: 10, color: 'var(--ou-text-muted)', marginTop: 1 }}>{n.domain_data.time}</div>
+                  <div style={{ fontSize: 11, color: 'var(--ou-text-muted)', marginTop: 2 }}>
+                    {n.domain_data.time}
+                  </div>
                 )}
               </div>
             </div>
@@ -223,7 +247,7 @@ function TodoSidebar({ nodes, filter, setFilter }: {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       <SidebarLabel>OU Todo</SidebarLabel>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -233,20 +257,27 @@ function TodoSidebar({ nodes, filter, setFilter }: {
             onClick={() => setFilter(f.key)}
             style={{
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              padding: '7px 10px', borderRadius: 8, border: 'none', cursor: 'pointer',
+              height: 32, padding: '0 12px',
+              borderRadius: 8, border: 'none', cursor: 'pointer',
               background: filter === f.key ? 'var(--ou-bg)' : 'transparent',
               boxShadow: filter === f.key ? 'var(--ou-neu-pressed-sm)' : 'none',
               textAlign: 'left',
               transition: 'all 150ms ease',
             }}
           >
-            <span style={{ fontSize: 13, fontWeight: filter === f.key ? 600 : 400, color: filter === f.key ? 'var(--ou-text-strong)' : 'var(--ou-text-secondary)' }}>
+            <span style={{
+              fontSize: 14,
+              fontWeight: filter === f.key ? 600 : 400,
+              color: filter === f.key ? 'var(--ou-text-strong)' : 'var(--ou-text-secondary)',
+            }}>
               {f.label}
             </span>
             <span style={{
-              fontSize: 11, fontFamily: 'var(--ou-font-mono)',
+              fontSize: 12,
+              fontFamily: 'var(--ou-font-mono)',
               color: filter === f.key ? 'var(--ou-text-body)' : 'var(--ou-text-disabled)',
-              minWidth: 18, textAlign: 'right',
+              minWidth: 20,
+              textAlign: 'right',
             }}>
               {counts[f.key]}
             </span>
@@ -290,11 +321,14 @@ function FinanceSidebar({ nodes, selectedMonth, setSelectedMonth }: {
   const categories = Object.entries(catMap).sort((a, b) => b[1] - a[1]).slice(0, 6);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       <SidebarLabel>OU Finance</SidebarLabel>
 
       {/* Month nav */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        marginBottom: 16,
+      }}>
         <button onClick={prevMonth} style={navBtnStyle}>‹</button>
         <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ou-text-strong)' }}>
           {d.format('YYYY년 M월')}
@@ -303,12 +337,31 @@ function FinanceSidebar({ nodes, selectedMonth, setSelectedMonth }: {
       </div>
 
       {/* Total */}
-      <div style={{ marginBottom: 18, padding: '12px 14px', borderRadius: 10, background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-pressed-sm)' }}>
-        <div style={{ fontSize: 10, color: 'var(--ou-text-muted)', letterSpacing: '0.08em', marginBottom: 4 }}>총 지출</div>
-        <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'var(--ou-font-logo)', color: 'var(--ou-text-bright)', letterSpacing: '-0.02em' }}>
+      <div style={{
+        marginBottom: 20,
+        padding: '12px 16px',
+        borderRadius: 12,
+        background: 'var(--ou-bg)',
+        boxShadow: 'var(--ou-neu-pressed-sm)',
+      }}>
+        <div style={{
+          fontSize: 11, color: 'var(--ou-text-muted)',
+          letterSpacing: '0.06em', textTransform: 'uppercase',
+          marginBottom: 4,
+        }}>
+          총 지출
+        </div>
+        <div style={{
+          fontSize: 20, fontWeight: 700,
+          fontFamily: 'var(--ou-font-logo)',
+          color: 'var(--ou-text-bright)',
+          letterSpacing: '-0.02em',
+        }}>
           ₩{total.toLocaleString('ko-KR')}
         </div>
-        <div style={{ fontSize: 10, color: 'var(--ou-text-dimmed)', marginTop: 3 }}>{monthNodes.length}건</div>
+        <div style={{ fontSize: 12, color: 'var(--ou-text-dimmed)', marginTop: 4 }}>
+          {monthNodes.length}건
+        </div>
       </div>
 
       {/* Category breakdown */}
@@ -317,15 +370,25 @@ function FinanceSidebar({ nodes, selectedMonth, setSelectedMonth }: {
           {categories.map(([cat, amt]) => {
             const pct = total > 0 ? (amt / total) * 100 : 0;
             return (
-              <div key={cat} style={{ marginBottom: 10 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
-                  <span style={{ fontSize: 12, color: 'var(--ou-text-body)' }}>{cat}</span>
-                  <span style={{ fontSize: 11, fontFamily: 'var(--ou-font-mono)', color: 'var(--ou-text-muted)' }}>
+              <div key={cat} style={{ marginBottom: 12 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                  <span style={{ fontSize: 13, color: 'var(--ou-text-body)' }}>{cat}</span>
+                  <span style={{ fontSize: 12, fontFamily: 'var(--ou-font-mono)', color: 'var(--ou-text-muted)' }}>
                     {Math.round(pct)}%
                   </span>
                 </div>
-                <div style={{ height: 3, borderRadius: 2, background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-pressed-sm)', overflow: 'hidden' }}>
-                  <div style={{ height: '100%', width: `${pct}%`, background: 'var(--ou-text-secondary)', borderRadius: 2, transition: 'width 400ms ease' }} />
+                <div style={{
+                  height: 4, borderRadius: 2,
+                  background: 'var(--ou-bg)',
+                  boxShadow: 'var(--ou-neu-pressed-sm)',
+                  overflow: 'hidden',
+                }}>
+                  <div style={{
+                    height: '100%', width: `${pct}%`,
+                    background: 'var(--ou-text-secondary)',
+                    borderRadius: 2,
+                    transition: 'width 400ms ease',
+                  }} />
                 </div>
               </div>
             );
@@ -358,7 +421,6 @@ function HabitSidebar({ nodes, selected, setSelected }: {
 }) {
   const today = new Date().toISOString().slice(0, 10);
 
-  // 습관별 집계
   const habitMap: Record<string, string[]> = {};
   for (const n of nodes) {
     const title = n.domain_data?.title;
@@ -375,10 +437,9 @@ function HabitSidebar({ nodes, selected, setSelected }: {
   }));
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       <SidebarLabel>OU Habit</SidebarLabel>
 
-      {/* 전체 보기 */}
       <button
         onClick={() => setSelected(null)}
         style={{
@@ -388,17 +449,23 @@ function HabitSidebar({ nodes, selected, setSelected }: {
           marginBottom: 8,
         }}
       >
-        <span style={{ fontSize: 13, fontWeight: selected === null ? 600 : 400, color: selected === null ? 'var(--ou-text-strong)' : 'var(--ou-text-secondary)' }}>
+        <span style={{
+          fontSize: 14,
+          fontWeight: selected === null ? 600 : 400,
+          color: selected === null ? 'var(--ou-text-strong)' : 'var(--ou-text-secondary)',
+        }}>
           전체 보기
         </span>
-        <span style={{ fontSize: 11, color: 'var(--ou-text-disabled)', fontFamily: 'var(--ou-font-mono)' }}>{habits.length}</span>
+        <span style={{ fontSize: 12, color: 'var(--ou-text-disabled)', fontFamily: 'var(--ou-font-mono)' }}>
+          {habits.length}
+        </span>
       </button>
 
       <div style={{ height: 1, background: 'var(--ou-border-faint)', margin: '0 0 8px' }} />
 
       <SidebarSection title="습관 목록">
         {habits.length === 0 ? (
-          <div style={{ fontSize: 11, color: 'var(--ou-text-disabled)', padding: '4px 0' }}>기록된 습관 없음</div>
+          <div style={{ fontSize: 12, color: 'var(--ou-text-disabled)', padding: '4px 0' }}>기록된 습관 없음</div>
         ) : habits.map(h => (
           <button
             key={h.title}
@@ -410,13 +477,14 @@ function HabitSidebar({ nodes, selected, setSelected }: {
               marginBottom: 4,
             }}
           >
-            {/* Done indicator */}
             <div style={{
               width: 8, height: 8, borderRadius: '50%', flexShrink: 0,
               background: h.doneToday ? 'var(--ou-text-body)' : 'var(--ou-border-subtle)',
             }} />
             <span style={{
-              flex: 1, fontSize: 12, fontWeight: h.title === selected ? 600 : 400,
+              flex: 1,
+              fontSize: 13,
+              fontWeight: h.title === selected ? 600 : 400,
               color: h.title === selected ? 'var(--ou-text-strong)' : 'var(--ou-text-secondary)',
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               textAlign: 'left',
@@ -424,7 +492,7 @@ function HabitSidebar({ nodes, selected, setSelected }: {
               {h.title}
             </span>
             {h.streak > 0 && (
-              <span style={{ fontSize: 10, color: 'var(--ou-text-dimmed)', fontFamily: 'var(--ou-font-mono)', flexShrink: 0 }}>
+              <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed)', fontFamily: 'var(--ou-font-mono)', flexShrink: 0 }}>
                 {h.streak}일
               </span>
             )}
@@ -439,7 +507,7 @@ function HabitSidebar({ nodes, selected, setSelected }: {
 
 function DefaultSidebar({ appDef, count }: { appDef: AppDef; count: number }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       <SidebarLabel>{appDef.label}</SidebarLabel>
       <StatBadge value={count} label="전체" />
     </div>
@@ -451,9 +519,11 @@ function DefaultSidebar({ appDef, count }: { appDef: AppDef; count: number }) {
 function SidebarLabel({ children }: { children: React.ReactNode }) {
   return (
     <div style={{
-      fontSize: 10, fontWeight: 700, letterSpacing: '0.14em',
-      color: 'var(--ou-text-dimmed)', textTransform: 'uppercase',
-      fontFamily: 'var(--ou-font-logo)', marginBottom: 16,
+      fontSize: 11, fontWeight: 600,
+      letterSpacing: '0.08em',
+      color: 'var(--ou-text-dimmed)',
+      textTransform: 'uppercase',
+      marginBottom: 16,
     }}>
       {children}
     </div>
@@ -462,8 +532,14 @@ function SidebarLabel({ children }: { children: React.ReactNode }) {
 
 function SidebarSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div style={{ marginBottom: 16 }}>
-      <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.08em', color: 'var(--ou-text-disabled)', textTransform: 'uppercase', marginBottom: 8 }}>
+    <div style={{ marginBottom: 20 }}>
+      <div style={{
+        fontSize: 11, fontWeight: 600,
+        letterSpacing: '0.06em',
+        color: 'var(--ou-text-disabled)',
+        textTransform: 'uppercase',
+        marginBottom: 8,
+      }}>
         {title}
       </div>
       {children}
@@ -473,9 +549,24 @@ function SidebarSection({ title, children }: { title: string; children: React.Re
 
 function StatBadge({ value, label }: { value: number; label: string }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', padding: '8px 12px', borderRadius: 8, background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-pressed-sm)' }}>
-      <span style={{ fontSize: 18, fontWeight: 700, fontFamily: 'var(--ou-font-logo)', color: 'var(--ou-text-bright)', lineHeight: 1 }}>{value}</span>
-      <span style={{ fontSize: 10, color: 'var(--ou-text-muted)', marginTop: 3 }}>{label}</span>
+    <div style={{
+      display: 'flex', flexDirection: 'column',
+      padding: '12px 16px',
+      borderRadius: 8,
+      background: 'var(--ou-bg)',
+      boxShadow: 'var(--ou-neu-pressed-sm)',
+    }}>
+      <span style={{
+        fontSize: 20, fontWeight: 700,
+        fontFamily: 'var(--ou-font-logo)',
+        color: 'var(--ou-text-bright)',
+        lineHeight: 1,
+      }}>
+        {value}
+      </span>
+      <span style={{ fontSize: 11, color: 'var(--ou-text-muted)', marginTop: 4 }}>
+        {label}
+      </span>
     </div>
   );
 }
@@ -492,14 +583,15 @@ function EmptyState({ domain }: { domain: string }) {
 const navBtnStyle: React.CSSProperties = {
   background: 'none', border: 'none', cursor: 'pointer',
   fontSize: 18, color: 'var(--ou-text-muted)',
-  padding: '2px 6px', borderRadius: 6,
+  padding: '4px 8px', borderRadius: 6,
   display: 'flex', alignItems: 'center', justifyContent: 'center',
   lineHeight: 1,
 };
 
 const habitBtnBase: React.CSSProperties = {
   display: 'flex', alignItems: 'center', gap: 8,
-  padding: '6px 10px', borderRadius: 8, border: 'none', cursor: 'pointer',
+  height: 32, padding: '0 12px',
+  borderRadius: 8, border: 'none', cursor: 'pointer',
   width: '100%', transition: 'all 150ms ease',
 };
 

@@ -61,7 +61,7 @@ export function AppInputBar({ domain, placeholder, onRecorded }: AppInputBarProp
       bottom: 0,
       background: 'var(--ou-bg)',
       borderTop: '1px solid var(--ou-border-faint)',
-      padding: '12px 32px 16px',
+      padding: '12px 24px 16px',
       zIndex: 20,
     }}>
       <div style={{

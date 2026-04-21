@@ -7,7 +7,7 @@ import { QSDSpotlight } from '@/components/qsd/QSDSpotlight';
 import { useState, useEffect, useCallback } from 'react';
 
 // universe 페이지에서는 상단바 숨김 (몰입형)
-const HIDE_TOPNAV_PATHS = ['/universe'];
+const HIDE_TOPNAV_PATHS = ['/universe', '/app'];
 // 홈에서는 Spotlight 사용 안 함 (QSD탭이 내장되어 있음)
 const QSD_INLINE_PATHS = ['/home'];
 
