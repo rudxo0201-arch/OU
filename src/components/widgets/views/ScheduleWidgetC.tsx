@@ -2,11 +2,12 @@
 
 /**
  * Schedule Widget C — Mini Month Grid + Next Event
- * 미니 월간 그리드(이벤트 도트) + 다음 일정 1개 강조
+ * 미니 월간 그리드(이벤트 도트) + 다음 일정 1개 강조 + 월 이동
  */
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { DateNav } from '../DateNav';
+import { WidgetEmptyState } from '../WidgetEmptyState';
 
 interface ScheduleNode {
   id: string;
@@ -15,7 +16,7 @@ interface ScheduleNode {
 }
 
 function buildMonthGrid(year: number, month: number) {
-  const firstDay = new Date(year, month, 1).getDay(); // 0=sun
+  const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const startOffset = (firstDay + 6) % 7; // Monday-first
   const cells: (number | null)[] = [];
@@ -25,23 +26,29 @@ function buildMonthGrid(year: number, month: number) {
 }
 
 export function ScheduleWidgetC() {
+  const [selectedMonth, setSelectedMonth] = useState(() => new Date().toISOString().slice(0, 10));
   const [allEvents, setAllEvents] = useState<ScheduleNode[]>([]);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
 
-  const now = new Date();
-  const today = now.toISOString().slice(0, 10);
-  const year = now.getFullYear();
-  const month = now.getMonth();
+  const today = new Date().toISOString().slice(0, 10);
+  const d = new Date(selectedMonth + 'T00:00:00');
+  const year = d.getFullYear();
+  const month = d.getMonth();
   const cells = buildMonthGrid(year, month);
   const LABELS = ['월', '화', '수', '목', '금', '토', '일'];
 
+  // 해당 월의 첫날~마지막날
+  const monthFrom = `${year}-${String(month + 1).padStart(2, '0')}-01`;
+  const lastDay = new Date(year, month + 1, 0).getDate();
+  const monthTo = `${year}-${String(month + 1).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`;
+
   useEffect(() => {
-    fetch('/api/nodes?domain=schedule&limit=100')
+    setLoading(true);
+    fetch(`/api/nodes?domain=schedule&limit=200&date_from=${monthFrom}&date_to=${monthTo}`)
       .then(r => r.json())
       .then(d => { setAllEvents(d.nodes || []); setLoading(false); })
       .catch(() => setLoading(false));
-  }, []);
+  }, [monthFrom, monthTo]);
 
   const eventDates = new Set(allEvents.map(n => n.domain_data?.date).filter(Boolean));
   const nextEvent = allEvents
@@ -56,21 +63,23 @@ export function ScheduleWidgetC() {
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column', padding: '16px 16px 14px' }}>
 
       {/* ── Month Header ── */}
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 10, flexShrink: 0 }}>
-        <span style={{
-          fontFamily: 'var(--ou-font-logo)',
-          fontSize: 18, fontWeight: 700,
-          color: 'var(--ou-text-bright)',
-          letterSpacing: '-0.01em',
-        }}>
-          {month + 1}월
-        </span>
-        <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed)' }}>{year}</span>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, flexShrink: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+          <span style={{
+            fontFamily: 'var(--ou-font-logo)',
+            fontSize: 18, fontWeight: 700,
+            color: 'var(--ou-text-bright)',
+            letterSpacing: '-0.01em',
+          }}>
+            {month + 1}월
+          </span>
+          <span style={{ fontSize: 11, color: 'var(--ou-text-dimmed)' }}>{year}</span>
+        </div>
+        <DateNav date={selectedMonth} onChange={setSelectedMonth} unit="month" />
       </div>
 
       {/* ── Mini Month Grid ── */}
       <div style={{ flexShrink: 0, marginBottom: 12 }}>
-        {/* Day labels */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 1, marginBottom: 4 }}>
           {LABELS.map(l => (
             <div key={l} style={{
@@ -81,11 +90,10 @@ export function ScheduleWidgetC() {
             </div>
           ))}
         </div>
-        {/* Day cells */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 1 }}>
-          {cells.map((d, i) => {
-            if (!d) return <div key={`empty-${i}`} />;
-            const pad = String(d).padStart(2, '0');
+          {cells.map((day, i) => {
+            if (!day) return <div key={`empty-${i}`} />;
+            const pad = String(day).padStart(2, '0');
             const iso = `${year}-${String(month + 1).padStart(2, '0')}-${pad}`;
             const isToday = iso === today;
             const hasEvent = eventDates.has(iso);
@@ -95,8 +103,7 @@ export function ScheduleWidgetC() {
                 display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1,
               }}>
                 <div style={{
-                  width: 20, height: 20,
-                  borderRadius: '50%',
+                  width: 20, height: 20, borderRadius: '50%',
                   background: isToday ? 'var(--ou-bg)' : 'transparent',
                   boxShadow: isToday ? 'var(--ou-neu-pressed-sm)' : 'none',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -107,7 +114,7 @@ export function ScheduleWidgetC() {
                     fontFamily: isToday ? 'var(--ou-font-logo)' : 'inherit',
                     color: isToday ? 'var(--ou-text-bright)' : 'var(--ou-text-secondary)',
                   }}>
-                    {d}
+                    {day}
                   </span>
                 </div>
                 <div style={{
@@ -128,20 +135,12 @@ export function ScheduleWidgetC() {
         {loading ? (
           <div style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>...</div>
         ) : !nextEvent ? (
-          <button onClick={() => router.push('/orb')} style={{
-            background: 'none', border: 'none', cursor: 'pointer',
-            textAlign: 'left', padding: 0, fontSize: 12,
-            color: 'var(--ou-text-muted)', lineHeight: 1.5,
-          }}>
-            Orb에서 일정을 말해보세요 →
-          </button>
+          <WidgetEmptyState skeleton="schedule" />
         ) : (
           <div style={{ display: 'flex', gap: 10, alignItems: 'center', width: '100%' }}>
             <div style={{
-              background: 'var(--ou-bg)',
-              boxShadow: 'var(--ou-neu-raised-xs)',
-              borderRadius: 8, padding: '5px 10px',
-              flexShrink: 0,
+              background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-raised-xs)',
+              borderRadius: 8, padding: '5px 10px', flexShrink: 0,
             }}>
               <div style={{
                 fontFamily: 'var(--ou-font-logo)',
@@ -158,8 +157,7 @@ export function ScheduleWidgetC() {
             </div>
             <div style={{ flex: 1, overflow: 'hidden' }}>
               <div style={{
-                fontSize: 13, fontWeight: 600,
-                color: 'var(--ou-text-strong)',
+                fontSize: 13, fontWeight: 600, color: 'var(--ou-text-strong)',
                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               }}>
                 {nextEvent.domain_data.title || nextEvent.raw?.slice(0, 24) || '일정'}

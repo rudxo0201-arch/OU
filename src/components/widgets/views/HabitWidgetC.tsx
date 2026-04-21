@@ -7,7 +7,7 @@
  */
 
 import { useState, useEffect, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
+import { WidgetEmptyState } from '../WidgetEmptyState';
 
 interface HabitNode {
   id: string;
@@ -40,7 +40,6 @@ export function HabitWidgetC() {
   const [habits, setHabits] = useState<{ title: string; dateSet: Set<string> }[]>([]);
   const [selectedHabit, setSelectedHabit] = useState<string>('');
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
 
   const last30 = useMemo(() => getLast30Days(), []);
   const today = last30[29];
@@ -122,13 +121,7 @@ export function HabitWidgetC() {
         {loading ? (
           <div style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>...</div>
         ) : habits.length === 0 ? (
-          <button onClick={() => router.push('/orb')} style={{
-            background: 'none', border: 'none', cursor: 'pointer',
-            textAlign: 'left', padding: 0, fontSize: 12,
-            color: 'var(--ou-text-muted)', lineHeight: 1.5,
-          }}>
-            Orb에서 루틴을 말해보세요 →
-          </button>
+          <WidgetEmptyState skeleton="habit" />
         ) : (
           <div style={{
             display: 'grid',

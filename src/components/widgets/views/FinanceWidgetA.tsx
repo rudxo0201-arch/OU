@@ -7,7 +7,8 @@
  */
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { DateNav } from '../DateNav';
+import { WidgetEmptyState } from '../WidgetEmptyState';
 
 interface FinanceNode {
   id: string;
@@ -42,26 +43,24 @@ function formatAmount(amount: number): string {
 }
 
 export function FinanceWidgetA() {
+  const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [transactions, setTransactions] = useState<FinanceNode[]>([]);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
 
   const today = new Date().toISOString().slice(0, 10);
+  const isToday = selectedDate === today;
 
   useEffect(() => {
-    fetch('/api/nodes?domain=finance&limit=50')
+    setLoading(true);
+    fetch(`/api/nodes?domain=finance&limit=50&date_from=${selectedDate}&date_to=${selectedDate}`)
       .then(r => r.json())
       .then(d => {
         const nodes: FinanceNode[] = d.nodes || [];
-        const todayTx = nodes
-          .filter(n => n.created_at.slice(0, 10) === today && n.domain_data?.amount)
-          .slice(0, 6);
-        setTransactions(todayTx);
+        setTransactions(nodes.filter(n => n.domain_data?.amount).slice(0, 6));
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [selectedDate]);
 
   const totalAmount = transactions.reduce((sum, t) => {
     const amt = typeof t.domain_data.amount === 'string'
@@ -75,13 +74,15 @@ export function FinanceWidgetA() {
 
       {/* ── Amount Hero ── */}
       <div style={{ marginBottom: 14, flexShrink: 0 }}>
-        <div style={{
-          fontSize: 9, fontWeight: 700, letterSpacing: '0.16em',
-          color: 'var(--ou-text-dimmed)', textTransform: 'uppercase',
-          marginBottom: 6,
-          fontFamily: 'var(--ou-font-logo)',
-        }}>
-          오늘 지출
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+          <span style={{
+            fontSize: 9, fontWeight: 700, letterSpacing: '0.16em',
+            color: 'var(--ou-text-dimmed)', textTransform: 'uppercase',
+            fontFamily: 'var(--ou-font-logo)',
+          }}>
+            {isToday ? '오늘 지출' : '지출'}
+          </span>
+          <DateNav date={selectedDate} onChange={setSelectedDate} />
         </div>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
           <span style={{
@@ -111,13 +112,7 @@ export function FinanceWidgetA() {
         {loading ? (
           <div style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>...</div>
         ) : transactions.length === 0 ? (
-          <button onClick={() => router.push('/orb')} style={{
-            background: 'none', border: 'none', cursor: 'pointer',
-            textAlign: 'left', padding: 0, fontSize: 12,
-            color: 'var(--ou-text-muted)', lineHeight: 1.5,
-          }}>
-            Orb에서 지출을 말해보세요 →
-          </button>
+          <WidgetEmptyState skeleton="finance" />
         ) : transactions.map(t => {
           const amt = typeof t.domain_data.amount === 'string'
             ? parseFloat(t.domain_data.amount.replace(/[^0-9.]/g, ''))

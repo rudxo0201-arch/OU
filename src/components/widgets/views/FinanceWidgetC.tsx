@@ -7,7 +7,8 @@
  */
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { DateNav } from '../DateNav';
+import { WidgetEmptyState } from '../WidgetEmptyState';
 
 interface FinanceNode {
   id: string;
@@ -33,23 +34,26 @@ function parseAmount(v: number | string | undefined): number {
 }
 
 export function FinanceWidgetC() {
+  const [selectedMonth, setSelectedMonth] = useState(() => new Date().toISOString().slice(0, 10));
   const [nodes, setNodes] = useState<FinanceNode[]>([]);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
 
-  const now = new Date();
-  const monthStart = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
+  const d = new Date(selectedMonth + 'T00:00:00');
+  const year = d.getFullYear();
+  const month = d.getMonth();
+  const monthFrom = `${year}-${String(month + 1).padStart(2, '0')}-01`;
+  const lastDay = new Date(year, month + 1, 0).getDate();
+  const monthTo = `${year}-${String(month + 1).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`;
 
   useEffect(() => {
-    fetch('/api/nodes?domain=finance&limit=200')
+    setLoading(true);
+    fetch(`/api/nodes?domain=finance&limit=200&date_from=${monthFrom}&date_to=${monthTo}`)
       .then(r => r.json())
       .then(d => { setNodes(d.nodes || []); setLoading(false); })
       .catch(() => setLoading(false));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [monthFrom, monthTo]);
 
-  // Filter this month
-  const monthNodes = nodes.filter(n => n.created_at.slice(0, 10) >= monthStart);
+  const monthNodes = nodes;
   const total = monthNodes.reduce((s, n) => s + parseAmount(n.domain_data.amount), 0);
 
   // Group by category
@@ -67,12 +71,15 @@ export function FinanceWidgetC() {
 
       {/* ── Header ── */}
       <div style={{ marginBottom: 14, flexShrink: 0 }}>
-        <div style={{
-          fontSize: 9, fontWeight: 700, letterSpacing: '0.16em',
-          color: 'var(--ou-text-dimmed)', textTransform: 'uppercase',
-          marginBottom: 5, fontFamily: 'var(--ou-font-logo)',
-        }}>
-          이번 달 지출
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 5 }}>
+          <span style={{
+            fontSize: 9, fontWeight: 700, letterSpacing: '0.16em',
+            color: 'var(--ou-text-dimmed)', textTransform: 'uppercase',
+            fontFamily: 'var(--ou-font-logo)',
+          }}>
+            {`${month + 1}월 지출`}
+          </span>
+          <DateNav date={selectedMonth} onChange={setSelectedMonth} unit="month" />
         </div>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 3 }}>
           <span style={{ fontSize: 9, color: 'var(--ou-text-muted)', fontFamily: 'var(--ou-font-mono)' }}>₩</span>
@@ -96,13 +103,7 @@ export function FinanceWidgetC() {
         {loading ? (
           <div style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>...</div>
         ) : categories.length === 0 ? (
-          <button onClick={() => router.push('/orb')} style={{
-            background: 'none', border: 'none', cursor: 'pointer',
-            textAlign: 'left', padding: 0, fontSize: 12,
-            color: 'var(--ou-text-muted)', lineHeight: 1.5,
-          }}>
-            Orb에서 지출을 말해보세요 →
-          </button>
+          <WidgetEmptyState skeleton="finance" />
         ) : categories.map(([cat, amt]) => {
           const pct = total > 0 ? (amt / total) * 100 : 0;
           return (

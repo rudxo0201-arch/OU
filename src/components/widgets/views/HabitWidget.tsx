@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { WidgetEmptyState } from '../WidgetEmptyState';
 
 interface HabitNode {
   id: string;
@@ -19,7 +19,6 @@ interface HabitNode {
 export function HabitWidget() {
   const [habits, setHabits] = useState<HabitNode[]>([]);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
 
   useEffect(() => {
     fetch('/api/nodes?domain=habit&limit=30')
@@ -61,17 +60,7 @@ export function HabitWidget() {
         {loading ? (
           <div style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>불러오는 중...</div>
         ) : habits.length === 0 ? (
-          <button
-            onClick={() => router.push('/orb')}
-            style={{
-              background: 'none', border: 'none', cursor: 'pointer',
-              textAlign: 'left', padding: 0,
-              fontSize: 11, color: 'var(--ou-text-muted)',
-              lineHeight: 1.6,
-            }}
-          >
-            Orb에서 루틴을 말해보세요 →
-          </button>
+          <WidgetEmptyState skeleton="habit" />
         ) : habits.map(h => (
           <div key={h.id} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <div style={{

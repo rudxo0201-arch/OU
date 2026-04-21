@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { DateNav } from '../DateNav';
+import { WidgetEmptyState } from '../WidgetEmptyState';
 
 interface ScheduleNode {
   id: string;
@@ -15,24 +16,22 @@ interface ScheduleNode {
 }
 
 export function TodayScheduleWidget() {
+  const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [events, setEvents] = useState<ScheduleNode[]>([]);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
 
   useEffect(() => {
-    const today = new Date().toISOString().slice(0, 10);
-    fetch('/api/nodes?domain=schedule&limit=50')
+    setLoading(true);
+    fetch(`/api/nodes?domain=schedule&limit=50&date_from=${selectedDate}&date_to=${selectedDate}`)
       .then(r => r.json())
       .then(d => {
         const nodes: ScheduleNode[] = d.nodes || [];
-        const todayEvents = nodes
-          .filter(n => n.domain_data?.date === today)
-          .sort((a, b) => (a.domain_data.time || '').localeCompare(b.domain_data.time || ''));
-        setEvents(todayEvents);
+        const sorted = nodes.sort((a, b) => (a.domain_data.time || '').localeCompare(b.domain_data.time || ''));
+        setEvents(sorted);
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  }, []);
+  }, [selectedDate]);
 
   return (
     <div style={{
@@ -41,32 +40,24 @@ export function TodayScheduleWidget() {
       padding: '14px 16px',
     }}>
       {/* 헤더 */}
-      <span style={{
-        fontSize: 10, fontWeight: 600,
-        color: 'var(--ou-text-dimmed)',
-        letterSpacing: '0.10em', textTransform: 'uppercase',
-        fontFamily: 'var(--ou-font-logo)',
-        marginBottom: 12, flexShrink: 0,
-      }}>
-        오늘 일정
-      </span>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, flexShrink: 0 }}>
+        <span style={{
+          fontSize: 10, fontWeight: 600,
+          color: 'var(--ou-text-dimmed)',
+          letterSpacing: '0.10em', textTransform: 'uppercase',
+          fontFamily: 'var(--ou-font-logo)',
+        }}>
+          일정
+        </span>
+        <DateNav date={selectedDate} onChange={setSelectedDate} />
+      </div>
 
       {/* 일정 리스트 */}
       <div style={{ flex: 1, overflow: 'auto', display: 'flex', flexDirection: 'column', gap: 8 }}>
         {loading ? (
-          <div style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>불러오는 중...</div>
+          <div style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>...</div>
         ) : events.length === 0 ? (
-          <button
-            onClick={() => router.push('/orb')}
-            style={{
-              background: 'none', border: 'none', cursor: 'pointer',
-              textAlign: 'left', padding: 0,
-              fontSize: 11, color: 'var(--ou-text-muted)',
-              lineHeight: 1.6,
-            }}
-          >
-            Orb에서 일정을 말해보세요 →
-          </button>
+          <WidgetEmptyState skeleton="schedule" />
         ) : events.map(e => (
           <div key={e.id} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             {/* 시간 박스 */}

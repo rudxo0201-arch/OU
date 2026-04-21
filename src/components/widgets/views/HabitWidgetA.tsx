@@ -7,7 +7,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { WidgetEmptyState } from '../WidgetEmptyState';
 
 interface HabitNode {
   id: string;
@@ -47,7 +47,6 @@ function calcStreak(dates: string[]): number {
 export function HabitWidgetA() {
   const [habits, setHabits] = useState<{ title: string; logDates: string[] }[]>([]);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
 
   const last7 = getLast7Dates();
   const todayStr = last7[6];
@@ -112,13 +111,7 @@ export function HabitWidgetA() {
         {loading ? (
           <div style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>...</div>
         ) : habits.length === 0 ? (
-          <button onClick={() => router.push('/orb')} style={{
-            background: 'none', border: 'none', cursor: 'pointer',
-            textAlign: 'left', padding: 0, fontSize: 12,
-            color: 'var(--ou-text-muted)', lineHeight: 1.5,
-          }}>
-            Orb에서 루틴을 말해보세요 →
-          </button>
+          <WidgetEmptyState skeleton="habit" />
         ) : habits.map(h => {
           const dateSet = new Set(h.logDates);
           return (

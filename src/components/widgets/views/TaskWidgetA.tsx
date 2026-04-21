@@ -6,8 +6,8 @@
  */
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { cleanDisplayText } from '@/lib/utils/cleanDisplayText';
+import { WidgetEmptyState } from '../WidgetEmptyState';
 
 interface TaskNode {
   id: string;
@@ -19,7 +19,6 @@ export function TaskWidgetA() {
   const [tasks, setTasks] = useState<TaskNode[]>([]);
   const [checked, setChecked] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
 
   useEffect(() => {
     fetch('/api/nodes?domain=task&limit=30')
@@ -88,13 +87,7 @@ export function TaskWidgetA() {
         {loading ? (
           <div style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>...</div>
         ) : tasks.length === 0 ? (
-          <button onClick={() => router.push('/orb')} style={{
-            background: 'none', border: 'none', cursor: 'pointer',
-            textAlign: 'left', padding: 0, fontSize: 12,
-            color: 'var(--ou-text-muted)', lineHeight: 1.5,
-          }}>
-            Orb에서 할 일을 말해보세요 →
-          </button>
+          <WidgetEmptyState skeleton="task" />
         ) : tasks.map(t => {
           const isDone = checked.has(t.id);
           return (
