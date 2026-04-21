@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { BaseAppLayout } from './BaseAppLayout';
+import { AppInputBar } from './AppInputBar';
 import { VIEW_REGISTRY } from '@/components/views/registry';
 import { WidgetEmptyState } from '@/components/widgets/WidgetEmptyState';
 import type { AppDef } from '@/lib/apps/registry';
@@ -91,10 +92,12 @@ export function AppView({ appDef, nodes, activeView: initialView }: Props) {
   ) : null;
 
   const ViewComp = VIEW_REGISTRY[activeView];
+  const showInputBar = appDef.inputType === 'record';
 
   return (
     <BaseAppLayout appLabel={appDef.label} sidebar={sidebar} headerRight={viewSwitcher}>
-      <div style={{ padding: '28px 32px', minHeight: '100%' }}>
+      {/* 뷰 콘텐츠 */}
+      <div style={{ padding: '28px 32px', paddingBottom: showInputBar ? 8 : 28 }}>
         {filteredNodes.length === 0 ? (
           <EmptyState domain={appDef.domain} />
         ) : ViewComp ? (
@@ -105,6 +108,14 @@ export function AppView({ appDef, nodes, activeView: initialView }: Props) {
           </div>
         )}
       </div>
+
+      {/* 기록형 AI 입력바 */}
+      {showInputBar && (
+        <AppInputBar
+          domain={appDef.domain}
+          placeholder={appDef.inputPlaceholder ?? '기록하기...'}
+        />
+      )}
     </BaseAppLayout>
   );
 }

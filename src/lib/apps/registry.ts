@@ -6,6 +6,8 @@
  * 홈 위젯은 앱의 미니뷰.
  */
 
+export type AppInputType = 'record' | 'editor' | 'search' | 'none';
+
 export interface AppDef {
   slug: string;            // URL: /app/{slug}
   label: string;           // 표시 이름: 'OU Calendar'
@@ -16,6 +18,8 @@ export interface AppDef {
   widgetTypes: string[];   // 연결된 홈 위젯 타입들
   route?: string;          // 기본: /app/{slug}. 오버라이드 시 설정.
   hasDetailRoute?: boolean; // /app/{slug}/{itemId} 사용 여부
+  inputType?: AppInputType; // AI 입력 방식. 기본: 'none'
+  inputPlaceholder?: string; // 입력창 placeholder
 }
 
 const APP_REGISTRY: AppDef[] = [
@@ -42,6 +46,8 @@ const APP_REGISTRY: AppDef[] = [
     alternateViews: ['timeline', 'table'],
     widgetTypes: ['today-schedule', 'schedule-a', 'schedule-b', 'schedule-c', 'view-calendar'],
     hasDetailRoute: false,
+    inputType: 'record',
+    inputPlaceholder: '일정 추가... "내일 3시 팀 미팅"',
   },
   {
     slug: 'todo',
@@ -52,6 +58,8 @@ const APP_REGISTRY: AppDef[] = [
     alternateViews: ['task', 'table'],
     widgetTypes: ['today-tasks', 'task-a', 'task-b', 'task-c', 'view-todo'],
     hasDetailRoute: false,
+    inputType: 'record',
+    inputPlaceholder: '할 일 추가... "과제 금요일까지"',
   },
   {
     slug: 'finance',
@@ -62,6 +70,8 @@ const APP_REGISTRY: AppDef[] = [
     alternateViews: ['table'],
     widgetTypes: ['finance-a', 'finance-b', 'finance-c', 'view-chart'],
     hasDetailRoute: false,
+    inputType: 'record',
+    inputPlaceholder: '지출 기록... "점심 김치찌개 9000원"',
   },
   {
     slug: 'habit',
@@ -72,6 +82,8 @@ const APP_REGISTRY: AppDef[] = [
     alternateViews: ['table'],
     widgetTypes: ['habit-log', 'habit-a', 'habit-b', 'habit-c', 'view-heatmap'],
     hasDetailRoute: false,
+    inputType: 'record',
+    inputPlaceholder: '습관 기록... "오늘 명상 30분 완료"',
   },
 
   // ── Tier 3: 뷰 있음, 위젯 보강 필요 ──
@@ -84,6 +96,8 @@ const APP_REGISTRY: AppDef[] = [
     alternateViews: ['timeline', 'table'],
     widgetTypes: ['idea-notes'],
     hasDetailRoute: true,
+    inputType: 'record',
+    inputPlaceholder: '아이디어 기록... "이런 기능 있으면 어떨까"',
   },
   {
     slug: 'people',

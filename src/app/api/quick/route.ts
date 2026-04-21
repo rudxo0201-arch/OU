@@ -6,7 +6,7 @@ export const maxDuration = 30;
 
 export async function POST(req: NextRequest) {
   try {
-    const { text } = await req.json();
+    const { text, domainHint } = await req.json();
     if (!text?.trim()) {
       return NextResponse.json({ error: 'empty' }, { status: 400 });
     }
@@ -15,10 +15,12 @@ export async function POST(req: NextRequest) {
     const { data: { user } } = await supabase.auth.getUser();
 
     // 클라이언트는 낙관적으로 "기록됨" 표시 — 서버는 완전히 처리 후 응답
+    // domainHint가 있으면 classifyDomain() 스킵 (앱 컨텍스트가 도메인을 결정)
     await saveMessageAsync({
       userId: user?.id,
       userMessage: text.trim(),
       assistantMessage: '',
+      ...(domainHint ? { domainHint } : {}),
     });
 
     return NextResponse.json({ ok: true });
