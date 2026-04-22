@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { NeuButton, NeuInput, NeuTextarea } from '@/components/ds';
+import { GlassButton, GlassInput } from '@/components/ds';
 import { createClient } from '@/lib/supabase/client';
 import { Section, Row, Field } from './_shared';
 
@@ -66,25 +66,32 @@ export function GeneralTab({ user }: { user: { id: string; email?: string; creat
     <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
       <Section title="프로필" sub="· 어시스턴트가 당신을 부를 이름">
         <Field label="이름">
-          <NeuInput
+          <GlassInput
             value={profile.display_name}
             onChange={e => setProfile(p => ({ ...p, display_name: e.target.value }))}
             placeholder="이름을 입력하세요"
           />
         </Field>
         <Field label="핸들">
-          <NeuInput value={profile.handle} onChange={e => setProfile(p => ({ ...p, handle: e.target.value }))} placeholder="@handle" />
+          <GlassInput value={profile.handle} onChange={e => setProfile(p => ({ ...p, handle: e.target.value }))} placeholder="@handle" />
         </Field>
         <Field label="소개">
-          <NeuTextarea
+          <textarea
             value={profile.bio}
             onChange={e => setProfile(p => ({ ...p, bio: e.target.value }))}
             placeholder="나에 대한 짧은 설명..."
+            rows={3}
+            style={{
+              width: '100%', padding: '10px 14px', borderRadius: 'var(--ou-radius-md)',
+              border: '1px solid var(--ou-glass-border)', background: 'var(--ou-glass)',
+              fontFamily: 'inherit', fontSize: 14, color: 'var(--ou-text-body)',
+              resize: 'vertical', lineHeight: 1.6,
+            }}
           />
         </Field>
-        <NeuButton variant="default" onClick={saveProfile} style={{ marginTop: 4 }}>
+        <GlassButton variant="accent" onClick={saveProfile} style={{ marginTop: 4 }}>
           {saving ? '저장 중...' : saved ? '저장됨' : '프로필 저장'}
-        </NeuButton>
+        </GlassButton>
       </Section>
 
       <Section title="계정">
@@ -108,20 +115,20 @@ export function GeneralTab({ user }: { user: { id: string; email?: string; creat
                 {llmKeys[provider] ? (
                   <>
                     <span style={{ flex: 1, fontSize: 12, color: 'var(--ou-text-muted)' }}>등록됨</span>
-                    <NeuButton variant="ghost" size="sm" onClick={() => deleteLlmKey(provider)} style={{ color: 'var(--ou-accent)' }}>삭제</NeuButton>
+                    <GlassButton variant="ghost" size="sm" onClick={() => deleteLlmKey(provider)} style={{ color: 'var(--ou-accent)' }}>삭제</GlassButton>
                   </>
                 ) : (
                   <>
-                    <NeuInput
+                    <GlassInput
                       type="password"
                       placeholder={meta.placeholder}
                       value={keyInputs[provider] || ''}
                       onChange={e => setKeyInputs(p => ({ ...p, [provider]: e.target.value }))}
                       style={{ flex: 1, fontSize: 12, padding: '8px 14px' }}
                     />
-                    <NeuButton variant="default" size="sm" onClick={() => saveLlmKey(provider)}>
+                    <GlassButton variant="accent" size="sm" onClick={() => saveLlmKey(provider)}>
                       {keySaving[provider] ? '...' : '등록'}
-                    </NeuButton>
+                    </GlassButton>
                   </>
                 )}
               </div>
@@ -187,7 +194,7 @@ function ApiKeySection() {
             <code style={{ flex: 1, fontSize: 11, padding: '6px 0', color: 'var(--ou-text-body)', wordBreak: 'break-all', borderBottom: '1px solid var(--ou-border-subtle)' }}>
               {newPlainKey}
             </code>
-            <NeuButton variant="default" size="sm" onClick={copyKey}>{copied ? '복사됨' : '복사'}</NeuButton>
+            <GlassButton variant="accent" size="sm" onClick={copyKey}>{copied ? '복사됨' : '복사'}</GlassButton>
           </div>
         </div>
       )}
@@ -199,19 +206,19 @@ function ApiKeySection() {
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             {k.last_used_at && <span style={{ fontSize: 10, color: 'var(--ou-text-disabled)' }}>최근: {new Date(k.last_used_at).toLocaleDateString('ko-KR')}</span>}
-            <NeuButton variant="ghost" size="sm" onClick={() => revokeKey(k.id)} style={{ color: 'var(--ou-accent)' }}>삭제</NeuButton>
+            <GlassButton variant="ghost" size="sm" onClick={() => revokeKey(k.id)} style={{ color: 'var(--ou-accent)' }}>삭제</GlassButton>
           </div>
         </div>
       ))}
       <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
-        <NeuInput
+        <GlassInput
           value={newName}
           onChange={e => setNewName(e.target.value)}
           placeholder="키 이름 (예: claude-code)"
           onKeyDown={e => e.key === 'Enter' && createKey()}
           style={{ flex: 1, fontSize: 12 }}
         />
-        <NeuButton variant="default" size="sm" onClick={createKey}>{creating ? '...' : '생성'}</NeuButton>
+        <GlassButton variant="accent" size="sm" onClick={createKey}>{creating ? '...' : '생성'}</GlassButton>
       </div>
     </Section>
   );

@@ -4,13 +4,13 @@ import { useState } from 'react';
 import type { ViewProps } from './registry';
 import { GlassTabs } from '@/components/ds';
 import { DSTab } from './admin/DSTab';
+import { NodesTab } from './admin/NodesTab';
+import { ViewsTab } from './admin/ViewsTab';
 
 const ADMIN_TABS = [
   { key: 'ds', label: 'DS' },
-  // 추후 추가
-  // { key: 'nodes', label: '노드' },
-  // { key: 'members', label: '멤버' },
-  // { key: 'views', label: '뷰' },
+  { key: 'nodes', label: '노드' },
+  { key: 'views', label: '뷰' },
 ];
 
 export function AdminView(_props: ViewProps) {
@@ -30,6 +30,8 @@ export function AdminView(_props: ViewProps) {
       {/* 탭 콘텐츠 */}
       <div style={{ flex: 1, overflowY: 'auto' }}>
         {tab === 'ds' && <DSTab />}
+        {tab === 'nodes' && <NodesTab />}
+        {tab === 'views' && <ViewsTab />}
       </div>
     </div>
   );

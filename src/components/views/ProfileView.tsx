@@ -30,6 +30,18 @@ const DOMAIN_ICONS: Record<string, string> = {
 };
 
 export function ProfileView({ nodes }: ViewProps) {
+  const people = useMemo(() =>
+    nodes
+      .filter(n => n.domain === 'relation')
+      .map(n => ({
+        id: n.id,
+        name: (n.domain_data?.name as string) || (n.raw ?? '').slice(0, 20) || '인물',
+        job: (n.domain_data?.job as string) || (n.domain_data?.occupation as string) || '',
+        relationship: (n.domain_data?.relationship as string) || '',
+        note: (n.domain_data?.note as string) || '',
+      })),
+  [nodes]);
+
   const stats = useMemo(() => {
     const domainCounts: Record<string, number> = {};
     const weeklyActivity: Record<string, number> = {};
@@ -88,16 +100,16 @@ export function ProfileView({ nodes }: ViewProps) {
         display: 'flex', flexDirection: 'column', alignItems: 'center',
         padding: '28px 20px',
         borderRadius: 16,
-        border: '0.5px solid var(--ou-border-faint)',
-        background: 'var(--ou-bg)',
-        boxShadow: 'var(--ou-neu-raised-lg)',
+        border: '1px solid var(--ou-glass-border)',
+        background: 'var(--ou-glass)',
+        boxShadow: 'var(--ou-shadow-card)',
         marginBottom: 24,
       }}>
         <div style={{
           width: 72, height: 72, borderRadius: '50%',
-          background: 'var(--ou-bg)',
-          boxShadow: 'var(--ou-neu-raised-sm)',
-          border: '0.5px solid var(--ou-border-faint)',
+          background: 'var(--ou-glass)',
+          boxShadow: 'var(--ou-shadow-sm)',
+          border: '1px solid var(--ou-glass-border)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: 28, color: 'var(--ou-text-muted)',
           marginBottom: 14,
@@ -180,6 +192,50 @@ export function ProfileView({ nodes }: ViewProps) {
           </div>
         )}
       </div>
+
+      {/* 인물 섹션 */}
+      {people.length > 0 && (
+        <div>
+          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ou-text-heading)', marginBottom: 12 }}>
+            인물 <span style={{ fontSize: 11, fontWeight: 400, color: 'var(--ou-text-muted)' }}>{people.length}명</span>
+          </div>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
+            gap: 10,
+          }}>
+            {people.map(person => (
+              <div key={person.id} style={{
+                padding: '14px 16px',
+                borderRadius: 12,
+                border: '1px solid var(--ou-glass-border)',
+                background: 'var(--ou-glass)',
+                boxShadow: 'var(--ou-shadow-sm)',
+              }}>
+                <div style={{
+                  width: 36, height: 36, borderRadius: '50%',
+                  background: 'var(--ou-space-subtle)',
+                  border: '1px solid var(--ou-glass-border)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 14, color: 'var(--ou-text-muted)',
+                  marginBottom: 10,
+                }}>
+                  {person.name.slice(0, 1)}
+                </div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ou-text-heading)', marginBottom: 3 }}>
+                  {person.name}
+                </div>
+                {person.job && (
+                  <div style={{ fontSize: 11, color: 'var(--ou-text-secondary)', marginBottom: 2 }}>{person.job}</div>
+                )}
+                {person.relationship && (
+                  <div style={{ fontSize: 10, color: 'var(--ou-text-muted)' }}>{person.relationship}</div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
       </div>
     </div>
   );

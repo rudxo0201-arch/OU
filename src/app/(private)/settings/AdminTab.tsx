@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { NeuButton, NeuInput, NeuSelect, NeuTable, type NeuTableColumn } from '@/components/ds';
+import { GlassButton, GlassInput } from '@/components/ds';
 import { Section } from './_shared';
 
 export function AdminTab() {
@@ -51,43 +51,65 @@ function DbViewer() {
 
   const doSearch = () => { setPage(1); fetchData(selectedTable, 1, search); };
   const totalPages = Math.ceil(total / 20);
-  const columns: NeuTableColumn[] = rows.length > 0
-    ? Object.keys(rows[0]).filter(k => k !== 'domain_data').map(k => ({
-        key: k,
-        label: k,
-        render: (value: unknown) => {
-          const str = typeof value === 'object' ? JSON.stringify(value)?.slice(0, 50) : String(value ?? '');
-          return <span style={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>{str}</span>;
-        },
-      }))
+  const columnKeys = rows.length > 0
+    ? Object.keys(rows[0]).filter(k => k !== 'domain_data')
     : [];
 
   return (
     <Section title="DB 뷰어">
       <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-        <NeuSelect
+        <select
           value={selectedTable}
-          onChange={v => { setSelectedTable(v); setPage(1); setSearch(''); }}
-          options={[{ value: '', label: '테이블 선택...' }, ...tables.map(t => ({ value: t, label: t }))]}
-          style={{ flex: 1 }}
-        />
+          onChange={e => { setSelectedTable(e.target.value); setPage(1); setSearch(''); }}
+          style={{
+            flex: 1, padding: '10px 14px', borderRadius: 'var(--ou-radius-md)',
+            border: '1px solid var(--ou-glass-border)', background: 'var(--ou-glass)',
+            fontFamily: 'inherit', fontSize: 13, color: 'var(--ou-text-body)',
+          }}
+        >
+          <option value="">테이블 선택...</option>
+          {tables.map(t => <option key={t} value={t}>{t}</option>)}
+        </select>
       </div>
       {selectedTable && (
         <>
           <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-            <NeuInput value={search} onChange={e => setSearch(e.target.value)} onKeyDown={e => e.key === 'Enter' && doSearch()} placeholder="검색..." style={{ flex: 1 }} />
-            <NeuButton variant="default" size="sm" onClick={doSearch}>검색</NeuButton>
+            <GlassInput value={search} onChange={e => setSearch(e.target.value)} onKeyDown={e => e.key === 'Enter' && doSearch()} placeholder="검색..." containerStyle={{ flex: 1 }} style={{ fontSize: 12 }} />
+            <GlassButton variant="accent" size="sm" onClick={doSearch}>검색</GlassButton>
           </div>
           {loading ? (
             <p style={{ fontSize: 12, color: 'var(--ou-text-muted)' }}>로딩 중...</p>
           ) : (
-            <NeuTable columns={columns} rows={rows} />
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
+                <thead>
+                  <tr>
+                    {columnKeys.map(k => (
+                      <th key={k} style={{ padding: '6px 10px', textAlign: 'left', borderBottom: '1px solid var(--ou-glass-border)', color: 'var(--ou-text-secondary)', fontWeight: 600, whiteSpace: 'nowrap' }}>
+                        {k}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((row, i) => (
+                    <tr key={i} style={{ borderBottom: '1px solid var(--ou-glass-border)' }}>
+                      {columnKeys.map(k => (
+                        <td key={k} style={{ padding: '6px 10px', color: 'var(--ou-text-body)', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {typeof row[k] === 'object' ? JSON.stringify(row[k])?.slice(0, 50) : String(row[k] ?? '')}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
           {totalPages > 1 && (
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 12 }}>
-              <NeuButton variant="default" size="sm" onClick={() => setPage(p => Math.max(1, p - 1))}>이전</NeuButton>
+              <GlassButton variant="accent" size="sm" onClick={() => setPage(p => Math.max(1, p - 1))}>이전</GlassButton>
               <span style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>{page} / {totalPages} ({total}건)</span>
-              <NeuButton variant="default" size="sm" onClick={() => setPage(p => Math.min(totalPages, p + 1))}>다음</NeuButton>
+              <GlassButton variant="accent" size="sm" onClick={() => setPage(p => Math.min(totalPages, p + 1))}>다음</GlassButton>
             </div>
           )}
         </>
@@ -115,7 +137,7 @@ function SeedButton({ type, label }: { type: string; label: string }) {
       <span style={{ fontSize: 14, color: 'var(--ou-text-body)' }}>{label}</span>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         {result && <span style={{ fontSize: 11, color: status === 'error' ? 'var(--ou-accent)' : 'var(--ou-text-muted)' }}>{result}</span>}
-        <NeuButton variant="default" size="sm" onClick={run}>{status === 'loading' ? '...' : '실행'}</NeuButton>
+        <GlassButton variant="accent" size="sm" onClick={run}>{status === 'loading' ? '...' : '실행'}</GlassButton>
       </div>
     </div>
   );

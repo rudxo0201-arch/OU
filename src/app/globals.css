@@ -147,6 +147,13 @@
   --ou-text-dimmed:     var(--ou-text-muted);
   --ou-text-error:      var(--ou-error);
   --ou-accent-primary:  var(--ou-accent);
+  /* 누락 토큰 보완 */
+  --ou-surface-faint:   rgba(0, 0, 0, 0.03);
+  --ou-bg-raised:       rgba(255, 255, 255, 0.85);
+  --ou-text-bright:     var(--ou-text-heading);
+  --ou-neu-raised-xs:   var(--ou-shadow-sm);
+  --ou-neu-pressed-xs:  inset 0 1px 2px rgba(0, 0, 0, 0.04);
+  --ou-neu-pressed-lg:  inset 0 2px 8px rgba(0, 0, 0, 0.10);
 }
 
 /* ── 팔레트 시스템 (모노크롬) ── */
