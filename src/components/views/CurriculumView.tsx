@@ -87,124 +87,105 @@ export function CurriculumView({ nodes }: ViewProps) {
     );
   }
 
+  const currentChapter = chapters[expandedChapter] ?? chapters[0];
+
   return (
-    <div style={{ padding: 20, maxWidth: 640, margin: '0 auto' }}>
-      {/* Progress bar */}
-      <div style={{ marginBottom: 24 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-          <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ou-text-heading)' }}>
-            커리큘럼
-          </span>
-          <span style={{ fontSize: 12, color: 'var(--ou-text-muted)' }}>
-            {completedCount}/{totalLessons} 완료
-          </span>
+    <div style={{ display: 'flex', width: '100%', height: '100%', overflow: 'hidden' }}>
+      {/* ── 좌측 사이드바: 챕터 목록 + 진행률 ── */}
+      <div style={{
+        width: 240, flexShrink: 0,
+        background: 'var(--ou-glass)',
+        borderRight: '1px solid var(--ou-glass-border)',
+        overflowY: 'auto',
+        padding: '20px 12px',
+        display: 'flex', flexDirection: 'column',
+      }}>
+        {/* 진행률 */}
+        <div style={{ padding: '0 8px', marginBottom: 16 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+            <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ou-text-muted)' }}>커리큘럼</span>
+            <span style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>{completedCount}/{totalLessons}</span>
+          </div>
+          <div style={{ height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.07)', overflow: 'hidden' }}>
+            <div style={{ width: `${progress * 100}%`, height: '100%', borderRadius: 2, background: 'var(--ou-text-heading)', transition: '300ms ease' }} />
+          </div>
         </div>
-        <div style={{
-          height: 4, borderRadius: 2,
-          background: 'var(--ou-border-faint)',
-          boxShadow: 'var(--ou-neu-pressed-sm)',
-          overflow: 'hidden',
-        }}>
-          <div style={{
-            width: `${progress * 100}%`, height: '100%',
-            borderRadius: 2,
-            background: 'var(--ou-text-muted)',
-            transition: '300ms ease',
-          }} />
-        </div>
-      </div>
-
-      {/* Chapters */}
-      {chapters.map((chapter, ci) => {
-        const chapterCompleted = chapter.lessons.filter(l => isCompleted(l)).length;
-        const isOpen = expandedChapter === ci;
-
-        return (
-          <div key={ci} style={{ marginBottom: 8 }}>
-            {/* Chapter header */}
-            <button
-              onClick={() => setExpandedChapter(isOpen ? -1 : ci)}
-              style={{
-                width: '100%', textAlign: 'left',
-                padding: '12px 14px',
-                borderRadius: 8,
-                border: '0.5px solid var(--ou-border-faint)',
-                background: 'var(--ou-bg)',
-                boxShadow: isOpen ? 'var(--ou-neu-pressed-sm)' : 'var(--ou-neu-raised-sm)',
-                cursor: 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                transition: '150ms ease',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <span style={{ fontSize: 10, color: 'var(--ou-text-disabled)' }}>
-                  {isOpen ? '▼' : '▶'}
-                </span>
-                <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--ou-text-heading)' }}>
+        <div style={{ height: 1, background: 'var(--ou-glass-border)', marginBottom: 8 }} />
+        {/* 챕터 리스트 */}
+        {chapters.map((chapter, ci) => {
+          const chapterCompleted = chapter.lessons.filter(l => isCompleted(l)).length;
+          const isActive = expandedChapter === ci;
+          return (
+            <button key={ci} onClick={() => setExpandedChapter(ci)} style={{
+              textAlign: 'left', padding: '10px 10px', borderRadius: 8, border: 'none',
+              background: isActive ? 'rgba(0,0,0,0.07)' : 'transparent',
+              cursor: 'pointer', marginBottom: 2,
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: 13, fontWeight: isActive ? 600 : 400, color: isActive ? 'var(--ou-text-heading)' : 'var(--ou-text-body)' }}>
                   {chapter.title}
                 </span>
+                <span style={{ fontSize: 10, color: 'var(--ou-text-muted)', background: 'rgba(0,0,0,0.05)', borderRadius: 999, padding: '1px 6px' }}>
+                  {chapterCompleted}/{chapter.lessons.length}
+                </span>
               </div>
-              <span style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>
-                {chapterCompleted}/{chapter.lessons.length}
-              </span>
             </button>
+          );
+        })}
+      </div>
 
-            {/* Lessons */}
-            {isOpen && (
-              <div style={{ padding: '4px 0 4px 24px' }}>
-                {chapter.lessons.map(lesson => (
-                  <div
-                    key={lesson.id}
-                    onClick={() => toggleComplete(lesson.id)}
-                    style={{
-                      display: 'flex', alignItems: 'center', gap: 10,
-                      padding: '8px 10px',
-                      cursor: 'pointer',
-                      borderRadius: 6,
-                      transition: '150ms ease',
-                    }}
-                  >
-                    {/* Checkbox */}
-                    <div style={{
-                      width: 16, height: 16, borderRadius: 4, flexShrink: 0,
-                      border: `1.5px solid ${isCompleted(lesson) ? 'var(--ou-border-subtle)' : 'var(--ou-border-faint)'}`,
-                      background: isCompleted(lesson) ? 'var(--ou-text-muted)' : 'transparent',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    }}>
-                      {isCompleted(lesson) && (
-                        <svg width="9" height="9" viewBox="0 0 10 10" fill="none">
-                          <path d="M2 5.5L4 7.5L8 3" stroke="var(--ou-bg)" strokeWidth="1.5" strokeLinecap="round" />
-                        </svg>
-                      )}
-                    </div>
-
-                    {/* Type icon */}
-                    <span style={{ fontSize: 12, flexShrink: 0 }}>
-                      {lesson.type === 'video' ? '▶' : '📄'}
-                    </span>
-
-                    {/* Title */}
-                    <span style={{
-                      fontSize: 13, flex: 1,
-                      color: isCompleted(lesson) ? 'var(--ou-text-muted)' : 'var(--ou-text-body)',
-                      textDecoration: isCompleted(lesson) ? 'line-through' : 'none',
-                    }}>
-                      {lesson.title}
-                    </span>
-
-                    {/* Duration */}
-                    {lesson.duration && (
-                      <span style={{ fontSize: 10, color: 'var(--ou-text-disabled)', flexShrink: 0 }}>
-                        {lesson.duration}
-                      </span>
+      {/* ── 우측 레슨 목록 ── */}
+      <div style={{ flex: 1, overflowY: 'auto', padding: '24px 32px 40px' }}>
+        {currentChapter && (
+          <>
+            <div style={{ marginBottom: 20 }}>
+              <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--ou-text-heading)', margin: '0 0 4px' }}>
+                {currentChapter.title}
+              </h2>
+              <div style={{ fontSize: 12, color: 'var(--ou-text-muted)' }}>
+                {currentChapter.lessons.filter(l => isCompleted(l)).length}/{currentChapter.lessons.length} 완료
+              </div>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              {currentChapter.lessons.map(lesson => (
+                <div key={lesson.id} onClick={() => toggleComplete(lesson.id)} style={{
+                  display: 'flex', alignItems: 'center', gap: 12,
+                  padding: '12px 16px', borderRadius: 10, cursor: 'pointer',
+                  background: 'var(--ou-glass)', border: '1px solid var(--ou-glass-border)',
+                  transition: '150ms',
+                }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--ou-glass-hover)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'var(--ou-glass)')}
+                >
+                  <div style={{
+                    width: 18, height: 18, borderRadius: 4, flexShrink: 0,
+                    border: `1.5px solid ${isCompleted(lesson) ? 'rgba(0,0,0,0.25)' : 'rgba(0,0,0,0.18)'}`,
+                    background: isCompleted(lesson) ? 'rgba(0,0,0,0.65)' : 'transparent',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  }}>
+                    {isCompleted(lesson) && (
+                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                        <path d="M2 5.5L4 7.5L8 3" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
                     )}
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
-        );
-      })}
+                  <span style={{ fontSize: 13, flexShrink: 0 }}>{lesson.type === 'video' ? '▶' : '📄'}</span>
+                  <span style={{
+                    fontSize: 14, flex: 1,
+                    color: isCompleted(lesson) ? 'var(--ou-text-muted)' : 'var(--ou-text-body)',
+                    textDecoration: isCompleted(lesson) ? 'line-through' : 'none',
+                  }}>
+                    {lesson.title}
+                  </span>
+                  {lesson.duration && (
+                    <span style={{ fontSize: 11, color: 'var(--ou-text-muted)', flexShrink: 0 }}>{lesson.duration}</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 }

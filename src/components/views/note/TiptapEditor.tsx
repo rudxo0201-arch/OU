@@ -9,6 +9,8 @@ import TaskList from '@tiptap/extension-task-list';
 import TaskItem from '@tiptap/extension-task-item';
 import { OuViewBlockExtension } from './OuViewBlockExtension';
 import { WikiLinkExtension } from './WikiLinkExtension';
+import { CalloutExtension, CALLOUT_PRESETS, type CalloutType } from './CalloutExtension';
+import { ImageBlockExtension } from './ImageBlockExtension';
 import { BubbleToolbar } from './BubbleToolbar';
 import { SlashCommandMenu, type SlashCommand } from './SlashCommandMenu';
 import { WikiLinkAutocomplete } from './WikiLinkAutocomplete';
@@ -16,6 +18,7 @@ import {
   TextHOne, TextHTwo, TextHThree,
   ListBullets, ListNumbers, CheckSquare,
   Quotes, Code, Minus, TextT, Database,
+  Warning, Info, Image,
 } from '@phosphor-icons/react';
 
 import type { Editor } from '@tiptap/react';
@@ -25,6 +28,7 @@ type Props = {
   initialContent?: object;
   onUpdate: (json: object, text: string) => void;
   onEditorReady?: (editor: Editor) => void;
+  onFocusTitle?: () => void;
   readOnly?: boolean;
 };
 
@@ -41,7 +45,7 @@ const DOMAIN_OPTIONS = [
   { key: 'knowledge', label: '지식',     defaultView: 'table' },
 ];
 
-export function TiptapEditor({ noteId, initialContent, onUpdate, onEditorReady, readOnly = false }: Props) {
+export function TiptapEditor({ noteId, initialContent, onUpdate, onEditorReady, onFocusTitle, readOnly = false }: Props) {
   const [slash,  setSlash]  = useState<SlashState>({ active: false, query: '', x: 0, y: 0 });
   const [wiki,   setWiki]   = useState<WikiState>({ active: false, query: '', x: 0, y: 0 });
   const [domain, setDomain] = useState<DomainState>({ active: false, x: 0, y: 0 });
@@ -63,6 +67,11 @@ export function TiptapEditor({ noteId, initialContent, onUpdate, onEditorReady, 
       { label: '인용',         description: '블록 인용',             icon: <Quotes size={16} />,     action: () => ed.chain().focus().toggleBlockquote().run() },
       { label: '코드 블록',    description: '코드 입력',             icon: <Code size={16} />,       action: () => ed.chain().focus().toggleCodeBlock().run() },
       { label: '구분선',       description: '수평 줄',               icon: <Minus size={16} />,      action: () => ed.chain().focus().setHorizontalRule().run() },
+      { label: '정보 박스',    description: '💡 파란 강조 블록',     icon: <Info size={16} />,       action: () => ed.chain().focus().insertContent({ type: 'callout', attrs: { type: 'info',    emoji: '💡' }, content: [{ type: 'paragraph' }] }).run() },
+      { label: '팁',           description: '✅ 초록 팁 박스',       icon: <Info size={16} />,       action: () => ed.chain().focus().insertContent({ type: 'callout', attrs: { type: 'tip',     emoji: '✅' }, content: [{ type: 'paragraph' }] }).run() },
+      { label: '주의',         description: '⚠️ 노란 경고 박스',     icon: <Warning size={16} />,    action: () => ed.chain().focus().insertContent({ type: 'callout', attrs: { type: 'warning', emoji: '⚠️' }, content: [{ type: 'paragraph' }] }).run() },
+      { label: '오류',         description: '🚫 빨간 오류 박스',     icon: <Warning size={16} />,    action: () => ed.chain().focus().insertContent({ type: 'callout', attrs: { type: 'error',   emoji: '🚫' }, content: [{ type: 'paragraph' }] }).run() },
+      { label: '이미지',       description: 'URL로 이미지 삽입',     icon: <Image size={16} />,      action: () => ed.chain().focus().insertContent({ type: 'imageBlock', attrs: { src: '', caption: '', width: '100%' } }).run() },
       {
         label: 'OU 뷰',
         description: '데이터 뷰 임베드 (table, kanban…)',
@@ -78,6 +87,7 @@ export function TiptapEditor({ noteId, initialContent, onUpdate, onEditorReady, 
 
   // ── Tiptap 에디터 ──────────────────────────────────────────────
   const editor = useEditor({
+    immediatelyRender: false,
     extensions: [
       StarterKit.configure({ heading: { levels: [1, 2, 3] } }),
       Placeholder.configure({
@@ -88,6 +98,8 @@ export function TiptapEditor({ noteId, initialContent, onUpdate, onEditorReady, 
       TaskItem.configure({ nested: true }),
       OuViewBlockExtension,
       WikiLinkExtension,
+      CalloutExtension,
+      ImageBlockExtension,
     ],
     content: initialContent ?? { type: 'doc', content: [{ type: 'paragraph' }] },
     editable: !readOnly,
@@ -95,11 +107,27 @@ export function TiptapEditor({ noteId, initialContent, onUpdate, onEditorReady, 
     onUpdate: ({ editor: ed }) => onUpdate(ed.getJSON(), ed.getText()),
   });
 
+  // ── readOnly 반응성 동기화 ────────────────────────────────────
+  useEffect(() => {
+    if (!editor) return;
+    editor.setEditable(!readOnly);
+  }, [editor, readOnly]);
+
   // ── 키 이벤트: 슬래시 + [[위키링크]] 감지 ──────────────────────
   useEffect(() => {
     if (!editor) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
+      // 문서 맨 앞에서 백스페이스 → 제목으로 포커스
+      if (e.key === 'Backspace' && onFocusTitle && !slash.active && !wiki.active) {
+        const { from, empty } = editor.state.selection;
+        if (empty && from <= 1) {
+          e.preventDefault();
+          onFocusTitle();
+          return;
+        }
+      }
+
       // 슬래시 커맨드
       if (e.key === '/' && !slash.active && !wiki.active) {
         const { from } = editor.state.selection;
@@ -131,11 +159,12 @@ export function TiptapEditor({ noteId, initialContent, onUpdate, onEditorReady, 
     };
 
     const handleKeyUp = () => {
-      // 슬래시 쿼리 업데이트
+      // 슬래시 쿼리 업데이트 (slashStartRef는 '/' 입력 전 위치 → 첫 글자('/') 제거)
       if (slash.active && slashStartRef.current !== null) {
         const { from } = editor.state.selection;
-        const text = editor.state.doc.textBetween(slashStartRef.current, from, '');
-        setSlash((s) => ({ ...s, query: text }));
+        const raw = editor.state.doc.textBetween(slashStartRef.current, from, '');
+        const query = raw.startsWith('/') ? raw.slice(1) : raw;
+        setSlash((s) => ({ ...s, query }));
       }
       // 위키 쿼리 업데이트
       if (wiki.active && wikiStartRef.current !== null) {

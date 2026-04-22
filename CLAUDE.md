@@ -96,6 +96,28 @@ opposite_of / requires / example_of / involves / located_at / occurs_at
 - **예외**: 별(importance) → `var(--ou-accent-primary)`
 - **인증 게이트**: 비로그인 버튼 `disabled` 금지 → 클릭 시 `/login`
 
+### 데스크톱 퍼스트 (Desktop-First)
+```
+OU는 데스크톱 웹앱이다.
+모든 뷰는 데스크톱에서 바로 출시해도 될 수준의 UI/UX/디자인을 갖춰야 한다.
+
+금지:
+  → maxWidth: N px 으로 좁히는 모바일 패턴 (단, NoteView/OrbChat 720px 예외)
+  → 단일 컬럼 전용 레이아웃
+  → CSS 미디어 쿼리 없는 반응형 부재
+
+최소 요건:
+  1. 정보 밀도: 대시보드/그리드/멀티컬럼으로 한 화면에 충분한 정보 제공
+  2. 반응형: @media breakpoint 768px / 1024px / 1440px 3단계 대응
+  3. 인터랙션: hover 상태, 넓은 클릭 영역, 키보드 접근성
+  4. 시각적 완성도: 레퍼런스 수준의 카드/차트/테이블 디자인
+
+반응형 패턴:
+  → CSS Modules (.module.css)에 미디어 쿼리 작성
+  → 인라인 스타일은 정적 값만, 반응형은 CSS 클래스로
+  → 최소 breakpoint: 768px(태블릿) / 1024px(데스크톱) / 1440px(와이드)
+```
+
 ### 아키텍처
 - **뷰 레지스트리**: 새 뷰 추가 = 등록만. 기존 코드 수정 금지
 - **API 키**: 서버사이드 only. 클라이언트 노출 절대 금지

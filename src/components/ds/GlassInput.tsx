@@ -36,7 +36,7 @@ export function GlassInput({
     gap: 'var(--ou-space-2)',
     height: 44,
     padding: '0 14px',
-    background: focused ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.03)',
+    background: focused ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.70)',
     backdropFilter: 'var(--ou-blur-light)',
     WebkitBackdropFilter: 'var(--ou-blur-light)',
     border: `1px solid ${error ? 'rgba(248,113,113,0.4)' : focused ? 'var(--ou-glass-border-focus)' : 'var(--ou-glass-border)'}`,

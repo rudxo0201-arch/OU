@@ -28,7 +28,7 @@ export function GlassModal({ open, onClose, children, title, width = 480 }: Glas
     alignItems: 'center',
     justifyContent: 'center',
     padding: '24px',
-    background: 'rgba(0,0,0,0.6)',
+    background: 'rgba(0,0,0,0.25)',
     backdropFilter: 'blur(4px)',
     WebkitBackdropFilter: 'blur(4px)',
     animation: 'ou-fade-in 200ms ease-out',

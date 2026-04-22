@@ -1,64 +1,77 @@
 /* ──────────────────────────────────────────
-   OU Design System — Glassmorphism Dark Tech
-   "Own Universe" — 다크 스페이스 위 유리 패널
+   OU Design System — Light Industrial Monochrome
+   "Own Universe" — 라이트 실버 배경, 순수 흑백, 프로페셔널 도구 미감
    ────────────────────────────────────────── */
 
 /* ── 1. CSS 토큰 ── */
 :root {
   /* Space (배경) */
-  --ou-space:              #0b0b11;
-  --ou-space-subtle:       #10101a;
-  --ou-space-gradient:     linear-gradient(145deg, #0b0b11 0%, #141420 50%, #0d0d18 100%);
+  --ou-space:              #e4e4ea;
+  --ou-space-subtle:       #dcdce2;
+  --ou-space-gradient:     linear-gradient(145deg, #e4e4ea 0%, #eaeaef 50%, #e0e0e6 100%);
 
-  /* Glass Surface */
-  --ou-glass:              rgba(255, 255, 255, 0.04);
-  --ou-glass-hover:        rgba(255, 255, 255, 0.07);
-  --ou-glass-active:       rgba(255, 255, 255, 0.10);
-  --ou-glass-elevated:     rgba(255, 255, 255, 0.08);
-  --ou-glass-strong:       rgba(255, 255, 255, 0.12);
+  /* Surface (화이트 카드) — 불투명 white on grey bg */
+  --ou-glass:              rgba(255, 255, 255, 0.97);
+  --ou-glass-hover:        rgba(255, 255, 255, 1.0);
+  --ou-glass-active:       rgba(255, 255, 255, 1.0);
+  --ou-glass-elevated:     rgba(255, 255, 255, 1.0);
+  --ou-glass-strong:       rgba(255, 255, 255, 1.0);
 
-  /* Glass Border */
-  --ou-glass-border:       rgba(255, 255, 255, 0.06);
-  --ou-glass-border-hover: rgba(255, 255, 255, 0.12);
-  --ou-glass-border-focus: rgba(108, 140, 255, 0.4);
+  /* Border */
+  --ou-glass-border:       rgba(0, 0, 0, 0.07);
+  --ou-glass-border-hover: rgba(0, 0, 0, 0.14);
+  --ou-glass-border-focus: rgba(0, 0, 0, 0.25);
 
-  /* Blur */
-  --ou-blur:               blur(24px) saturate(180%);
-  --ou-blur-light:         blur(12px) saturate(150%);
+  /* Blur (제거) */
+  --ou-blur:               none;
+  --ou-blur-light:         none;
 
-  /* Text (6단계) */
-  --ou-text-heading:       rgba(255, 255, 255, 0.95);
-  --ou-text-strong:        rgba(255, 255, 255, 0.85);
-  --ou-text-body:          rgba(255, 255, 255, 0.72);
-  --ou-text-secondary:     rgba(255, 255, 255, 0.48);
-  --ou-text-muted:         rgba(255, 255, 255, 0.28);
-  --ou-text-disabled:      rgba(255, 255, 255, 0.14);
+  /* Text (6단계, 다크 on 라이트) */
+  --ou-text-heading:       rgba(0, 0, 0, 0.90);
+  --ou-text-strong:        rgba(0, 0, 0, 0.78);
+  --ou-text-body:          rgba(0, 0, 0, 0.62);
+  --ou-text-secondary:     rgba(0, 0, 0, 0.42);
+  --ou-text-muted:         rgba(0, 0, 0, 0.26);
+  --ou-text-disabled:      rgba(0, 0, 0, 0.14);
 
-  /* Accent — 팔레트로 교체 가능 */
-  --ou-accent:             #6c8cff;
-  --ou-accent-hover:       #8aa4ff;
-  --ou-accent-rgb:         108, 140, 255;
-  --ou-accent-glow:        0 0 24px rgba(108, 140, 255, 0.25);
-  --ou-accent-glow-lg:     0 0 48px rgba(108, 140, 255, 0.15);
+  /* Accent — 모노크롬 */
+  --ou-accent:             #1a1a1f;
+  --ou-accent-hover:       #333338;
+  --ou-accent-rgb:         26, 26, 31;
+  --ou-accent-glow:        none;
+  --ou-accent-glow-lg:     none;
 
   /* Semantic */
-  --ou-success:            #34d399;
-  --ou-warning:            #fbbf24;
-  --ou-error:              #f87171;
-  --ou-info:               #60a5fa;
+  --ou-success:            #16a34a;
+  --ou-warning:            #ca8a04;
+  --ou-error:              #dc2626;
+  --ou-info:               #2563eb;
 
-  /* Shadow (깊이 3단계) */
-  --ou-shadow-sm:          0 2px 8px rgba(0, 0, 0, 0.3);
-  --ou-shadow-md:          0 8px 32px rgba(0, 0, 0, 0.4);
-  --ou-shadow-lg:          0 16px 64px rgba(0, 0, 0, 0.5);
+  /* Dark Card (강조 카드용) */
+  --ou-card-dark:          #1a1a1f;
+  --ou-card-dark-hover:    #252528;
+  --ou-card-dark-text:     rgba(255, 255, 255, 0.92);
+  --ou-card-dark-sub:      rgba(255, 255, 255, 0.55);
+
+  /* Shadow — 레퍼런스 수준 가시적 깊이감 */
+  --ou-shadow-sm:          0 1px 2px rgba(0, 0, 0, 0.05), 0 2px 8px rgba(0, 0, 0, 0.07);
+  --ou-shadow-md:          0 2px 4px rgba(0, 0, 0, 0.07), 0 8px 24px rgba(0, 0, 0, 0.11);
+  --ou-shadow-lg:          0 4px 8px rgba(0, 0, 0, 0.09), 0 16px 48px rgba(0, 0, 0, 0.15);
+  /* 위젯 카드 전용 — ambient + edge highlight */
+  --ou-shadow-card:        0 1px 0 rgba(255,255,255,0.8) inset,
+                           0 1px 3px rgba(0, 0, 0, 0.07),
+                           0 8px 32px rgba(0, 0, 0, 0.09);
+  --ou-shadow-card-hover:  0 1px 0 rgba(255,255,255,0.8) inset,
+                           0 2px 6px rgba(0, 0, 0, 0.09),
+                           0 20px 60px rgba(0, 0, 0, 0.16);
 
   /* Border Radius */
-  --ou-radius-xs:          6px;
-  --ou-radius-sm:          8px;
-  --ou-radius-md:          12px;
-  --ou-radius-card:        16px;
-  --ou-radius-lg:          20px;
-  --ou-radius-xl:          24px;
+  --ou-radius-xs:          4px;
+  --ou-radius-sm:          6px;
+  --ou-radius-md:          10px;
+  --ou-radius-card:        14px;
+  --ou-radius-lg:          16px;
+  --ou-radius-xl:          20px;
   --ou-radius-pill:        999px;
 
   /* Spacing (8px 베이스) */
@@ -87,6 +100,7 @@
   --ou-font-mono:    'JetBrains Mono', monospace;
 
   /* Font Size */
+  --ou-text-micro: 10px;  /* 마이크로 레이블 (카테고리 uppercase) */
   --ou-text-xs:   12px;
   --ou-text-sm:   14px;
   --ou-text-base: 16px;
@@ -96,6 +110,22 @@
   --ou-text-3xl:  48px;
   --ou-text-hero: 64px;
 
+  /* Letter Spacing */
+  --ou-tracking-tight:  -0.02em;  /* 타이틀 */
+  --ou-tracking-normal:  0em;
+  --ou-tracking-wide:    0.05em;  /* 레이블 */
+  --ou-tracking-wider:   0.08em;  /* 마이크로 uppercase */
+
+  /* Line Height */
+  --ou-leading-tight:  1.15;
+  --ou-leading-snug:   1.35;
+  --ou-leading-normal: 1.5;
+
+  /* Widget row heights */
+  --ou-row-sm:   32px;
+  --ou-row-md:   36px;
+  --ou-row-lg:   44px;
+
   /* Transition */
   --ou-transition-fast:   120ms ease-out;
   --ou-transition:        200ms ease;
@@ -103,11 +133,27 @@
   --ou-transition-spring: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* ── 팔레트 시스템 ── */
-[data-palette="cosmos"], :root { --ou-accent: #6c8cff; --ou-accent-hover: #8aa4ff; --ou-accent-rgb: 108, 140, 255; }
-[data-palette="nebula"]        { --ou-accent: #a78bfa; --ou-accent-hover: #c4b5fd; --ou-accent-rgb: 167, 139, 250; }
-[data-palette="aurora"]        { --ou-accent: #34d399; --ou-accent-hover: #6ee7b7; --ou-accent-rgb: 52, 211, 153; }
-[data-palette="solar"]         { --ou-accent: #fbbf24; --ou-accent-hover: #fcd34d; --ou-accent-rgb: 251, 191, 36; }
+/* ── 레거시 변수 → 폴백 (기존 뷰 호환) ── */
+:root {
+  --ou-neu-raised-sm:   var(--ou-shadow-sm);
+  --ou-neu-raised-md:   var(--ou-shadow-md);
+  --ou-neu-raised-lg:   var(--ou-shadow-lg);
+  --ou-neu-pressed-sm:  inset 0 1px 3px rgba(0, 0, 0, 0.06);
+  --ou-neu-pressed-md:  inset 0 2px 6px rgba(0, 0, 0, 0.08);
+  --ou-border-subtle:   rgba(0, 0, 0, 0.08);
+  --ou-border-faint:    rgba(0, 0, 0, 0.04);
+  --ou-bg:              var(--ou-space);
+  --ou-surface:         var(--ou-glass);
+  --ou-text-dimmed:     var(--ou-text-muted);
+  --ou-text-error:      var(--ou-error);
+  --ou-accent-primary:  var(--ou-accent);
+}
+
+/* ── 팔레트 시스템 (모노크롬) ── */
+[data-palette="cosmos"], :root { --ou-accent: #1a1a1f; --ou-accent-hover: #333338; --ou-accent-rgb: 26, 26, 31; }
+[data-palette="nebula"]        { --ou-accent: #2a2a30; --ou-accent-hover: #3a3a40; --ou-accent-rgb: 42, 42, 48; }
+[data-palette="aurora"]        { --ou-accent: #1f2520; --ou-accent-hover: #2f3530; --ou-accent-rgb: 31, 37, 32; }
+[data-palette="solar"]         { --ou-accent: #252520; --ou-accent-hover: #353530; --ou-accent-rgb: 37, 37, 32; }
 
 /* ── 2. CSS 리셋 ── */
 *, *::before, *::after {
@@ -176,8 +222,8 @@ img, video {
 }
 
 @keyframes ou-glow-pulse {
-  0%, 100% { box-shadow: 0 0 12px rgba(var(--ou-accent-rgb), 0.15); }
-  50%       { box-shadow: 0 0 32px rgba(var(--ou-accent-rgb), 0.35); }
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.02); }
 }
 
 @keyframes ou-shimmer {

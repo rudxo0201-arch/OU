@@ -37,9 +37,9 @@ export default function LandingPage() {
         justifyContent: 'space-between',
         padding: '0 32px',
         height: 56,
-        background: 'rgba(11,11,17,0.7)',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
+        background: 'rgba(228,228,234,0.92)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
         borderBottom: '1px solid var(--ou-glass-border)',
       }}>
         <span style={{
@@ -87,7 +87,7 @@ export default function LandingPage() {
               fontWeight: 800,
               color: 'var(--ou-text-heading)',
               letterSpacing: '-0.03em',
-              textShadow: `0 0 32px rgba(var(--ou-accent-rgb), 0.6)`,
+              textShadow: 'none',
             }}>
               OU
             </span>

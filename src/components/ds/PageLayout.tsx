@@ -7,7 +7,7 @@ interface PageLayoutProps {
   noAmbient?: boolean;
 }
 
-export function PageLayout({ children, style, noAmbient = false }: PageLayoutProps) {
+export function PageLayout({ children, style, noAmbient = true }: PageLayoutProps) {
   return (
     <div style={{
       position: 'relative',

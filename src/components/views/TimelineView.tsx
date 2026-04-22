@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import dayjs from 'dayjs';
 import 'dayjs/locale/ko';
 import type { ViewProps } from './registry';
@@ -50,8 +50,27 @@ export function TimelineView({ nodes }: ViewProps) {
     );
   }
 
+  const domainCounts = useMemo(() => {
+    const map: Record<string, number> = {};
+    for (const n of sorted) map[n.domain] = (map[n.domain] || 0) + 1;
+    return Object.entries(map).sort(([, a], [, b]) => b - a).slice(0, 4);
+  }, [sorted]);
+
   return (
-    <div style={{ padding: '20px 24px', maxWidth: 640, margin: '0 auto' }}>
+    <div style={{ padding: '24px 32px 40px', width: '100%' }}>
+      {/* 상단 통계 카드 */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 12, marginBottom: 28 }}>
+        <div style={{ background: 'var(--ou-card-dark)', borderRadius: 'var(--ou-radius-card)', padding: '16px 18px', boxShadow: 'var(--ou-shadow-md)' }}>
+          <div style={{ fontSize: 11, color: 'var(--ou-card-dark-sub)', letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 6 }}>총 데이터</div>
+          <div style={{ fontSize: 26, fontWeight: 700, color: 'var(--ou-card-dark-text)', letterSpacing: '-0.02em' }}>{sorted.length}</div>
+        </div>
+        {domainCounts.map(([domain, count]) => (
+          <div key={domain} style={{ background: 'var(--ou-glass)', border: '1px solid var(--ou-glass-border)', borderRadius: 'var(--ou-radius-card)', padding: '16px 18px', boxShadow: 'var(--ou-shadow-sm)' }}>
+            <div style={{ fontSize: 11, color: 'var(--ou-text-muted)', letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 6 }}>{DOMAIN_LABELS[domain] || domain}</div>
+            <div style={{ fontSize: 26, fontWeight: 700, color: 'var(--ou-text-heading)', letterSpacing: '-0.02em' }}>{count}</div>
+          </div>
+        ))}
+      </div>
       {grouped.map(([dateStr, items]) => {
         const label = dateStr === today ? '오늘'
           : dateStr === yesterday ? '어제'

@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
+import { createClient } from '@/lib/supabase/client';
 import { ViewRenderer } from '@/components/views/ViewRenderer';
 
 interface OrbViewProps {
@@ -12,27 +13,60 @@ interface OrbViewProps {
 /**
  * 각 Orb의 메인 뷰.
  * /api/nodes에서 해당 도메인 데이터를 가져와 ViewRenderer로 렌더링.
- * note Orb는 viewType='note' → NoteView(Tiptap 에디터)를 사용.
+ * Supabase Realtime으로 data_nodes 변경 시 자동 갱신.
  */
 export function OrbView({ domain, viewType, orbSlug }: OrbViewProps) {
   const [nodes, setNodes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // 도메인 없는 Orb (time 등)는 데이터 불필요
+  const fetchNodes = useCallback(async () => {
     if (!domain) {
-      setNodes(['__no_domain__'] as any); // ViewRenderer가 nodes 체크하므로 dummy
+      setNodes([]);
       setLoading(false);
       return;
     }
-    fetch(`/api/nodes?domain=${domain}&limit=100`)
-      .then((r) => r.ok ? r.json() : { data: [] })
-      .then((json) => {
-        setNodes(json.data ?? json ?? []);
-      })
-      .catch(() => setNodes([]))
-      .finally(() => setLoading(false));
+    try {
+      const res = await fetch(`/api/nodes?domain=${domain}&limit=200`);
+      const json = res.ok ? await res.json() : { nodes: [] };
+      setNodes(Array.isArray(json.nodes) ? json.nodes : []);
+    } catch {
+      setNodes([]);
+    } finally {
+      setLoading(false);
+    }
   }, [domain]);
+
+  useEffect(() => {
+    fetchNodes();
+  }, [fetchNodes]);
+
+  // Supabase Realtime: data_nodes 변경 시 자동 갱신
+  useEffect(() => {
+    if (!domain) return;
+
+    const supabase = createClient();
+
+    const channel = supabase
+      .channel(`orb-${orbSlug}-nodes`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'data_nodes',
+          filter: `domain=eq.${domain}`,
+        },
+        () => {
+          // INSERT / UPDATE / DELETE 모두 전체 재조회 (목록 정합성 보장)
+          fetchNodes();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [domain, orbSlug, fetchNodes]);
 
   if (loading) {
     return (
@@ -40,41 +74,21 @@ export function OrbView({ domain, viewType, orbSlug }: OrbViewProps) {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        height: 'calc(100vh - 52px)',
+        height: '100dvh',
         color: 'var(--ou-text-muted)',
-        fontSize: 'var(--ou-text-sm)',
       }}>
         <span className="ou-spinner" style={{ width: 20, height: 20 }} />
       </div>
     );
   }
 
-  if (nodes.length === 0 && domain) {
-    return (
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: 'calc(100vh - 52px)',
-        gap: 12,
-        color: 'var(--ou-text-muted)',
-      }}>
-        <span style={{ fontSize: 40, opacity: 0.3 }}>◎</span>
-        <span style={{ fontSize: 'var(--ou-text-sm)' }}>아직 데이터가 없습니다</span>
-        <span style={{ fontSize: 'var(--ou-text-xs)', color: 'var(--ou-text-disabled)' }}>
-          홈 화면의 QS 입력바로 기록을 시작해보세요
-        </span>
-      </div>
-    );
-  }
-
   return (
     <div style={{
-      height: 'calc(100vh - 52px)',
+      height: '100dvh',
       overflow: 'auto',
     }}>
-      <ViewRenderer viewType={viewType} nodes={nodes} />
+      {/* allowEmpty=true: 뷰가 직접 빈 상태/스켈레톤을 렌더링 */}
+      <ViewRenderer viewType={viewType} nodes={nodes} allowEmpty />
     </div>
   );
 }

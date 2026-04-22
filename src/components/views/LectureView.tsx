@@ -78,7 +78,7 @@ export function LectureView({ nodes }: LectureViewProps) {
   }
 
   return (
-    <div style={{ display: 'flex', height: 500 }}>
+    <div style={{ display: 'flex', height: '100%', minHeight: 500 }}>
       {/* Left: chapter list */}
       <div style={{ width: 220, borderRight: '0.5px solid var(--ou-border-subtle)', flexShrink: 0 }}>
         <div style={{ padding: '8px 12px', borderBottom: '0.5px solid var(--ou-border-subtle)' }}>
@@ -89,7 +89,7 @@ export function LectureView({ nodes }: LectureViewProps) {
             <div style={{ height: '100%', width: `${progress}%`, background: 'var(--ou-text-muted)', borderRadius: 2 }} />
           </div>
         </div>
-        <div style={{ height: 440, overflowY: 'auto' }}>
+        <div style={{ flex: 1, overflowY: 'auto' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
             {chapters.map((ch, idx) => {
               const isActive = idx === selectedChapterIdx;

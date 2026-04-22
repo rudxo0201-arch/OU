@@ -90,7 +90,7 @@ export function ScrapView({ nodes }: ViewProps) {
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   background: 'rgba(0,0,0,0.3)',
                 }}>
-                  <span style={{ fontSize: 24, color: 'rgba(255,255,255,0.8)' }}>▶</span>
+                  <span style={{ fontSize: 24, color: 'rgba(0,0,0,0.7)' }}>▶</span>
                 </div>
               </div>
             )}

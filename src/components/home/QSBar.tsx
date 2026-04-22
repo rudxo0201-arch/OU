@@ -1,7 +1,7 @@
 'use client';
 
 import { CSSProperties, FormEvent, useState } from 'react';
-import { GlassTabs, useToast } from '@/components/ds';
+import { useToast } from '@/components/ds';
 
 type QSTab = 'Q' | 'S';
 
@@ -9,6 +9,34 @@ const PLACEHOLDERS: Record<QSTab, string> = {
   Q: '오늘 뭐했어... 어디 갔어... 뭐 먹었어...',
   S: '내 데이터에서 검색...',
 };
+
+/* ── 탭 버튼 ── */
+function TabBtn({
+  label,
+  active,
+  onClick,
+}: {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+}) {
+  const style: CSSProperties = {
+    padding: '4px 12px',
+    height: 30,
+    borderRadius: 8,
+    border: 'none',
+    background: active ? 'rgba(0,0,0,0.88)' : 'transparent',
+    color: active ? '#fff' : 'rgba(0,0,0,0.36)',
+    fontSize: 12,
+    fontWeight: 600,
+    letterSpacing: '0.02em',
+    cursor: 'pointer',
+    transition: 'all 140ms ease',
+    fontFamily: 'var(--ou-font-body)',
+    flexShrink: 0,
+  };
+  return <button type="button" style={style} onClick={onClick}>{label}</button>;
+}
 
 export function QSBar() {
   const [tab, setTab] = useState<QSTab>('Q');
@@ -34,10 +62,9 @@ export function QSBar() {
         if (!res.ok) throw new Error('Quick 입력 실패');
         show('기록됨', 'success');
       } else {
-        // S(Search) — TODO: /api/search 연결 후 오버레이로 결과 표시
         show('검색 기능은 준비 중입니다.', 'info');
       }
-    } catch (err) {
+    } catch {
       show('오류가 발생했습니다.', 'error');
     } finally {
       setLoading(false);
@@ -47,31 +74,36 @@ export function QSBar() {
   const containerStyle: CSSProperties = {
     display: 'flex',
     alignItems: 'center',
-    gap: 12,
-    padding: '0 16px',
-    height: 52,
-    background: focused ? 'rgba(255,255,255,0.07)' : 'var(--ou-glass)',
-    backdropFilter: 'var(--ou-blur)',
-    WebkitBackdropFilter: 'var(--ou-blur)',
-    border: `1px solid ${focused ? 'var(--ou-glass-border-focus)' : 'var(--ou-glass-border)'}`,
-    borderRadius: 'var(--ou-radius-pill)',
-    boxShadow: focused ? `0 0 0 3px rgba(var(--ou-accent-rgb), 0.08)` : 'var(--ou-shadow-sm)',
-    transition: 'all var(--ou-transition-fast)',
+    gap: 8,
+    padding: '0 6px 0 10px',
+    height: 48,
+    background: 'rgba(255,255,255,1)',
+    border: `1px solid ${focused ? 'rgba(0,0,0,0.22)' : 'rgba(0,0,0,0.09)'}`,
+    borderRadius: 14,
+    boxShadow: focused
+      ? '0 0 0 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.10)'
+      : '0 1px 2px rgba(0,0,0,0.05), 0 4px 14px rgba(0,0,0,0.08)',
+    transition: 'all 160ms ease',
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ width: '100%', maxWidth: 720 }}>
+    <form onSubmit={handleSubmit} style={{ width: '100%', maxWidth: 680 }}>
       <div style={containerStyle}>
-        {/* QS 탭 */}
-        <GlassTabs
-          tabs={[
-            { key: 'Q', label: 'Quick' },
-            { key: 'S', label: 'Search' },
-          ]}
-          activeKey={tab}
-          onChange={(k) => setTab(k as QSTab)}
-          style={{ flexShrink: 0 }}
-        />
+        {/* 탭 그룹 */}
+        <div style={{
+          display: 'flex',
+          gap: 2,
+          background: 'rgba(0,0,0,0.05)',
+          padding: 3,
+          borderRadius: 10,
+          flexShrink: 0,
+        }}>
+          <TabBtn label="Quick" active={tab === 'Q'} onClick={() => setTab('Q')} />
+          <TabBtn label="Search" active={tab === 'S'} onClick={() => setTab('S')} />
+        </div>
+
+        {/* 구분선 */}
+        <div style={{ width: 1, height: 20, background: 'rgba(0,0,0,0.08)', flexShrink: 0 }} />
 
         {/* 입력 */}
         <input
@@ -85,24 +117,24 @@ export function QSBar() {
             background: 'none',
             border: 'none',
             outline: 'none',
-            fontSize: 'var(--ou-text-base)',
-            color: 'var(--ou-text-body)',
+            fontSize: 14,
+            color: 'rgba(0,0,0,0.78)',
             fontFamily: 'var(--ou-font-body)',
             minWidth: 0,
           }}
         />
 
-        {/* 전송 버튼 / 로딩 */}
+        {/* 전송 / 로딩 */}
         {loading ? (
-          <span className="ou-spinner" style={{ width: 18, height: 18, flexShrink: 0 }} />
+          <span className="ou-spinner" style={{ width: 18, height: 18, flexShrink: 0, marginRight: 6 }} />
         ) : value.trim() ? (
           <button
             type="submit"
             style={{
-              width: 28,
-              height: 28,
-              borderRadius: '50%',
-              background: 'var(--ou-accent)',
+              width: 32,
+              height: 32,
+              borderRadius: 10,
+              background: 'rgba(0,0,0,0.88)',
               border: 'none',
               cursor: 'pointer',
               display: 'flex',
@@ -110,15 +142,39 @@ export function QSBar() {
               justifyContent: 'center',
               flexShrink: 0,
               color: '#fff',
-              fontSize: 14,
-              transition: 'transform var(--ou-transition-fast)',
+              fontSize: 15,
+              transition: 'transform 120ms ease, background 120ms ease',
             }}
-            onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.9)')}
+            onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(0,0,0,1)')}
+            onMouseLeave={(e) => (e.currentTarget.style.background = 'rgba(0,0,0,0.88)')}
+            onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.88)')}
             onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
           >
             ↑
           </button>
-        ) : null}
+        ) : (
+          /* 힌트 키보드 */
+          <div style={{
+            display: 'flex',
+            gap: 4,
+            alignItems: 'center',
+            marginRight: 4,
+            flexShrink: 0,
+          }}>
+            <kbd style={{
+              padding: '2px 6px',
+              background: 'rgba(0,0,0,0.06)',
+              border: '1px solid rgba(0,0,0,0.10)',
+              borderRadius: 5,
+              fontSize: 10,
+              fontFamily: 'var(--ou-font-mono)',
+              color: 'rgba(0,0,0,0.32)',
+              lineHeight: 1.4,
+            }}>
+              ⌘K
+            </kbd>
+          </div>
+        )}
       </div>
     </form>
   );

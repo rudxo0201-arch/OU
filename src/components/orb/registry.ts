@@ -21,6 +21,8 @@ export const ORB_REGISTRY: Record<string, OrbDef> = {
   time:     { slug: 'time',     title: '시계',     icon: '◷', viewType: 'time',    placeholder: '' },
   /** Deep Talk: viewType 없음 = LLM 대화창 */
   'deep-talk': { slug: 'deep-talk', title: 'Deep Talk', icon: '◉', placeholder: '무엇이든 깊이 이야기해보세요...' },
+  /** 관리자 Orb: DS 문서, 노드·멤버 관리 등 */
+  admin: { slug: 'admin', title: '관리자', icon: '⚙', viewType: 'admin' },
 };
 
 export function getOrbDef(slug: string): OrbDef | null {

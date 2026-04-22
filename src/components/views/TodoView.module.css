@@ -1,0 +1,163 @@
+/* TodoView — Desktop-first sidebar layout */
+
+.root {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  overflow: hidden;
+}
+
+/* ── 좌측 사이드바 ── */
+.sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--ou-glass);
+  border-right: 1px solid var(--ou-glass-border);
+  padding: 24px 12px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sidebarTitle {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ou-text-muted);
+  padding: 0 8px;
+  margin-bottom: 8px;
+}
+
+.sidebarItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border-radius: var(--ou-radius-md);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: background var(--ou-transition-fast);
+  text-align: left;
+  width: 100%;
+}
+.sidebarItem:hover { background: rgba(0, 0, 0, 0.04); }
+
+.sidebarItemActive {
+  background: rgba(0, 0, 0, 0.07);
+}
+
+.sidebarItemLabel {
+  font-size: 13px;
+  color: var(--ou-text-body);
+}
+.sidebarItemLabelActive {
+  color: var(--ou-text-heading);
+  font-weight: 600;
+}
+
+.sidebarItemCount {
+  font-size: 11px;
+  color: var(--ou-text-muted);
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: var(--ou-radius-pill);
+  padding: 1px 6px;
+}
+.sidebarItemCountAlert {
+  color: var(--ou-error);
+  background: rgba(220, 38, 38, 0.1);
+}
+
+.sidebarDivider {
+  height: 1px;
+  background: var(--ou-glass-border);
+  margin: 8px 0;
+}
+
+/* ── 메인 콘텐츠 ── */
+.main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 32px 40px;
+  min-width: 0;
+}
+
+.mainHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.mainTitle {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ou-text-heading);
+  letter-spacing: -0.02em;
+}
+
+.mainMeta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--ou-text-muted);
+}
+
+.overdueAlert {
+  color: var(--ou-error);
+  font-weight: 600;
+}
+
+/* ── 할일 리스트 ── */
+.section { margin-bottom: 20px; }
+
+.sectionLabel {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ou-text-disabled);
+  padding: 10px 12px 4px;
+}
+
+.todoList {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+/* ── 빈 상태 ── */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  color: var(--ou-text-disabled);
+  text-align: center;
+  gap: 12px;
+}
+.emptyIcon { font-size: 32px; opacity: 0.25; }
+.emptyText { font-size: 13px; color: var(--ou-text-secondary); }
+.emptyHint { font-size: 12px; color: var(--ou-text-disabled); }
+
+/* 모바일: 사이드바 숨기고 탭으로 */
+@media (max-width: 768px) {
+  .root { flex-direction: column; }
+  .sidebar {
+    width: 100%;
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 12px 16px;
+    border-right: none;
+    border-bottom: 1px solid var(--ou-glass-border);
+    gap: 4px;
+  }
+  .sidebarTitle { display: none; }
+  .sidebarDivider { display: none; }
+  .sidebarItem { flex-direction: row; white-space: nowrap; padding: 6px 10px; }
+  .main { padding: 16px 16px 40px; }
+}

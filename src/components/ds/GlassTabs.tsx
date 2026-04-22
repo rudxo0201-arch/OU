@@ -18,7 +18,7 @@ export function GlassTabs({ tabs, activeKey, onChange, style }: GlassTabsProps) 
   return (
     <div style={{
       display: 'inline-flex',
-      background: 'rgba(255,255,255,0.03)',
+      background: 'rgba(0,0,0,0.04)',
       border: '1px solid var(--ou-glass-border)',
       borderRadius: 'var(--ou-radius-pill)',
       padding: '3px',

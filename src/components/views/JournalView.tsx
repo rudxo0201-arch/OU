@@ -92,38 +92,71 @@ export function JournalView({ nodes }: ViewProps) {
     );
   }
 
-  return (
-    <div style={{ padding: 20, maxWidth: 560, margin: '0 auto' }}>
-      {/* Mood summary */}
-      {moodStats.length > 0 && (
-        <div style={{
-          display: 'flex', gap: 8, marginBottom: 24,
-          padding: '12px 16px', borderRadius: 12,
-          background: 'var(--ou-bg)',
-          border: 'none',
-          boxShadow: 'var(--ou-neu-pressed-sm)',
-          flexWrap: 'wrap',
-        }}>
-          {moodStats.slice(0, 5).map(([mood, count]) => {
-            const info = getMoodInfo(mood);
-            return (
-              <div key={mood} style={{
-                display: 'flex', alignItems: 'center', gap: 4,
-                padding: '4px 10px', borderRadius: 999,
-                background: info.color,
-                fontSize: 12,
-              }}>
-                <span>{info.emoji}</span>
-                <span style={{ color: 'var(--ou-text-body)' }}>{info.label || mood}</span>
-                <span style={{ color: 'var(--ou-text-muted)', fontSize: 10 }}>{count}</span>
-              </div>
-            );
-          })}
-        </div>
-      )}
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const displayGroups = selectedDate
+    ? grouped.filter(([k]) => k === selectedDate)
+    : grouped;
 
+  return (
+    <div style={{ display: 'flex', width: '100%', height: '100%', overflow: 'hidden' }}>
+      {/* ── 좌측 사이드바: 날짜 목록 + 무드 통계 ── */}
+      <div style={{
+        width: 220, flexShrink: 0,
+        background: 'var(--ou-glass)',
+        borderRight: '1px solid var(--ou-glass-border)',
+        overflowY: 'auto',
+        padding: '20px 12px',
+        display: 'flex', flexDirection: 'column', gap: 2,
+      }}>
+        <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ou-text-muted)', padding: '0 8px', marginBottom: 8 }}>
+          {entries.length}개의 기록
+        </div>
+        {/* 전체 보기 */}
+        <button onClick={() => setSelectedDate(null)} style={{
+          textAlign: 'left', padding: '8px 10px', borderRadius: 8, border: 'none',
+          background: !selectedDate ? 'rgba(0,0,0,0.07)' : 'transparent',
+          color: !selectedDate ? 'var(--ou-text-heading)' : 'var(--ou-text-muted)',
+          fontSize: 13, fontWeight: !selectedDate ? 600 : 400, cursor: 'pointer',
+        }}>전체 보기</button>
+        <div style={{ height: 1, background: 'var(--ou-glass-border)', margin: '8px 0' }} />
+        {grouped.map(([dateKey, dayEntries]) => {
+          const isToday = dateKey === today;
+          const label = dateKey === '날짜 없음' ? dateKey : isToday ? '오늘' : dayjs(dateKey).format('M월 D일 (ddd)');
+          return (
+            <button key={dateKey} onClick={() => setSelectedDate(dateKey)} style={{
+              textAlign: 'left', padding: '8px 10px', borderRadius: 8, border: 'none',
+              background: selectedDate === dateKey ? 'rgba(0,0,0,0.07)' : 'transparent',
+              color: selectedDate === dateKey ? 'var(--ou-text-heading)' : 'var(--ou-text-muted)',
+              fontSize: 13, cursor: 'pointer',
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            }}>
+              <span style={{ fontWeight: selectedDate === dateKey ? 600 : 400 }}>{label}</span>
+              <span style={{ fontSize: 11, color: 'var(--ou-text-disabled)', background: 'rgba(0,0,0,0.05)', borderRadius: 999, padding: '1px 6px' }}>{dayEntries.length}</span>
+            </button>
+          );
+        })}
+        {/* 무드 통계 */}
+        {moodStats.length > 0 && (
+          <div style={{ marginTop: 16, paddingTop: 12, borderTop: '1px solid var(--ou-glass-border)' }}>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ou-text-disabled)', padding: '0 8px', marginBottom: 8 }}>무드</div>
+            {moodStats.slice(0, 5).map(([mood, count]) => {
+              const info = getMoodInfo(mood);
+              return (
+                <div key={mood} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 10px', borderRadius: 8 }}>
+                  <span style={{ fontSize: 14 }}>{info.emoji}</span>
+                  <span style={{ flex: 1, fontSize: 12, color: 'var(--ou-text-body)' }}>{info.label || mood}</span>
+                  <span style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>{count}</span>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* ── 우측 콘텐츠 ── */}
+      <div style={{ flex: 1, overflowY: 'auto', padding: '24px 32px 40px' }}>
       {/* Entries */}
-      {grouped.map(([dateKey, dayEntries]) => {
+      {displayGroups.map(([dateKey, dayEntries]) => {
         const isToday = dateKey === today;
         const dateLabel = dateKey === '날짜 없음' ? dateKey
           : isToday ? '오늘'
@@ -191,6 +224,7 @@ export function JournalView({ nodes }: ViewProps) {
           </div>
         );
       })}
+      </div>
     </div>
   );
 }

@@ -16,7 +16,8 @@ export type Stroke = {
 type Tool = 'pen' | 'eraser';
 
 type Props = {
-  active: boolean;          // 필기 모드 on/off
+  active: boolean;          // 필기 모드 on/off (그리기 가능)
+  visible: boolean;         // 필기 표시 여부 (active가 아닐 때도 strokes 렌더)
   strokes: Stroke[];
   onStrokeAdd: (stroke: Stroke) => void;
   onStrokeRemove: (id: string) => void;
@@ -33,7 +34,7 @@ const COLORS = [
 ];
 
 export function AnnotationLayer({
-  active, strokes, onStrokeAdd, onStrokeRemove, findBlockAt, buildBlockMap,
+  active, visible, strokes, onStrokeAdd, onStrokeRemove, findBlockAt, buildBlockMap,
 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const drawingRef = useRef(false);
@@ -176,6 +177,7 @@ export function AnnotationLayer({
           pointerEvents: active ? 'all' : 'none',
           touchAction: active ? 'none' : 'auto',
           cursor: active ? (tool === 'pen' ? 'crosshair' : 'cell') : 'default',
+          opacity: (active || visible) ? 1 : 0,
         }}
       />
 

@@ -1,12 +1,6 @@
-import { Suspense } from 'react';
 import { notFound, redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import dynamic from 'next/dynamic';
-
-const NoteView = dynamic(
-  () => import('@/components/views/NoteView').then((m) => m.NoteView),
-  { ssr: false }
-);
 
 const NoteLayout = dynamic(
   () => import('@/components/views/note/NoteLayout').then((m) => m.NoteLayout),
@@ -20,7 +14,6 @@ interface Props {
 export default async function NotePage({ params }: Props) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-
   if (!user) redirect('/login');
 
   // noteId === 'new' → 새 노트 생성 후 redirect
@@ -30,14 +23,13 @@ export default async function NotePage({ params }: Props) {
       .insert({
         user_id: user.id,
         domain: 'note',
+        source_type: 'manual',
         raw: '',
         domain_data: {
           title: '',
           parent_page_id: null,
           blocks: { type: 'doc', content: [{ type: 'paragraph' }] },
         },
-        confidence: 'high',
-        visibility: 'private',
       })
       .select('id')
       .single();
@@ -45,37 +37,25 @@ export default async function NotePage({ params }: Props) {
     if (error || !data) {
       console.error('[Note/new]', error?.message);
       return (
-        <div style={{ padding: 32, color: 'var(--ou-text-muted)' }}>노트 생성 실패</div>
+        <div style={{ padding: 32, color: 'var(--ou-text-muted)', fontFamily: 'monospace', fontSize: 13 }}>
+          노트 생성 실패: {error?.message ?? 'unknown error'}
+        </div>
       );
     }
-
     redirect(`/note/${data.id}`);
   }
 
-  // 기존 노트 조회
-  const { data: node, error } = await supabase
+  // 존재 여부만 확인 (실제 데이터는 NotePanel이 클라이언트에서 fetch)
+  const { data: exists } = await supabase
     .from('data_nodes')
-    .select('id, domain, domain_data, raw, created_at, updated_at')
+    .select('id')
     .eq('id', params.noteId)
     .eq('user_id', user.id)
     .eq('domain', 'note')
     .single();
 
-  if (error || !node) {
-    notFound();
-  }
+  if (!exists) notFound();
 
-  const title = (node.domain_data as Record<string, unknown>)?.title as string | undefined;
-
-  return (
-    <Suspense fallback={
-      <div style={{ minHeight: '100dvh', background: 'var(--ou-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--ou-text-disabled)', animation: 'blink 1s ease-in-out infinite' }} />
-      </div>
-    }>
-      <NoteLayout noteId={params.noteId} title={title || '제목 없음'}>
-        <NoteView nodes={[node]} />
-      </NoteLayout>
-    </Suspense>
-  );
+  // NoteLayout → PanelWorkspace → NotePanel 이 클라이언트에서 데이터를 로드
+  return <NoteLayout noteId={params.noteId} />;
 }

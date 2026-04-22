@@ -168,7 +168,7 @@ export function FlashcardView({ nodes }: ViewProps) {
     <div
       tabIndex={0}
       onKeyDown={handleKeyDown}
-      style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 20, outline: 'none' }}
+      style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '32px 20px', outline: 'none', width: '100%', minHeight: '100%' }}
     >
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, width: '100%', maxWidth: 420, justifyContent: 'space-between' }}>

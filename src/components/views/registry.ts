@@ -20,6 +20,9 @@ export interface ViewMeta {
  * 추가 시 이 파일에만 등록. 기존 코드 수정 금지.
  */
 export const VIEW_REGISTRY: Record<string, ComponentType<ViewProps>> = {
+  // ── Admin ──
+  admin:      dynamic(() => import('./AdminView').then(m => m.AdminView), { ssr: false }),
+
   // ── Wave 1: 기본 내장 ──
   note:       dynamic(() => import('./NoteView').then(m => m.NoteView), { ssr: false }),
   time:       dynamic(() => import('./TimeView').then(m => m.TimeView), { ssr: false }),
@@ -100,6 +103,7 @@ export const VIEW_REGISTRY: Record<string, ComponentType<ViewProps>> = {
 };
 
 export const VIEW_META: Record<string, ViewMeta> = {
+  admin:      { previewOnClick: false },
   todo:       { previewOnClick: false },
   calendar:   { previewOnClick: true },
   table:      { previewOnClick: false },

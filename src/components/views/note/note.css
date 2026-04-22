@@ -150,3 +150,38 @@
 .ou-note-editor .ProseMirror ::selection {
   background: color-mix(in srgb, var(--ou-accent) 20%, transparent);
 }
+
+/* WikiLink node */
+.ou-note-editor .ProseMirror .wiki-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: var(--ou-text-body);
+  font-size: 0.92em;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 120ms;
+}
+.ou-note-editor .ProseMirror .wiki-link:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+/* OuViewBlock — placeholder frame */
+.ou-note-editor .ProseMirror [data-type="ouViewBlock"] {
+  border-radius: var(--ou-radius-md);
+  border: 1px solid var(--ou-border-subtle);
+  background: var(--ou-surface-subtle);
+  margin: 0.6em 0;
+  min-height: 120px;
+}
+
+/* Focus ring on selected node views */
+.ou-note-editor .ProseMirror .ProseMirror-selectednode {
+  outline: 2px solid color-mix(in srgb, var(--ou-accent) 50%, transparent);
+  outline-offset: 2px;
+  border-radius: var(--ou-radius-sm);
+}

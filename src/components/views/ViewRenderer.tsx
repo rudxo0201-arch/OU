@@ -13,6 +13,8 @@ interface ViewRendererProps {
   onSave?: () => void;
   inline?: boolean;
   layoutConfig?: LayoutConfig;
+  /** true면 nodes가 비어도 뷰 렌더링 — 뷰 자체가 스켈레톤/빈 상태를 표시 */
+  allowEmpty?: boolean;
 }
 
 /** 뷰 크래시 방지 에러 바운더리 */
@@ -57,14 +59,14 @@ class ViewErrorBoundary extends Component<
   }
 }
 
-export function ViewRenderer({ viewType, nodes, filters, onSave, inline, layoutConfig }: ViewRendererProps) {
+export function ViewRenderer({ viewType, nodes, filters, onSave, inline, layoutConfig, allowEmpty }: ViewRendererProps) {
   // 하위 호환: pdf → document
   const resolvedType = viewType === 'pdf' || viewType === 'export' ? 'document' : viewType;
   const View = VIEW_REGISTRY[resolvedType];
 
-  // 필터 원칙: 빈 뷰 표시 금지 + 배열 보장
+  // 배열 보장. allowEmpty=true면 빈 상태도 뷰에 전달 (뷰가 스켈레톤/빈 상태를 직접 렌더링)
   const safeNodes = Array.isArray(nodes) ? nodes : [];
-  if (safeNodes.length === 0) return null;
+  if (safeNodes.length === 0 && !allowEmpty) return null;
 
   if (!View) {
     if (process.env.NODE_ENV === 'development') {

@@ -13,7 +13,7 @@ export async function GET(_req: NextRequest) {
       .select('id, domain_data, created_at, updated_at')
       .eq('user_id', user.id)
       .eq('domain', 'note')
-      .not('system_tags', 'cs', '{"archived"}')
+      .or('system_tags.is.null,system_tags.not.cs.{"archived"}')
       .order('updated_at', { ascending: false });
 
     if (error) {
@@ -49,14 +49,13 @@ export async function POST(req: NextRequest) {
       .insert({
         user_id: user.id,
         domain: 'note',
+        source_type: 'manual',
         raw: title,
         domain_data: {
           title,
           parent_page_id,
           blocks: { type: 'doc', content: [{ type: 'paragraph' }] },
         },
-        confidence: 'high',
-        visibility: 'private',
       })
       .select('id')
       .single();

@@ -4,50 +4,43 @@ import { useState, useMemo } from 'react';
 import dayjs from 'dayjs';
 import 'dayjs/locale/ko';
 import type { ViewProps } from './registry';
+import styles from './ChartView.module.css';
 
 dayjs.locale('ko');
 
-/**
- * 지출 차트 뷰
- * 참고: 뱅크샐러드, Mint, YNAB
- * - 도넛 차트 (카테고리별 비율)
- * - 카테고리별 바 차트
- * - 월별 전환
- * - 최근 거래 내역
- */
-
-const CATEGORIES = ['식비', '교통', '쇼핑', '문화', '의료', '교육', '주거', '통신', '여가', '기타'] as const;
-
-const CATEGORY_COLORS: Record<string, string> = {
-  '식비': 'rgba(255,180,120,0.8)',
-  '교통': 'rgba(120,180,255,0.8)',
-  '쇼핑': 'rgba(255,120,180,0.8)',
-  '문화': 'rgba(180,120,255,0.8)',
-  '의료': 'rgba(120,255,180,0.8)',
-  '교육': 'rgba(255,255,120,0.8)',
-  '주거': 'rgba(180,220,255,0.8)',
-  '통신': 'rgba(200,200,200,0.8)',
-  '여가': 'rgba(255,160,200,0.8)',
-  '기타': 'rgba(160,160,160,0.8)',
+// ── 상수 ──────────────────────────────────────────────────────────────────
+const CAT_COLORS: Record<string, string> = {
+  '식비':    '#FF9F7A', '교통':    '#7AB8FF', '쇼핑':    '#FF7AB8',
+  '문화':    '#B87AFF', '의료':    '#7AFFB8', '교육':    '#FFE97A',
+  '주거':    '#A0CCFF', '통신':    '#C8C8C8', '여가':    '#FFA0C8',
+  '기타':    '#A0A0A0',
+  '급여':    '#7AFFB8', '용돈':    '#A8E6A8', '부업':    '#7AFFE0',
+  '투자':    '#B8FFA0', '환급':    '#D4FFA8', '기타수입': '#88CC88',
 };
 
-interface SpendingItem {
+// ── 파서 ──────────────────────────────────────────────────────────────────
+interface FinanceItem {
   id: string;
+  type: 'expense' | 'income';
   amount: number;
   category: string;
   date: string;
   title: string;
 }
 
-function parseSpending(nodes: ViewProps['nodes']): SpendingItem[] {
-  const result: SpendingItem[] = [];
+function parseFinance(nodes: ViewProps['nodes']): FinanceItem[] {
+  const result: FinanceItem[] = [];
   for (const n of nodes) {
     if (n.domain !== 'finance' || !n.domain_data) continue;
+    const type: 'expense' | 'income' =
+      n.domain_data.type === 'income' ? 'income' : 'expense';
+
     if (Array.isArray(n.domain_data.items)) {
       for (const it of n.domain_data.items) {
         result.push({
-          id: n.id,
-          amount: Number(it.amount) || 0,
+          id: n.id + it.name,
+          type: it.type === 'income' ? 'income' : 'expense',
+          amount: Math.abs(Number(it.amount)) || 0,
           category: it.category ?? '기타',
           date: n.domain_data.date ?? n.created_at ?? '',
           title: it.name || it.title || '지출',
@@ -56,50 +49,56 @@ function parseSpending(nodes: ViewProps['nodes']): SpendingItem[] {
     } else if (n.domain_data.amount != null) {
       result.push({
         id: n.id,
-        amount: Number(n.domain_data.amount) || 0,
+        type,
+        amount: Math.abs(Number(n.domain_data.amount)) || 0,
         category: n.domain_data.category ?? '기타',
         date: n.domain_data.date ?? n.created_at ?? '',
-        title: n.domain_data.title || (n.raw ?? '').slice(0, 30) || '지출',
+        title: n.domain_data.title || (n.raw ?? '').slice(0, 30) || (type === 'income' ? '수입' : '지출'),
       });
     }
   }
   return result.sort((a, b) => (a.date > b.date ? -1 : 1));
 }
 
-// SVG 도넛 차트
-function DonutChart({ data, total }: { data: [string, number][]; total: number }) {
-  const size = 160;
-  const radius = 60;
-  const strokeWidth = 20;
+// ── SVG 도넛 차트 ─────────────────────────────────────────────────────────
+function DonutChart({ data, total, size = 160, stroke = 24 }: {
+  data: [string, number][];
+  total: number;
+  size?: number;
+  stroke?: number;
+}) {
+  const radius = (size - stroke) / 2;
+  const cx = size / 2, cy = size / 2;
+  const circ = 2 * Math.PI * radius;
   let offset = 0;
-  const circumference = 2 * Math.PI * radius;
 
-  if (data.length === 0) {
+  if (total === 0) {
     return (
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-        <circle cx={size/2} cy={size/2} r={radius} fill="none" stroke="var(--ou-border-faint)" strokeWidth={strokeWidth} />
-        <text x={size/2} y={size/2} textAnchor="middle" dy="0.35em" fill="var(--ou-text-dimmed)" fontSize="12">데이터 없음</text>
+        <circle cx={cx} cy={cy} r={radius} fill="none"
+          stroke="rgba(0,0,0,0.06)" strokeWidth={stroke} />
+        <text x={cx} y={cy} textAnchor="middle" dy="0.35em"
+          fill="var(--ou-text-disabled)" fontSize="11">기록 없음</text>
       </svg>
     );
   }
 
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ transform: 'rotate(-90deg)' }}>
-      {data.map(([category, amount]) => {
-        const ratio = total > 0 ? amount / total : 0;
-        const dash = ratio * circumference;
-        const gap = circumference - dash;
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}
+      style={{ transform: 'rotate(-90deg)' }}>
+      <circle cx={cx} cy={cy} r={radius} fill="none"
+        stroke="rgba(0,0,0,0.04)" strokeWidth={stroke} />
+      {data.map(([cat, amt]) => {
+        const ratio = amt / total;
+        const dash = ratio * circ;
         const el = (
-          <circle
-            key={category}
-            cx={size/2} cy={size/2} r={radius}
-            fill="none"
-            stroke={CATEGORY_COLORS[category] || 'rgba(160,160,160,0.8)'}
-            strokeWidth={strokeWidth}
-            strokeDasharray={`${dash} ${gap}`}
+          <circle key={cat} cx={cx} cy={cy} r={radius} fill="none"
+            stroke={CAT_COLORS[cat] || '#aaa'}
+            strokeWidth={stroke}
+            strokeDasharray={`${dash - 1} ${circ - dash + 1}`}
             strokeDashoffset={-offset}
-            strokeLinecap="round"
-            style={{ transition: '300ms ease' }}
+            strokeLinecap="butt"
+            style={{ transition: '400ms ease' }}
           />
         );
         offset += dash;
@@ -109,122 +108,362 @@ function DonutChart({ data, total }: { data: [string, number][]; total: number }
   );
 }
 
+// ── 월별 바 차트 (듀얼: 수입 + 지출) ────────────────────────────────────
+function MonthlyBarChart({ items }: { items: FinanceItem[] }) {
+  const months = useMemo(() =>
+    Array.from({ length: 6 }, (_, i) => dayjs().subtract(5 - i, 'month')),
+  []);
+
+  const data = useMemo(() =>
+    months.map(m => {
+      const key = m.format('YYYY-MM');
+      const expense = items
+        .filter(it => it.type === 'expense' && dayjs(it.date).format('YYYY-MM') === key)
+        .reduce((s, it) => s + it.amount, 0);
+      const income = items
+        .filter(it => it.type === 'income' && dayjs(it.date).format('YYYY-MM') === key)
+        .reduce((s, it) => s + it.amount, 0);
+      return { label: m.format('M월'), expense, income, key };
+    }),
+  [months, items]);
+
+  const max = Math.max(...data.flatMap(d => [d.expense, d.income]), 1);
+  const currentKey = dayjs().format('YYYY-MM');
+
+  return (
+    <div className={styles.barChartWrap}>
+      {data.map(d => {
+        const isCurrent = d.key === currentKey;
+        const expH = Math.max((d.expense / max) * 132, d.expense > 0 ? 3 : 0);
+        const incH = Math.max((d.income / max) * 132, d.income > 0 ? 3 : 0);
+        return (
+          <div key={d.key} className={styles.barCol}>
+            <div className={styles.barInner}>
+              {d.income > 0 && (
+                <div className={styles.barSegment} style={{
+                  height: expH > 0 ? incH : incH,
+                  background: isCurrent ? 'rgba(22,163,74,0.55)' : 'rgba(22,163,74,0.2)',
+                }} />
+              )}
+              {d.expense > 0 && (
+                <div className={styles.barSegment} style={{
+                  height: expH,
+                  background: isCurrent ? 'rgba(0,0,0,0.75)' : 'rgba(0,0,0,0.12)',
+                }} />
+              )}
+            </div>
+            <span className={isCurrent ? styles.barLabelActive : styles.barLabel}>{d.label}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ── 메인 컴포넌트 ─────────────────────────────────────────────────────────
+type DonutTab = 'expense' | 'income';
+
 export function ChartView({ nodes, inline }: ViewProps & { inline?: boolean }) {
   const [monthOffset, setMonthOffset] = useState(0);
-  const currentMonth = dayjs().subtract(monthOffset, 'month');
+  const [donutTab, setDonutTab] = useState<DonutTab>('expense');
+  const [search, setSearch] = useState('');
+  const [catFilter, setCatFilter] = useState<string>('all');
+  const [expandedCat, setExpandedCat] = useState<string | null>(null);
 
-  const allItems = useMemo(() => parseSpending(nodes), [nodes]);
+  const currentMonth = dayjs().subtract(monthOffset, 'month');
+  const prevMonth    = dayjs().subtract(monthOffset + 1, 'month');
+  const allItems = useMemo(() => parseFinance(nodes), [nodes]);
 
   const monthItems = useMemo(() =>
-    allItems.filter(it => it.date && dayjs(it.date).format('YYYY-MM') === currentMonth.format('YYYY-MM')),
+    allItems.filter(it => dayjs(it.date).format('YYYY-MM') === currentMonth.format('YYYY-MM')),
   [allItems, currentMonth]);
 
-  const totalAmount = monthItems.reduce((sum, it) => sum + it.amount, 0);
+  const prevItems = useMemo(() =>
+    allItems.filter(it => dayjs(it.date).format('YYYY-MM') === prevMonth.format('YYYY-MM')),
+  [allItems, prevMonth]);
+
+  const expenses     = monthItems.filter(it => it.type === 'expense');
+  const incomes      = monthItems.filter(it => it.type === 'income');
+  const totalExpense = expenses.reduce((s, it) => s + it.amount, 0);
+  const totalIncome  = incomes.reduce((s, it) => s + it.amount, 0);
+  const net          = totalIncome - totalExpense;
+
+  const prevExpense = prevItems.filter(it => it.type === 'expense').reduce((s, it) => s + it.amount, 0);
+  const prevIncome  = prevItems.filter(it => it.type === 'income').reduce((s, it) => s + it.amount, 0);
+  const prevNet     = prevIncome - prevExpense;
+
+  function pctDelta(curr: number, prev: number): number | null {
+    if (prev === 0) return null;
+    return ((curr - prev) / prev) * 100;
+  }
+
+  const donutItems = donutTab === 'expense' ? expenses : incomes;
+  const donutTotal = donutTab === 'expense' ? totalExpense : totalIncome;
 
   const byCategory = useMemo(() => {
     const map: Record<string, number> = {};
-    for (const it of monthItems) {
-      const cat = CATEGORIES.includes(it.category as typeof CATEGORIES[number]) ? it.category : '기타';
-      map[cat] = (map[cat] ?? 0) + it.amount;
+    for (const it of donutItems) {
+      map[it.category] = (map[it.category] ?? 0) + it.amount;
     }
     return Object.entries(map).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]);
+  }, [donutItems]);
+
+  const allCats = useMemo(() => {
+    const seen = new Set<string>();
+    for (const it of monthItems) seen.add(it.category);
+    return Array.from(seen);
   }, [monthItems]);
 
-  const maxCatAmount = Math.max(...byCategory.map(([, v]) => v), 1);
+  const filteredItems = useMemo(() => {
+    let items = monthItems;
+    if (catFilter !== 'all') items = items.filter(it => it.category === catFilter);
+    if (search) items = items.filter(it => it.title.includes(search) || it.category.includes(search));
+    return items;
+  }, [monthItems, catFilter, search]);
 
-  // 인라인
+  // ── 인라인 모드 ──
   if (inline) {
     return (
-      <div style={{
-        padding: '10px 14px',
-        border: 'none',
-        borderRadius: 'var(--ou-radius-md, 8px)',
-        boxShadow: 'var(--ou-neu-pressed-sm)',
-      }}>
+      <div style={{ padding: '10px 14px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontSize: 11, color: 'var(--ou-text-muted)', letterSpacing: 1 }}>SPENDING</span>
+          <span style={{ fontSize: 11, color: 'var(--ou-text-muted)', letterSpacing: 1 }}>지출</span>
           <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ou-text-heading)' }}>
-            {totalAmount.toLocaleString()}원
+            {totalExpense.toLocaleString()}원
           </span>
+        </div>
+        {totalIncome > 0 && (
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
+            <span style={{ fontSize: 11, color: 'var(--ou-text-muted)', letterSpacing: 1 }}>수입</span>
+            <span style={{ fontSize: 13, color: 'var(--ou-success)' }}>
+              +{totalIncome.toLocaleString()}원
+            </span>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // ── 빈 상태 ──
+  if (allItems.length === 0) {
+    return (
+      <div className={styles.empty}>
+        <div className={styles.emptyIcon}>◈</div>
+        <div>
+          <div className={styles.emptyTitle}>가계부가 비어 있습니다</div>
+          <div className={styles.emptyHint}>"오늘 커피 5000원" 처럼 말해보세요</div>
         </div>
       </div>
     );
   }
 
-  if (allItems.length === 0) {
+  function DeltaBadge({ curr, prev }: { curr: number; prev: number }) {
+    const d = pctDelta(curr, prev);
+    if (d === null) return null;
+    const isUp = d > 0;
     return (
-      <div style={{ padding: 40, textAlign: 'center', color: 'var(--ou-text-muted)', fontSize: 13 }}>
-        지출 기록이 없습니다. Orb에 "커피 4500원" 같이 말해보세요.
-      </div>
+      <span className={`${styles.summaryDelta} ${isUp ? styles.deltaUp : styles.deltaDown}`}>
+        {isUp ? '▲' : '▼'} {Math.abs(d).toFixed(1)}% 전월 대비
+      </span>
     );
   }
 
   return (
-    <div style={{ padding: 20, maxWidth: 560, margin: '0 auto' }}>
-      {/* Month navigation */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-        <button onClick={() => setMonthOffset(m => m + 1)} style={{ cursor: 'pointer', padding: 4, color: 'var(--ou-text-muted)' }}>◀</button>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ou-text-heading)' }}>{currentMonth.format('YYYY년 M월')}</div>
-          <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--ou-text-heading)', marginTop: 4 }}>{totalAmount.toLocaleString()}원</div>
+    <div className={styles.root}>
+
+      {/* ── 헤더 ── */}
+      <div className={styles.header}>
+        <div className={styles.monthNav}>
+          <button className={styles.navBtn} onClick={() => setMonthOffset(m => m + 1)}>◀</button>
+          <span className={styles.monthLabel}>{currentMonth.format('YYYY년 M월')}</span>
+          <button className={styles.navBtn}
+            onClick={() => setMonthOffset(m => Math.max(0, m - 1))}
+            disabled={monthOffset === 0}>▶</button>
         </div>
-        <button onClick={() => setMonthOffset(m => Math.max(0, m - 1))} disabled={monthOffset === 0}
-          style={{ cursor: monthOffset === 0 ? 'default' : 'pointer', padding: 4, color: 'var(--ou-text-muted)', opacity: monthOffset === 0 ? 0.3 : 1 }}>▶</button>
+        <div className={styles.tabRow}>
+          {(['expense', 'income'] as const).map(t => (
+            <button key={t}
+              className={`${styles.tab} ${donutTab === t ? styles.tabActive : ''}`}
+              onClick={() => { setDonutTab(t); setCatFilter('all'); }}>
+              {t === 'expense' ? '지출' : '수입'}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Donut chart */}
-      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24, padding: 16, borderRadius: 12, boxShadow: 'var(--ou-neu-raised-sm)' }}>
-        <DonutChart data={byCategory} total={totalAmount} />
-      </div>
+      {/* ── 요약 카드 3개 ── */}
+      <div className={styles.summaryGrid}>
+        {/* 총 지출 — dark card */}
+        <div className={styles.summaryCardDark}>
+          <div className={styles.summaryLabelDark}>총 지출</div>
+          <div className={styles.summaryAmountDark}>
+            {totalExpense.toLocaleString()}<span className={styles.summaryUnit}>원</span>
+          </div>
+          {prevExpense > 0 && (() => {
+            const d = pctDelta(totalExpense, prevExpense);
+            if (d === null) return null;
+            const isUp = d > 0;
+            return (
+              <span style={{
+                marginTop: 8, fontSize: 12, fontWeight: 500, display: 'flex', alignItems: 'center', gap: 4,
+                color: isUp ? 'rgba(248,113,113,0.9)' : 'rgba(134,239,172,0.9)',
+              }}>
+                {isUp ? '▲' : '▼'} {Math.abs(d).toFixed(1)}% 전월 대비
+              </span>
+            );
+          })()}
+        </div>
 
-      {/* Category bars */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 24 }}>
-        {byCategory.map(([category, amount]) => {
-          const percent = totalAmount > 0 ? ((amount / totalAmount) * 100).toFixed(0) : '0';
-          return (
-            <div key={category}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: CATEGORY_COLORS[category] || '#888' }} />
-                  <span style={{ fontSize: 12, color: 'var(--ou-text-body)' }}>{category}</span>
-                </div>
-                <span style={{ fontSize: 12, color: 'var(--ou-text-muted)' }}>{amount.toLocaleString()}원 ({percent}%)</span>
-              </div>
-              <div style={{ height: 6, borderRadius: 3, background: 'var(--ou-border-faint)', overflow: 'hidden' }}>
-                <div style={{
-                  height: '100%', borderRadius: 3,
-                  width: `${(amount / maxCatAmount) * 100}%`,
-                  background: CATEGORY_COLORS[category] || '#888',
-                  transition: '300ms ease',
-                }} />
-              </div>
-            </div>
-          );
-        })}
-      </div>
+        {/* 총 수입 */}
+        <div className={styles.summaryCard}>
+          <div className={styles.summaryLabel}>총 수입</div>
+          <div className={styles.summaryAmount}>
+            {totalIncome.toLocaleString()}<span className={styles.summaryUnit}>원</span>
+          </div>
+          <DeltaBadge curr={totalIncome} prev={prevIncome} />
+        </div>
 
-      {/* Recent transactions */}
-      <div>
-        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ou-text-heading)', marginBottom: 10 }}>최근 거래</div>
-        {monthItems.slice(0, 10).map((item, i) => (
-          <div key={`${item.id}-${i}`} style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            padding: '10px 12px',
-            marginBottom: 6,
-            borderRadius: 8,
-            boxShadow: 'var(--ou-neu-raised-sm)',
+        {/* 순 저축 / 초과 */}
+        <div className={styles.summaryCard}>
+          <div className={styles.summaryLabel}>{net >= 0 ? '순 저축' : '초과 지출'}</div>
+          <div className={styles.summaryAmount} style={{
+            color: net >= 0 ? 'var(--ou-success)' : 'var(--ou-error)',
           }}>
-            <div>
-              <div style={{ fontSize: 13, color: 'var(--ou-text-body)' }}>{item.title}</div>
-              <div style={{ fontSize: 10, color: 'var(--ou-text-muted)', marginTop: 2 }}>
-                {item.category} · {item.date ? dayjs(item.date).format('M/D') : ''}
-              </div>
+            {net >= 0 ? '+' : ''}{net.toLocaleString()}<span className={styles.summaryUnit}>원</span>
+          </div>
+          <DeltaBadge curr={Math.abs(net)} prev={Math.abs(prevNet)} />
+        </div>
+      </div>
+
+      {/* ── 차트 2컬럼 ── */}
+      <div className={styles.chartGrid}>
+        {/* 도넛 차트 + 카테고리 */}
+        <div className={styles.chartCard}>
+          <div className={styles.chartCardTitle}>카테고리 분석</div>
+          <div className={styles.donutWrap}>
+            <DonutChart data={byCategory} total={donutTotal} size={160} stroke={24} />
+            <div className={styles.donutCenter}>
+              <div className={styles.donutCenterLabel}>{donutTab === 'expense' ? '총 지출' : '총 수입'}</div>
+              <div className={styles.donutCenterAmount}>{donutTotal.toLocaleString()}</div>
+              <div className={styles.donutCenterUnit}>원</div>
             </div>
-            <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--ou-text-heading)' }}>
-              -{item.amount.toLocaleString()}원
+          </div>
+          <div className={styles.catList}>
+            {byCategory.slice(0, 6).map(([cat, amt]) => {
+              const pct = donutTotal > 0 ? (amt / donutTotal) * 100 : 0;
+              const catItems = donutItems.filter(it => it.category === cat);
+              const isExpanded = expandedCat === cat;
+              return (
+                <div key={cat}>
+                  <div className={styles.catItem}
+                    onClick={() => setExpandedCat(isExpanded ? null : cat)}>
+                    <div className={styles.catDot}
+                      style={{ background: CAT_COLORS[cat] || '#aaa' }} />
+                    <span className={styles.catName}>{cat}</span>
+                    <div className={styles.catBar}>
+                      <div className={styles.catBarFill}
+                        style={{ width: `${pct}%`, background: CAT_COLORS[cat] || '#aaa' }} />
+                    </div>
+                    <span className={styles.catPct}>{pct.toFixed(0)}%</span>
+                    <span className={styles.catAmount}>{amt.toLocaleString()}원</span>
+                  </div>
+                  {isExpanded && catItems.length > 0 && (
+                    <div className={styles.catDetail}>
+                      {catItems.map((it, i) => (
+                        <div key={`${it.id}-${i}`} className={styles.catDetailItem}>
+                          <div>
+                            <div className={styles.catDetailTitle}>{it.title}</div>
+                            <div className={styles.catDetailDate}>
+                              {it.date ? dayjs(it.date).format('M월 D일') : ''}
+                            </div>
+                          </div>
+                          <span className={styles.catDetailAmount}>
+                            {it.type === 'income' ? '+' : '-'}{it.amount.toLocaleString()}원
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* 월별 바 차트 */}
+        <div className={styles.chartCard}>
+          <div className={styles.chartCardTitle}>
+            최근 6개월 트렌드
+            <span style={{ fontSize: 10, fontWeight: 400, marginLeft: 8, color: 'var(--ou-text-disabled)' }}>
+              <span style={{ color: 'rgba(22,163,74,0.7)' }}>■</span> 수입&nbsp;
+              <span style={{ color: 'rgba(0,0,0,0.5)' }}>■</span> 지출
             </span>
           </div>
-        ))}
+          <MonthlyBarChart items={allItems} />
+        </div>
+      </div>
+
+      {/* ── 거래 내역 테이블 ── */}
+      <div className={styles.tableCard}>
+        <div className={styles.tableToolbar}>
+          <span className={styles.tableTitle}>거래 내역</span>
+          <input
+            className={styles.searchInput}
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="검색..."
+          />
+          <div className={styles.filterChips}>
+            {['all', ...allCats].map(cat => (
+              <button key={cat}
+                className={`${styles.chip} ${catFilter === cat ? styles.chipActive : ''}`}
+                onClick={() => setCatFilter(cat)}>
+                {cat === 'all' ? '전체' : cat}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className={styles.tableHeader}>
+          <div className={styles.thCell} />
+          <div className={styles.thCell}>내역</div>
+          <div className={styles.thCell}>카테고리</div>
+          <div className={styles.thCell} style={{ textAlign: 'right' }}>금액</div>
+          <div className={styles.thCell} style={{ textAlign: 'right' }}>날짜</div>
+        </div>
+
+        {filteredItems.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '32px 0', fontSize: 13, color: 'var(--ou-text-disabled)' }}>
+            거래 내역이 없습니다
+          </div>
+        ) : (
+          filteredItems.map((it, i) => (
+            <div key={`${it.id}-${i}`} className={styles.tableRow}>
+              <div className={styles.rowIcon} style={{
+                background: `${CAT_COLORS[it.category] || '#aaa'}22`,
+                color: CAT_COLORS[it.category] || '#aaa',
+              }}>
+                {it.category.slice(0, 1)}
+              </div>
+              <div className={styles.rowTitle}>{it.title}</div>
+              <div className={styles.rowCategory}>{it.category}</div>
+              <div className={`${styles.rowAmount} ${it.type === 'income' ? styles.rowAmountIncome : styles.rowAmountExpense}`}>
+                {it.type === 'income' ? '+' : '-'}{it.amount.toLocaleString()}원
+              </div>
+              <div className={styles.rowDate}>
+                {it.date ? dayjs(it.date).format('M월 D일 (ddd)') : ''}
+              </div>
+            </div>
+          ))
+        )}
+
+        {filteredItems.length > 0 && (
+          <div className={styles.tableFooter}>
+            <span className={styles.tableFooterCount}>{filteredItems.length}건</span>
+            <span className={styles.tableFooterTotal}>
+              {filteredItems.reduce((s, it) => s + it.amount, 0).toLocaleString()}원
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );

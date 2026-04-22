@@ -293,7 +293,7 @@ function HerbCard({ herb, isSelected, isComparing, onClick, onCompare }: {
   onClick: () => void; onCompare: () => void;
 }) {
   // NATURE_COLORS: 온냉 시각 인코딩 (의도적 색상)
-  const natureColor = herb.nature[0] ? (NATURE_COLORS[herb.nature[0]] || 'rgba(255,255,255,0.05)') : 'rgba(255,255,255,0.02)';
+  const natureColor = herb.nature[0] ? (NATURE_COLORS[herb.nature[0]] || 'rgba(0,0,0,0.04)') : 'rgba(0,0,0,0.02)';
 
   return (
     <div

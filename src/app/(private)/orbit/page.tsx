@@ -1,0 +1,1037 @@
+'use client';
+
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { useRouter } from 'next/navigation';
+import { VIEW_LABELS, VIEW_REGISTRY } from '@/components/views/registry';
+import { getSampleNodes, NO_THUMBNAIL_TYPES } from '@/lib/utils/sampleNodes';
+import { NeuPageLayout, NeuModal } from '@/components/ds';
+import { useWidgetStore } from '@/stores/widgetStore';
+import { getWidgetTypeForView, getWidgetDefaultSize } from '@/lib/utils/viewToWidget';
+import {
+  MagnifyingGlass, CheckSquare, CalendarBlank, Table, Book, Stack,
+  ChartBar, GridFour, NotePencil, UserCircle, Lightbulb, ListBullets,
+  VideoCamera, BookBookmark, YoutubeLogo, MapPin, Clock, Calendar,
+  Sun, SunHorizon, CalendarDots, CreditCard, Wallet, ChartPieSlice,
+  TrendUp, ArrowsLeftRight, Tag, Alarm, CheckCircle, WarningCircle,
+  User, PersonSimpleRun, Fire, FileText, FilmStrip, Star, Code,
+  Timer, Pill, Thermometer, Plant, TextAa, BookOpen, ClipboardText, Circle,
+} from '@phosphor-icons/react';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type PhosphorIcon = React.ComponentType<any>;
+
+// ── 뷰 타입 → 도메인 매핑 ────────────────────────────────
+const VIEW_TYPE_TO_DOMAIN: Record<string, string> = {
+  // 풀뷰
+  todo: 'task', calendar: 'schedule', table: 'knowledge', task: 'task',
+  dictionary: 'knowledge', flashcard: 'education', timeline: 'schedule',
+  chart: 'finance', heatmap: 'habit', journal: 'health', profile: 'relation',
+  idea: 'idea', curriculum: 'education', lecture: 'education', boncho: 'health',
+  scrap: 'knowledge', youtube: 'media', map: 'location',
+  // 인라인 — 일정
+  'schedule-time': 'schedule', 'schedule-date': 'schedule', 'schedule-range': 'schedule',
+  'schedule-today': 'schedule', 'schedule-tomorrow': 'schedule',
+  'schedule-week': 'schedule', 'schedule-around': 'schedule',
+  // 인라인 — 가계부
+  'finance-amount': 'finance', 'finance-balance': 'finance', 'finance-today': 'finance',
+  'finance-week': 'finance', 'finance-compare': 'finance', 'finance-category': 'finance',
+  // 인라인 — 할 일
+  'task-check': 'task', 'task-deadline': 'task', 'task-today': 'task',
+  'task-overdue': 'task', 'task-week': 'task', 'task-check-simple': 'task',
+  // 인라인 — 기타
+  'idea-card': 'idea', 'relation-card': 'relation', 'habit-log': 'habit',
+  'habit-streak': 'habit', 'knowledge-note': 'knowledge', 'media-card': 'media',
+  'media-rating': 'media', 'dev-note': 'development', 'location-pin': 'location',
+  'youtube-card': 'media', 'youtube-timestamp': 'media', 'health-log': 'health',
+  'health-symptom': 'health', 'health-med': 'health', 'boncho-herb': 'health',
+  'dict-char': 'knowledge', 'edu-lesson': 'education', 'edu-assignment': 'education',
+};
+
+// ── 아이콘 맵 (Phosphor Icons only) ──────────────────────
+const VIEW_ICONS: Record<string, PhosphorIcon> = {
+  // 풀뷰
+  todo: CheckSquare, calendar: CalendarBlank, table: Table, task: CheckSquare,
+  dictionary: Book, flashcard: Stack, timeline: ArrowsLeftRight, chart: ChartBar,
+  heatmap: GridFour, journal: NotePencil, profile: UserCircle, idea: Lightbulb,
+  curriculum: ListBullets, lecture: VideoCamera, scrap: BookBookmark,
+  youtube: YoutubeLogo, map: MapPin,
+  // 인라인 — 일정
+  'schedule-time': Clock, 'schedule-date': Calendar, 'schedule-range': CalendarBlank,
+  'schedule-today': Sun, 'schedule-tomorrow': SunHorizon, 'schedule-week': CalendarDots,
+  'schedule-around': CalendarDots,
+  // 인라인 — 가계부
+  'finance-amount': CreditCard, 'finance-balance': Wallet, 'finance-today': ChartPieSlice,
+  'finance-week': TrendUp, 'finance-compare': ArrowsLeftRight, 'finance-category': Tag,
+  // 인라인 — 할 일
+  'task-check': CheckSquare, 'task-deadline': Alarm, 'task-today': CheckCircle,
+  'task-overdue': WarningCircle, 'task-week': CalendarBlank, 'task-check-simple': CheckSquare,
+  // 인라인 — 기타
+  'idea-card': Lightbulb, 'relation-card': User, 'habit-log': PersonSimpleRun,
+  'habit-streak': Fire, 'knowledge-note': FileText, 'media-card': FilmStrip,
+  'media-rating': Star, 'dev-note': Code, 'location-pin': MapPin,
+  'youtube-card': YoutubeLogo, 'youtube-timestamp': Timer,
+  'health-log': Pill, 'health-symptom': Thermometer, 'health-med': Pill,
+  'boncho-herb': Plant, 'dict-char': TextAa, 'edu-lesson': BookOpen,
+  'edu-assignment': ClipboardText,
+};
+
+const DOMAIN_LABELS: Record<string, string> = {
+  schedule: '일정', finance: '가계부', task: '할 일', idea: '아이디어',
+  relation: '인물', habit: '습관', knowledge: '지식', media: '미디어',
+  development: '개발', location: '장소', education: '교육', health: '건강',
+};
+
+const DOMAIN_ORDER = ['schedule', 'task', 'finance', 'habit', 'idea', 'relation', 'knowledge', 'location', 'media', 'education', 'development', 'health'];
+
+// 피처드 뷰 키 (hero 섹션에 강조 표시)
+const FEATURED_KEYS = ['location-map', 'schedule-month', 'task-kanban'];
+
+type Tab = 'market' | 'my' | 'builtin';
+
+interface ViewPreset {
+  id: string;
+  key: string;
+  name: string;
+  description: string | null;
+  icon: string | null;
+  domain: string;
+  category: string;
+  view_type: string;
+  when_to_use: string;
+  is_default: boolean;
+}
+
+interface SavedView {
+  id: string;
+  name: string;
+  view_type: string;
+  icon?: string;
+}
+
+export default function OrbitPage() {
+  const router = useRouter();
+  const [tab, setTab] = useState<Tab>('market');
+  const [myViews, setMyViews] = useState<SavedView[]>([]);
+  const [presets, setPresets] = useState<ViewPreset[]>([]);
+  const [installedKeys, setInstalledKeys] = useState<Set<string>>(new Set());
+  const [loading, setLoading] = useState(true);
+  const [installing, setInstalling] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedDomain, setSelectedDomain] = useState<string>('all');
+  const [selectedPreset, setSelectedPreset] = useState<ViewPreset | null>(null);
+  const [uninstalling, setUninstalling] = useState<string | null>(null);
+  const [justInstalled, setJustInstalled] = useState<{ name: string; viewType: string } | null>(null);
+
+  const addWidget = useWidgetStore(s => s.addWidget);
+  const widgets = useWidgetStore(s => s.widgets);
+
+  useEffect(() => {
+    Promise.all([
+      fetch('/api/views').then(r => r.json()).catch(() => ({})),
+      fetch('/api/views/presets').then(r => r.json()).catch(() => ({ presets: [] })),
+    ]).then(([viewsData, presetsData]) => {
+      const views: SavedView[] = viewsData.views || viewsData.data || [];
+      const allPresets: ViewPreset[] = presetsData.presets || [];
+      setMyViews(views);
+      setPresets(allPresets);
+      const installed = new Set<string>();
+      allPresets.forEach(p => {
+        if (views.some(v => v.view_type === p.view_type && v.name === p.name)) installed.add(p.key);
+      });
+      setInstalledKeys(installed);
+      setLoading(false);
+    });
+  }, []);
+
+  const install = useCallback(async (presetKey: string) => {
+    setInstalling(presetKey);
+    try {
+      const res = await fetch('/api/orbit/install', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ presetKey }),
+      });
+      const data = await res.json();
+      if (data.viewId) {
+        setInstalledKeys(prev => new Set(prev).add(presetKey));
+        fetch('/api/views').then(r => r.json()).then(d => setMyViews(d.views || d.data || []));
+        const preset = presets.find(p => p.key === presetKey);
+        if (preset) {
+          setSelectedPreset(null); // 설치 완료 후 상세 모달 닫기
+          setJustInstalled({ name: preset.name, viewType: preset.view_type });
+        }
+      }
+    } finally {
+      setInstalling(null);
+    }
+  }, []);
+
+  const uninstall = useCallback(async (presetKey: string) => {
+    const preset = presets.find(p => p.key === presetKey);
+    if (!preset) return;
+    const view = myViews.find(v => v.view_type === preset.view_type && v.name === preset.name);
+    if (!view) return;
+    setUninstalling(presetKey);
+    try {
+      await fetch(`/api/orbit/install?viewId=${view.id}`, { method: 'DELETE' });
+      setInstalledKeys(prev => { const s = new Set(prev); s.delete(presetKey); return s; });
+      setMyViews(prev => prev.filter(v => v.id !== view.id));
+      setSelectedPreset(null);
+    } finally {
+      setUninstalling(null);
+    }
+  }, [presets, myViews]);
+
+  const BUILTIN_VIEWS = Object.entries(VIEW_LABELS).map(([key, label]) => ({
+    id: `builtin-${key}`, viewType: key, name: label,
+    domain: VIEW_TYPE_TO_DOMAIN[key] || 'knowledge',
+  }));
+
+  // 검색 + 도메인 필터 (마켓: BUILTIN_VIEWS 기반)
+  const filteredBuiltin = BUILTIN_VIEWS.filter(v => {
+    const matchDomain = selectedDomain === 'all' || v.domain === selectedDomain;
+    if (!searchQuery) return matchDomain;
+    const q = searchQuery.toLowerCase();
+    return matchDomain && (v.name.toLowerCase().includes(q) || DOMAIN_LABELS[v.domain]?.includes(q));
+  });
+
+  // presets API 보조 필터 (API 데이터 있을 때만)
+  const filteredPresets = presets.filter(p => {
+    const matchDomain = selectedDomain === 'all' || p.domain === selectedDomain;
+    if (!searchQuery) return matchDomain;
+    const q = searchQuery.toLowerCase();
+    return matchDomain && (
+      p.name.includes(q) || p.description?.includes(q) ||
+      p.when_to_use.includes(q) || DOMAIN_LABELS[p.domain]?.includes(q)
+    );
+  });
+
+  const featuredPresets = presets.filter(p => FEATURED_KEYS.includes(p.key));
+
+  const builtinByDomain = DOMAIN_ORDER.reduce((acc, domain) => {
+    const items = filteredBuiltin.filter(v => v.domain === domain);
+    if (items.length > 0) acc[domain] = items;
+    return acc;
+  }, {} as Record<string, typeof BUILTIN_VIEWS>);
+
+  const presetsByDomain = DOMAIN_ORDER.reduce((acc, domain) => {
+    const items = filteredPresets.filter(p => p.domain === domain);
+    if (items.length > 0) acc[domain] = items;
+    return acc;
+  }, {} as Record<string, ViewPreset[]>);
+
+  const TABS: { key: Tab; label: string }[] = [
+    { key: 'market', label: '마켓' },
+    { key: 'my', label: '내 뷰' },
+    { key: 'builtin', label: '기본 내장' },
+  ];
+
+  const domains = ['all', ...DOMAIN_ORDER.filter(d => BUILTIN_VIEWS.some(v => v.domain === d))];
+
+  return (
+    <NeuPageLayout onBack={() => router.back()}>
+      <div style={{ paddingBottom: 80 }}>
+        {/* Header */}
+        <div style={{ marginBottom: 24 }}>
+          <div style={{
+            fontSize: 12, color: 'var(--ou-text-dimmed)',
+            fontFamily: 'var(--ou-font-logo)', letterSpacing: '0.12em', textTransform: 'uppercase',
+            marginBottom: 6,
+          }}>
+            Orbit
+          </div>
+          <h1 style={{
+            fontSize: 30, fontWeight: 700, color: 'var(--ou-text-bright)',
+            margin: '0 0 4px', letterSpacing: '-0.02em',
+          }}>
+            뷰 마켓플레이스
+          </h1>
+          <p style={{ fontSize: 14, color: 'var(--ou-text-body)', margin: 0 }}>
+            데이터를 꺼내 쓰는 렌더 방식을 골라 설치하세요.
+          </p>
+        </div>
+
+        {/* Tabs */}
+        <div style={{ display: 'flex', gap: 8, marginBottom: 24 }}>
+          {TABS.map(t => (
+            <button key={t.key} onClick={() => setTab(t.key)} style={{
+              padding: '8px 18px', borderRadius: 999, border: 'none',
+              fontFamily: 'inherit', fontSize: 13, fontWeight: tab === t.key ? 600 : 500,
+              cursor: 'pointer', background: 'var(--ou-bg)',
+              boxShadow: tab === t.key ? 'var(--ou-neu-pressed-sm)' : 'var(--ou-neu-raised-xs)',
+              color: tab === t.key ? 'var(--ou-text-bright)' : 'var(--ou-text-secondary)',
+              transition: 'box-shadow 150ms',
+            }}>
+              {t.label}
+              {t.key === 'my' && myViews.length > 0 && (
+                <span style={{ marginLeft: 6, fontSize: 11, opacity: 0.6 }}>{myViews.length}</span>
+              )}
+            </button>
+          ))}
+        </div>
+
+        {/* ── 마켓 탭 ── */}
+        {tab === 'market' && (
+          <>
+            {/* 검색 */}
+            <div style={{ position: 'relative', marginBottom: 20 }}>
+              <MagnifyingGlass
+                size={14}
+                style={{
+                  position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)',
+                  color: 'var(--ou-text-muted)', pointerEvents: 'none',
+                }}
+              />
+              <input
+                value={searchQuery}
+                onChange={e => { setSearchQuery(e.target.value); setSelectedDomain('all'); }}
+                placeholder="뷰 검색 (예: 일정, 지출, 캘린더)"
+                style={{
+                  width: '100%', padding: '10px 16px 10px 36px',
+                  borderRadius: 12, border: 'none',
+                  fontFamily: 'inherit', fontSize: 13,
+                  background: 'var(--ou-bg)',
+                  boxShadow: 'var(--ou-neu-pressed-sm)',
+                  color: 'var(--ou-text-strong)',
+                  outline: 'none', boxSizing: 'border-box',
+                }}
+              />
+            </div>
+
+            {/* 도메인 필터 chips */}
+            <div style={{
+              display: 'flex', gap: 8, overflowX: 'auto', marginBottom: 28,
+              paddingBottom: 4,
+              msOverflowStyle: 'none', scrollbarWidth: 'none',
+            }}>
+              {domains.map(d => (
+                <button
+                  key={d}
+                  onClick={() => setSelectedDomain(d)}
+                  style={{
+                    flexShrink: 0,
+                    padding: '6px 14px', borderRadius: 999, border: 'none',
+                    fontFamily: 'inherit', fontSize: 12, fontWeight: selectedDomain === d ? 600 : 400,
+                    cursor: 'pointer', whiteSpace: 'nowrap',
+                    background: 'var(--ou-bg)',
+                    boxShadow: selectedDomain === d ? 'var(--ou-neu-pressed-sm)' : 'var(--ou-neu-raised-xs)',
+                    color: selectedDomain === d ? 'var(--ou-text-bright)' : 'var(--ou-text-muted)',
+                    transition: 'all 150ms',
+                  }}
+                >
+                  {d === 'all' ? '전체' : DOMAIN_LABELS[d] || d}
+                </button>
+              ))}
+            </div>
+
+            {filteredBuiltin.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '60px 0' }}>
+                <div style={{ fontSize: 14, color: 'var(--ou-text-muted)' }}>검색 결과가 없어요.</div>
+              </div>
+            ) : searchQuery || selectedDomain !== 'all' ? (
+              /* 필터/검색 결과 — 그리드 */
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(168px, 1fr))',
+                gap: 14,
+              }}>
+                {filteredBuiltin.map(v => (
+                  <ViewCard
+                    key={v.id}
+                    view={v}
+                    onOpen={() => {
+                      const matchingPreset = presets.find(p => p.view_type === v.viewType);
+                      if (matchingPreset) { setSelectedPreset(matchingPreset); return; }
+                      const existing = myViews.find(mv => mv.view_type === v.viewType);
+                      if (existing) router.push(`/view/${existing.id}`);
+                      else router.push(`/view/builtin-${v.viewType}`);
+                    }}
+                  />
+                ))}
+              </div>
+            ) : (
+              /* 기본 화면 — 도메인별 섹션 */
+              <>
+                {featuredPresets.length > 0 && (
+                  <div style={{ marginBottom: 40 }}>
+                    <SectionHeader title="추천 뷰" />
+                    <div style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
+                      gap: 16,
+                    }}>
+                      {featuredPresets.map(p => (
+                        <FeaturedCard
+                          key={p.key}
+                          preset={p}
+                          installed={installedKeys.has(p.key)}
+                          installing={installing === p.key}
+                          onInstall={() => install(p.key)}
+                          onOpen={() => setSelectedPreset(p)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {Object.entries(builtinByDomain).map(([domain, items]) => (
+                  <BuiltinDomainSection
+                    key={domain}
+                    domain={domain}
+                    items={items}
+                    onOpen={(viewType) => {
+                      const matchingPreset = presets.find(p => p.view_type === viewType);
+                      if (matchingPreset) { setSelectedPreset(matchingPreset); return; }
+                      const existing = myViews.find(mv => mv.view_type === viewType);
+                      if (existing) router.push(`/view/${existing.id}`);
+                      else router.push(`/view/builtin-${viewType}`);
+                    }}
+                    onShowAll={() => setSelectedDomain(domain)}
+                  />
+                ))}
+              </>
+            )}
+          </>
+        )}
+
+        {/* ── 내 뷰 탭 ── */}
+        {tab === 'my' && (
+          loading ? (
+            <div style={{ fontSize: 13, color: 'var(--ou-text-muted)', padding: '20px 0' }}>불러오는 중...</div>
+          ) : myViews.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '60px 0' }}>
+              <div style={{ fontSize: 32, marginBottom: 12, opacity: 0.2 }}>◉</div>
+              <div style={{ fontSize: 14, color: 'var(--ou-text-muted)' }}>아직 설치한 뷰가 없어요</div>
+              <div style={{ fontSize: 12, color: 'var(--ou-text-dimmed)', marginTop: 4 }}>마켓에서 뷰를 설치해보세요</div>
+            </div>
+          ) : (
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(168px, 188px))',
+              justifyContent: 'center', gap: 16,
+            }}>
+              {myViews.map(v => (
+                <ViewCard
+                  key={v.id}
+                  view={{ id: v.id, name: v.name, viewType: v.view_type }}
+                  onOpen={() => router.push(`/view/${v.id}`)}
+                />
+              ))}
+            </div>
+          )
+        )}
+
+        {/* ── 기본 내장 탭 ── */}
+        {tab === 'builtin' && (
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(168px, 188px))',
+            justifyContent: 'center', gap: 16,
+          }}>
+            {BUILTIN_VIEWS.map(v => (
+              <ViewCard
+                key={v.id}
+                view={v}
+                onOpen={() => {
+                  const existing = myViews.find(mv => mv.view_type === v.viewType);
+                  if (existing) router.push(`/view/${existing.id}`);
+                  else router.push(`/view/builtin-${v.viewType}`);
+                }}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* 프리셋 상세 모달 */}
+      {selectedPreset && (
+        <PresetDetailModal
+          preset={selectedPreset}
+          installed={installedKeys.has(selectedPreset.key)}
+          installing={installing === selectedPreset.key}
+          uninstalling={uninstalling === selectedPreset.key}
+          onClose={() => setSelectedPreset(null)}
+          onInstall={() => install(selectedPreset.key)}
+          onUninstall={() => uninstall(selectedPreset.key)}
+          onOpen={() => {
+            const existing = myViews.find(v => v.view_type === selectedPreset.view_type && v.name === selectedPreset.name);
+            if (existing) router.push(`/view/${existing.id}`);
+            else router.push(`/view/builtin-${selectedPreset.view_type}`);
+            setSelectedPreset(null);
+          }}
+        />
+      )}
+
+      {/* 설치 완료 → 홈 위젯 배치 프롬프트 */}
+      {justInstalled && (
+        <NeuModal open onClose={() => setJustInstalled(null)} title="설치 완료">
+          <div style={{ textAlign: 'center', padding: '8px 0 16px' }}>
+            <div style={{ fontSize: 36, marginBottom: 12 }}>✓</div>
+            <div style={{ fontSize: 14, color: 'var(--ou-text-body)', marginBottom: 6 }}>
+              <strong>{justInstalled.name}</strong> 설치됐어요
+            </div>
+            <div style={{ fontSize: 12, color: 'var(--ou-text-muted)', marginBottom: 24 }}>
+              홈 화면에 위젯으로 추가할까요?
+            </div>
+            <div style={{ display: 'flex', gap: 10 }}>
+              {(() => {
+                const widgetType = getWidgetTypeForView(justInstalled.viewType);
+                const alreadyOnHome = widgetType ? widgets.some(w => w.type === widgetType) : false;
+                return widgetType ? (
+                  <button
+                    onClick={() => {
+                      if (!alreadyOnHome) {
+                        const [w, h] = getWidgetDefaultSize(widgetType);
+                        addWidget({ id: `${widgetType}-${Date.now()}`, type: widgetType, x: 0, y: 0, w, h });
+                      }
+                      setJustInstalled(null);
+                      router.push('/home');
+                    }}
+                    style={{
+                      flex: 1, padding: '11px 0', borderRadius: 12, border: 'none',
+                      fontFamily: 'inherit', fontSize: 13, fontWeight: 600,
+                      cursor: 'pointer',
+                      background: 'var(--ou-bg)',
+                      boxShadow: 'var(--ou-neu-raised-sm)',
+                      color: 'var(--ou-text-strong)',
+                    }}
+                  >
+                    {alreadyOnHome ? '홈으로 이동' : '위젯 추가 →'}
+                  </button>
+                ) : null;
+              })()}
+              <button
+                onClick={() => setJustInstalled(null)}
+                style={{
+                  flex: 1, padding: '11px 0', borderRadius: 12, border: 'none',
+                  fontFamily: 'inherit', fontSize: 13, fontWeight: 500,
+                  cursor: 'pointer',
+                  background: 'var(--ou-bg)',
+                  boxShadow: 'var(--ou-neu-raised-xs)',
+                  color: 'var(--ou-text-muted)',
+                }}
+              >
+                나중에
+              </button>
+            </div>
+          </div>
+        </NeuModal>
+      )}
+    </NeuPageLayout>
+  );
+}
+
+// ── 섹션 헤더 ─────────────────────────────────────────────
+function SectionHeader({ title, onShowAll }: { title: string; onShowAll?: () => void }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+      <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--ou-text-bright)', letterSpacing: '-0.01em' }}>
+        {title}
+      </span>
+      {onShowAll && (
+        <button
+          onClick={onShowAll}
+          style={{
+            background: 'none', border: 'none', cursor: 'pointer',
+            fontSize: 12, color: 'var(--ou-text-muted)', fontFamily: 'inherit',
+          }}
+        >
+          모두 보기
+        </button>
+      )}
+    </div>
+  );
+}
+
+// ── 빌트인 도메인 섹션 (가로 스크롤) ────────────────────────
+function BuiltinDomainSection({ domain, items, onOpen, onShowAll }: {
+  domain: string;
+  items: { id: string; viewType: string; name: string; domain: string }[];
+  onOpen: (viewType: string) => void;
+  onShowAll: () => void;
+}) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  return (
+    <div style={{ marginBottom: 36 }}>
+      <SectionHeader title={DOMAIN_LABELS[domain] || domain} onShowAll={items.length > 4 ? onShowAll : undefined} />
+      <div
+        ref={scrollRef}
+        style={{
+          display: 'flex', gap: 14, overflowX: 'auto',
+          paddingBottom: 8,
+          msOverflowStyle: 'none', scrollbarWidth: 'none',
+        }}
+      >
+        {items.map(v => (
+          <div key={v.id} style={{ flexShrink: 0, width: 168 }}>
+            <ViewCard view={v} onOpen={() => onOpen(v.viewType)} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── 도메인 섹션 (가로 스크롤) ─────────────────────────────
+function DomainSection({ domain, items, installedKeys, installing, onInstall, onOpen, onShowAll }: {
+  domain: string;
+  items: ViewPreset[];
+  installedKeys: Set<string>;
+  installing: string | null;
+  onInstall: (key: string) => void;
+  onOpen: (viewType: string) => void;
+  onShowAll: () => void;
+}) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  return (
+    <div style={{ marginBottom: 36 }}>
+      <SectionHeader title={DOMAIN_LABELS[domain] || domain} onShowAll={items.length > 3 ? onShowAll : undefined} />
+      <div
+        ref={scrollRef}
+        style={{
+          display: 'flex', gap: 14, overflowX: 'auto',
+          paddingBottom: 8,
+          msOverflowStyle: 'none', scrollbarWidth: 'none',
+        }}
+      >
+        {items.map(p => (
+          <div key={p.key} style={{ flexShrink: 0, width: 180 }}>
+            <PresetCard
+              preset={p}
+              installed={installedKeys.has(p.key)}
+              installing={installing === p.key}
+              onInstall={() => onInstall(p.key)}
+              onOpen={() => onOpen(p.view_type)}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── 피처드 카드 (hero) ────────────────────────────────────
+function FeaturedCard({ preset, installed, installing, onInstall, onOpen }: {
+  preset: ViewPreset;
+  installed: boolean;
+  installing: boolean;
+  onInstall: () => void;
+  onOpen: () => void;
+}) {
+  const [hovered, setHovered] = useState(false);
+  const IconComp = VIEW_ICONS[preset.view_type] || Circle;
+
+  return (
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        borderRadius: 20,
+        background: 'var(--ou-bg)',
+        boxShadow: hovered ? 'var(--ou-neu-raised-lg)' : 'var(--ou-neu-raised-md)',
+        overflow: 'hidden',
+        transition: 'box-shadow 200ms ease',
+        cursor: 'pointer',
+      }}
+      onClick={onOpen}
+    >
+      {/* Preview 영역 */}
+      <div style={{
+        height: 160, background: 'var(--ou-bg)',
+        boxShadow: 'inset 4px 4px 10px rgba(163,177,198,0.4), inset -4px -4px 10px rgba(255,255,255,0.7)',
+        position: 'relative', overflow: 'hidden',
+      }}>
+        <ViewThumbnail
+          viewType={preset.view_type}
+          domain={preset.domain}
+          height={160}
+          scale={0.5}
+          IconComp={IconComp}
+        />
+        <div style={{
+          position: 'absolute', bottom: 10, left: 12,
+          fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase',
+          color: 'var(--ou-text-dimmed)', fontFamily: 'var(--ou-font-logo)',
+          background: 'rgba(var(--ou-bg-rgb, 235,235,235), 0.8)',
+          padding: '2px 8px', borderRadius: 6,
+        }}>
+          {DOMAIN_LABELS[preset.domain] || preset.domain}
+        </div>
+      </div>
+
+      {/* 정보 영역 */}
+      <div style={{ padding: '14px 16px 16px' }}>
+        <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--ou-text-bright)', marginBottom: 4 }}>
+          {preset.name}
+        </div>
+        {preset.description && (
+          <div style={{
+            fontSize: 12, color: 'var(--ou-text-muted)', lineHeight: 1.5,
+            marginBottom: 14, display: '-webkit-box',
+            WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const, overflow: 'hidden',
+          }}>
+            {preset.description}
+          </div>
+        )}
+        <button
+          onClick={e => { e.stopPropagation(); if (!installed && !installing) onInstall(); }}
+          disabled={installed || installing}
+          style={{
+            padding: '8px 20px', borderRadius: 999, border: 'none',
+            fontFamily: 'inherit', fontSize: 12, fontWeight: 600,
+            cursor: installed || installing ? 'default' : 'pointer',
+            background: 'var(--ou-bg)',
+            boxShadow: installed ? 'var(--ou-neu-pressed-sm)' : 'var(--ou-neu-raised-sm)',
+            color: installed ? 'var(--ou-text-dimmed)' : 'var(--ou-text-strong)',
+            transition: 'all 150ms',
+          }}
+        >
+          {installing ? '...' : installed ? '설치됨' : '설치'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ── 일반 프리셋 카드 ──────────────────────────────────────
+function PresetCard({ preset, installed, installing, onInstall, onOpen }: {
+  preset: ViewPreset;
+  installed: boolean;
+  installing: boolean;
+  onInstall: () => void;
+  onOpen: () => void;
+}) {
+  const [hovered, setHovered] = useState(false);
+  const IconComp = VIEW_ICONS[preset.view_type] || Circle;
+  const categoryLabel = preset.category === 'inline' ? '인라인' : preset.category === 'cross' ? '복합' : '풀뷰';
+
+  return (
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        borderRadius: 16, overflow: 'hidden',
+        background: 'var(--ou-bg)',
+        boxShadow: hovered ? 'var(--ou-neu-raised-md)' : 'var(--ou-neu-raised-sm)',
+        transition: 'box-shadow 200ms ease',
+        cursor: 'pointer',
+      }}
+      onClick={onOpen}
+    >
+      {/* Preview */}
+      <div style={{
+        height: 100, background: 'var(--ou-bg)',
+        boxShadow: 'inset 3px 3px 8px rgba(163,177,198,0.35), inset -3px -3px 8px rgba(255,255,255,0.65)',
+        overflow: 'hidden',
+      }}>
+        <ViewThumbnail
+          viewType={preset.view_type}
+          domain={preset.domain}
+          height={100}
+          scale={0.375}
+          IconComp={IconComp}
+        />
+      </div>
+
+      {/* 정보 */}
+      <div style={{ padding: '12px 12px 14px' }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--ou-text-strong)', marginBottom: 4, lineHeight: 1.3 }}>
+          {preset.name}
+        </div>
+        {preset.description && (
+          <div style={{
+            fontSize: 11, color: 'var(--ou-text-dimmed)', lineHeight: 1.4, marginBottom: 10,
+            display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const, overflow: 'hidden',
+          }}>
+            {preset.description}
+          </div>
+        )}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6 }}>
+          <span style={{ fontSize: 10, color: 'var(--ou-text-disabled)', fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+            {categoryLabel}
+          </span>
+          <button
+            onClick={e => { e.stopPropagation(); if (!installed && !installing) onInstall(); }}
+            disabled={installed || installing}
+            style={{
+              padding: '5px 12px', borderRadius: 999, border: 'none',
+              fontFamily: 'inherit', fontSize: 11, fontWeight: 600,
+              cursor: installed || installing ? 'default' : 'pointer',
+              background: 'var(--ou-bg)',
+              boxShadow: installed ? 'var(--ou-neu-pressed-sm)' : 'var(--ou-neu-raised-xs)',
+              color: installed ? 'var(--ou-text-disabled)' : 'var(--ou-text-strong)',
+              transition: 'all 150ms', whiteSpace: 'nowrap',
+            }}
+          >
+            {installing ? '...' : installed ? '설치됨' : '설치'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── 썸네일 (가상 데이터 기반 스케일다운 렌더링) ──────────────
+function ViewThumbnail({ viewType, domain, height, scale, IconComp }: {
+  viewType: string; domain: string; height: number; scale: number; IconComp: PhosphorIcon;
+}) {
+  const isInline = viewType.includes('-');
+  const ViewComp = VIEW_REGISTRY[viewType];
+  const showRender = !!ViewComp && !NO_THUMBNAIL_TYPES.has(viewType) && !isInline;
+
+  if (!showRender) {
+    return (
+      <div style={{ height, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ou-text-body)' }}>
+        <IconComp size={Math.round(height * 0.38)} weight="light" />
+      </div>
+    );
+  }
+
+  const INNER_W = Math.round(480);
+  const INNER_H = Math.round(height / scale);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const nodes = getSampleNodes(viewType, domain) as any[];
+
+  return (
+    <div style={{ height, overflow: 'hidden', position: 'relative', pointerEvents: 'none', userSelect: 'none' }}>
+      <div style={{ width: INNER_W, height: INNER_H, transform: `scale(${scale})`, transformOrigin: 'top left' }}>
+        <ViewComp nodes={nodes} />
+      </div>
+    </div>
+  );
+}
+
+// ── 실제 뷰 미리보기 ─────────────────────────────────────
+function ViewPreviewPane({ viewType, domain }: { viewType: string; domain: string }) {
+  const [nodes, setNodes] = useState<unknown[]>([]);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    const apiMap: Record<string, string> = {
+      boncho: '/api/boncho',
+      shanghanlun: '/api/shanghanlun',
+    };
+    const url = apiMap[viewType] || `/api/nodes?domain=${domain}&limit=50`;
+    fetch(url)
+      .then(r => r.json())
+      .then(d => { setNodes(d.nodes || []); setLoaded(true); })
+      .catch(() => setLoaded(true));
+  }, [viewType, domain]);
+
+  const ViewComponent = VIEW_REGISTRY[viewType];
+  if (!ViewComponent) return null;
+
+  return (
+    <div style={{
+      position: 'relative',
+      height: 240,
+      borderRadius: 12,
+      overflow: 'hidden',
+      boxShadow: 'var(--ou-neu-pressed-sm)',
+      background: 'var(--ou-bg)',
+      marginBottom: 16,
+    }}>
+      {/* 실제 뷰 렌더링 — pointer-events 없음 */}
+      <div style={{ pointerEvents: 'none', userSelect: 'none', height: '100%', overflow: 'hidden' }}>
+        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+        <ViewComponent nodes={nodes as any} />
+      </div>
+
+      {/* 데이터 없을 때 오버레이 */}
+      {loaded && nodes.length === 0 && (
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: 'rgba(var(--ou-bg-rgb, 235,235,235), 0.75)',
+          display: 'flex', flexDirection: 'column',
+          alignItems: 'center', justifyContent: 'center', gap: 6,
+        }}>
+          <div style={{ fontSize: 12, color: 'var(--ou-text-muted)', fontWeight: 500 }}>
+            데이터를 입력하면 여기에 표시돼요
+          </div>
+          <div style={{ fontSize: 11, color: 'var(--ou-text-dimmed)' }}>
+            설치 후 Orb에서 말해보세요
+          </div>
+        </div>
+      )}
+
+      {/* 로딩 */}
+      {!loaded && (
+        <div style={{
+          position: 'absolute', inset: 0,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--ou-text-disabled)', animation: 'blink 1s ease-in-out infinite' }} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── 프리셋 상세 모달 ──────────────────────────────────────
+function PresetDetailModal({ preset, installed, installing, uninstalling, onClose, onInstall, onUninstall, onOpen }: {
+  preset: ViewPreset;
+  installed: boolean;
+  installing: boolean;
+  uninstalling: boolean;
+  onClose: () => void;
+  onInstall: () => void;
+  onUninstall: () => void;
+  onOpen: () => void;
+}) {
+  const categoryLabel = preset.category === 'inline' ? '인라인' : preset.category === 'cross' ? '복합' : '풀뷰';
+
+  return (
+    <NeuModal open onClose={onClose} title={preset.name}>
+      {/* 실제 뷰 미리보기 */}
+      <ViewPreviewPane viewType={preset.view_type} domain={preset.domain} />
+
+      {/* 뱃지 */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+        <span style={{
+          padding: '4px 12px', borderRadius: 999,
+          background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-raised-xs)',
+          fontSize: 11, fontWeight: 600, color: 'var(--ou-text-muted)',
+          letterSpacing: '0.04em',
+        }}>
+          {DOMAIN_LABELS[preset.domain] || preset.domain}
+        </span>
+        <span style={{
+          padding: '4px 12px', borderRadius: 999,
+          background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-pressed-xs)',
+          fontSize: 11, fontWeight: 600, color: 'var(--ou-text-dimmed)',
+          letterSpacing: '0.04em',
+        }}>
+          {categoryLabel}
+        </span>
+      </div>
+
+      {/* 설명 */}
+      {preset.description && (
+        <div style={{
+          fontSize: 14, color: 'var(--ou-text-body)', lineHeight: 1.7,
+          marginBottom: 16,
+        }}>
+          {preset.description}
+        </div>
+      )}
+
+      {/* 언제 사용 */}
+      {preset.when_to_use && (
+        <div style={{
+          padding: '12px 16px', borderRadius: 12,
+          background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-pressed-sm)',
+          fontSize: 12, color: 'var(--ou-text-muted)', lineHeight: 1.7,
+          marginBottom: 24,
+        }}>
+          <span style={{ fontWeight: 600, color: 'var(--ou-text-secondary)', marginRight: 6 }}>사용 시점</span>
+          {preset.when_to_use}
+        </div>
+      )}
+
+      {/* 버튼 영역 */}
+      <div style={{ display: 'flex', gap: 10 }}>
+        {installed ? (
+          <>
+            <button
+              onClick={onOpen}
+              style={{
+                flex: 1, padding: '12px 0', borderRadius: 12, border: 'none',
+                fontFamily: 'inherit', fontSize: 13, fontWeight: 600,
+                cursor: 'pointer', background: 'var(--ou-bg)',
+                boxShadow: 'var(--ou-neu-raised-sm)',
+                color: 'var(--ou-text-strong)',
+              }}
+            >
+              뷰 열기 →
+            </button>
+            <button
+              onClick={onUninstall}
+              disabled={uninstalling}
+              style={{
+                padding: '12px 20px', borderRadius: 12, border: 'none',
+                fontFamily: 'inherit', fontSize: 13, fontWeight: 500,
+                cursor: uninstalling ? 'default' : 'pointer',
+                background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-raised-xs)',
+                color: 'var(--ou-text-muted)',
+              }}
+            >
+              {uninstalling ? '...' : '삭제'}
+            </button>
+          </>
+        ) : (
+          <button
+            onClick={onInstall}
+            disabled={installing}
+            style={{
+              flex: 1, padding: '12px 0', borderRadius: 12, border: 'none',
+              fontFamily: 'inherit', fontSize: 13, fontWeight: 600,
+              cursor: installing ? 'default' : 'pointer',
+              background: 'var(--ou-bg)', boxShadow: 'var(--ou-neu-raised-sm)',
+              color: 'var(--ou-text-strong)',
+            }}
+          >
+            {installing ? '설치 중...' : '설치하기'}
+          </button>
+        )}
+      </div>
+    </NeuModal>
+  );
+}
+
+// ── 기존 뷰 카드 (내 뷰 / 기본 내장 탭) ──────────────────
+function ViewCard({ view, onOpen }: {
+  view: { id: string; name: string; viewType?: string; domain?: string };
+  onOpen: () => void;
+}) {
+  const [hovered, setHovered] = useState(false);
+  const IconComp = (view.viewType && VIEW_ICONS[view.viewType]) || Circle;
+  const domain = view.domain || (view.viewType && VIEW_TYPE_TO_DOMAIN[view.viewType]) || 'knowledge';
+  return (
+    <button
+      onClick={onOpen}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        display: 'flex', flexDirection: 'column', alignItems: 'stretch', gap: 0,
+        padding: 0, background: 'var(--ou-bg)',
+        border: `1.5px solid ${hovered ? 'var(--ou-border-subtle)' : 'var(--ou-border-faint)'}`,
+        borderRadius: 16, cursor: 'pointer', fontFamily: 'inherit',
+        boxShadow: hovered ? '0 4px 16px rgba(0,0,0,0.06)' : 'none',
+        transition: 'border-color 150ms ease, box-shadow 150ms ease',
+        width: '100%', overflow: 'hidden', textAlign: 'left',
+      }}
+    >
+      {/* 썸네일 */}
+      <div style={{
+        height: 110,
+        background: 'var(--ou-bg)',
+        boxShadow: 'inset 2px 2px 6px rgba(163,177,198,0.3), inset -2px -2px 6px rgba(255,255,255,0.6)',
+        overflow: 'hidden',
+      }}>
+        {view.viewType ? (
+          <ViewThumbnail
+            viewType={view.viewType}
+            domain={domain}
+            height={110}
+            scale={0.35}
+            IconComp={IconComp}
+          />
+        ) : (
+          <div style={{ height: 110, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ou-text-body)' }}>
+            <IconComp size={36} weight="light" />
+          </div>
+        )}
+      </div>
+      {/* 이름 */}
+      <div style={{ padding: '10px 12px 12px' }}>
+        <span style={{
+          fontSize: 12, color: 'var(--ou-text-strong)', lineHeight: 1.3,
+          display: 'block', overflow: 'hidden', textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap', fontWeight: 500,
+        }}>
+          {view.name}
+        </span>
+      </div>
+    </button>
+  );
+}

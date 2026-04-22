@@ -62,8 +62,11 @@ export async function ingestConversation({
     .map(m => m.content)
     .join('\n');
 
-  // 도메인 분류 — 복합 도메인 지원
-  const { domain, domains, viewHint, viewHints, confidence } = await classifyDomain(fullText);
+  // 도메인 분류 — claude_code 소스는 LLM 분류 없이 development로 강제 지정
+  const isDevSession = metadata?.source === 'claude_code' || sourceType === 'dev_tool';
+  const { domain, domains, viewHint, viewHints, confidence } = isDevSession
+    ? { domain: 'development', domains: ['development'], viewHint: 'dev_workspace', viewHints: ['dev_workspace'], confidence: 'high' as const }
+    : await classifyDomain(fullText);
 
   const today = new Date().toISOString().slice(0, 10);
 
@@ -97,12 +100,17 @@ export async function ingestConversation({
   }).select().single();
 
   // data_node 생성 — 복합 도메인 포함
+  // dev 세션은 user 요청을 raw로, 일반 대화는 fullText 사용
+  const rawText = isDevSession
+    ? (userMessages || fullText)
+    : fullText;
+
   const { data: node, error: nodeErr } = await supabase.from('data_nodes').insert({
     user_id: userId,
     message_id: assistantMsg?.id ?? userMsg?.id,
     domain,
     domains: domains ?? [domain],
-    raw: fullText,
+    raw: rawText,
     source_type: sourceType,
     confidence,
     resolution: 'resolved',

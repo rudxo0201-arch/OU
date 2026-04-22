@@ -7,95 +7,87 @@ interface OrbItem {
   slug: string;
   label: string;
   icon: string;
-  href?: string;
 }
 
 const DEFAULT_ORBS: OrbItem[] = [
-  { slug: 'note',     label: '노트',   icon: '✎' },
-  { slug: 'calendar', label: '캘린더', icon: '◫' },
-  { slug: 'task',     label: '할 일',  icon: '✓' },
-  { slug: 'finance',  label: '가계부', icon: '◈' },
-  { slug: 'habit',    label: '습관',   icon: '⟳' },
+  { slug: 'note',     label: '노트',    icon: '✎' },
+  { slug: 'calendar', label: '캘린더',  icon: '◫' },
+  { slug: 'task',     label: '할 일',   icon: '✓' },
+  { slug: 'finance',  label: '가계부',  icon: '◈' },
+  { slug: 'habit',    label: '습관',    icon: '⟳' },
   { slug: 'idea',     label: '아이디어', icon: '✦' },
 ];
 
-interface OrbIconProps {
-  orb: OrbItem;
-  onClick?: () => void;
-}
-
-function OrbIcon({ orb, onClick }: OrbIconProps) {
+function OrbIcon({ orb, onClick }: { orb: OrbItem; onClick?: () => void }) {
   const [hovered, setHovered] = useState(false);
   const [pressed, setPressed] = useState(false);
 
-  const style: CSSProperties = {
+  const wrapStyle: CSSProperties = {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    gap: 8,
+    gap: 6,
     cursor: 'pointer',
     userSelect: 'none',
     WebkitUserSelect: 'none',
   };
 
-  const iconBoxStyle: CSSProperties = {
-    width: 64,
-    height: 64,
-    borderRadius: 'var(--ou-radius-card)',
+  const boxStyle: CSSProperties = {
+    width: 52,
+    height: 52,
+    borderRadius: 14,
     background: pressed
-      ? 'var(--ou-glass-active)'
+      ? 'rgba(255,255,255,1)'
       : hovered
-        ? 'var(--ou-glass-hover)'
-        : 'var(--ou-glass)',
-    backdropFilter: 'var(--ou-blur-light)',
-    WebkitBackdropFilter: 'var(--ou-blur-light)',
-    border: `1px solid ${hovered ? 'var(--ou-glass-border-hover)' : 'var(--ou-glass-border)'}`,
-    boxShadow: hovered ? `var(--ou-shadow-md), var(--ou-accent-glow)` : 'var(--ou-shadow-sm)',
+        ? 'rgba(255,255,255,1)'
+        : 'rgba(255,255,255,0.92)',
+    border: '1px solid rgba(0,0,0,0.08)',
+    boxShadow: hovered
+      ? '0 2px 4px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.12)'
+      : '0 1px 2px rgba(0,0,0,0.04), 0 3px 10px rgba(0,0,0,0.07)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontSize: 26,
-    color: hovered ? 'var(--ou-accent)' : 'var(--ou-text-body)',
-    transition: 'all var(--ou-transition-fast)',
-    transform: pressed ? 'scale(0.93)' : hovered ? 'translateY(-2px)' : 'none',
+    fontSize: 20,
+    color: hovered ? 'rgba(0,0,0,0.88)' : 'rgba(0,0,0,0.52)',
+    transition: 'all 140ms ease',
+    transform: pressed ? 'scale(0.92)' : hovered ? 'translateY(-3px) scale(1.04)' : 'none',
   };
 
   const labelStyle: CSSProperties = {
-    fontSize: 'var(--ou-text-xs)',
-    color: 'var(--ou-text-secondary)',
+    fontSize: 11,
     fontWeight: 500,
+    color: hovered ? 'rgba(0,0,0,0.62)' : 'rgba(0,0,0,0.36)',
     letterSpacing: '0.01em',
+    transition: 'color 140ms ease',
+    whiteSpace: 'nowrap',
   };
 
   return (
     <div
-      style={style}
+      style={wrapStyle}
       onClick={onClick}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => { setHovered(false); setPressed(false); }}
       onMouseDown={() => setPressed(true)}
       onMouseUp={() => setPressed(false)}
     >
-      <div style={iconBoxStyle}>{orb.icon}</div>
+      <div style={boxStyle}>{orb.icon}</div>
       <span style={labelStyle}>{orb.label}</span>
     </div>
   );
 }
 
-interface OrbGridProps {
-  orbs?: OrbItem[];
-}
-
-export function OrbGrid({ orbs = DEFAULT_ORBS }: OrbGridProps) {
+export function OrbGrid({ orbs = DEFAULT_ORBS }: { orbs?: OrbItem[] }) {
   const router = useRouter();
 
   return (
     <div
       style={{
         display: 'flex',
-        flexWrap: 'wrap',
-        gap: 16,
-        justifyContent: 'flex-start',
+        gap: 12,
+        alignItems: 'center',
+        flexWrap: 'nowrap',
       }}
       className="ou-stagger"
     >

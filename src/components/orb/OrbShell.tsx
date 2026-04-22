@@ -38,9 +38,9 @@ export function OrbShell({ slug, title, icon, children }: OrbShellProps) {
         display: 'flex',
         alignItems: 'center',
         padding: '0 20px',
-        background: 'rgba(11,11,17,0.75)',
-        backdropFilter: 'blur(24px)',
-        WebkitBackdropFilter: 'blur(24px)',
+        background: 'rgba(228,228,234,0.92)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
         borderBottom: '1px solid var(--ou-glass-border)',
       }}>
         {/* 뒤로가기 */}

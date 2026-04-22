@@ -42,30 +42,35 @@ export function TopNavBar() {
     alignItems: 'center',
     padding: '0 24px',
     gap: 'var(--ou-space-4)',
-    background: 'rgba(11,11,17,0.75)',
-    backdropFilter: 'blur(24px)',
-    WebkitBackdropFilter: 'blur(24px)',
-    borderBottom: '1px solid var(--ou-glass-border)',
+    background: 'rgba(228,228,234,0.96)',
+    backdropFilter: 'blur(20px)',
+    WebkitBackdropFilter: 'blur(20px)',
+    borderBottom: '1px solid rgba(0,0,0,0.06)',
+    boxShadow: '0 1px 0 rgba(255,255,255,0.5)',
   };
 
   return (
     <nav style={navStyle}>
       {/* 로고 */}
-      <Link href="/home" style={{ marginRight: 8, display: 'flex', alignItems: 'center' }}>
+      <Link href="/home" style={{ marginRight: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
         <span style={{
           fontFamily: 'var(--ou-font-logo)',
-          fontSize: 16,
+          fontSize: 14,
           fontWeight: 700,
-          color: 'var(--ou-text-heading)',
-          letterSpacing: '-0.02em',
-          textShadow: 'var(--ou-accent-glow)',
+          color: 'rgba(0,0,0,0.88)',
+          letterSpacing: '0.06em',
         }}>
           OU
         </span>
+        <span style={{
+          width: 1,
+          height: 14,
+          background: 'rgba(0,0,0,0.15)',
+        }} />
       </Link>
 
       {/* 네비 아이템 */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
         {NAV_ITEMS.map((item) => {
           const isActive = pathname.startsWith(item.href);
           return (
@@ -73,14 +78,15 @@ export function TopNavBar() {
               <span style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                height: 32,
+                height: 30,
                 padding: '0 12px',
-                borderRadius: 'var(--ou-radius-pill)',
-                fontSize: 'var(--ou-text-sm)',
+                borderRadius: 8,
+                fontSize: 13,
                 fontWeight: isActive ? 600 : 400,
-                color: isActive ? 'var(--ou-text-heading)' : 'var(--ou-text-secondary)',
-                background: isActive ? 'var(--ou-glass-strong)' : 'transparent',
-                transition: 'all var(--ou-transition-fast)',
+                color: isActive ? 'rgba(0,0,0,0.88)' : 'rgba(0,0,0,0.42)',
+                background: isActive ? 'rgba(255,255,255,0.85)' : 'transparent',
+                boxShadow: isActive ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+                transition: 'all 140ms ease',
               }}>
                 {item.label}
               </span>
@@ -132,6 +138,21 @@ export function TopNavBar() {
               }}>
                 {user?.email}
               </div>
+              <Link href="/orb/admin" onClick={() => setShowMenu(false)}>
+                <div style={{
+                  padding: '8px 12px',
+                  fontSize: 'var(--ou-text-sm)',
+                  color: 'var(--ou-text-body)',
+                  borderRadius: 'var(--ou-radius-xs)',
+                  transition: 'background var(--ou-transition-fast)',
+                  cursor: 'pointer',
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(0,0,0,0.04)')}
+                onMouseLeave={(e) => (e.currentTarget.style.background = 'none')}
+                >
+                  관리자
+                </div>
+              </Link>
               <button
                 onClick={handleSignOut}
                 style={{

@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import type { Editor } from '@tiptap/react';
-import { TextB, TextItalic, TextStrikethrough, Code, Link } from '@phosphor-icons/react';
+import { TextB, TextItalic, TextStrikethrough, Code, Link, TextHOne, TextHTwo, TextHThree, TextT, ArrowsOut } from '@phosphor-icons/react';
 
 type ToolbarPos = { x: number; y: number } | null;
 
@@ -11,11 +11,12 @@ type Props = {
 };
 
 export function BubbleToolbar({ editor }: Props) {
-  const [pos, setPos] = useState<ToolbarPos>(null);
+  const [pos, setPos]               = useState<ToolbarPos>(null);
+  const [turnIntoOpen, setTurnIntoOpen] = useState(false);
 
   const updatePos = useCallback(() => {
     const { from, to, empty } = editor.state.selection;
-    if (empty) { setPos(null); return; }
+    if (empty) { setPos(null); setTurnIntoOpen(false); return; }
 
     const start = editor.view.coordsAtPos(from);
     const end = editor.view.coordsAtPos(to);
@@ -26,7 +27,7 @@ export function BubbleToolbar({ editor }: Props) {
 
   useEffect(() => {
     editor.on('selectionUpdate', updatePos);
-    editor.on('blur', () => setPos(null));
+    editor.on('blur', () => { setPos(null); setTurnIntoOpen(false); });
     return () => {
       editor.off('selectionUpdate', updatePos);
       editor.off('blur', () => setPos(null));
@@ -34,6 +35,13 @@ export function BubbleToolbar({ editor }: Props) {
   }, [editor, updatePos]);
 
   if (!pos) return null;
+
+  const TURN_INTO = [
+    { label: '텍스트',  icon: <TextT size={13} />,       action: () => editor.chain().focus().setParagraph().run(),               isActive: editor.isActive('paragraph') },
+    { label: '제목 1',  icon: <TextHOne size={13} />,    action: () => editor.chain().focus().toggleHeading({ level: 1 }).run(), isActive: editor.isActive('heading', { level: 1 }) },
+    { label: '제목 2',  icon: <TextHTwo size={13} />,    action: () => editor.chain().focus().toggleHeading({ level: 2 }).run(), isActive: editor.isActive('heading', { level: 2 }) },
+    { label: '제목 3',  icon: <TextHThree size={13} />,  action: () => editor.chain().focus().toggleHeading({ level: 3 }).run(), isActive: editor.isActive('heading', { level: 3 }) },
+  ];
 
   const buttons = [
     {
@@ -75,6 +83,11 @@ export function BubbleToolbar({ editor }: Props) {
     },
   ];
 
+  const activeBlockLabel =
+    editor.isActive('heading', { level: 1 }) ? 'H1' :
+    editor.isActive('heading', { level: 2 }) ? 'H2' :
+    editor.isActive('heading', { level: 3 }) ? 'H3' : 'T';
+
   return (
     <div
       onMouseDown={(e) => e.preventDefault()}
@@ -86,7 +99,7 @@ export function BubbleToolbar({ editor }: Props) {
         zIndex: 1000,
         display: 'flex',
         alignItems: 'center',
-        gap: 2,
+        gap: 0,
         background: 'var(--ou-bg)',
         borderRadius: 'var(--ou-radius-sm)',
         boxShadow: 'var(--ou-neu-raised-sm)',
@@ -94,6 +107,60 @@ export function BubbleToolbar({ editor }: Props) {
         pointerEvents: 'all',
       }}
     >
+      {/* Turn into 드롭다운 */}
+      <div style={{ position: 'relative' }}>
+        <button
+          title="블록 변환"
+          onMouseDown={(e) => { e.preventDefault(); setTurnIntoOpen((v) => !v); }}
+          style={{
+            display: 'flex', alignItems: 'center', gap: 3,
+            height: 28, padding: '0 8px',
+            border: 'none', borderRadius: 'var(--ou-radius-sm)',
+            background: turnIntoOpen ? 'var(--ou-surface-muted)' : 'transparent',
+            cursor: 'pointer',
+            color: 'var(--ou-text-secondary)',
+            fontSize: 11, fontWeight: 600,
+            transition: 'all var(--ou-transition)',
+          }}
+        >
+          {activeBlockLabel}
+          <ArrowsOut size={10} />
+        </button>
+
+        {turnIntoOpen && (
+          <div style={{
+            position: 'absolute', top: 'calc(100% + 6px)', left: '50%', transform: 'translateX(-50%)',
+            background: 'var(--ou-bg)', borderRadius: 'var(--ou-radius-sm)',
+            boxShadow: 'var(--ou-neu-raised-md)', padding: 4, minWidth: 130, zIndex: 1001,
+          }}>
+            {TURN_INTO.map((opt) => (
+              <button
+                key={opt.label}
+                onMouseDown={(e) => { e.preventDefault(); opt.action(); setTurnIntoOpen(false); }}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  width: '100%', padding: '6px 10px',
+                  border: 'none', borderRadius: 'var(--ou-radius-sm)',
+                  background: opt.isActive ? 'var(--ou-surface-muted)' : 'transparent',
+                  cursor: 'pointer',
+                  color: opt.isActive ? 'var(--ou-text-bright)' : 'var(--ou-text-secondary)',
+                  fontSize: 12, textAlign: 'left',
+                  transition: 'background 100ms',
+                }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ou-surface-muted)'; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = opt.isActive ? 'var(--ou-surface-muted)' : 'transparent'; }}
+              >
+                {opt.icon}
+                <span>{opt.label}</span>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* 구분선 */}
+      <div style={{ width: 1, height: 18, background: 'var(--ou-border-subtle)', margin: '0 4px', flexShrink: 0 }} />
+
       {buttons.map((btn) => (
         <button
           key={btn.title}
