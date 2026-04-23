@@ -242,6 +242,26 @@ img, video {
   to { transform: rotate(360deg); }
 }
 
+@keyframes ou-wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  15%      { transform: rotate(-1.5deg); }
+  30%      { transform: rotate(1.5deg); }
+  45%      { transform: rotate(-1deg); }
+  60%      { transform: rotate(1deg); }
+  75%      { transform: rotate(-0.5deg); }
+}
+
+@keyframes ou-widget-min-hit {
+  0%   { transform: translateX(0);    box-shadow: var(--ou-shadow-card); }
+  15%  { transform: translateX(-5px); box-shadow: 0 0 0 2px rgba(0,0,0,0.50); }
+  30%  { transform: translateX(5px);  box-shadow: 0 0 0 2px rgba(0,0,0,0.45); }
+  45%  { transform: translateX(-4px); box-shadow: 0 0 0 2px rgba(0,0,0,0.35); }
+  60%  { transform: translateX(4px);  box-shadow: 0 0 0 1px rgba(0,0,0,0.20); }
+  75%  { transform: translateX(-2px); }
+  90%  { transform: translateX(2px);  }
+  100% { transform: translateX(0);    box-shadow: var(--ou-shadow-card); }
+}
+
 /* ── 4. 유틸 클래스 ── */
 
 /* 페이지 진입 */

@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { useWidgetSize } from './useWidgetSize';
 
 interface ScheduleNode {
   id: string;
@@ -15,6 +16,8 @@ interface ScheduleNode {
 }
 
 export function TodayScheduleWidget() {
+  const rootRef = useRef<HTMLDivElement>(null);
+  const size = useWidgetSize(rootRef);
   const [events, setEvents] = useState<ScheduleNode[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -35,21 +38,22 @@ export function TodayScheduleWidget() {
   }, []);
 
   return (
-    <div style={{
+    <div ref={rootRef} style={{
       height: '100%',
       display: 'flex', flexDirection: 'column',
       padding: '14px 16px',
     }}>
-      {/* 헤더 */}
-      <span style={{
-        fontSize: 10, fontWeight: 600,
-        color: 'var(--ou-text-dimmed)',
-        letterSpacing: '0.10em', textTransform: 'uppercase',
-        fontFamily: 'var(--ou-font-logo)',
-        marginBottom: 12, flexShrink: 0,
-      }}>
-        오늘 일정
-      </span>
+      {size !== 'sm' && (
+        <span style={{
+          fontSize: 10, fontWeight: 600,
+          color: 'var(--ou-text-dimmed)',
+          letterSpacing: '0.10em', textTransform: 'uppercase',
+          fontFamily: 'var(--ou-font-logo)',
+          marginBottom: 12, flexShrink: 0,
+        }}>
+          오늘 일정
+        </span>
+      )}
 
       {/* 일정 리스트 */}
       <div style={{ flex: 1, overflow: 'auto', display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -93,7 +97,7 @@ export function TodayScheduleWidget() {
                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               }}>
                 {e.domain_data.title || e.raw?.slice(0, 20) || '일정'}
-                {e.domain_data.location && (
+                {size === 'lg' && e.domain_data.location && (
                   <span style={{ color: 'var(--ou-text-dimmed)', fontWeight: 400 }}>
                     {' · '}{e.domain_data.location}
                   </span>

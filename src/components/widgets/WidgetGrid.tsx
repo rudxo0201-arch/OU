@@ -44,6 +44,7 @@ export function WidgetGrid({ transition = 'idle' }: Props) {
   const [gridWidth, setGridWidth] = useState(0);
   const [mounted, setMounted] = useState(false);
   const [editMode, setEditMode] = useState(false);
+  const [shakingId, setShakingId] = useState<string | null>(null);
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const longPressStart = useRef<{ x: number; y: number } | null>(null);
 
@@ -72,9 +73,9 @@ export function WidgetGrid({ transition = 'idle' }: Props) {
     if (Math.sqrt(dx * dx + dy * dy) > 5) cancelLongPress();
   }, [cancelLongPress]);
 
-  // Broadcast edit mode changes
+  // Broadcast edit mode changes with { active } detail
   useEffect(() => {
-    window.dispatchEvent(new CustomEvent('widget-edit-mode-change', { detail: { editMode } }));
+    window.dispatchEvent(new CustomEvent('widget-edit-mode-change', { detail: { active: editMode } }));
   }, [editMode]);
 
   // ESC to exit edit mode
@@ -86,9 +87,9 @@ export function WidgetGrid({ transition = 'idle' }: Props) {
     return () => window.removeEventListener('keydown', handler);
   }, [editMode]);
 
-  // widget-edit-mode-enter event → 편집 모드 진입
+  // widget-edit-mode-enter → toggle (DockBar 완료 버튼도 이 이벤트 사용)
   useEffect(() => {
-    const handler = () => setEditMode(true);
+    const handler = () => setEditMode(prev => !prev);
     window.addEventListener('widget-edit-mode-enter', handler);
     return () => window.removeEventListener('widget-edit-mode-enter', handler);
   }, []);
@@ -120,9 +121,26 @@ export function WidgetGrid({ transition = 'idle' }: Props) {
     requestAnimationFrame(() => handleLayoutChange(_layout));
   }, [handleLayoutChange]);
 
-  const handleResizeStop = useCallback((_layout: Layout[]) => {
+  const handleResizeStop = useCallback((_layout: Layout[], ...rest: unknown[]) => {
+    // 최솟값 도달 감지 → shake 피드백
+    const oldItem = rest[0] as Layout | undefined;
+    const newItem = rest[1] as Layout | undefined;
+    if (oldItem && newItem) {
+      const widget = widgets.find(w => w.id === newItem.i);
+      if (widget) {
+        const def = getWidgetDef(widget.type);
+        if (def) {
+          const atMin = newItem.w <= def.minSize[0] || newItem.h <= def.minSize[1];
+          const unchanged = newItem.w === oldItem.w && newItem.h === oldItem.h;
+          if (atMin && unchanged) {
+            setShakingId(newItem.i);
+            setTimeout(() => setShakingId(null), 450);
+          }
+        }
+      }
+    }
     requestAnimationFrame(() => handleLayoutChange(_layout));
-  }, [handleLayoutChange]);
+  }, [handleLayoutChange, widgets]);
 
   const handleRemove = useCallback((id: string) => {
     const def = getWidgetDef(widgets.find(w => w.id === id)?.type ?? '');
@@ -164,28 +182,7 @@ export function WidgetGrid({ transition = 'idle' }: Props) {
       onPointerCancel={cancelLongPress}
     >
 
-      {/* Edit mode "완료" button */}
-      {editMode && (
-        <button
-          onClick={() => {
-            setEditMode(false);
-            const store = useTutorialStore.getState();
-            if (store.isEditMode()) {
-              store.exitEditMode();
-              window.dispatchEvent(new CustomEvent('orb-expand'));
-            }
-          }}
-          style={{
-            position: 'absolute', top: -36, right: 0, zIndex: 20,
-            padding: '6px 20px', borderRadius: 999,
-            background: 'rgba(255,255,255,0.9)', color: '#111',
-            fontSize: 13, fontWeight: 600,
-            transition: '180ms ease',
-          }}
-        >
-          완료
-        </button>
-      )}
+      {/* 완료 버튼은 DockBar가 담당 */}
       <GridLayout
         layout={layout}
         width={gridWidth}
@@ -236,6 +233,7 @@ export function WidgetGrid({ transition = 'idle' }: Props) {
                 removable={def?.removable ?? true}
                 onRemove={() => handleRemove(w.id)}
                 editMode={editMode}
+                isShaking={shakingId === w.id}
               />
             </div>
           );

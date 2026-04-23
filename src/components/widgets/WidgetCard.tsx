@@ -11,9 +11,10 @@ interface Props {
   removable?: boolean;
   onRemove?: () => void;
   editMode?: boolean;
+  isShaking?: boolean;
 }
 
-export const WidgetCard = memo(function WidgetCard({ widgetId, type, removable, onRemove, editMode }: Props) {
+export const WidgetCard = memo(function WidgetCard({ widgetId, type, removable, onRemove, editMode, isShaking }: Props) {
   const def = getWidgetDef(type);
   const scrollable: ScrollPolicy = def?.scrollable ?? 'none';
   const Comp = def?.component;
@@ -28,8 +29,14 @@ export const WidgetCard = memo(function WidgetCard({ widgetId, type, removable, 
   const isOrb = type === 'ou-view';
   const cardClassName = editMode ? styles.cardEdit : (isOrb ? styles.cardless : styles.cardNormal);
 
+  const animation = isShaking
+    ? 'ou-widget-min-hit 0.4s ease'
+    : editMode
+    ? 'ou-wiggle 1.5s ease-in-out infinite'
+    : undefined;
+
   return (
-    <div className={cardClassName} style={editMode ? { animation: 'wiggle 1.5s ease-in-out infinite' } : undefined}>
+    <div className={cardClassName} style={animation ? { animation } : undefined}>
       {/* Remove button — only in edit mode */}
       {editMode && removable !== false && onRemove && (
         <button className={styles.removeBtn} onClick={onRemove} title="위젯 제거"

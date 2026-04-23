@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { cleanDisplayText } from '@/lib/utils/cleanDisplayText';
+import { useWidgetSize } from './useWidgetSize';
 
 interface TaskNode {
   id: string;
@@ -17,6 +18,8 @@ interface TaskNode {
 }
 
 export function TaskWidget() {
+  const rootRef = useRef<HTMLDivElement>(null);
+  const size = useWidgetSize(rootRef);
   const [tasks, setTasks] = useState<TaskNode[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -37,20 +40,22 @@ export function TaskWidget() {
   }, []);
 
   return (
-    <div style={{
+    <div ref={rootRef} style={{
       height: '100%',
       display: 'flex', flexDirection: 'column',
       padding: '14px 16px',
     }}>
-      <span style={{
-        fontSize: 10, fontWeight: 600,
-        color: 'var(--ou-text-dimmed)',
-        letterSpacing: '0.10em', textTransform: 'uppercase',
-        fontFamily: 'var(--ou-font-logo)',
-        marginBottom: 12, flexShrink: 0,
-      }}>
-        할 일
-      </span>
+      {size !== 'sm' && (
+        <span style={{
+          fontSize: 10, fontWeight: 600,
+          color: 'var(--ou-text-dimmed)',
+          letterSpacing: '0.10em', textTransform: 'uppercase',
+          fontFamily: 'var(--ou-font-logo)',
+          marginBottom: 12, flexShrink: 0,
+        }}>
+          할 일
+        </span>
+      )}
 
       <div style={{ flex: 1, overflow: 'auto', display: 'flex', flexDirection: 'column', gap: 6 }}>
         {loading ? (
@@ -88,7 +93,7 @@ export function TaskWidget() {
                   ? cleanDisplayText(t.domain_data.title)
                   : cleanDisplayText(t.raw?.slice(0, 50) ?? '') || '할 일'}
               </div>
-              {t.domain_data.deadline && (
+              {size !== 'sm' && t.domain_data.deadline && (
                 <div style={{ fontSize: 10, color: 'var(--ou-text-dimmed)', marginTop: 1 }}>
                   {t.domain_data.deadline}
                 </div>

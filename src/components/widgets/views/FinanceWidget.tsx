@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { useWidgetSize } from './useWidgetSize';
 
 interface FinanceNode {
   id: string;
@@ -35,6 +36,8 @@ function isToday(node: FinanceNode): boolean {
 const CATEGORY_ORDER = ['식비', '교통', '쇼핑', '의료', '주거', '통신', '교육', '여가', '기타'];
 
 export function FinanceWidget() {
+  const rootRef = useRef<HTMLDivElement>(null);
+  const size = useWidgetSize(rootRef);
   const [nodes, setNodes] = useState<FinanceNode[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -69,36 +72,45 @@ export function FinanceWidget() {
   }
   const cats = CATEGORY_ORDER.filter(c => byCat[c]).map(c => ({ cat: c, amount: byCat[c] }));
 
+  const visibleCats = size === 'sm' ? [] : size === 'md' ? cats.slice(0, 3) : cats;
+
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', padding: '14px 16px' }}>
-      <span style={{
-        fontSize: 10, fontWeight: 600, color: 'var(--ou-text-dimmed)',
-        letterSpacing: '0.10em', textTransform: 'uppercase',
-        fontFamily: 'var(--ou-font-logo)', marginBottom: 10, flexShrink: 0,
-      }}>
-        오늘 지출
-      </span>
+    <div ref={rootRef} style={{ height: '100%', display: 'flex', flexDirection: 'column', padding: '14px 16px' }}>
+      {size !== 'sm' && (
+        <span style={{
+          fontSize: 10, fontWeight: 600, color: 'var(--ou-text-dimmed)',
+          letterSpacing: '0.10em', textTransform: 'uppercase',
+          fontFamily: 'var(--ou-font-logo)', marginBottom: 10, flexShrink: 0,
+        }}>
+          오늘 지출
+        </span>
+      )}
 
       <div style={{
-        fontSize: 22, fontWeight: 700, color: 'var(--ou-text-strong)',
-        fontFamily: 'var(--ou-font-mono)', marginBottom: 12, flexShrink: 0,
+        fontSize: size === 'sm' ? 18 : 22, fontWeight: 700, color: 'var(--ou-text-strong)',
+        fontFamily: 'var(--ou-font-mono)', marginBottom: size === 'sm' ? 0 : 12, flexShrink: 0,
         letterSpacing: '-0.02em',
       }}>
         {loading ? '—' : `₩${total.toLocaleString()}`}
       </div>
 
-      <div style={{ flex: 1, overflow: 'auto', display: 'flex', flexDirection: 'column', gap: 4 }}>
-        {!loading && cats.length === 0 ? (
-          <div style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>오늘 지출이 없어요.</div>
-        ) : cats.map(({ cat, amount }) => (
-          <div key={cat} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: 11, color: 'var(--ou-text-body)' }}>{cat}</span>
-            <span style={{ fontSize: 11, fontWeight: 600, fontFamily: 'var(--ou-font-mono)', color: 'var(--ou-text-strong)' }}>
-              ₩{amount.toLocaleString()}
-            </span>
-          </div>
-        ))}
-      </div>
+      {size !== 'sm' && (
+        <div style={{ flex: 1, overflow: 'auto', display: 'flex', flexDirection: 'column', gap: 4 }}>
+          {!loading && cats.length === 0 ? (
+            <div style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>오늘 지출이 없어요.</div>
+          ) : visibleCats.map(({ cat, amount }) => (
+            <div key={cat} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: 11, color: 'var(--ou-text-body)' }}>{cat}</span>
+              <span style={{ fontSize: 11, fontWeight: 600, fontFamily: 'var(--ou-font-mono)', color: 'var(--ou-text-strong)' }}>
+                ₩{amount.toLocaleString()}
+              </span>
+            </div>
+          ))}
+          {size === 'md' && cats.length > 3 && (
+            <div style={{ fontSize: 10, color: 'var(--ou-text-dimmed)' }}>+{cats.length - 3}개 더</div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

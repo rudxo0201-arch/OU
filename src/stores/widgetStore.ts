@@ -14,6 +14,12 @@ export interface WidgetInstance {
 export const GRID_COLS = 16;
 export const GRID_ROWS = 9;
 
+export const GRID_PRESETS = [
+  { label: '크게',   cols: 10, rows: 6  },
+  { label: '기본',   cols: 16, rows: 9  },
+  { label: '촘촘히', cols: 20, rows: 12 },
+] as const;
+
 const DEFAULT_LAYOUT: WidgetInstance[] = [
   { id: 'default-qsbar',    type: 'qsbar',         x: 4,  y: 0, w: 8, h: 2 },
   { id: 'default-schedule', type: 'today-schedule', x: 0,  y: 2, w: 5, h: 4 },

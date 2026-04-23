@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { useWidgetSize } from './useWidgetSize';
 
 interface NoteNode {
   id: string;
@@ -12,6 +13,8 @@ interface NoteNode {
 }
 
 export function NoteWidget() {
+  const rootRef = useRef<HTMLDivElement>(null);
+  const size = useWidgetSize(rootRef);
   const [notes, setNotes] = useState<NoteNode[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -38,14 +41,16 @@ export function NoteWidget() {
   }, [fetchNodes]);
 
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', padding: '14px 16px' }}>
-      <span style={{
-        fontSize: 10, fontWeight: 600, color: 'var(--ou-text-dimmed)',
-        letterSpacing: '0.10em', textTransform: 'uppercase',
-        fontFamily: 'var(--ou-font-logo)', marginBottom: 12, flexShrink: 0,
-      }}>
-        최근 노트
-      </span>
+    <div ref={rootRef} style={{ height: '100%', display: 'flex', flexDirection: 'column', padding: '14px 16px' }}>
+      {size !== 'sm' && (
+        <span style={{
+          fontSize: 10, fontWeight: 600, color: 'var(--ou-text-dimmed)',
+          letterSpacing: '0.10em', textTransform: 'uppercase',
+          fontFamily: 'var(--ou-font-logo)', marginBottom: 12, flexShrink: 0,
+        }}>
+          최근 노트
+        </span>
+      )}
 
       <div style={{ flex: 1, overflow: 'auto', display: 'flex', flexDirection: 'column', gap: 6 }}>
         {loading ? (
@@ -73,7 +78,9 @@ export function NoteWidget() {
               }}>
                 {title}
               </span>
-              <span style={{ fontSize: 10, color: 'var(--ou-text-dimmed)', flexShrink: 0 }}>{dateStr}</span>
+              {size !== 'sm' && (
+                <span style={{ fontSize: 10, color: 'var(--ou-text-dimmed)', flexShrink: 0 }}>{dateStr}</span>
+              )}
             </div>
           );
         })}

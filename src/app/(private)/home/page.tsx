@@ -1,33 +1,47 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { PageLayout } from '@/components/ds';
 import { OrbGrid } from '@/components/home/OrbGrid';
 import { DockBar } from '@/components/home/DockBar';
 import { WidgetGrid } from '@/components/widgets/WidgetGrid';
+import { ViewPickerPanel } from '@/components/widgets/ViewPickerPanel';
 import '@/components/widgets/views/register';
 
-/* ─────────────────────────────────────────────
-   OrbGrid height 상수 (DockBar와 맞춤)
-   OrbGrid: 약 64px, DockBar: 80px
-───────────────────────────────────────────── */
 const ORB_ROW_HEIGHT = 64;
 const DOCK_HEIGHT = 80;
 
 export default function HomePage() {
-  const router = useRouter();
+  const [editMode, setEditMode] = useState(false);
+  const [pickerOpen, setPickerOpen] = useState(false);
 
-  /* Cmd+K → QSBar 포커스 (위젯 안에 있으므로 커스텀 이벤트로 전달) */
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
+    const onModeChange = (e: Event) => {
+      const active = (e as CustomEvent).detail?.active ?? false;
+      setEditMode(active);
+      if (!active) setPickerOpen(false);
+    };
+    const onAddWidget = () => setPickerOpen(p => !p);
+
+    const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
         window.dispatchEvent(new CustomEvent('qsbar-focus'));
       }
+      if ((e.metaKey || e.ctrlKey) && e.key === 'e') {
+        e.preventDefault();
+        window.dispatchEvent(new CustomEvent('widget-edit-mode-enter'));
+      }
     };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
+
+    window.addEventListener('widget-edit-mode-change', onModeChange);
+    window.addEventListener('dock-add-widget', onAddWidget);
+    window.addEventListener('keydown', onKey);
+    return () => {
+      window.removeEventListener('widget-edit-mode-change', onModeChange);
+      window.removeEventListener('dock-add-widget', onAddWidget);
+      window.removeEventListener('keydown', onKey);
+    };
   }, []);
 
   return (
@@ -39,10 +53,8 @@ export default function HomePage() {
           position: 'absolute',
           top: 0, left: 0, right: 0,
           height: ORB_ROW_HEIGHT,
-          display: 'flex',
-          alignItems: 'center',
-          paddingLeft: 24,
-          zIndex: 10,
+          display: 'flex', alignItems: 'center',
+          paddingLeft: 24, zIndex: 10,
         }}>
           <OrbGrid />
         </div>
@@ -50,23 +62,32 @@ export default function HomePage() {
         {/* ── 위젯 그리드 ── */}
         <div style={{
           position: 'absolute',
-          top: ORB_ROW_HEIGHT,
-          bottom: DOCK_HEIGHT,
-          left: 0,
-          right: 0,
+          top: ORB_ROW_HEIGHT, bottom: DOCK_HEIGHT, left: 0, right: 0,
         }}>
           <WidgetGrid />
         </div>
+
+        {/* ── 편집 모드 딤 오버레이 ── */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'rgba(0,0,0,0.28)',
+          zIndex: 5,
+          pointerEvents: 'none',
+          opacity: editMode ? 1 : 0,
+          transition: 'opacity 200ms ease',
+        }} />
+
+        {/* ── ViewPickerPanel (우측 슬라이드) ── */}
+        <ViewPickerPanel open={pickerOpen} onClose={() => setPickerOpen(false)} />
 
         {/* ── 독바 ── */}
         <div style={{
           position: 'absolute',
           bottom: 0, left: 0, right: 0,
           height: DOCK_HEIGHT,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 10,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          zIndex: 200,
         }}>
           <DockBar />
         </div>
