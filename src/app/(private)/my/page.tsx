@@ -1,3 +1,5 @@
+// LEGACY(2026-04-24): 구 홈(위젯 바탕화면) 컨셉. /home 통합 + Phase 2에서 폐기 예정.
+// DATA: localStorage="ou-widget-layout" — Phase 2에서 /home 위젯 레이아웃으로 마이그레이션 필요.
 'use client';
 
 import { useState, useCallback, useRef, useEffect } from 'react';

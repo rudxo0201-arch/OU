@@ -13,9 +13,10 @@ export const config: DomainExtractionConfig = {
   },
   requiredFields: ['date', 'title'],
   rules: `
-- 날짜 없으면 오늘(today) 기준으로 추론
+- date는 반드시 YYYY-MM-DD ISO 형식. "today", "tomorrow", "next_thursday" 같은 문자열 출력 절대 금지.
+- 날짜 없으면 오늘(위에 주입된 today) 기준으로 추론하여 ISO 날짜로 변환
 - 오전/오후 없이 1~6시면 오후로 추정
-- "다음주 월요일", "이번 금요일" → today 기준 절대 날짜로 변환
+- "다음주 월요일", "이번 금요일" → today 기준 절대 날짜(YYYY-MM-DD)로 변환
 - title은 완전한 이벤트명으로: "부인과 수업" (O), "수업" (X), "회의" (X → "팀 미팅" 등)
 - 수식어+이벤트 형태면 수식어 포함: "부인과 수업", "팀 회식", "어머니 생신"
 - location은 최대한 구체적으로: "강남역 2번 출구 카페" (O), "카페" (X)
@@ -24,19 +25,19 @@ export const config: DomainExtractionConfig = {
   examples: [
     {
       input: '내일 아침 9시 부인과 수업',
-      output: { date: 'tomorrow', time: '09:00', title: '부인과 수업' },
+      output: { date: '2026-04-25', time: '09:00', title: '부인과 수업' },
     },
     {
       input: '다음주 목요일 팀 회식 강남역 맥주집',
-      output: { date: 'next_thursday', title: '팀 회식', location: '강남역 맥주집' },
+      output: { date: '2026-04-30', title: '팀 회식', location: '강남역 맥주집' },
     },
     {
       input: '이번 일요일 6시 조선호텔 민준이 결혼식',
-      output: { date: 'this_sunday', time: '18:00', title: '결혼식', location: '조선호텔', participants: ['민준'] },
+      output: { date: '2026-04-26', time: '18:00', title: '결혼식', location: '조선호텔', participants: ['민준'] },
     },
     {
       input: '3일 후 실습',
-      output: { date: '3_days_later', title: '실습' },
+      output: { date: '2026-04-27', title: '실습' },
     },
   ],
 };

@@ -213,7 +213,7 @@ interface SaveMessageInput {
 export async function saveMessageAsync(input: SaveMessageInput) {
   const supabase = createAdminClient();
 
-  const today = new Date().toISOString().slice(0, 10);
+  const today = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Seoul' }).format(new Date());
 
   // 비로그인은 메시지/노드 저장 스킵 (DB FK 제약)
   if (!input.userId) {
