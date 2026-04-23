@@ -60,7 +60,27 @@ export function QSBar() {
           body: JSON.stringify({ text }),
         });
         if (!res.ok) throw new Error('Quick 입력 실패');
-        show('기록됨', 'success');
+
+        const data = await res.json();
+        const { nodeId, domain, title } = data as { nodeId?: string; domain?: string; title?: string };
+
+        const DOMAIN_LABEL: Record<string, string> = {
+          schedule: '일정', task: '할 일', finance: '지출',
+          habit: '습관', note: '노트', idea: '아이디어',
+          knowledge: '지식', media: '미디어',
+        };
+        const label = domain ? (DOMAIN_LABEL[domain] ?? domain) : '기록';
+        const summary = title ? `${label}에 기록 — ${title}` : `${label}에 기록됨`;
+
+        show(summary, 'success', {
+          duration: 4000,
+          action: nodeId ? {
+            label: '취소',
+            onClick: () => {
+              fetch(`/api/quick?nodeId=${nodeId}`, { method: 'DELETE' }).catch(() => {});
+            },
+          } : undefined,
+        });
       } else {
         show('검색 기능은 준비 중입니다.', 'info');
       }

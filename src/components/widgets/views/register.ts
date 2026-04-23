@@ -14,6 +14,9 @@ import { ApiTokenWidget } from './ApiTokenWidget';
 import { TaskWidget } from './TaskWidget';
 import { HabitWidget } from './HabitWidget';
 import { IdeaWidget } from './IdeaWidget';
+import { FinanceWidget } from './FinanceWidget';
+import { NoteWidget } from './NoteWidget';
+import { QSBarWidget } from './QSBarWidget';
 
 registerWidget({
   type: 'ou-view',
@@ -242,6 +245,39 @@ registerWidget({
   scrollable: 'vertical',
   minSize: [3, 2],
   defaultSize: [5, 3],
+  removable: true,
+  needsCard: false,
+});
+
+registerWidget({
+  type: 'qsbar',
+  label: 'Quick / Search',
+  component: QSBarWidget,
+  scrollable: 'none',
+  minSize: [6, 2],
+  defaultSize: [8, 2],
+  removable: false,
+  needsCard: false,
+});
+
+registerWidget({
+  type: 'today-finance',
+  label: '지출',
+  component: FinanceWidget,
+  scrollable: 'vertical',
+  minSize: [3, 2],
+  defaultSize: [5, 4],
+  removable: true,
+  needsCard: false,
+});
+
+registerWidget({
+  type: 'recent-notes',
+  label: '노트',
+  component: NoteWidget,
+  scrollable: 'vertical',
+  minSize: [3, 2],
+  defaultSize: [7, 3],
   removable: true,
   needsCard: false,
 });

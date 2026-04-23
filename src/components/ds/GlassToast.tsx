@@ -4,14 +4,21 @@ import { CSSProperties, createContext, useCallback, useContext, useEffect, useRe
 
 type ToastType = 'info' | 'success' | 'warning' | 'error';
 
+interface ToastAction {
+  label: string;
+  onClick: () => void;
+}
+
 interface Toast {
   id: string;
   message: string;
   type: ToastType;
+  duration?: number;
+  action?: ToastAction;
 }
 
 interface ToastContextValue {
-  show: (message: string, type?: ToastType) => void;
+  show: (message: string, type?: ToastType, options?: { duration?: number; action?: ToastAction }) => void;
 }
 
 const ToastContext = createContext<ToastContextValue>({ show: () => {} });
@@ -29,9 +36,9 @@ const TYPE_COLOR: Record<ToastType, string> = {
 
 function ToastItem({ toast, onRemove }: { toast: Toast; onRemove: (id: string) => void }) {
   useEffect(() => {
-    const t = setTimeout(() => onRemove(toast.id), 3200);
+    const t = setTimeout(() => onRemove(toast.id), toast.duration ?? 3200);
     return () => clearTimeout(t);
-  }, [toast.id, onRemove]);
+  }, [toast.id, toast.duration, onRemove]);
 
   const style: CSSProperties = {
     display: 'flex',
@@ -56,6 +63,24 @@ function ToastItem({ toast, onRemove }: { toast: Toast; onRemove: (id: string) =
   return (
     <div style={style}>
       <span style={{ flex: 1, lineHeight: 1.4 }}>{toast.message}</span>
+      {toast.action && (
+        <button
+          onClick={() => { toast.action!.onClick(); onRemove(toast.id); }}
+          style={{
+            background: 'rgba(0,0,0,0.08)',
+            border: '1px solid rgba(0,0,0,0.10)',
+            borderRadius: 6,
+            color: 'var(--ou-text-body)',
+            cursor: 'pointer',
+            fontSize: 11,
+            fontWeight: 600,
+            padding: '3px 8px',
+            flexShrink: 0,
+          }}
+        >
+          {toast.action.label}
+        </button>
+      )}
       <button
         onClick={() => onRemove(toast.id)}
         style={{
@@ -77,9 +102,9 @@ function ToastItem({ toast, onRemove }: { toast: Toast; onRemove: (id: string) =
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const show = useCallback((message: string, type: ToastType = 'info') => {
+  const show = useCallback((message: string, type: ToastType = 'info', options?: { duration?: number; action?: ToastAction }) => {
     const id = Math.random().toString(36).slice(2);
-    setToasts((prev) => [...prev, { id, message, type }]);
+    setToasts((prev) => [...prev, { id, message, type, ...options }]);
   }, []);
 
   const remove = useCallback((id: string) => {
