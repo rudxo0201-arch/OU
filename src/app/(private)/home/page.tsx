@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { createClient } from '@/lib/supabase/client';
 import { PageLayout } from '@/components/ds';
 import { QSBar } from '@/components/home/QSBar';
 import { OrbGrid } from '@/components/home/OrbGrid';
@@ -290,19 +291,34 @@ function GenericNodeList({ nodes, loading, domain }: { nodes: any[]; loading: bo
   );
 }
 
-/* ── 공통: 노드 fetch 훅 ── */
+/* ── 공통: 노드 fetch 훅 (Realtime 구독 포함) ── */
 function useNodes(domain: DomainKey, limit: number) {
   const [nodes, setNodes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const fetchNodes = useCallback(() => {
     setLoading(true);
-    fetch(`/api/nodes?domain=${domain}&limit=${limit}`)
+    return fetch(`/api/nodes?domain=${domain}&limit=${limit}`)
       .then(r => r.ok ? r.json() : { nodes: [] })
       .then(j => setNodes(Array.isArray(j.nodes) ? j.nodes : []))
       .catch(() => setNodes([]))
       .finally(() => setLoading(false));
   }, [domain, limit]);
+
+  useEffect(() => { fetchNodes(); }, [fetchNodes]);
+
+  useEffect(() => {
+    const supabase = createClient();
+    const channel = supabase
+      .channel(`home-widget-${domain}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'data_nodes', filter: `domain=eq.${domain}` },
+        () => { fetchNodes(); }
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [domain, fetchNodes]);
 
   return { nodes, loading };
 }

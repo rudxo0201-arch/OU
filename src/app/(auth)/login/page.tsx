@@ -23,11 +23,17 @@ function LoginForm() {
     setError('');
     setLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
-        options: { redirectTo: `${window.location.origin}/auth/callback` },
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+          skipBrowserRedirect: true,
+        },
       });
       if (error) throw error;
+      if (data?.url) {
+        window.location.href = data.url;
+      }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : '오류가 발생했습니다.');
       setLoading(false);

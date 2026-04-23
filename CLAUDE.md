@@ -14,18 +14,27 @@ OU는 특정 도메인(한의학 등)에 종속된 서비스가 아니다.
 한의학/본초/경혈은 관리자가 구축한 첫 번째 도메인 예시일 뿐.
 코드, UI, 아키텍처 어디에도 특정 도메인이 하드코딩되면 안 된다.
 도메인은 data_nodes.domain 필드로 확장하는 구조.
-
-예시로 한의학을 들더라도:
-  → "어떤 도메인이든" 작동하는 구조인지 항상 확인
-  → 새 뷰/기능은 반드시 도메인 중립으로 설계
 ```
 
 ---
 
 ## 한 줄 정의
 
-**LLM 대화를 데이터화하고, 어떤 형태의 뷰로든 꺼내 쓰는 개인 데이터 우주 플랫폼.**
+**개인 데이터 우주 OS. 말하면 저장되고, 찾으면 뷰가 된다.**
 메인 카피: **Just talk.**
+
+---
+
+## OU의 구조
+
+```
+OU OS = 공통 백엔드 (DB + 파이프라인 + 인증)
+Orb   = 모듈 조합으로 만든 SaaS 앱 (OU 백엔드 공유)
+모듈  = 원자적 프론트엔드 컴포넌트 (Input / Display / Logic)
+```
+
+> LLM 입력창은 Orb가 아니다. Input 모듈 중 하나일 뿐이다.
+> Orb = 여러 모듈이 조합된 완전한 앱 (여러 페이지 가능).
 
 ---
 
@@ -35,18 +44,12 @@ OU는 특정 도메인(한의학 등)에 종속된 서비스가 아니다.
 |------|------|------------|
 | `CLAUDE.md` | 이 파일. 전역 원칙 | 항상 |
 | `PLANNING.md` | 인덱스 + 불변 원칙 | 항상 |
-| `VISION.md` | 서비스 비전, 킬러 데모, 청사진 | UX/방향 판단 시 |
-| `DATA.md` | 데이터 파이프라인, 트리플 아키텍처 | 데이터 레이어 작업 시 |
+| `docs/PROTOTYPE.md` | 프로토타입 아키텍처 + 채널 설계 | 파이프라인/채널 작업 시 |
+| `VISION.md` | 서비스 비전, 킬러 데모 | UX/방향 판단 시 |
+| `DATA.md` | 데이터 파이프라인 | 데이터 레이어 작업 시 |
 | `DATA_STANDARD.md` | 데이터 저장 표준 (불변) | 스키마 작업 시 |
 | `DB_SCHEMA.sql` | 전체 DB 스키마 | DB 작업 시 |
-| `PLATFORM.md` | 플랫폼 레이어 (그룹/구독/SNS/채팅) | 플랫폼 기능 작업 시 |
-| `VIEWS.md` | 데이터뷰, 추천, 커스텀, AI 뷰 생성 | 뷰/렌더링 작업 시 |
-| `BUSINESS.md` | 수익화, 교육 시장 | 비즈니스 로직 작업 시 |
-| `TECH.md` | 기술 스택, 보안, 비용 | 인프라 작업 시 |
-| `ROADMAP.md` | Phase, 위험, 에이전트, KPI | 전체 구조 파악 시 |
 | `FRONTEND_DESIGN.md` | 프론트엔드 설계 | UI 구현 시 |
-| `IDEAS.md` | 아이디어 로그 (누락 방지) | 기획 참고 시 |
-| `SCENARIOS.md` | 페르소나별 UX 시나리오 | 마케팅/UX 기획 시 |
 
 ---
 
@@ -54,29 +57,49 @@ OU는 특정 도메인(한의학 등)에 종속된 서비스가 아니다.
 
 | 용어 | 정의 | 금지 표현 |
 |------|------|-----------|
+| **OU OS** | 공통 백엔드 위의 개인 데이터 운영체제 | — |
+| **Orb** | 모듈 조합 SaaS 앱. OU 백엔드 공유 | 앱, 채팅창 |
+| **모듈** | 원자적 프론트엔드 컴포넌트 | — |
 | **DataNode** | 의미 단위로 구조화된 데이터. 그래프의 노드 하나 | 항목, 카드 |
 | **데이터뷰 (DataView)** | DataNode를 원하는 형식으로 렌더링한 뷰 | 사전, 목록, 페이지 |
 | **그래프뷰** | 노드=별, 엣지=중력으로 시각화한 데이터뷰 | — |
 | **회원** | 로그인한 사용자. 개인 DB 보유 | 유저 |
 | **관리자** | OU 팀. 생태계 첫 번째 생산자. 회원 중 1번 | — |
 | **트리플** | subject-predicate-object. 온톨로지 기본 단위 | — |
-| **.ou** | OU 고유 파일 포맷 (DataNode + 뷰 설정) | — |
 
 ---
 
-## 전역 불변 제약 (Invariants)
+## 채널 구조 (입력/조회/심화)
 
-### 데이터 아키텍처
 ```
-messages → data_nodes → sections → sentences
-                ↓
-            triples ←── triple_sentence_sources ──→ sentences
-            (node에 속함)   (출처 연결, 선택적, N:M)
+Quick 입력창  → Write Only.  LLM이 JSONB 추출. 사용자는 카테고리 의식 안 함.
+Search 창     → Read Only.   내부 DB만 쿼리. 도메인 템플릿 뷰 즉시 렌더링.
+Deeptalk      → Reason.      Search 맥락 주입 + 외부 확장. 긴 대화/연구/기획.
+```
 
-triples는 sentences의 자식이 아니다.
-한 문장에서 트리플 여러 개 가능 (1:N).
-여러 문장 → 트리플 하나 추론 가능 (N:M).
+채널별 프롬프트는 반드시 분리한다 (PromptRegistry).
+Search에 질문이 들어와도 내부 DB만 본다. 외부 검색은 Deeptalk.
+
+---
+
+## 데이터 파이프라인 원칙
+
 ```
+Layer 1: 즉시 raw 저장 (실패 없음)
+Layer 2: LLM 도메인 분류 + JSONB 추출 (sync, 빠름)
+Layer 3: 트리플 추출 + 임베딩 (async, MVP 후순위)
+```
+
+**Layer 2 금지 사항:**
+- 뷰 힌트(view_hint) 추출 금지 → 뷰는 프론트엔드 레지스트리가 결정
+- 트리플 추출 금지 → Layer 3 몫
+- 정규식/키워드 분류 금지 → LLM 의미 분류만
+
+**트리플은 MVP에서 급하지 않다.** JSONB만 정확히 들어가면 모든 뷰를 구현할 수 있다.
+
+---
+
+## 전역 불변 제약
 
 ### 표준 서술어 (절대 추가/변경 금지)
 ```
@@ -90,6 +113,7 @@ opposite_of / requires / example_of / involves / located_at / occurs_at
 - **원본 보존 최우선**: 파싱 실패해도 원본은 R2에 반드시 저장
 - **참조 공유**: 관리자 DataNode는 복사 저장 금지 → user_node_refs로만
 - **필터 원칙**: 빈 결과가 나오는 필터는 표시하지 않는다
+- **감정 스텔스**: emotion 도메인은 조용히 기록. 사용자 명시 요청 전까지 노출 금지
 
 ### UI / 디자인
 - **색상**: 흰~흑 계열만. 유채색 배경·테두리 금지
@@ -98,24 +122,19 @@ opposite_of / requires / example_of / involves / located_at / occurs_at
 
 ### 데스크톱 퍼스트 (Desktop-First)
 ```
-OU는 데스크톱 웹앱이다.
-모든 뷰는 데스크톱에서 바로 출시해도 될 수준의 UI/UX/디자인을 갖춰야 한다.
-
 금지:
-  → maxWidth: N px 으로 좁히는 모바일 패턴 (단, NoteView/OrbChat 720px 예외)
+  → maxWidth: N px 으로 좁히는 모바일 패턴
   → 단일 컬럼 전용 레이아웃
   → CSS 미디어 쿼리 없는 반응형 부재
 
 최소 요건:
-  1. 정보 밀도: 대시보드/그리드/멀티컬럼으로 한 화면에 충분한 정보 제공
-  2. 반응형: @media breakpoint 768px / 1024px / 1440px 3단계 대응
+  1. 정보 밀도: 대시보드/그리드/멀티컬럼
+  2. 반응형: @media breakpoint 768px / 1024px / 1440px
   3. 인터랙션: hover 상태, 넓은 클릭 영역, 키보드 접근성
-  4. 시각적 완성도: 레퍼런스 수준의 카드/차트/테이블 디자인
 
 반응형 패턴:
   → CSS Modules (.module.css)에 미디어 쿼리 작성
   → 인라인 스타일은 정적 값만, 반응형은 CSS 클래스로
-  → 최소 breakpoint: 768px(태블릿) / 1024px(데스크톱) / 1440px(와이드)
 ```
 
 ### 아키텍처
@@ -155,6 +174,7 @@ ou-web/
 ├── CLAUDE.md              # 이 파일
 ├── PLANNING.md            # 문서 인덱스
 ├── docs/                  # 기획 문서
+│   ├── PROTOTYPE.md       # 프로토타입 아키텍처 (최신)
 │   ├── VISION.md
 │   ├── DATA.md
 │   ├── DATA_STANDARD.md
@@ -167,21 +187,19 @@ ou-web/
 │   └── FRONTEND_DESIGN.md
 ├── supabase/
 │   └── DB_SCHEMA.sql
-├── ou-study/              # YouTube→DataNode 수집 툴 (독립)
 └── src/
     ├── app/               # 라우트
     │   ├── (auth)/        # login, terms-agree
-    │   ├── (public)/      # / (랜딩), /universe (비로그인 홈)
-    │   └── (private)/     # /my, /chat, /accuracy, /feed,
+    │   ├── (public)/      # / (랜딩)
+    │   └── (private)/     # /home, /orb, /accuracy, /feed,
     │                      # /messages, /admin, /settings
     ├── components/
     │   ├── graph/         # PixiJS 그래프뷰
-    │   ├── chat/          # OU-Chat UI
-    │   ├── views/         # 데이터뷰 컴포넌트 (registry.ts 기반, 등록만으로 확장)
+    │   ├── views/         # 데이터뷰 컴포넌트 (registry.ts 기반)
     │   └── ui/            # 공통 UI
     ├── lib/
     │   ├── pipeline/      # DataNode 생성 파이프라인 (Layer 1/2/3)
-    │   ├── llm/           # LLM Provider 추상화
+    │   ├── llm/           # LLM Provider 추상화 + PromptRegistry
     │   ├── workers/       # Web Workers (graph-physics)
     │   └── utils/
     ├── stores/            # Zustand 스토어
@@ -195,9 +213,8 @@ ou-web/
 | 라우트 | 공식 이름 |
 |--------|-----------|
 | `/` | 랜딩페이지 |
-| `/home` | 홈 (비로그인) |
-| `/home` | 홈 (로그인) |
-| `/orb` | orb - llm orb의 전체창 |
+| `/home` | 홈 (로그인/비로그인 통합) |
+| `/orb` | Orb 전체창 |
 | `/accuracy` | 정확도 높이기 |
 | `/feed` | SNS 채널 |
 | `/messages` | OU 채팅 |
@@ -224,7 +241,6 @@ ou-web/
 - 1개 파일 동시에 수정 금지
 - 에러 원인 모르면 추측 수정 금지 → 로그/콘솔 에러 메시지 확인 우선
 - 사용자에게 rm -rf .next && pnpm dev 반복 요청 금지
-  → 빌드가 깨지지 않도록 사전에 검증
 ```
 
 ---
