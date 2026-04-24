@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { createClient } from '@/lib/supabase/client';
 import { useWidgetSize } from './useWidgetSize';
 
 interface ScheduleNode {
@@ -22,20 +23,37 @@ export function TodayScheduleWidget() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  useEffect(() => {
-    const today = new Date().toISOString().slice(0, 10);
+  const fetchEvents = useCallback(() => {
+    const today = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Seoul' }).format(new Date());
     fetch('/api/nodes?domain=schedule&limit=50')
       .then(r => r.json())
       .then(d => {
         const nodes: ScheduleNode[] = d.nodes || [];
         const todayEvents = nodes
-          .filter(n => n.domain_data?.date === today)
+          .filter(n => {
+            const date = n.domain_data?.date;
+            if (!date) return false;
+            const s = String(date).trim().toLowerCase();
+            if (s === 'today' || s === '오늘') return true;
+            return s === today;
+          })
           .sort((a, b) => (a.domain_data.time || '').localeCompare(b.domain_data.time || ''));
         setEvents(todayEvents);
         setLoading(false);
       })
       .catch(() => setLoading(false));
   }, []);
+
+  useEffect(() => { fetchEvents(); }, [fetchEvents]);
+
+  useEffect(() => {
+    const supabase = createClient();
+    const ch = supabase
+      .channel('widget-schedule')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'data_nodes', filter: 'domain=eq.schedule' }, fetchEvents)
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [fetchEvents]);
 
   return (
     <div ref={rootRef} style={{

@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { createClient } from '@/lib/supabase/client';
 import { cleanDisplayText } from '@/lib/utils/cleanDisplayText';
 import { useWidgetSize } from './useWidgetSize';
 
@@ -24,7 +25,7 @@ export function TaskWidget() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  useEffect(() => {
+  const fetchTasks = useCallback(() => {
     fetch('/api/nodes?domain=task&limit=20')
       .then(r => r.json())
       .then(d => {
@@ -38,6 +39,17 @@ export function TaskWidget() {
       })
       .catch(() => setLoading(false));
   }, []);
+
+  useEffect(() => { fetchTasks(); }, [fetchTasks]);
+
+  useEffect(() => {
+    const supabase = createClient();
+    const ch = supabase
+      .channel('widget-task')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'data_nodes', filter: 'domain=eq.task' }, fetchTasks)
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [fetchTasks]);
 
   return (
     <div ref={rootRef} style={{

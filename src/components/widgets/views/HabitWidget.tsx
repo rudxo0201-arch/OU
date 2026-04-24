@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { createClient } from '@/lib/supabase/client';
 
 interface HabitNode {
   id: string;
@@ -21,12 +22,11 @@ export function HabitWidget() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  useEffect(() => {
+  const fetchHabits = useCallback(() => {
     fetch('/api/nodes?domain=habit&limit=30')
       .then(r => r.json())
       .then(d => {
         const nodes: HabitNode[] = d.nodes || [];
-        // title 있는 것만, 이름 기준으로 중복 제거 (가장 최근 것만)
         const seen = new Set<string>();
         const unique: HabitNode[] = [];
         for (const n of nodes) {
@@ -40,6 +40,17 @@ export function HabitWidget() {
       })
       .catch(() => setLoading(false));
   }, []);
+
+  useEffect(() => { fetchHabits(); }, [fetchHabits]);
+
+  useEffect(() => {
+    const supabase = createClient();
+    const ch = supabase
+      .channel('widget-habit')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'data_nodes', filter: 'domain=eq.habit' }, fetchHabits)
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [fetchHabits]);
 
   return (
     <div style={{

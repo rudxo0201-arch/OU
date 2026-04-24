@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { createClient } from '@/lib/supabase/client';
 
 interface IdeaNode {
   id: string;
@@ -18,7 +19,7 @@ export function IdeaWidget() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  useEffect(() => {
+  const fetchIdeas = useCallback(() => {
     fetch('/api/nodes?domain=idea&limit=10')
       .then(r => r.json())
       .then(d => {
@@ -28,6 +29,17 @@ export function IdeaWidget() {
       })
       .catch(() => setLoading(false));
   }, []);
+
+  useEffect(() => { fetchIdeas(); }, [fetchIdeas]);
+
+  useEffect(() => {
+    const supabase = createClient();
+    const ch = supabase
+      .channel('widget-idea')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'data_nodes', filter: 'domain=eq.idea' }, fetchIdeas)
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [fetchIdeas]);
 
   return (
     <div style={{
