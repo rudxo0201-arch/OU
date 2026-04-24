@@ -21,14 +21,14 @@ export const GRID_PRESETS = [
 ] as const;
 
 const DEFAULT_LAYOUT: WidgetInstance[] = [
-  { id: 'default-qsbar',    type: 'qsbar',         x: 4,  y: 0, w: 8, h: 2 },
-  { id: 'default-schedule', type: 'today-schedule', x: 2,  y: 2, w: 12, h: 7 },
+  { id: 'default-qsbar',    type: 'qsbar',         x: 4,  y: 3, w: 8, h: 2 },
+  { id: 'default-schedule', type: 'today-schedule', x: 11, y: 0, w: 5, h: 6 },
 ];
 const DEFAULT_PAGE2_LAYOUT: WidgetInstance[] = [];
 const ADMIN_LAYOUT: WidgetInstance[] = [];
 const ADMIN_PAGE2_LAYOUT: WidgetInstance[] = [];
 
-const LAYOUT_VERSION = 10;
+const LAYOUT_VERSION = 11;
 
 export interface WidgetPage {
   id: string;

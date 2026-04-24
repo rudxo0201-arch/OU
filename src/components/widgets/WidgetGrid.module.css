@@ -8,22 +8,17 @@
   position: relative;
 }
 
-/* ===== Normal mode — neumorphism raised cards ===== */
+/* ===== Normal mode — transparent, no border ===== */
 .cardNormal {
   position: relative;
   display: flex;
   flex-direction: column;
   height: 100%;
   border-radius: var(--ou-radius-md);
-  background: var(--ou-bg);
-  box-shadow: var(--ou-neu-raised-md);
+  background: transparent;
+  box-shadow: none;
   overflow: hidden;
   cursor: default;
-  transition: box-shadow var(--ou-transition);
-}
-
-.cardNormal:hover {
-  box-shadow: var(--ou-neu-raised-lg);
 }
 
 /* ===== Edit mode — dashed border ===== */
