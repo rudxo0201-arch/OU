@@ -33,7 +33,7 @@ export default function OrbPage() {
   return (
     <OrbShell slug={orb.slug} title={orb.title} icon={orb.icon}>
       {orb.viewType
-        ? <OrbView domain={orb.domain} viewType={orb.viewType} orbSlug={orb.slug} />
+        ? <OrbView domain={orb.domain} viewType={orb.viewType} orbSlug={orb.slug} placeholder={orb.placeholder} />
         : <OrbChat placeholder={orb.placeholder} />
       }
     </OrbShell>

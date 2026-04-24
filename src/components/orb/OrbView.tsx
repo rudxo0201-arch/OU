@@ -3,11 +3,13 @@
 import { useEffect, useState, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { ViewRenderer } from '@/components/views/ViewRenderer';
+import { OrbInputBar } from './OrbInputBar';
 
 interface OrbViewProps {
   domain?: string;
   viewType: string;
   orbSlug: string;
+  placeholder?: string;
 }
 
 /**
@@ -15,7 +17,7 @@ interface OrbViewProps {
  * /api/nodes에서 해당 도메인 데이터를 가져와 ViewRenderer로 렌더링.
  * Supabase Realtime으로 data_nodes 변경 시 자동 갱신.
  */
-export function OrbView({ domain, viewType, orbSlug }: OrbViewProps) {
+export function OrbView({ domain, viewType, orbSlug, placeholder }: OrbViewProps) {
   const [nodes, setNodes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -83,12 +85,21 @@ export function OrbView({ domain, viewType, orbSlug }: OrbViewProps) {
   }
 
   return (
-    <div style={{
-      height: '100dvh',
-      overflow: 'auto',
-    }}>
-      {/* allowEmpty=true: 뷰가 직접 빈 상태/스켈레톤을 렌더링 */}
-      <ViewRenderer viewType={viewType} nodes={nodes} allowEmpty />
-    </div>
+    <>
+      <div style={{
+        height: '100dvh',
+        overflow: 'auto',
+        paddingBottom: domain ? 96 : 0,
+      }}>
+        {/* allowEmpty=true: 뷰가 직접 빈 상태/스켈레톤을 렌더링 */}
+        <ViewRenderer viewType={viewType} nodes={nodes} allowEmpty />
+      </div>
+      {domain && (
+        <OrbInputBar
+          domain={domain}
+          placeholder={placeholder}
+        />
+      )}
+    </>
   );
 }
