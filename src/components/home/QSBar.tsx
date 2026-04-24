@@ -2,6 +2,9 @@
 
 import { CSSProperties, FormEvent, useState } from 'react';
 import { useToast } from '@/components/ds';
+import { useQuickImageUpload } from '@/hooks/useQuickImageUpload';
+import { ImagePreviewModal } from '@/components/quick/ImagePreviewModal';
+import type { ImagePreviewData } from '@/hooks/useQuickImageUpload';
 
 type QSTab = 'Q' | 'S';
 
@@ -43,7 +46,14 @@ export function QSBar() {
   const [value, setValue] = useState('');
   const [focused, setFocused] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [preview, setPreview] = useState<ImagePreviewData | null>(null);
   const { show } = useToast();
+
+  const { inputRef, triggerUpload, handleInputChange, bindDropZone, bindPaste, isUploading, isDragOver } =
+    useQuickImageUpload({
+      onPreviewReady: (data) => setPreview(data),
+      onError: (msg) => show(msg, 'error'),
+    });
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -112,8 +122,48 @@ export function QSBar() {
   };
 
   return (
+    <>
+      {/* 숨겨진 파일 input */}
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/*"
+        style={{ display: 'none' }}
+        onChange={handleInputChange}
+      />
+
+      {/* 이미지 프리뷰 모달 */}
+      {preview && (
+        <ImagePreviewModal
+          ocrText={preview.ocrText}
+          onClose={() => setPreview(null)}
+          onSaved={(nodeId, domain) => {
+            setPreview(null);
+            const DOMAIN_LABEL: Record<string, string> = {
+              schedule: '일정', task: '할 일', finance: '지출',
+              habit: '습관', knowledge: '지식', media: '미디어',
+            };
+            const label = domain ? (DOMAIN_LABEL[domain] ?? domain) : '기록';
+            show(`${label}에 기록됨`, 'success', {
+              duration: 4000,
+              action: nodeId ? {
+                label: '취소',
+                onClick: () => fetch(`/api/quick?nodeId=${nodeId}`, { method: 'DELETE' }).catch(() => {}),
+              } : undefined,
+            });
+            if (domain) window.dispatchEvent(new CustomEvent('ou-node-created', { detail: { domain } }));
+          }}
+        />
+      )}
+
     <form onSubmit={handleSubmit} style={{ width: '100%', maxWidth: 680 }}>
-      <div style={containerStyle}>
+      <div
+        style={{
+          ...containerStyle,
+          outline: isDragOver ? '2px dashed rgba(0,0,0,0.3)' : containerStyle.outline,
+        }}
+        {...(tab === 'Q' ? { ...bindDropZone, ...bindPaste } : {})}
+      >
         {/* 탭 그룹 */}
         <div style={{
           display: 'flex',
@@ -149,8 +199,36 @@ export function QSBar() {
           }}
         />
 
+        {/* 이미지 첨부 버튼 (Quick 탭에서만) */}
+        {tab === 'Q' && !loading && !isUploading && (
+          <button
+            type="button"
+            onClick={triggerUpload}
+            title="이미지 업로드"
+            style={{
+              width: 28,
+              height: 28,
+              borderRadius: 8,
+              background: 'transparent',
+              border: '1px solid rgba(0,0,0,0.10)',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+              color: 'rgba(0,0,0,0.35)',
+              fontSize: 14,
+              transition: 'background 120ms ease',
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(0,0,0,0.05)')}
+            onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+          >
+            ⌃
+          </button>
+        )}
+
         {/* 전송 / 로딩 */}
-        {loading ? (
+        {(loading || isUploading) ? (
           <span className="ou-spinner" style={{ width: 18, height: 18, flexShrink: 0, marginRight: 6 }} />
         ) : value.trim() ? (
           <button
@@ -202,5 +280,6 @@ export function QSBar() {
         )}
       </div>
     </form>
+    </>
   );
 }
