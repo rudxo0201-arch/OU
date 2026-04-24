@@ -54,6 +54,7 @@ export async function classifyDomain(text: string) {
 
 규칙:
 - 해당하는 도메인을 모두 선택 (복수 가능)
+- 시간 표현(N시, 오전/오후, 내일, 다음주 등)이 명시적으로 있으면 반드시 schedule을 배열 첫 번째로
 - 감정이 포함되어 있으면 반드시 emotion도 포함
 - 사람이 언급되면 반드시 relation도 포함
 - 최소 1개 이상 선택

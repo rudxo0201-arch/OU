@@ -2,22 +2,23 @@
 
 import { CSSProperties, ReactNode, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { ArrowLeft, X } from '@phosphor-icons/react';
 import { AmbientBackground } from '@/components/ds';
 
 interface OrbShellProps {
   slug: string;
   title: string;
   icon: string;
+  subtitle?: string;
   children: ReactNode;
 }
 
-/**
- * Orb 전체화면 셸.
- * 글래스 네비바(Orb 이름 + 닫기) + 콘텐츠 영역.
- */
-export function OrbShell({ slug, title, icon, children }: OrbShellProps) {
+export function OrbShell({ slug, title, icon, subtitle, children }: OrbShellProps) {
   const router = useRouter();
   const [closeHovered, setCloseHovered] = useState(false);
+  const [backHovered, setBackHovered] = useState(false);
+
+  const headerHeight = subtitle ? 64 : 52;
 
   return (
     <div style={{
@@ -27,25 +28,24 @@ export function OrbShell({ slug, title, icon, children }: OrbShellProps) {
     }}>
       <AmbientBackground />
 
-      {/* Orb 헤더 */}
       <header style={{
         position: 'fixed',
         top: 0,
         left: 0,
         right: 0,
         zIndex: 200,
-        height: 52,
+        height: headerHeight,
         display: 'flex',
-        alignItems: 'center',
-        padding: '0 20px',
-        background: 'rgba(228,228,234,0.92)',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
-        borderBottom: '1px solid var(--ou-glass-border)',
+        alignItems: subtitle ? 'flex-start' : 'center',
+        padding: subtitle ? '12px 20px 0' : '0 20px',
+        background: 'var(--ou-glass)',
+        borderBottom: '1px solid var(--ou-hairline-strong)',
       }}>
         {/* 뒤로가기 */}
         <button
           onClick={() => router.push('/home')}
+          onMouseEnter={() => setBackHovered(true)}
+          onMouseLeave={() => setBackHovered(false)}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -55,28 +55,42 @@ export function OrbShell({ slug, title, icon, children }: OrbShellProps) {
             borderRadius: 'var(--ou-radius-sm)',
             background: 'none',
             border: 'none',
-            color: 'var(--ou-text-secondary)',
-            fontSize: 18,
+            color: backHovered ? 'var(--ou-text-heading)' : 'var(--ou-text-muted)',
             cursor: 'pointer',
             transition: 'color var(--ou-transition-fast)',
-            marginRight: 12,
+            marginRight: 10,
+            flexShrink: 0,
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--ou-text-heading)')}
-          onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--ou-text-secondary)')}
         >
-          ←
+          <ArrowLeft size={16} weight="regular" />
         </button>
 
-        {/* Orb 이름 */}
-        <span style={{ fontSize: 18, marginRight: 8 }}>{icon}</span>
-        <span style={{
-          fontSize: 'var(--ou-text-sm)',
-          fontWeight: 600,
-          color: 'var(--ou-text-heading)',
-          letterSpacing: '-0.01em',
-        }}>
-          {title}
-        </span>
+        {/* 타이틀 블록 */}
+        <div style={{ flex: 1, overflow: 'hidden' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontSize: 16, lineHeight: 1 }}>{icon}</span>
+            <span style={{
+              fontSize: 'var(--ou-text-sm)',
+              fontWeight: 600,
+              color: 'var(--ou-text-heading)',
+              letterSpacing: '-0.01em',
+            }}>
+              {title}
+            </span>
+          </div>
+          {subtitle && (
+            <div style={{
+              fontSize: 'var(--ou-text-micro)',
+              fontFamily: 'var(--ou-font-mono)',
+              color: 'var(--ou-text-muted)',
+              letterSpacing: '0.04em',
+              marginTop: 3,
+              marginLeft: 24,
+            }}>
+              {subtitle}
+            </div>
+          )}
+        </div>
 
         {/* 닫기 */}
         <button
@@ -84,30 +98,28 @@ export function OrbShell({ slug, title, icon, children }: OrbShellProps) {
           onMouseEnter={() => setCloseHovered(true)}
           onMouseLeave={() => setCloseHovered(false)}
           style={{
-            marginLeft: 'auto',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             width: 32,
             height: 32,
             borderRadius: 'var(--ou-radius-sm)',
-            background: closeHovered ? 'var(--ou-glass-hover)' : 'transparent',
+            background: 'none',
             border: 'none',
-            color: closeHovered ? 'var(--ou-text-heading)' : 'var(--ou-text-secondary)',
-            fontSize: 16,
+            color: closeHovered ? 'var(--ou-text-heading)' : 'var(--ou-text-muted)',
             cursor: 'pointer',
-            transition: 'all var(--ou-transition-fast)',
+            transition: 'color var(--ou-transition-fast)',
+            flexShrink: 0,
           }}
         >
-          ✕
+          <X size={15} weight="regular" />
         </button>
       </header>
 
-      {/* 콘텐츠 */}
       <main style={{
         position: 'relative',
         zIndex: 1,
-        paddingTop: 52,
+        paddingTop: headerHeight,
         minHeight: '100vh',
       }}>
         {children}

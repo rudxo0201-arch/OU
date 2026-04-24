@@ -22,49 +22,22 @@ const DOMAIN_LABEL: Record<string, string> = {
 export function OrbInputBar({ domain, placeholder }: OrbInputBarProps) {
   const [value, setValue] = useState('');
   const [focused, setFocused] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const { show } = useToast();
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (!value.trim() || loading) return;
     const text = value.trim();
-    setLoading(true);
     setValue('');
+    show(`${DOMAIN_LABEL[domain] ?? '기록'}에 기록됨`, 'success', { duration: 3000 });
+    window.dispatchEvent(new CustomEvent('ou-node-created', { detail: { domain } }));
 
-    try {
-      const res = await fetch('/api/quick', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          text,
-          domainHint: domain,
-        }),
-      });
-      if (!res.ok) throw new Error('기록 실패');
-
-      const data = await res.json();
-      const { nodeId, title } = data as { nodeId?: string; title?: string };
-
-      const label = DOMAIN_LABEL[domain] ?? '기록';
-      const summary = title ? `${label}에 기록 — ${title}` : `${label}에 기록됨`;
-
-      window.dispatchEvent(new CustomEvent('ou-node-created', { detail: { domain } }));
-
-      show(summary, 'success', {
-        duration: 4000,
-        action: nodeId ? {
-          label: '취소',
-          onClick: () => {
-            fetch(`/api/quick?nodeId=${nodeId}`, { method: 'DELETE' }).catch(() => {});
-          },
-        } : undefined,
-      });
-    } catch {
-      show('오류가 발생했습니다.', 'error');
-    } finally {
-      setLoading(false);
-    }
+    fetch('/api/quick', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, domainHint: domain }),
+    }).catch(() => show('저장 실패', 'error'));
   }
 
   const containerStyle: CSSProperties = {

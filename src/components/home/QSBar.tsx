@@ -18,7 +18,7 @@ const PLACEHOLDERS: Record<QSTab, string> = {
 export function QSBar() {
   const [tab, setTab] = useState<QSTab>('Q');
   const [value, setValue] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const [preview, setPreview] = useState<ImagePreviewData | null>(null);
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [searchLoading, setSearchLoading] = useState(false);
@@ -79,29 +79,20 @@ export function QSBar() {
       return;
     }
 
-    if (loading) return;
-    setLoading(true); setValue('');
-    try {
-      const res = await fetch('/api/quick', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text }),
-      });
-      if (!res.ok) throw new Error();
-      const data = await res.json();
-      const { nodeId, domain, title } = data as { nodeId?: string; domain?: string; title?: string };
-      const LABEL: Record<string, string> = {
-        schedule: '일정', task: '할 일', finance: '지출',
-        habit: '습관', note: '노트', idea: '아이디어', knowledge: '지식', media: '미디어',
-      };
-      const label = domain ? (LABEL[domain] ?? domain) : '기록';
-      if (domain) window.dispatchEvent(new CustomEvent('ou-node-created', { detail: { domain } }));
-      show(title ? `${label}에 기록 — ${title}` : `${label}에 기록됨`, 'success', {
-        duration: 4000,
-        action: nodeId ? { label: '취소', onClick: () => fetch(`/api/quick?nodeId=${nodeId}`, { method: 'DELETE' }).catch(() => {}) } : undefined,
-      });
-    } catch { show('오류가 발생했습니다.', 'error'); }
-    finally { setLoading(false); }
+    setValue('');
+    show('기록됨', 'success', { duration: 3000 });
+
+    fetch('/api/quick', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text }),
+    })
+      .then(async res => {
+        if (!res.ok) { show('저장 실패', 'error'); return; }
+        const { domain, nodeId } = await res.json() as { domain?: string; nodeId?: string };
+        if (domain) window.dispatchEvent(new CustomEvent('ou-node-created', { detail: { domain } }));
+      })
+      .catch(() => show('저장 실패', 'error'));
   }
 
   // ── 디자인 토큰 ───────────────────────────────────────────────────────────

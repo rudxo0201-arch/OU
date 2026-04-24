@@ -20,7 +20,7 @@ const BASE_RULES = `## 공통 추출 규칙
 /**
  * 도메인별 extraction 시스템 프롬프트 생성
  */
-export function buildExtractionPrompt(config: DomainExtractionConfig, today: string): string {
+export function buildExtractionPrompt(config: DomainExtractionConfig, today: string, currentTime?: string): string {
   const schemaLines = Object.entries(config.schema)
     .map(([field, desc]) => `  ${field}: ${desc}`)
     .join('\n');
@@ -31,10 +31,14 @@ export function buildExtractionPrompt(config: DomainExtractionConfig, today: str
       ).join('\n\n')}`
     : '';
 
+  const timeContext = currentTime
+    ? `\n## 현재 시각\n${currentTime} (오전/오후 명시 없는 시간의 AM/PM 추론 기준)`
+    : '';
+
   return `${BASE_RULES}
 
 ## 오늘 날짜
-${today} (상대 날짜 변환 시 이 날짜를 기준으로)
+${today} (상대 날짜 변환 시 이 날짜를 기준으로)${timeContext}
 
 ## 추출 도메인: ${config.domain}
 

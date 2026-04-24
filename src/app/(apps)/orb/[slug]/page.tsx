@@ -2,10 +2,14 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import dayjs from 'dayjs';
+import 'dayjs/locale/ko';
 import { OrbShell } from '@/components/orb/OrbShell';
 import { OrbChat } from '@/components/orb/OrbChat';
 import { OrbView } from '@/components/orb/OrbView';
 import { getOrbDef } from '@/components/orb/registry';
+
+dayjs.locale('ko');
 
 /** 독립 앱 Orb — OrbShell 없이 자체 레이아웃으로 라우팅 */
 const STANDALONE_ORBS: Record<string, string> = {
@@ -30,8 +34,12 @@ export default function OrbPage() {
   if (!orb) return null;
   if (STANDALONE_ORBS[slug]) return null; // redirect 중
 
+  const subtitle = slug === 'calendar'
+    ? dayjs().format('MMMM YYYY')
+    : undefined;
+
   return (
-    <OrbShell slug={orb.slug} title={orb.title} icon={orb.icon}>
+    <OrbShell slug={orb.slug} title={orb.title} icon={orb.icon} subtitle={subtitle}>
       {orb.viewType
         ? <OrbView domain={orb.domain} viewType={orb.viewType} orbSlug={orb.slug} placeholder={orb.placeholder} />
         : <OrbChat placeholder={orb.placeholder} />

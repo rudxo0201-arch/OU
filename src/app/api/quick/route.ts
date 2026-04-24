@@ -36,9 +36,6 @@ export async function POST(req: NextRequest) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
-    // 클라이언트는 낙관적으로 "기록됨" 표시 — 서버는 완전히 처리 후 응답
-    // domainHint가 있으면 classifyDomain() 스킵 (앱 컨텍스트가 도메인을 결정)
-    // context는 Orb 전용 입력창에서 subject_type/subject_name 등을 주입할 때 사용
     const result = await saveMessageAsync({
       userId: user?.id,
       userMessage: text.trim(),
@@ -53,7 +50,6 @@ export async function POST(req: NextRequest) {
       nodeId: result?.node?.id ?? null,
       domain: result?.domain ?? null,
       title: (dd?.title ?? dd?.what ?? dd?.text ?? null) as string | null,
-      // care 도메인: LLM이 추출한 subject_name 반환 → 클라이언트에서 신규 등록 여부 판단
       subjectName: result?.domain === 'care' ? (dd?.subject_name ?? null) : null,
     });
   } catch (e) {

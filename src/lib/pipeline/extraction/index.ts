@@ -28,7 +28,9 @@ export async function extractAll(
 ): Promise<ExtractionResult> {
   try {
     const config = getDomainConfig(domain);
-    const systemPrompt = buildExtractionPrompt(config, today);
+    const now = new Date();
+    const currentTime = now.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Seoul' });
+    const systemPrompt = buildExtractionPrompt(config, today, currentTime);
 
     const result = await completeWithFallback(
       [{ role: 'user', content: text }],

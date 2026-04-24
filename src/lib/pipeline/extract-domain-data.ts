@@ -106,9 +106,10 @@ function extractSchedule(raw: string): Record<string, any> {
     const min = timeMatch[3] ? parseInt(timeMatch[3], 10) : 0;
     if (timeMatch[1] === '오후' && hour < 12) hour += 12;
     else if (timeMatch[1] === '오전' && hour === 12) hour = 0;
-    else if (!timeMatch[1] && hour >= 1 && hour <= 6) {
-      // 오전/오후 표시 없이 1~6시면 오후로 추정 (한국어 일상 맥락)
-      hour += 12;
+    else if (!timeMatch[1] && hour < 12) {
+      const currentHour = dayjs().hour();
+      if (currentHour > hour) hour += 12; // 이미 지난 시간 → 오후로
+      else if (hour >= 1 && hour <= 6) hour += 12; // 1~6시 → 오후 기본
     }
     result.time = `${String(hour).padStart(2, '0')}:${String(min).padStart(2, '0')}`;
   }

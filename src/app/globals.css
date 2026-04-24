@@ -131,6 +131,14 @@
   --ou-transition:        200ms ease;
   --ou-transition-slow:   400ms cubic-bezier(0.16, 1, 0.3, 1);
   --ou-transition-spring: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Display Typography */
+  --ou-text-display:      48px;
+  --ou-text-display-lg:   72px;
+
+  /* Hairline Dividers */
+  --ou-hairline:          rgba(0, 0, 0, 0.06);
+  --ou-hairline-strong:   rgba(0, 0, 0, 0.10);
 }
 
 /* ── 레거시 변수 → 폴백 (기존 뷰 호환) ── */
@@ -228,6 +236,16 @@ img, video {
   to   { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes ou-slide-in-right {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes ou-toast-shrink {
+  from { transform: scaleX(1); }
+  to   { transform: scaleX(0); }
+}
+
 @keyframes ou-glow-pulse {
   0%, 100% { transform: scale(1); }
   50%       { transform: scale(1.02); }
@@ -314,4 +332,12 @@ img, video {
 .ou-no-select {
   user-select: none;
   -webkit-user-select: none;
+}
+
+/* 에디토리얼 display 타이포 */
+.ou-display {
+  font-family: var(--ou-font-display);
+  font-weight: 600;
+  letter-spacing: var(--ou-tracking-tight);
+  line-height: 1;
 }
