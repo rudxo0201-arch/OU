@@ -30,6 +30,7 @@ export async function POST(req: NextRequest) {
     const results: Array<{
       id: string;
       domain: string;
+      domain_data?: Record<string, unknown>;
       raw: string;
       created_at: string;
       confidence?: string;
@@ -39,17 +40,19 @@ export async function POST(req: NextRequest) {
     if (mode === 'keyword' || mode === 'hybrid') {
       const { data: sqlResults } = await supabase
         .from('data_nodes')
-        .select('id, domain, raw, created_at, confidence')
+        .select('id, domain, domain_data, raw, created_at, confidence')
         .eq('user_id', user.id)
         .not('domain_data->>_admin_internal', 'eq', 'true')
+        .not('system_tags', 'cs', '{"archived"}')
         .ilike('raw', `%${query}%`)
         .order('created_at', { ascending: false })
         .limit(20);
 
-      (sqlResults ?? []).forEach((r: { id: string; domain: string; raw: string; created_at: string; confidence?: string }) => {
+      (sqlResults ?? []).forEach((r: { id: string; domain: string; domain_data?: Record<string, unknown>; raw: string; created_at: string; confidence?: string }) => {
         results.push({
           id: r.id,
           domain: r.domain,
+          domain_data: r.domain_data,
           raw: r.raw,
           created_at: r.created_at,
           confidence: r.confidence ?? undefined,
@@ -100,17 +103,19 @@ export async function POST(req: NextRequest) {
         if (mode === 'semantic' && results.length === 0) {
           const { data: fallbackResults } = await supabase
             .from('data_nodes')
-            .select('id, domain, raw, created_at, confidence')
+            .select('id, domain, domain_data, raw, created_at, confidence')
             .eq('user_id', user.id)
             .not('domain_data->>_admin_internal', 'eq', 'true')
+            .not('system_tags', 'cs', '{"archived"}')
             .ilike('raw', `%${query}%`)
             .order('created_at', { ascending: false })
             .limit(20);
 
-          (fallbackResults ?? []).forEach((r: { id: string; domain: string; raw: string; created_at: string; confidence?: string }) => {
+          (fallbackResults ?? []).forEach((r: { id: string; domain: string; domain_data?: Record<string, unknown>; raw: string; created_at: string; confidence?: string }) => {
             results.push({
               id: r.id,
               domain: r.domain,
+              domain_data: r.domain_data,
               raw: r.raw,
               created_at: r.created_at,
               confidence: r.confidence ?? undefined,

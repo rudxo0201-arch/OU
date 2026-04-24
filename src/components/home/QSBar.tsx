@@ -1,10 +1,12 @@
 'use client';
 
-import { CSSProperties, FormEvent, useState } from 'react';
+import { CSSProperties, FormEvent, useEffect, useRef, useState } from 'react';
 import { useToast } from '@/components/ds';
 import { useQuickImageUpload } from '@/hooks/useQuickImageUpload';
 import { ImagePreviewModal } from '@/components/quick/ImagePreviewModal';
 import type { ImagePreviewData } from '@/hooks/useQuickImageUpload';
+import { SearchPanel } from './SearchPanel';
+import type { SearchResult } from './SearchPanel';
 
 type QSTab = 'Q' | 'S';
 
@@ -47,6 +49,10 @@ export function QSBar() {
   const [focused, setFocused] = useState(false);
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState<ImagePreviewData | null>(null);
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { show } = useToast();
 
   const { inputRef, triggerUpload, handleInputChange, bindDropZone, bindPaste, isUploading, isDragOver } =
@@ -55,50 +61,104 @@ export function QSBar() {
       onError: (msg) => show(msg, 'error'),
     });
 
+  // 탭 전환 시 검색 상태 초기화
+  useEffect(() => {
+    if (tab === 'Q') {
+      setSearchOpen(false);
+      setSearchResults([]);
+    }
+  }, [tab]);
+
+  // S탭 debounce 검색
+  useEffect(() => {
+    if (tab !== 'S' || !value.trim()) {
+      setSearchOpen(false);
+      return;
+    }
+    if (searchTimer.current) clearTimeout(searchTimer.current);
+    searchTimer.current = setTimeout(async () => {
+      setSearchLoading(true);
+      setSearchOpen(true);
+      try {
+        const res = await fetch('/api/search', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: value.trim(), mode: 'hybrid' }),
+        });
+        const data = await res.json();
+        setSearchResults(data.results ?? []);
+      } catch {
+        setSearchResults([]);
+      } finally {
+        setSearchLoading(false);
+      }
+    }, 400);
+    return () => { if (searchTimer.current) clearTimeout(searchTimer.current); };
+  }, [tab, value]);
+
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    if (!value.trim() || loading) return;
+    if (!value.trim()) return;
     const text = value.trim();
+
+    // S탭: 즉시 검색 (입력값 유지, debounce 취소)
+    if (tab === 'S') {
+      if (searchTimer.current) clearTimeout(searchTimer.current);
+      setSearchLoading(true);
+      setSearchOpen(true);
+      try {
+        const res = await fetch('/api/search', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: text, mode: 'hybrid' }),
+        });
+        const data = await res.json();
+        setSearchResults(data.results ?? []);
+      } catch {
+        setSearchResults([]);
+      } finally {
+        setSearchLoading(false);
+      }
+      return;
+    }
+
+    // Q탭
+    if (loading) return;
     setLoading(true);
     setValue('');
 
     try {
-      if (tab === 'Q') {
-        const res = await fetch('/api/quick', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text }),
-        });
-        if (!res.ok) throw new Error('Quick 입력 실패');
+      const res = await fetch('/api/quick', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text }),
+      });
+      if (!res.ok) throw new Error('Quick 입력 실패');
 
-        const data = await res.json();
-        const { nodeId, domain, title } = data as { nodeId?: string; domain?: string; title?: string };
+      const data = await res.json();
+      const { nodeId, domain, title } = data as { nodeId?: string; domain?: string; title?: string };
 
-        const DOMAIN_LABEL: Record<string, string> = {
-          schedule: '일정', task: '할 일', finance: '지출',
-          habit: '습관', note: '노트', idea: '아이디어',
-          knowledge: '지식', media: '미디어',
-        };
-        const label = domain ? (DOMAIN_LABEL[domain] ?? domain) : '기록';
-        const summary = title ? `${label}에 기록 — ${title}` : `${label}에 기록됨`;
+      const DOMAIN_LABEL: Record<string, string> = {
+        schedule: '일정', task: '할 일', finance: '지출',
+        habit: '습관', note: '노트', idea: '아이디어',
+        knowledge: '지식', media: '미디어',
+      };
+      const label = domain ? (DOMAIN_LABEL[domain] ?? domain) : '기록';
+      const summary = title ? `${label}에 기록 — ${title}` : `${label}에 기록됨`;
 
-        // 위젯 즉시 갱신 (Realtime 폴백)
-        if (domain) {
-          window.dispatchEvent(new CustomEvent('ou-node-created', { detail: { domain } }));
-        }
-
-        show(summary, 'success', {
-          duration: 4000,
-          action: nodeId ? {
-            label: '취소',
-            onClick: () => {
-              fetch(`/api/quick?nodeId=${nodeId}`, { method: 'DELETE' }).catch(() => {});
-            },
-          } : undefined,
-        });
-      } else {
-        show('검색 기능은 준비 중입니다.', 'info');
+      if (domain) {
+        window.dispatchEvent(new CustomEvent('ou-node-created', { detail: { domain } }));
       }
+
+      show(summary, 'success', {
+        duration: 4000,
+        action: nodeId ? {
+          label: '취소',
+          onClick: () => {
+            fetch(`/api/quick?nodeId=${nodeId}`, { method: 'DELETE' }).catch(() => {});
+          },
+        } : undefined,
+      });
     } catch {
       show('오류가 발생했습니다.', 'error');
     } finally {
@@ -123,6 +183,16 @@ export function QSBar() {
 
   return (
     <>
+      {/* 검색 결과 패널 */}
+      {tab === 'S' && searchOpen && (
+        <SearchPanel
+          query={value}
+          results={searchResults}
+          loading={searchLoading}
+          onClose={() => setSearchOpen(false)}
+        />
+      )}
+
       {/* 숨겨진 파일 input */}
       <input
         ref={inputRef}
