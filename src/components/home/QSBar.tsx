@@ -1,6 +1,6 @@
 'use client';
 
-import { CSSProperties, FormEvent, useEffect, useRef, useState } from 'react';
+import { FormEvent, useEffect, useRef, useState } from 'react';
 import { useToast } from '@/components/ds';
 import { useQuickImageUpload } from '@/hooks/useQuickImageUpload';
 import { ImagePreviewModal } from '@/components/quick/ImagePreviewModal';
@@ -18,15 +18,16 @@ const PLACEHOLDERS: Record<QSTab, string> = {
 export function QSBar() {
   const [tab, setTab] = useState<QSTab>('Q');
   const [value, setValue] = useState('');
-  const [loading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState<ImagePreviewData | null>(null);
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [searchLoading, setSearchLoading] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { show } = useToast();
 
-  const { inputRef, triggerUpload, handleInputChange, bindDropZone, bindPaste, isUploading, isDragOver } =
+  const { inputRef, triggerUpload, handleInputChange, isUploading, isDragOver, bindDropZone, bindPaste } =
     useQuickImageUpload({
       onPreviewReady: (data) => setPreview(data),
       onError: (msg) => show(msg, 'error'),
@@ -35,6 +36,7 @@ export function QSBar() {
   // 탭 전환 시 검색 초기화
   useEffect(() => {
     if (tab === 'Q') { setSearchOpen(false); setSearchResults([]); }
+    textareaRef.current?.focus();
   }, [tab]);
 
   // S탭 debounce 검색
@@ -42,8 +44,7 @@ export function QSBar() {
     if (tab !== 'S' || !value.trim()) { setSearchOpen(false); return; }
     if (searchTimer.current) clearTimeout(searchTimer.current);
     searchTimer.current = setTimeout(async () => {
-      setSearchLoading(true);
-      setSearchOpen(true);
+      setSearchLoading(true); setSearchOpen(true);
       try {
         const res = await fetch('/api/search', {
           method: 'POST',
@@ -79,63 +80,41 @@ export function QSBar() {
       return;
     }
 
-    setValue('');
-    show('기록됨', 'success', { duration: 3000 });
-
-    fetch('/api/quick', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text }),
-    })
-      .then(async res => {
-        if (!res.ok) { show('저장 실패', 'error'); return; }
-        const { domain, nodeId } = await res.json() as { domain?: string; nodeId?: string };
-        if (domain) window.dispatchEvent(new CustomEvent('ou-node-created', { detail: { domain } }));
-      })
-      .catch(() => show('저장 실패', 'error'));
+    if (loading) return;
+    setLoading(true); setValue('');
+    try {
+      const res = await fetch('/api/quick', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text }),
+      });
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      const { nodeId, domain, title } = data as { nodeId?: string; domain?: string; title?: string };
+      const LABEL: Record<string, string> = {
+        schedule: '일정', task: '할 일', finance: '지출',
+        habit: '습관', note: '노트', idea: '아이디어', knowledge: '지식', media: '미디어',
+      };
+      if (domain) window.dispatchEvent(new CustomEvent('ou-node-created', { detail: { domain } }));
+      show(title ? `${LABEL[domain!] ?? '기록'} — ${title}` : '기록됨', 'success', {
+        duration: 4000,
+        action: nodeId ? { label: '취소', onClick: () => fetch(`/api/quick?nodeId=${nodeId}`, { method: 'DELETE' }).catch(() => {}) } : undefined,
+      });
+    } catch { show('오류가 발생했습니다.', 'error'); }
+    finally { setLoading(false); }
   }
 
-  // ── 디자인 토큰 ───────────────────────────────────────────────────────────
+  function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit(e as unknown as FormEvent);
+    }
+  }
+
   const isQ = tab === 'Q';
-  const borderColor = 'rgba(0,0,0,0.88)';
-  const tabW = 38;
-  const barH = 52;
-  const radius = 14;
-
-  const sideTabStyle = (active: boolean, side: 'left' | 'right'): CSSProperties => ({
-    width: tabW,
-    height: '100%',
-    flexShrink: 0,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    background: active ? borderColor : 'transparent',
-    borderRadius: side === 'left'
-      ? `${radius}px 0 0 ${radius}px`
-      : `0 ${radius}px ${radius}px 0`,
-    cursor: 'pointer',
-    border: 'none',
-    transition: 'background 200ms ease',
-    userSelect: 'none',
-    WebkitUserSelect: 'none',
-  });
-
-  const sideLabelStyle = (active: boolean): CSSProperties => ({
-    writingMode: 'vertical-rl',
-    transform: 'rotate(180deg)',
-    fontSize: 10,
-    fontWeight: 700,
-    letterSpacing: '0.12em',
-    textTransform: 'uppercase',
-    color: active ? '#fff' : 'rgba(0,0,0,0.28)',
-    fontFamily: 'var(--ou-font-body)',
-    transition: 'color 200ms ease',
-    lineHeight: 1,
-  });
 
   return (
     <>
-      {/* 검색 결과 패널 */}
       {tab === 'S' && searchOpen && (
         <SearchPanel
           query={value}
@@ -145,19 +124,16 @@ export function QSBar() {
         />
       )}
 
-      {/* 숨겨진 파일 input */}
       <input ref={inputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleInputChange} />
 
-      {/* 이미지 프리뷰 모달 */}
       {preview && (
         <ImagePreviewModal
           ocrText={preview.ocrText}
           onClose={() => setPreview(null)}
           onSaved={(nodeId, domain) => {
             setPreview(null);
-            const LABEL: Record<string, string> = { schedule: '일정', task: '할 일', finance: '지출', habit: '습관', knowledge: '지식', media: '미디어' };
-            const label = domain ? (LABEL[domain] ?? domain) : '기록';
-            show(`${label}에 기록됨`, 'success', {
+            const LABEL: Record<string, string> = { schedule: '일정', task: '할 일', finance: '지출', habit: '습관' };
+            show(`${LABEL[domain ?? ''] ?? '기록'}에 기록됨`, 'success', {
               duration: 4000,
               action: nodeId ? { label: '취소', onClick: () => fetch(`/api/quick?nodeId=${nodeId}`, { method: 'DELETE' }).catch(() => {}) } : undefined,
             });
@@ -166,113 +142,135 @@ export function QSBar() {
         />
       )}
 
-      <form onSubmit={handleSubmit} style={{ width: '100%', maxWidth: 680 }}>
-        {/* 외부 컨테이너 — 테두리 + 형태 */}
-        <div
-          style={{
+      <form
+        onSubmit={handleSubmit}
+        style={{ width: '100%', maxWidth: 680 }}
+        {...(isQ ? { ...bindDropZone, ...bindPaste } : {})}
+      >
+        <div style={{
+          background: '#fff',
+          border: `1px solid ${isDragOver ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0.12)'}`,
+          borderRadius: 16,
+          boxShadow: '0 2px 16px rgba(0,0,0,0.07)',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+          transition: 'border-color 150ms ease',
+        }}>
+          {/* 텍스트 입력 영역 */}
+          <textarea
+            ref={textareaRef}
+            value={value}
+            onChange={e => setValue(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder={PLACEHOLDERS[tab]}
+            disabled={loading || isUploading}
+            rows={3}
+            style={{
+              flex: 1,
+              resize: 'none',
+              border: 'none',
+              outline: 'none',
+              padding: '14px 16px 8px',
+              fontSize: 14,
+              lineHeight: 1.6,
+              color: 'rgba(0,0,0,0.82)',
+              fontFamily: 'var(--ou-font-body)',
+              background: 'transparent',
+              width: '100%',
+              boxSizing: 'border-box',
+            }}
+          />
+
+          {/* 하단 툴바 */}
+          <div style={{
             display: 'flex',
-            alignItems: 'stretch',
-            height: barH,
-            border: `1.5px solid ${borderColor}`,
-            borderRadius: radius,
-            background: '#fff',
-            outline: isDragOver ? `2px dashed ${borderColor}` : undefined,
-            transition: 'border-color 200ms ease',
-            overflow: 'hidden',
-          }}
-          {...(isQ ? { ...bindDropZone, ...bindPaste } : {})}
-        >
-          {/* ── 왼쪽 탭: Quick ── */}
-          <button
-            type="button"
-            style={sideTabStyle(isQ, 'left')}
-            onClick={() => setTab('Q')}
-            title="Quick 입력"
-          >
-            <span style={sideLabelStyle(isQ)}>Quick</span>
-          </button>
-
-          {/* ── 구분선 ── */}
-          <div style={{ width: 1, background: 'rgba(0,0,0,0.10)', flexShrink: 0 }} />
-
-          {/* ── 입력 영역 ── */}
-          <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 6, padding: '0 10px', minWidth: 0 }}>
-            <input
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
-              placeholder={PLACEHOLDERS[tab]}
-              disabled={loading || isUploading}
-              style={{
-                flex: 1,
-                background: 'none',
-                border: 'none',
-                outline: 'none',
-                fontSize: 14,
-                color: 'rgba(0,0,0,0.80)',
-                fontFamily: 'var(--ou-font-body)',
-                minWidth: 0,
-              }}
-            />
-
-            {/* 이미지 업로드 (Q 탭만) */}
-            {isQ && !loading && !isUploading && (
+            alignItems: 'center',
+            padding: '6px 10px 10px',
+            gap: 8,
+          }}>
+            {/* 이미지 업로드 버튼 (Q 탭만) */}
+            {isQ && (
               <button
                 type="button"
                 onClick={triggerUpload}
                 title="이미지 업로드"
                 style={{
-                  flexShrink: 0,
-                  width: 26, height: 26,
-                  borderRadius: 7,
+                  width: 28, height: 28,
+                  borderRadius: 8,
                   background: 'transparent',
-                  border: '1px solid rgba(0,0,0,0.12)',
+                  border: '1px solid rgba(0,0,0,0.10)',
                   cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: 'rgba(0,0,0,0.32)',
-                  fontSize: 13,
-                  transition: 'background 120ms ease',
+                  color: 'rgba(0,0,0,0.35)',
+                  fontSize: 14,
+                  flexShrink: 0,
                 }}
-                onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,0,0,0.06)')}
+                onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,0,0,0.05)')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >⌃</button>
             )}
 
-            {/* 전송 / 스피너 */}
+            <div style={{ flex: 1 }} />
+
+            {/* 모드 토글 */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              background: 'rgba(0,0,0,0.05)',
+              borderRadius: 8,
+              padding: 2,
+              gap: 1,
+            }}>
+              {(['Q', 'S'] as QSTab[]).map(t => (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => setTab(t)}
+                  style={{
+                    padding: '3px 10px',
+                    borderRadius: 6,
+                    border: 'none',
+                    background: tab === t ? '#fff' : 'transparent',
+                    boxShadow: tab === t ? '0 1px 3px rgba(0,0,0,0.12)' : 'none',
+                    color: tab === t ? 'rgba(0,0,0,0.85)' : 'rgba(0,0,0,0.38)',
+                    fontSize: 11,
+                    fontWeight: 600,
+                    letterSpacing: '0.04em',
+                    cursor: 'pointer',
+                    transition: 'all 150ms ease',
+                    fontFamily: 'var(--ou-font-body)',
+                  }}
+                >
+                  {t === 'Q' ? 'Quick' : 'Search'}
+                </button>
+              ))}
+            </div>
+
+            {/* 전송 버튼 */}
             {(loading || isUploading) ? (
-              <span className="ou-spinner" style={{ width: 16, height: 16, flexShrink: 0 }} />
-            ) : value.trim() ? (
+              <span className="ou-spinner" style={{ width: 18, height: 18, flexShrink: 0 }} />
+            ) : (
               <button
                 type="submit"
+                disabled={!value.trim()}
                 style={{
-                  flexShrink: 0,
-                  width: 28, height: 28,
-                  borderRadius: 8,
-                  background: borderColor,
+                  width: 32, height: 32,
+                  borderRadius: 10,
+                  background: value.trim() ? 'rgba(0,0,0,0.88)' : 'rgba(0,0,0,0.08)',
                   border: 'none',
-                  cursor: 'pointer',
+                  cursor: value.trim() ? 'pointer' : 'default',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: '#fff',
-                  fontSize: 14,
-                  transition: 'transform 100ms ease',
+                  color: value.trim() ? '#fff' : 'rgba(0,0,0,0.25)',
+                  fontSize: 15,
+                  transition: 'all 150ms ease',
+                  flexShrink: 0,
                 }}
-                onMouseDown={e => (e.currentTarget.style.transform = 'scale(0.88)')}
+                onMouseDown={e => { if (value.trim()) e.currentTarget.style.transform = 'scale(0.88)'; }}
                 onMouseUp={e => (e.currentTarget.style.transform = 'scale(1)')}
               >↑</button>
-            ) : null}
+            )}
           </div>
-
-          {/* ── 구분선 ── */}
-          <div style={{ width: 1, background: 'rgba(0,0,0,0.10)', flexShrink: 0 }} />
-
-          {/* ── 오른쪽 탭: Search ── */}
-          <button
-            type="button"
-            style={sideTabStyle(!isQ, 'right')}
-            onClick={() => setTab('S')}
-            title="내 데이터 검색"
-          >
-            <span style={sideLabelStyle(!isQ)}>Search</span>
-          </button>
         </div>
       </form>
     </>
