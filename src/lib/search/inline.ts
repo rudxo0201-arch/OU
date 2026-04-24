@@ -41,11 +41,21 @@ export async function searchUserData(
   // ── 1. 키워드 검색 (비용 0) ──
   if (keywords.length > 0) {
     for (const keyword of keywords.slice(0, 3)) {
+      const orFilter = [
+        `raw.ilike.%${keyword}%`,
+        `domain_data->>title.ilike.%${keyword}%`,
+        `domain_data->>what.ilike.%${keyword}%`,
+        `domain_data->>instructor.ilike.%${keyword}%`,
+        `domain_data->>category.ilike.%${keyword}%`,
+        `domain_data->>name.ilike.%${keyword}%`,
+        `domain_data->>location.ilike.%${keyword}%`,
+      ].join(',');
+
       let q = supabase
         .from('data_nodes')
-        .select('id, domain, raw, created_at')
+        .select('id, domain, domain_data, raw, created_at')
         .eq('user_id', userId)
-        .ilike('raw', `%${keyword}%`)
+        .or(orFilter)
         .order('created_at', { ascending: false })
         .limit(limit);
 
@@ -91,7 +101,7 @@ export async function searchUserData(
         if (vectorNodeIds.length > 0) {
           const { data: nodes } = await supabase
             .from('data_nodes')
-            .select('id, domain, raw, created_at')
+            .select('id, domain, domain_data, raw, created_at')
             .in('id', vectorNodeIds.map(v => v.node_id))
             .eq('user_id', userId);
 

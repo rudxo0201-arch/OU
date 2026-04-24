@@ -38,13 +38,23 @@ export async function POST(req: NextRequest) {
     }> = [];
 
     if (mode === 'keyword' || mode === 'hybrid') {
+      const orFilter = [
+        `raw.ilike.%${query}%`,
+        `domain_data->>title.ilike.%${query}%`,
+        `domain_data->>what.ilike.%${query}%`,
+        `domain_data->>instructor.ilike.%${query}%`,
+        `domain_data->>category.ilike.%${query}%`,
+        `domain_data->>name.ilike.%${query}%`,
+        `domain_data->>location.ilike.%${query}%`,
+      ].join(',');
+
       const { data: sqlResults } = await supabase
         .from('data_nodes')
         .select('id, domain, domain_data, raw, created_at, confidence')
         .eq('user_id', user.id)
         .not('domain_data->>_admin_internal', 'eq', 'true')
         .not('system_tags', 'cs', '{"archived"}')
-        .ilike('raw', `%${query}%`)
+        .or(orFilter)
         .order('created_at', { ascending: false })
         .limit(20);
 
@@ -76,38 +86,53 @@ export async function POST(req: NextRequest) {
         });
 
         const existingIds = new Set(results.map(r => r.id));
-        (vectorResults ?? []).forEach((r: {
-          node_id: string;
-          domain?: string;
-          raw?: string;
-          created_at?: string;
-          confidence?: string;
-          similarity?: number;
-        }) => {
-          if (!existingIds.has(r.node_id)) {
+        const vectorIds = (vectorResults ?? [])
+          .filter((r: { node_id: string; similarity?: number }) => !existingIds.has(r.node_id))
+          .map((r: { node_id: string; similarity?: number }) => ({ id: r.node_id, similarity: r.similarity ?? 0 }));
+
+        if (vectorIds.length > 0) {
+          const { data: vectorNodes } = await supabase
+            .from('data_nodes')
+            .select('id, domain, domain_data, raw, created_at, confidence')
+            .in('id', vectorIds.map((v: { id: string; similarity: number }) => v.id))
+            .eq('user_id', user.id)
+            .not('domain_data->>_admin_internal', 'eq', 'true');
+
+          const simMap = new Map(vectorIds.map((v: { id: string; similarity: number }) => [v.id, v.similarity]));
+          (vectorNodes ?? []).forEach((node: { id: string; domain: string; domain_data?: Record<string, unknown>; raw: string; created_at: string; confidence?: string }) => {
             results.push({
-              id: r.node_id,
-              domain: r.domain ?? 'unknown',
-              raw: r.raw ?? '',
-              created_at: r.created_at ?? '',
-              confidence: r.confidence ?? undefined,
-              similarity: r.similarity ?? undefined,
+              id: node.id,
+              domain: node.domain,
+              domain_data: node.domain_data,
+              raw: node.raw,
+              created_at: node.created_at,
+              confidence: node.confidence ?? undefined,
+              similarity: simMap.get(node.id) as number | undefined,
             });
-          }
-        });
+          });
+        }
       } catch (embErr) {
         // Semantic search unavailable, using keyword fallback
         console.warn('[Search] Semantic search unavailable, using keyword fallback:', embErr);
 
         // For semantic-only mode, fall back to keyword search so user still gets results
         if (mode === 'semantic' && results.length === 0) {
+          const fallbackOrFilter = [
+            `raw.ilike.%${query}%`,
+            `domain_data->>title.ilike.%${query}%`,
+            `domain_data->>what.ilike.%${query}%`,
+            `domain_data->>instructor.ilike.%${query}%`,
+            `domain_data->>category.ilike.%${query}%`,
+            `domain_data->>name.ilike.%${query}%`,
+            `domain_data->>location.ilike.%${query}%`,
+          ].join(',');
           const { data: fallbackResults } = await supabase
             .from('data_nodes')
             .select('id, domain, domain_data, raw, created_at, confidence')
             .eq('user_id', user.id)
             .not('domain_data->>_admin_internal', 'eq', 'true')
             .not('system_tags', 'cs', '{"archived"}')
-            .ilike('raw', `%${query}%`)
+            .or(fallbackOrFilter)
             .order('created_at', { ascending: false })
             .limit(20);
 

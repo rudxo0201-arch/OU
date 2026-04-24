@@ -45,9 +45,13 @@ function getSubText(r: SearchResult): string {
   const dd = r.domain_data;
   if (!dd) return '';
   if (r.domain === 'schedule') {
-    const time = dd.time as string | undefined;
-    const date = dd.date as string | undefined;
-    return [time, date].filter(Boolean).join(' · ');
+    const parts = [
+      dd.date as string | undefined,
+      dd.time as string | undefined,
+      dd.instructor as string | undefined,
+      dd.location as string | undefined,
+    ].filter(Boolean) as string[];
+    return parts.join(' · ');
   }
   if (r.domain === 'finance') {
     const amount = dd.amount as number | undefined;
