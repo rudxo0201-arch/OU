@@ -62,6 +62,14 @@ export function FinanceWidget() {
     return () => { supabase.removeChannel(ch); };
   }, [fetchNodes]);
 
+  useEffect(() => {
+    const handler = (e: Event) => {
+      if ((e as CustomEvent).detail?.domain === 'finance') fetchNodes();
+    };
+    window.addEventListener('ou-node-created', handler);
+    return () => window.removeEventListener('ou-node-created', handler);
+  }, [fetchNodes]);
+
   const todayNodes = nodes.filter(isToday).filter(n => n.domain_data?.type !== 'income');
   const total = todayNodes.reduce((s, n) => s + (n.domain_data?.amount ?? 0), 0);
 

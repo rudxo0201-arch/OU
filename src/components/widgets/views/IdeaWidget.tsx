@@ -41,6 +41,14 @@ export function IdeaWidget() {
     return () => { supabase.removeChannel(ch); };
   }, [fetchIdeas]);
 
+  useEffect(() => {
+    const handler = (e: Event) => {
+      if ((e as CustomEvent).detail?.domain === 'idea') fetchIdeas();
+    };
+    window.addEventListener('ou-node-created', handler);
+    return () => window.removeEventListener('ou-node-created', handler);
+  }, [fetchIdeas]);
+
   return (
     <div style={{
       height: '100%',

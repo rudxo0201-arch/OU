@@ -40,6 +40,14 @@ export function NoteWidget() {
     return () => { supabase.removeChannel(ch); };
   }, [fetchNodes]);
 
+  useEffect(() => {
+    const handler = (e: Event) => {
+      if ((e as CustomEvent).detail?.domain === 'note') fetchNodes();
+    };
+    window.addEventListener('ou-node-created', handler);
+    return () => window.removeEventListener('ou-node-created', handler);
+  }, [fetchNodes]);
+
   return (
     <div ref={rootRef} style={{ height: '100%', display: 'flex', flexDirection: 'column', padding: '14px 16px' }}>
       {size !== 'sm' && (

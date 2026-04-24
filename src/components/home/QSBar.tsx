@@ -72,6 +72,11 @@ export function QSBar() {
         const label = domain ? (DOMAIN_LABEL[domain] ?? domain) : '기록';
         const summary = title ? `${label}에 기록 — ${title}` : `${label}에 기록됨`;
 
+        // 위젯 즉시 갱신 (Realtime 폴백)
+        if (domain) {
+          window.dispatchEvent(new CustomEvent('ou-node-created', { detail: { domain } }));
+        }
+
         show(summary, 'success', {
           duration: 4000,
           action: nodeId ? {

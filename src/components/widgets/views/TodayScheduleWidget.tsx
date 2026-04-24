@@ -55,6 +55,14 @@ export function TodayScheduleWidget() {
     return () => { supabase.removeChannel(ch); };
   }, [fetchEvents]);
 
+  useEffect(() => {
+    const handler = (e: Event) => {
+      if ((e as CustomEvent).detail?.domain === 'schedule') fetchEvents();
+    };
+    window.addEventListener('ou-node-created', handler);
+    return () => window.removeEventListener('ou-node-created', handler);
+  }, [fetchEvents]);
+
   return (
     <div ref={rootRef} style={{
       height: '100%',

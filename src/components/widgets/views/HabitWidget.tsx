@@ -52,6 +52,14 @@ export function HabitWidget() {
     return () => { supabase.removeChannel(ch); };
   }, [fetchHabits]);
 
+  useEffect(() => {
+    const handler = (e: Event) => {
+      if ((e as CustomEvent).detail?.domain === 'habit') fetchHabits();
+    };
+    window.addEventListener('ou-node-created', handler);
+    return () => window.removeEventListener('ou-node-created', handler);
+  }, [fetchHabits]);
+
   return (
     <div style={{
       height: '100%',

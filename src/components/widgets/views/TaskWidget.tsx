@@ -51,6 +51,14 @@ export function TaskWidget() {
     return () => { supabase.removeChannel(ch); };
   }, [fetchTasks]);
 
+  useEffect(() => {
+    const handler = (e: Event) => {
+      if ((e as CustomEvent).detail?.domain === 'task') fetchTasks();
+    };
+    window.addEventListener('ou-node-created', handler);
+    return () => window.removeEventListener('ou-node-created', handler);
+  }, [fetchTasks]);
+
   return (
     <div ref={rootRef} style={{
       height: '100%',
