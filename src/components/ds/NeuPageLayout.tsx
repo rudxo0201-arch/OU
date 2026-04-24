@@ -1,6 +1,6 @@
 'use client';
 import { CSSProperties, ReactNode } from 'react';
-import { NeuButton } from './NeuButton';
+import { OuButton as NeuButton } from './OuButton';
 
 interface NeuPageLayoutProps {
   children: ReactNode;
