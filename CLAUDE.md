@@ -50,6 +50,7 @@ Orb   = 모듈 조합으로 만든 SaaS 앱 (OU 백엔드 공유)
 | `DATA_STANDARD.md` | 데이터 저장 표준 (불변) | 스키마 작업 시 |
 | `DB_SCHEMA.sql` | 전체 DB 스키마 | DB 작업 시 |
 | `FRONTEND_DESIGN.md` | 프론트엔드 설계 | UI 구현 시 |
+| `docs/ORB_DEV.md` | Orb 개발 체크리스트 + Lessons Learned | **Orb 개발 시 필독** |
 
 ---
 
