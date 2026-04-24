@@ -63,31 +63,34 @@ export function TodayScheduleWidget() {
     return () => window.removeEventListener('ou-node-created', handler);
   }, [fetchEvents]);
 
+  const pad = size === 'sm' ? '8px 10px' : size === 'md' ? '12px 14px' : '14px 18px';
+  const titleSize = size === 'sm' ? 11 : size === 'md' ? 12 : 13;
+  const timeSize  = size === 'sm' ? 10 : 11;
+  const gap       = size === 'sm' ? 5 : 8;
+
   return (
     <div ref={rootRef} style={{
       height: '100%',
       display: 'flex', flexDirection: 'column',
-      padding: '14px 16px',
+      padding: pad,
     }}>
       {size !== 'sm' && (
         <span style={{
-          fontSize: 10, fontWeight: 600,
+          fontSize: 9, fontWeight: 700,
           color: 'var(--ou-text-dimmed)',
-          letterSpacing: '0.10em', textTransform: 'uppercase',
-          fontFamily: 'var(--ou-font-logo)',
-          marginBottom: 12, flexShrink: 0,
+          letterSpacing: '0.12em', textTransform: 'uppercase',
+          marginBottom: size === 'lg' ? 14 : 10, flexShrink: 0,
         }}>
           오늘 일정
         </span>
       )}
 
-      {/* 일정 리스트 */}
-      <div style={{ flex: 1, overflow: 'auto', display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <div style={{ flex: 1, overflow: 'auto', display: 'flex', flexDirection: 'column', gap }}>
         {loading ? (
-          <div style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>불러오는 중...</div>
+          <div style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>…</div>
         ) : events.length === 0 ? (
           <button
-            onClick={() => router.push('/orb')}
+            onClick={() => router.push('/orb/calendar')}
             style={{
               background: 'none', border: 'none', cursor: 'pointer',
               textAlign: 'left', padding: 0,
@@ -95,40 +98,40 @@ export function TodayScheduleWidget() {
               lineHeight: 1.6,
             }}
           >
-            Orb에서 일정을 말해보세요 →
+            {size === 'sm' ? '일정 없음' : '오늘 일정이 없어요 →'}
           </button>
         ) : events.map(e => (
-          <div key={e.id} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            {/* 시간 박스 */}
+          <div key={e.id} style={{ display: 'flex', alignItems: 'center', gap: size === 'sm' ? 6 : 10 }}>
+            {/* 시간 */}
             <div style={{
-              padding: '4px 8px',
-              borderRadius: 8,
+              padding: size === 'sm' ? '3px 5px' : '4px 8px',
+              borderRadius: 6,
               background: 'var(--ou-bg)',
               boxShadow: 'var(--ou-neu-pressed-sm)',
-              fontSize: 11, fontWeight: 600,
+              fontSize: timeSize, fontWeight: 600,
               fontFamily: 'var(--ou-font-mono)',
               color: 'var(--ou-text-body)',
               flexShrink: 0,
-              minWidth: 44,
+              minWidth: size === 'sm' ? 32 : 44,
               textAlign: 'center',
             }}>
-              {e.domain_data.time || '종일'}
+              {e.domain_data.time ? e.domain_data.time.slice(0, 5) : '종일'}
             </div>
 
-            {/* 제목 + 장소 */}
+            {/* 제목 */}
             <div style={{ flex: 1, overflow: 'hidden' }}>
               <div style={{
-                fontSize: 12, fontWeight: 500,
+                fontSize: titleSize, fontWeight: 500,
                 color: 'var(--ou-text-strong)',
                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               }}>
                 {e.domain_data.title || e.raw?.slice(0, 20) || '일정'}
-                {size === 'lg' && e.domain_data.location && (
-                  <span style={{ color: 'var(--ou-text-dimmed)', fontWeight: 400 }}>
-                    {' · '}{e.domain_data.location}
-                  </span>
-                )}
               </div>
+              {size === 'lg' && e.domain_data.location && (
+                <div style={{ fontSize: 10, color: 'var(--ou-text-dimmed)', marginTop: 1 }}>
+                  ◎ {e.domain_data.location}
+                </div>
+              )}
             </div>
           </div>
         ))}

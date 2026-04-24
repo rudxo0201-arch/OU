@@ -26,8 +26,8 @@ export const WidgetCard = memo(function WidgetCard({ widgetId, type, removable, 
                                   { overflow: 'hidden' };
 
   // Orb widget: always transparent card. Others: neumorphism raised.
-  const isOrb = type === 'ou-view';
-  const cardClassName = editMode ? styles.cardEdit : (isOrb ? styles.cardless : styles.cardNormal);
+  const isTransparent = type === 'ou-view' || type === 'qsbar';
+  const cardClassName = editMode ? styles.cardEdit : (isTransparent ? styles.cardless : styles.cardNormal);
 
   const animation = isShaking
     ? 'ou-widget-min-hit 0.4s ease'
