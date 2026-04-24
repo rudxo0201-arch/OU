@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
       .from('data_nodes')
       .select('id, domain, domain_data, raw, created_at, updated_at')
       .eq('user_id', user.id)
-      .not('system_tags', 'cs', '{"archived"}')  // archived 레코드 제외
+      .or('system_tags.is.null,system_tags.not.cs.{archived}')  // archived 레코드 제외 (null-safe)
       .order('created_at', { ascending: false })
       .limit(limit);
 
