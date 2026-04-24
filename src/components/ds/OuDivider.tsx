@@ -1,15 +1,15 @@
 import { CSSProperties } from 'react';
 
-interface GlassDividerProps {
+export interface OuDividerProps {
   vertical?: boolean;
   style?: CSSProperties;
 }
 
-export function GlassDivider({ vertical = false, style }: GlassDividerProps) {
+export function OuDivider({ vertical = false, style }: OuDividerProps) {
   return (
     <div
       style={{
-        background: 'var(--ou-glass-border)',
+        background: 'var(--ou-border-subtle)',
         ...(vertical
           ? { width: 1, alignSelf: 'stretch' }
           : { height: 1, width: '100%' }),

@@ -1,40 +1,40 @@
 'use client';
 
-import { CSSProperties, createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { CSSProperties, createContext, useCallback, useContext, useEffect, useState } from 'react';
 
-type ToastType = 'info' | 'success' | 'warning' | 'error';
+type OuToastType = 'info' | 'success' | 'warning' | 'error';
 
-interface ToastAction {
+interface OuToastAction {
   label: string;
   onClick: () => void;
 }
 
-interface Toast {
+interface OuToastItem {
   id: string;
   message: string;
-  type: ToastType;
+  type: OuToastType;
   duration?: number;
-  action?: ToastAction;
+  action?: OuToastAction;
 }
 
-interface ToastContextValue {
-  show: (message: string, type?: ToastType, options?: { duration?: number; action?: ToastAction }) => void;
+interface OuToastContextValue {
+  show: (message: string, type?: OuToastType, options?: { duration?: number; action?: OuToastAction }) => void;
 }
 
-const ToastContext = createContext<ToastContextValue>({ show: () => {} });
+const OuToastContext = createContext<OuToastContextValue>({ show: () => {} });
 
 export function useToast() {
-  return useContext(ToastContext);
+  return useContext(OuToastContext);
 }
 
-const TYPE_COLOR: Record<ToastType, string> = {
+const TYPE_COLOR: Record<OuToastType, string> = {
   info:    'var(--ou-info)',
   success: 'var(--ou-success)',
   warning: 'var(--ou-warning)',
   error:   'var(--ou-error)',
 };
 
-function ToastItem({ toast, onRemove }: { toast: Toast; onRemove: (id: string) => void }) {
+function ToastItemView({ toast, onRemove }: { toast: OuToastItem; onRemove: (id: string) => void }) {
   useEffect(() => {
     const t = setTimeout(() => onRemove(toast.id), toast.duration ?? 3200);
     return () => clearTimeout(t);
@@ -45,9 +45,7 @@ function ToastItem({ toast, onRemove }: { toast: Toast; onRemove: (id: string) =
     alignItems: 'center',
     gap: 10,
     padding: '12px 16px',
-    background: 'var(--ou-glass-elevated)',
-    backdropFilter: 'var(--ou-blur)',
-    WebkitBackdropFilter: 'var(--ou-blur)',
+    background: 'var(--ou-surface)',
     border: '1px solid var(--ou-glass-border-hover)',
     borderLeft: `3px solid ${TYPE_COLOR[toast.type]}`,
     borderRadius: 'var(--ou-radius-md)',
@@ -67,9 +65,9 @@ function ToastItem({ toast, onRemove }: { toast: Toast; onRemove: (id: string) =
         <button
           onClick={() => { toast.action!.onClick(); onRemove(toast.id); }}
           style={{
-            background: 'rgba(0,0,0,0.08)',
-            border: '1px solid rgba(0,0,0,0.10)',
-            borderRadius: 6,
+            background: 'rgba(0,0,0,0.06)',
+            border: '1px solid var(--ou-glass-border)',
+            borderRadius: 'var(--ou-radius-xs)',
             color: 'var(--ou-text-body)',
             cursor: 'pointer',
             fontSize: 11,
@@ -100,9 +98,9 @@ function ToastItem({ toast, onRemove }: { toast: Toast; onRemove: (id: string) =
 }
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
-  const [toasts, setToasts] = useState<Toast[]>([]);
+  const [toasts, setToasts] = useState<OuToastItem[]>([]);
 
-  const show = useCallback((message: string, type: ToastType = 'info', options?: { duration?: number; action?: ToastAction }) => {
+  const show = useCallback((message: string, type: OuToastType = 'info', options?: { duration?: number; action?: OuToastAction }) => {
     const id = Math.random().toString(36).slice(2);
     setToasts((prev) => [...prev, { id, message, type, ...options }]);
   }, []);
@@ -112,26 +110,28 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <ToastContext.Provider value={{ show }}>
+    <OuToastContext.Provider value={{ show }}>
       {children}
-      <div style={{
-        position: 'fixed',
-        top: 20,
-        left: '50%',
-        transform: 'translateX(-50%)',
-        zIndex: 9999,
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 8,
-        alignItems: 'center',
-        pointerEvents: 'none',
-      }}>
+      <div
+        style={{
+          position: 'fixed',
+          top: 20,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 9999,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 8,
+          alignItems: 'center',
+          pointerEvents: 'none',
+        }}
+      >
         {toasts.map((t) => (
           <div key={t.id} style={{ pointerEvents: 'auto' }}>
-            <ToastItem toast={t} onRemove={remove} />
+            <ToastItemView toast={t} onRemove={remove} />
           </div>
         ))}
       </div>
-    </ToastContext.Provider>
+    </OuToastContext.Provider>
   );
 }

@@ -2,29 +2,31 @@
 
 import { CSSProperties, ReactNode } from 'react';
 
-interface Tab {
+export interface OuTab {
   key: string;
   label: ReactNode;
 }
 
-interface GlassTabsProps {
-  tabs: Tab[];
+export interface OuTabsProps {
+  tabs: OuTab[];
   activeKey: string;
   onChange: (key: string) => void;
   style?: CSSProperties;
 }
 
-export function GlassTabs({ tabs, activeKey, onChange, style }: GlassTabsProps) {
+export function OuTabs({ tabs, activeKey, onChange, style }: OuTabsProps) {
   return (
-    <div style={{
-      display: 'inline-flex',
-      background: 'rgba(0,0,0,0.04)',
-      border: '1px solid var(--ou-glass-border)',
-      borderRadius: 'var(--ou-radius-pill)',
-      padding: '3px',
-      gap: 2,
-      ...style,
-    }}>
+    <div
+      style={{
+        display: 'inline-flex',
+        background: 'rgba(0,0,0,0.04)',
+        border: '1px solid var(--ou-glass-border)',
+        borderRadius: 'var(--ou-radius-pill)',
+        padding: '3px',
+        gap: 2,
+        ...style,
+      }}
+    >
       {tabs.map((tab) => {
         const isActive = tab.key === activeKey;
         return (
@@ -42,9 +44,9 @@ export function GlassTabs({ tabs, activeKey, onChange, style }: GlassTabsProps) 
               fontFamily: 'var(--ou-font-body)',
               fontWeight: isActive ? 600 : 400,
               color: isActive ? 'var(--ou-text-heading)' : 'var(--ou-text-secondary)',
-              background: isActive ? 'var(--ou-glass-strong)' : 'transparent',
+              background: isActive ? 'var(--ou-surface)' : 'transparent',
               border: isActive ? '1px solid var(--ou-glass-border-hover)' : '1px solid transparent',
-              boxShadow: isActive ? `var(--ou-accent-glow)` : 'none',
+              boxShadow: isActive ? 'var(--ou-shadow-sm)' : 'none',
               cursor: 'pointer',
               transition: 'all var(--ou-transition-fast)',
               userSelect: 'none',

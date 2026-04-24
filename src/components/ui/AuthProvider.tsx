@@ -3,7 +3,7 @@
 import { ReactNode, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useAuthStore } from '@/stores/authStore';
-import { ToastProvider } from '@/components/ds/GlassToast';
+import { ToastProvider } from '@/components/ds';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const { setUser, setLoading } = useAuthStore();
