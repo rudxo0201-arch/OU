@@ -101,6 +101,9 @@ export const VIEW_REGISTRY: Record<string, ComponentType<ViewProps>> = {
   'edu-lesson':      dynamic(() => import('./inline/EduLessonView').then(m => m.EduLessonView), { ssr: false }),
   'edu-assignment':  dynamic(() => import('./inline/EduAssignmentView').then(m => m.EduAssignmentView), { ssr: false }),
   'task-check-simple': dynamic(() => import('./inline/TaskCheckView').then(m => m.TaskCheckView), { ssr: false }),
+
+  // ── Wave 11: 주간 시간표 ──
+  'edu-timetable': dynamic(() => import('./EduTimetableView').then(m => ({ default: m.EduTimetableView })), { ssr: false }),
 };
 
 export const VIEW_META: Record<string, ViewMeta> = {
@@ -165,6 +168,7 @@ export const VIEW_META: Record<string, ViewMeta> = {
   'dict-char':         { previewOnClick: false, category: 'inline' },
   'edu-lesson':        { previewOnClick: false, category: 'inline' },
   'edu-assignment':    { previewOnClick: false, category: 'inline' },
+  'edu-timetable':     { previewOnClick: false, category: 'full' },
 };
 
 /** 도메인 → 기본 뷰 매핑 */
@@ -244,4 +248,5 @@ export const VIEW_LABELS: Record<string, string> = {
   'dict-char':         '한자 카드',
   'edu-lesson':        '수업 기록',
   'edu-assignment':    '과제 마감',
+  'edu-timetable':     '주간 시간표',
 };
