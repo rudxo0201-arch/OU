@@ -1,6 +1,6 @@
 'use client';
 
-import { CSSProperties, useState } from 'react';
+import { CSSProperties, useEffect, useState } from 'react';
 import { useCareSubjectsStore } from '@/stores/careSubjectsStore';
 import { BabyQuickBar } from './babylog/BabyQuickBar';
 import { FeedingWidget } from './babylog/widgets/FeedingWidget';
@@ -126,12 +126,25 @@ function OnboardingScreen() {
 
 // ── 메인 뷰 ──────────────────────────────────────────────────────────────
 export function BabyLogView() {
-  const { subjects, activeSubjectName, setActiveSubjectName, addSubject, loaded } = useCareSubjectsStore();
+  const { subjects, activeSubjectName, setActiveSubjectName, addSubject, loaded, setSubjects, setLoaded } = useCareSubjectsStore();
   const [showAddInput, setShowAddInput] = useState(false);
   const [newName, setNewName] = useState('');
 
-  // 로딩 전
-  if (!loaded) return null;
+  // 이 컴포넌트에서 subjects 로딩
+  useEffect(() => {
+    if (loaded) return;
+    fetch('/api/care/subjects')
+      .then(r => r.json())
+      .then(json => { if (json.subjects) setSubjects(json.subjects); setLoaded(true); })
+      .catch(() => setLoaded(true));
+  }, [loaded, setSubjects, setLoaded]);
+
+  // 로딩 중
+  if (!loaded) return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', color: 'var(--ou-text-muted)' }}>
+      <span className="ou-spinner" style={{ width: 20, height: 20 }} />
+    </div>
+  );
 
   // 온보딩: 아이가 없으면 등록 화면
   if (subjects.length === 0) return <OnboardingScreen />;

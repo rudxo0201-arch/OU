@@ -43,7 +43,7 @@ const SHORTCUTS = [
 ];
 
 export function BabyQuickBar() {
-  const { subjects, activeSubjectName, setActiveSubjectName, setSubjects, setLoaded, loaded } = useCareSubjectsStore();
+  const { subjects, activeSubjectName, setActiveSubjectName } = useCareSubjectsStore();
   const [text, setText] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [recording, setRecording] = useState(false);
@@ -54,14 +54,6 @@ export function BabyQuickBar() {
   useEffect(() => {
     setHasMic(typeof navigator !== 'undefined' && !!navigator.mediaDevices?.getUserMedia);
   }, []);
-
-  useEffect(() => {
-    if (loaded) return;
-    fetch('/api/care/subjects')
-      .then(r => r.json())
-      .then(json => { if (json.subjects) setSubjects(json.subjects); setLoaded(true); })
-      .catch(() => setLoaded(true));
-  }, [loaded, setSubjects, setLoaded]);
 
   const activeSubject = subjects.find(s => s.name === activeSubjectName) ?? null;
 
