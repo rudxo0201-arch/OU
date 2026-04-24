@@ -512,6 +512,30 @@ export async function saveMessageAsync(input: SaveMessageInput) {
     return { node: null, domain, viewHint, confidence: 'low' };
   }
 
+  // LLM이 여러 항목을 배열로 반환한 경우 → 각각 별도 노드 INSERT
+  if (extractionResult.domain_data_list && extractionResult.domain_data_list.length > 1) {
+    const baseRow = {
+      user_id: input.userId,
+      group_id: input.groupId ?? null,
+      message_id: assistantMsg?.id,
+      domain,
+      raw: combinedForExtraction,
+      source_type: 'chat',
+      confidence,
+      resolution: 'resolved',
+      view_hint: viewHint,
+      visibility: 'private',
+    };
+    const insertResults = await Promise.all(
+      extractionResult.domain_data_list.map(dd =>
+        supabase.from('data_nodes').insert({ ...baseRow, domain_data: dd }).select().single()
+      )
+    );
+    const firstNode = insertResults[0]?.data ?? null;
+    console.log(`[Layer2] multi-node insert: ${insertResults.length} nodes for domain=${domain}`);
+    return { node: firstNode, domain, viewHint, confidence };
+  }
+
   const { data: node, error: nodeErr } = await supabase.from('data_nodes').insert({
     user_id: input.userId,
     group_id: input.groupId ?? null,

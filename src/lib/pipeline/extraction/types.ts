@@ -20,6 +20,8 @@ export interface ExtractedRelation {
 
 export interface ExtractionResult {
   domain_data: Record<string, any>;
+  /** LLM이 여러 항목을 배열로 출력한 경우 — 각각 별도 노드로 저장 */
+  domain_data_list?: Record<string, any>[];
   entities: ExtractedEntity[];
   relations: ExtractedRelation[];
   confidence: 'high' | 'medium' | 'low';

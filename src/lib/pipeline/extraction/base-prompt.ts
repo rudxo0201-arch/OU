@@ -60,5 +60,17 @@ ${examplesText}
 }
 \`\`\`
 
+**여러 개의 독립적인 항목이 있을 때:** domain_data를 배열로 출력.
+\`\`\`json
+{
+  "domain_data": [
+    { /* 첫 번째 항목 */ },
+    { /* 두 번째 항목 */ }
+  ],
+  "entities": [],
+  "relations": []
+}
+\`\`\`
+
 entities, relations가 없으면 빈 배열 [].`;
 }

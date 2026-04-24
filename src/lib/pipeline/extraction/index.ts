@@ -68,24 +68,39 @@ function parseExtractionResult(text: string, requiredFields: string[]): Extracti
 
     const parsed = JSON.parse(jsonMatch[0]);
 
-    const domain_data = parsed.domain_data && typeof parsed.domain_data === 'object'
-      ? parsed.domain_data
-      : {};
-
     const entities = Array.isArray(parsed.entities) ? parsed.entities : [];
     const relations = Array.isArray(parsed.relations) ? parsed.relations : [];
 
-    // 필수 필드 누락 시 confidence 낮춤
+    const clean = (obj: Record<string, any>) =>
+      Object.fromEntries(Object.entries(obj).filter(([, v]) => v !== null && v !== undefined && v !== ''));
+
+    // LLM이 배열로 출력한 경우 — 여러 독립 항목
+    if (Array.isArray(parsed.domain_data)) {
+      const list = (parsed.domain_data as Record<string, any>[])
+        .map(clean)
+        .filter(item => requiredFields.every(f => item[f]));
+
+      if (list.length === 0) {
+        return { domain_data: {}, entities, relations, confidence: 'low' };
+      }
+      return {
+        domain_data: list[0],
+        domain_data_list: list.length > 1 ? list : undefined,
+        entities,
+        relations,
+        confidence: 'high',
+      };
+    }
+
+    // 단일 객체
+    const domain_data = parsed.domain_data && typeof parsed.domain_data === 'object'
+      ? parsed.domain_data
+      : {};
     const missingRequired = requiredFields.filter(f => !domain_data[f]);
     const confidence = missingRequired.length > 0 ? 'low' : 'high';
 
-    // 빈 값 정리
-    const cleanDomainData = Object.fromEntries(
-      Object.entries(domain_data).filter(([, v]) => v !== null && v !== undefined && v !== '')
-    );
-
     return {
-      domain_data: cleanDomainData,
+      domain_data: clean(domain_data),
       entities,
       relations,
       confidence,

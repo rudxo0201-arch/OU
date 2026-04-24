@@ -21,6 +21,8 @@ export const config: DomainExtractionConfig = {
 - 수식어+이벤트 형태면 수식어 포함: "부인과 수업", "팀 회식", "어머니 생신"
 - location은 최대한 구체적으로: "강남역 2번 출구 카페" (O), "카페" (X)
 - participants에서 나/저/우리 제외
+- 하나의 이벤트에 세부 활동이 여럿이면 단일 객체로: "3시에 재활, 스트레칭" → title: "재활, 스트레칭"
+- 시간대가 다른 별개 이벤트 여러 개면 domain_data를 배열로 출력
 `,
   examples: [
     {
@@ -32,8 +34,15 @@ export const config: DomainExtractionConfig = {
       output: { date: '2026-04-30', title: '팀 회식', location: '강남역 맥주집' },
     },
     {
-      input: '이번 일요일 6시 조선호텔 민준이 결혼식',
-      output: { date: '2026-04-26', time: '18:00', title: '결혼식', location: '조선호텔', participants: ['민준'] },
+      input: '3시엔 재활, 4시20분 부터는 신경 시험 남아있어',
+      output: [
+        { date: '2026-04-24', time: '15:00', title: '재활' },
+        { date: '2026-04-24', time: '16:20', title: '신경 시험' },
+      ],
+    },
+    {
+      input: '3시에 재활, 스트레칭',
+      output: { date: '2026-04-24', time: '15:00', title: '재활, 스트레칭' },
     },
     {
       input: '3일 후 실습',
