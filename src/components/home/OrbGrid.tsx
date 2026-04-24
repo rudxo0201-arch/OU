@@ -16,6 +16,7 @@ const DEFAULT_ORBS: OrbItem[] = [
   { slug: 'finance',  label: '가계부',  icon: '◈' },
   { slug: 'habit',    label: '습관',    icon: '⟳' },
   { slug: 'idea',     label: '아이디어', icon: '✦' },
+  { slug: 'babylog',  label: '베이비로그', icon: '◐' },
 ];
 
 function OrbIcon({ orb, onClick }: { orb: OrbItem; onClick?: () => void }) {

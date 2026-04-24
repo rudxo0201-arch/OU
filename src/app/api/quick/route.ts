@@ -28,7 +28,7 @@ export async function DELETE(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { text, domainHint } = await req.json();
+    const { text, domainHint, context } = await req.json();
     if (!text?.trim()) {
       return NextResponse.json({ error: 'empty' }, { status: 400 });
     }
@@ -38,11 +38,13 @@ export async function POST(req: NextRequest) {
 
     // 클라이언트는 낙관적으로 "기록됨" 표시 — 서버는 완전히 처리 후 응답
     // domainHint가 있으면 classifyDomain() 스킵 (앱 컨텍스트가 도메인을 결정)
+    // context는 Orb 전용 입력창에서 subject_type/subject_name 등을 주입할 때 사용
     const result = await saveMessageAsync({
       userId: user?.id,
       userMessage: text.trim(),
       assistantMessage: '',
       ...(domainHint ? { domainHint } : {}),
+      ...(context ? { context } : {}),
     });
 
     const dd = result?.node?.domain_data as Record<string, unknown> | undefined;

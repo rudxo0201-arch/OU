@@ -10,6 +10,7 @@ import { getOrbDef } from '@/components/orb/registry';
 /** 독립 앱 Orb — OrbShell 없이 자체 레이아웃으로 라우팅 */
 const STANDALONE_ORBS: Record<string, string> = {
   note: '/note',
+  babylog: '/babylog',
 };
 
 export default function OrbPage() {

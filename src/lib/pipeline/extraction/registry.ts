@@ -9,6 +9,7 @@ import { config as habitConfig } from './domains/habit';
 import { config as relationConfig } from './domains/relation';
 import { config as developmentConfig } from './domains/development';
 import { config as mediaConfig } from './domains/media';
+import { config as careConfig } from './domains/care';
 import { config as defaultConfig } from './domains/_default';
 
 export const EXTRACTION_REGISTRY: Record<string, DomainExtractionConfig> = {
@@ -25,6 +26,7 @@ export const EXTRACTION_REGISTRY: Record<string, DomainExtractionConfig> = {
   relationship: relationConfig, // relationship → relation 통합
   development: developmentConfig,
   media: mediaConfig,
+  care: careConfig,
 };
 
 export const DEFAULT_EXTRACTION_CONFIG = defaultConfig;

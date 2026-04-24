@@ -208,6 +208,8 @@ interface SaveMessageInput {
   domainHint?: string;
   /** Sonnet이 json:meta segments로 분리한 의미 단위 — 있으면 각 segment별 DataNode 생성 */
   segments?: Array<{ text: string; domain: string }>;
+  /** Orb 전용 입력창에서 주입하는 추가 컨텍스트 (subject_type, subject_name 등) — extraction 결과에 병합 */
+  context?: Record<string, any>;
 }
 
 export async function saveMessageAsync(input: SaveMessageInput) {
@@ -502,7 +504,8 @@ export async function saveMessageAsync(input: SaveMessageInput) {
     : input.userMessage;
   const extractionResult = await extractAll(combinedForExtraction, domain, today);
   const domainData = {
-    ...extractionResult.domain_data,
+    ...(input.context ?? {}),          // Orb context 먼저 (subject_type, subject_name 등)
+    ...extractionResult.domain_data,   // LLM 추출 결과로 덮어씀 (더 구체적인 값 우선)
     ...(adminInternalData ?? {}),
   };
 
@@ -605,7 +608,8 @@ export async function saveMessageAsync(input: SaveMessageInput) {
     }).catch(e => console.error('[Layer2] unresolved failed:', e));
 
     // 엔티티 서브 노드 생성 (extractAll 결과 재활용 — 추가 LLM 호출 없음)
-    if (extractionResult.entities.length > 0) {
+    // care 도메인은 subject를 domain_data로 관리하므로 중복 person 엔티티 노드 생성 스킵
+    if (extractionResult.entities.length > 0 && domain !== 'care') {
       createEntityNodes(supabase, input.userId!, node.id, extractionResult.entities, extractionResult.relations)
         .catch(e => console.error('[Layer2] entity node creation failed:', e));
     }

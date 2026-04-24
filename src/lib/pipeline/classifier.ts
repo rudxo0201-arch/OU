@@ -19,6 +19,7 @@ const VIEW_HINT_MAP: Record<string, string> = {
   media: 'scrap',
   development: 'dev_workspace',
   note: 'note',
+  care: 'care_log',
   // 하위 호환 alias (기존 데이터 대응)
   health: 'heatmap',
   relationship: 'relation',
@@ -49,6 +50,7 @@ export async function classifyDomain(text: string) {
 - media: 영화, 드라마, 음악, 책, 게임
 - development: 개발, 코딩, 기술
 - note: 노트 작성, 메모, 기록, 글쓰기, 정리 요청 ("~노트 만들어줘", "~메모해줘", "~기록해줘")
+- care: 육아/반려동물/노인 돌봄 — 수유, 기저귀, 수면, 투약, 체온, 음식반응, 발달이정표
 
 규칙:
 - 해당하는 도메인을 모두 선택 (복수 가능)

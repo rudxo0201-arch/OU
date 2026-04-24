@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useWidgetStore } from '@/stores/widgetStore';
 import { GRID_PRESETS } from '@/stores/widgetStore';
 
-const DEFAULT_DOCK = ['note', 'calendar', 'task', 'finance', 'habit', 'youtube'];
+const DEFAULT_DOCK = ['note', 'calendar', 'task', 'finance', 'habit', 'youtube', 'babylog'];
 
 const ORB_ICONS: Record<string, string> = {
   note:     '✎',
@@ -15,6 +15,7 @@ const ORB_ICONS: Record<string, string> = {
   habit:    '⟳',
   idea:     '✦',
   youtube:  '▶',
+  babylog:  '◐',
 };
 
 const ORB_LABELS: Record<string, string> = {
@@ -25,6 +26,7 @@ const ORB_LABELS: Record<string, string> = {
   habit:    '습관',
   idea:     '아이디어',
   youtube:  'YouTube',
+  babylog:  '베이비로그',
 };
 
 function DockItem({ slug }: { slug: string }) {
