@@ -4,19 +4,18 @@ import { useState, useMemo } from 'react';
 import dayjs from 'dayjs';
 import 'dayjs/locale/ko';
 import type { ViewProps } from './registry';
+import { useDeleteNode } from './_shared/useDeleteNode';
 import styles from './ChartView.module.css';
 
 dayjs.locale('ko');
 
-// ── 상수 ──────────────────────────────────────────────────────────────────
-const CAT_COLORS: Record<string, string> = {
-  '식비':    '#FF9F7A', '교통':    '#7AB8FF', '쇼핑':    '#FF7AB8',
-  '문화':    '#B87AFF', '의료':    '#7AFFB8', '교육':    '#FFE97A',
-  '주거':    '#A0CCFF', '통신':    '#C8C8C8', '여가':    '#FFA0C8',
-  '기타':    '#A0A0A0',
-  '급여':    '#7AFFB8', '용돈':    '#A8E6A8', '부업':    '#7AFFE0',
-  '투자':    '#B8FFA0', '환급':    '#D4FFA8', '기타수입': '#88CC88',
-};
+// ── 카테고리 → monochrome 색상 (해시 기반 grayscale) ──────────────────────
+function catColor(category: string): string {
+  let h = 0;
+  for (const c of category) h = (h * 31 + c.charCodeAt(0)) & 0xffff;
+  const l = 28 + (h % 14) * 4; // 28~80% lightness
+  return `hsl(0, 0%, ${l}%)`;
+}
 
 // ── 파서 ──────────────────────────────────────────────────────────────────
 interface FinanceItem {
@@ -93,7 +92,7 @@ function DonutChart({ data, total, size = 160, stroke = 24 }: {
         const dash = ratio * circ;
         const el = (
           <circle key={cat} cx={cx} cy={cy} r={radius} fill="none"
-            stroke={CAT_COLORS[cat] || '#aaa'}
+            stroke={catColor(cat)}
             strokeWidth={stroke}
             strokeDasharray={`${dash - 1} ${circ - dash + 1}`}
             strokeDashoffset={-offset}
@@ -160,6 +159,44 @@ function MonthlyBarChart({ items }: { items: FinanceItem[] }) {
   );
 }
 
+// ── 거래 행 (hover 삭제) ─────────────────────────────────────────────────
+function FinanceRow({ it, i, onDelete }: { it: FinanceItem; i: number; onDelete: (id: string, title: string) => void }) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <div
+      className={styles.tableRow}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <div className={styles.rowIcon} style={{
+        background: `${catColor(it.category)}33`,
+        color: catColor(it.category),
+      }}>
+        {it.category.slice(0, 1)}
+      </div>
+      <div className={styles.rowTitle}>{it.title}</div>
+      <div className={styles.rowCategory}>{it.category}</div>
+      <div className={`${styles.rowAmount} ${it.type === 'income' ? styles.rowAmountIncome : styles.rowAmountExpense}`}>
+        {it.type === 'income' ? '+' : '-'}{it.amount.toLocaleString()}원
+      </div>
+      <div className={styles.rowDate} style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 6 }}>
+        {it.date ? dayjs(it.date).format('M월 D일') : ''}
+        {hovered && (
+          <button onClick={() => onDelete(it.id, it.title)} style={{
+            width: 18, height: 18, borderRadius: 4, border: 'none',
+            background: 'none', cursor: 'pointer',
+            color: 'rgba(0,0,0,0.30)', fontSize: 12,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}
+          onMouseEnter={e => (e.currentTarget.style.color = 'rgba(0,0,0,0.75)')}
+          onMouseLeave={e => (e.currentTarget.style.color = 'rgba(0,0,0,0.30)')}
+          >✕</button>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ── 메인 컴포넌트 ─────────────────────────────────────────────────────────
 type DonutTab = 'expense' | 'income';
 
@@ -169,10 +206,18 @@ export function ChartView({ nodes, inline }: ViewProps & { inline?: boolean }) {
   const [search, setSearch] = useState('');
   const [catFilter, setCatFilter] = useState<string>('all');
   const [expandedCat, setExpandedCat] = useState<string | null>(null);
+  const [localDeleted, setLocalDeleted] = useState<Set<string>>(new Set());
+  const deleteNode = useDeleteNode();
 
   const currentMonth = dayjs().subtract(monthOffset, 'month');
   const prevMonth    = dayjs().subtract(monthOffset + 1, 'month');
-  const allItems = useMemo(() => parseFinance(nodes), [nodes]);
+  const allItemsRaw = useMemo(() => parseFinance(nodes), [nodes]);
+  const allItems = useMemo(() => allItemsRaw.filter(it => !localDeleted.has(it.id)), [allItemsRaw, localDeleted]);
+
+  const handleDelete = async (id: string, title: string) => {
+    const ok = await deleteNode(id, title);
+    if (ok) setLocalDeleted(prev => new Set(prev).add(id));
+  };
 
   const monthItems = useMemo(() =>
     allItems.filter(it => dayjs(it.date).format('YYYY-MM') === currentMonth.format('YYYY-MM')),
@@ -357,11 +402,11 @@ export function ChartView({ nodes, inline }: ViewProps & { inline?: boolean }) {
                   <div className={styles.catItem}
                     onClick={() => setExpandedCat(isExpanded ? null : cat)}>
                     <div className={styles.catDot}
-                      style={{ background: CAT_COLORS[cat] || '#aaa' }} />
+                      style={{ background: catColor(cat) }} />
                     <span className={styles.catName}>{cat}</span>
                     <div className={styles.catBar}>
                       <div className={styles.catBarFill}
-                        style={{ width: `${pct}%`, background: CAT_COLORS[cat] || '#aaa' }} />
+                        style={{ width: `${pct}%`, background: catColor(cat) }} />
                     </div>
                     <span className={styles.catPct}>{pct.toFixed(0)}%</span>
                     <span className={styles.catAmount}>{amt.toLocaleString()}원</span>
@@ -394,7 +439,7 @@ export function ChartView({ nodes, inline }: ViewProps & { inline?: boolean }) {
           <div className={styles.chartCardTitle}>
             최근 6개월 트렌드
             <span style={{ fontSize: 10, fontWeight: 400, marginLeft: 8, color: 'var(--ou-text-disabled)' }}>
-              <span style={{ color: 'rgba(22,163,74,0.7)' }}>■</span> 수입&nbsp;
+              <span style={{ color: 'rgba(0,0,0,0.35)' }}>■</span> 수입&nbsp;
               <span style={{ color: 'rgba(0,0,0,0.5)' }}>■</span> 지출
             </span>
           </div>
@@ -437,22 +482,7 @@ export function ChartView({ nodes, inline }: ViewProps & { inline?: boolean }) {
           </div>
         ) : (
           filteredItems.map((it, i) => (
-            <div key={`${it.id}-${i}`} className={styles.tableRow}>
-              <div className={styles.rowIcon} style={{
-                background: `${CAT_COLORS[it.category] || '#aaa'}22`,
-                color: CAT_COLORS[it.category] || '#aaa',
-              }}>
-                {it.category.slice(0, 1)}
-              </div>
-              <div className={styles.rowTitle}>{it.title}</div>
-              <div className={styles.rowCategory}>{it.category}</div>
-              <div className={`${styles.rowAmount} ${it.type === 'income' ? styles.rowAmountIncome : styles.rowAmountExpense}`}>
-                {it.type === 'income' ? '+' : '-'}{it.amount.toLocaleString()}원
-              </div>
-              <div className={styles.rowDate}>
-                {it.date ? dayjs(it.date).format('M월 D일 (ddd)') : ''}
-              </div>
-            </div>
+            <FinanceRow key={`${it.id}-${i}`} it={it} i={i} onDelete={handleDelete} />
           ))
         )}
 

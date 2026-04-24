@@ -6,6 +6,7 @@ import { stripLLMMeta } from '@/lib/utils/stripLLMMeta';
 import { cleanDisplayText } from '@/lib/utils/cleanDisplayText';
 import 'dayjs/locale/ko';
 import type { ViewProps } from './registry';
+import { useDeleteNode } from './_shared/useDeleteNode';
 import styles from './TodoView.module.css';
 
 dayjs.locale('ko');
@@ -62,10 +63,10 @@ function isUpcoming(item: TodoItem) {
 }
 
 const PRIORITY_COLOR: Record<Priority, string> = {
-  4: '#FF6B6B',
-  3: '#FF9F40',
-  2: '#4DA6FF',
-  1: 'rgba(0,0,0,0.20)',
+  4: 'rgba(0,0,0,0.85)',
+  3: 'rgba(0,0,0,0.55)',
+  2: 'rgba(0,0,0,0.30)',
+  1: 'rgba(0,0,0,0.18)',
 };
 
 const PRIORITY_LABEL: Record<Priority, string> = {
@@ -89,9 +90,10 @@ function groupByProject(items: TodoItem[]): { label: string; items: TodoItem[] }
 }
 
 // ── 개별 할 일 행 ─────────────────────────────────────────────────────────
-function TodoRow({ item, onToggle, compact }: {
+function TodoRow({ item, onToggle, onDelete, compact }: {
   item: TodoItem;
   onToggle: (id: string, done: boolean) => void;
+  onDelete?: (id: string, title: string) => void;
   compact?: boolean;
 }) {
   const [hovered, setHovered] = useState(false);
@@ -144,12 +146,13 @@ function TodoRow({ item, onToggle, compact }: {
         {item.deadline && !compact && (
           <div style={{
             fontSize: 11, marginTop: 2,
-            color: overdue ? '#FF6B6B' : 'var(--ou-text-disabled)',
+            color: overdue ? 'rgba(0,0,0,0.75)' : 'var(--ou-text-disabled)',
+            fontWeight: overdue ? 600 : 400,
             display: 'flex', alignItems: 'center', gap: 3,
           }}>
             <span>{overdue ? '⚠' : '◷'}</span>
             <span>{dayjs(item.deadline).format('M월 D일 (ddd)')}</span>
-            {overdue && <span style={{ fontWeight: 600 }}> · 기한 지남</span>}
+            {overdue && <span> · 기한 지남</span>}
           </div>
         )}
       </div>
@@ -158,13 +161,34 @@ function TodoRow({ item, onToggle, compact }: {
       {p >= 3 && !compact && (
         <span style={{
           fontSize: 9, padding: '2px 6px', borderRadius: 999, flexShrink: 0,
-          background: `${PRIORITY_COLOR[p]}22`,
+          background: 'rgba(0,0,0,0.06)',
           color: PRIORITY_COLOR[p],
-          border: `1px solid ${PRIORITY_COLOR[p]}44`,
+          border: `1px solid ${PRIORITY_COLOR[p]}`,
           fontWeight: 600, marginTop: 2,
         }}>
           {PRIORITY_LABEL[p]}
         </span>
+      )}
+
+      {/* 삭제 버튼 */}
+      {!compact && onDelete && hovered && (
+        <button
+          onClick={() => onDelete(item.nodeId, item.title)}
+          style={{
+            flexShrink: 0, marginTop: 2,
+            width: 20, height: 20,
+            borderRadius: 4, border: 'none',
+            background: 'none', cursor: 'pointer',
+            color: 'rgba(0,0,0,0.30)',
+            fontSize: 13, lineHeight: 1,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            transition: '150ms',
+          }}
+          onMouseEnter={e => (e.currentTarget.style.color = 'rgba(0,0,0,0.75)')}
+          onMouseLeave={e => (e.currentTarget.style.color = 'rgba(0,0,0,0.30)')}
+        >
+          ✕
+        </button>
       )}
     </div>
   );
@@ -187,12 +211,20 @@ function SectionLabel({ label, color }: { label: string; color?: string }) {
 export function TodoView({ nodes, inline }: ViewProps) {
   const [subTab, setSubTab] = useState<SubTab>('today');
   const [localDone, setLocalDone] = useState<Record<string, boolean>>({});
+  const [localDeleted, setLocalDeleted] = useState<Set<string>>(new Set());
+  const deleteNode = useDeleteNode();
 
-  const allTodos = useMemo(() => parseTodos(nodes), [nodes]);
+  const allTodosRaw = useMemo(() => parseTodos(nodes), [nodes]);
+  const allTodos = useMemo(() => allTodosRaw.filter(t => !localDeleted.has(t.id)), [allTodosRaw, localDeleted]);
 
   const getIsDone = useCallback((item: TodoItem) =>
     localDone[item.id] !== undefined ? localDone[item.id] : item.done,
   [localDone]);
+
+  const handleDelete = useCallback(async (nodeId: string, title: string) => {
+    const ok = await deleteNode(nodeId, title);
+    if (ok) setLocalDeleted(prev => new Set(prev).add(nodeId));
+  }, [deleteNode]);
 
   const handleToggle = useCallback((id: string, done: boolean) => {
     setLocalDone(prev => ({ ...prev, [id]: done }));
@@ -308,16 +340,16 @@ export function TodoView({ nodes, inline }: ViewProps) {
         {/* 오늘 탭 */}
         {subTab === 'today' && tabItems.length > 0 && (
           <div className={styles.section}>
-            {overdueItems.length > 0 && <SectionLabel label="기한 지남" color="#FF6B6B" />}
+            {overdueItems.length > 0 && <SectionLabel label="기한 지남" />}
             <div className={styles.todoList}>
               {overdueItems.map(item => (
-                <TodoRow key={item.id} item={{ ...item, done: getIsDone(item) }} onToggle={handleToggle} />
+                <TodoRow key={item.id} item={{ ...item, done: getIsDone(item) }} onToggle={handleToggle} onDelete={handleDelete} />
               ))}
             </div>
             {todayItems.length > 0 && overdueItems.length > 0 && <SectionLabel label="오늘" />}
             <div className={styles.todoList}>
               {todayItems.map(item => (
-                <TodoRow key={item.id} item={{ ...item, done: getIsDone(item) }} onToggle={handleToggle} />
+                <TodoRow key={item.id} item={{ ...item, done: getIsDone(item) }} onToggle={handleToggle} onDelete={handleDelete} />
               ))}
             </div>
           </div>
@@ -327,7 +359,7 @@ export function TodoView({ nodes, inline }: ViewProps) {
         {subTab === 'upcoming' && tabItems.length > 0 && (
           <div className={`${styles.section} ${styles.todoList}`}>
             {tabItems.map(item => (
-              <TodoRow key={item.id} item={{ ...item, done: getIsDone(item) }} onToggle={handleToggle} />
+              <TodoRow key={item.id} item={{ ...item, done: getIsDone(item) }} onToggle={handleToggle} onDelete={handleDelete} />
             ))}
           </div>
         )}
@@ -340,7 +372,7 @@ export function TodoView({ nodes, inline }: ViewProps) {
                 <SectionLabel label={group.label} />
                 <div className={styles.todoList}>
                   {group.items.map(item => (
-                    <TodoRow key={item.id} item={{ ...item, done: getIsDone(item) }} onToggle={handleToggle} />
+                    <TodoRow key={item.id} item={{ ...item, done: getIsDone(item) }} onToggle={handleToggle} onDelete={handleDelete} />
                   ))}
                 </div>
               </div>
@@ -352,7 +384,7 @@ export function TodoView({ nodes, inline }: ViewProps) {
         {subTab === 'done' && tabItems.length > 0 && (
           <div className={styles.todoList} style={{ opacity: 0.65 }}>
             {tabItems.map(item => (
-              <TodoRow key={item.id} item={{ ...item, done: true }} onToggle={handleToggle} />
+              <TodoRow key={item.id} item={{ ...item, done: true }} onToggle={handleToggle} onDelete={handleDelete} />
             ))}
           </div>
         )}

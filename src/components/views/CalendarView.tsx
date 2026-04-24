@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { useDeleteNode } from './_shared/useDeleteNode';
 import { CaretLeft, CaretRight } from '@phosphor-icons/react';
 import dayjs from 'dayjs';
 import 'dayjs/locale/ko';
@@ -224,7 +225,45 @@ function WeekView({ currentWeek, events, onDayClick, selectedDay }: {
 }
 
 // ── 아젠다 뷰 ─────────────────────────────────────────────────────────────
-function AgendaView({ events }: { events: CalEvent[] }) {
+function AgendaEventRow({ e, onDelete }: { e: CalEvent; onDelete: (id: string, title: string) => void }) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        display: 'flex', gap: 12, alignItems: 'flex-start',
+        padding: '10px 12px',
+        background: hovered ? 'rgba(0,0,0,0.06)' : 'rgba(0,0,0,0.04)',
+        borderRadius: 10,
+        borderLeft: '2px solid rgba(0,0,0,0.18)',
+        transition: '150ms',
+      }}>
+      <div style={{ width: 40, flexShrink: 0, fontSize: 11, color: 'var(--ou-text-disabled)', paddingTop: 1 }}>
+        {e.time || '종일'}
+      </div>
+      <div style={{ flex: 1 }}>
+        <div style={{ fontSize: 14, color: 'var(--ou-text-heading)', fontWeight: 500 }}>{e.title}</div>
+        {e.location && (
+          <div style={{ fontSize: 11, color: 'var(--ou-text-muted)', marginTop: 3 }}>◎ {e.location}</div>
+        )}
+      </div>
+      {hovered && (
+        <button onClick={() => onDelete(e.id, e.title)} style={{
+          flexShrink: 0, width: 20, height: 20, borderRadius: 4,
+          border: 'none', background: 'none', cursor: 'pointer',
+          color: 'rgba(0,0,0,0.30)', fontSize: 13,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}
+        onMouseEnter={ev => (ev.currentTarget.style.color = 'rgba(0,0,0,0.75)')}
+        onMouseLeave={ev => (ev.currentTarget.style.color = 'rgba(0,0,0,0.30)')}
+        >✕</button>
+      )}
+    </div>
+  );
+}
+
+function AgendaView({ events, onDelete }: { events: CalEvent[]; onDelete: (id: string, title: string) => void }) {
   const today = dayjs();
   const upcoming = events
     .filter(e => !e.date.isBefore(today, 'day'))
@@ -263,33 +302,12 @@ function AgendaView({ events }: { events: CalEvent[] }) {
               borderBottom: '1px solid rgba(0,0,0,0.07)',
               display: 'flex', alignItems: 'center', gap: 6,
             }}>
-              {isToday && <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'rgba(120,220,140,0.8)', display: 'inline-block' }} />}
+              {isToday && <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'rgba(0,0,0,0.70)', display: 'inline-block' }} />}
               {label}
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {dayEvents.map(e => (
-                <div key={e.id} style={{
-                  display: 'flex', gap: 12, alignItems: 'flex-start',
-                  padding: '10px 12px',
-                  background: 'rgba(0,0,0,0.04)',
-                  borderRadius: 10,
-                  borderLeft: '2px solid rgba(0,0,0,0.18)',
-                }}>
-                  {/* 시간 */}
-                  <div style={{ width: 40, flexShrink: 0, fontSize: 11, color: 'var(--ou-text-disabled)', paddingTop: 1 }}>
-                    {e.time || '종일'}
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 14, color: 'var(--ou-text-heading)', fontWeight: 500 }}>
-                      {e.title}
-                    </div>
-                    {e.location && (
-                      <div style={{ fontSize: 11, color: 'var(--ou-text-muted)', marginTop: 3 }}>
-                        📍 {e.location}
-                      </div>
-                    )}
-                  </div>
-                </div>
+                <AgendaEventRow key={e.id} e={e} onDelete={onDelete} />
               ))}
             </div>
           </div>
@@ -300,7 +318,7 @@ function AgendaView({ events }: { events: CalEvent[] }) {
 }
 
 // ── 선택한 날 이벤트 패널 ─────────────────────────────────────────────────
-function DayPanel({ day, events }: { day: dayjs.Dayjs; events: CalEvent[] }) {
+function DayPanel({ day, events, onDelete }: { day: dayjs.Dayjs; events: CalEvent[]; onDelete: (id: string, title: string) => void }) {
   const dayEvents = events.filter(e => e.date.isSame(day, 'day'));
   const today = dayjs();
   const isToday = day.isSame(today, 'day');
@@ -320,19 +338,7 @@ function DayPanel({ day, events }: { day: dayjs.Dayjs; events: CalEvent[] }) {
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
         {dayEvents.map(e => (
-          <div key={e.id} style={{
-            display: 'flex', gap: 10, alignItems: 'center',
-            padding: '8px 10px', borderRadius: 8,
-            background: 'rgba(0,0,0,0.05)',
-          }}>
-            <div style={{ fontSize: 11, color: 'var(--ou-text-disabled)', width: 36, flexShrink: 0 }}>
-              {e.time || '종일'}
-            </div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 13, color: 'var(--ou-text-body)' }}>{e.title}</div>
-              {e.location && <div style={{ fontSize: 11, color: 'var(--ou-text-muted)', marginTop: 1 }}>📍 {e.location}</div>}
-            </div>
-          </div>
+          <AgendaEventRow key={e.id} e={e} onDelete={onDelete} />
         ))}
       </div>
     </div>
@@ -345,8 +351,16 @@ export function CalendarView({ nodes, inline }: ViewProps & { inline?: boolean }
   const [currentMonth, setCurrentMonth] = useState(dayjs());
   const [currentWeek, setCurrentWeek]   = useState(dayjs());
   const [selectedDay, setSelectedDay]   = useState<dayjs.Dayjs | null>(null);
+  const [localDeleted, setLocalDeleted] = useState<Set<string>>(new Set());
+  const deleteNode = useDeleteNode();
 
-  const events = useMemo(() => parseEvents(nodes), [nodes]);
+  const allEvents = useMemo(() => parseEvents(nodes), [nodes]);
+  const events = useMemo(() => allEvents.filter(e => !localDeleted.has(e.id)), [allEvents, localDeleted]);
+
+  const handleDelete = async (id: string, title: string) => {
+    const ok = await deleteNode(id, title);
+    if (ok) setLocalDeleted(prev => new Set(prev).add(id));
+  };
 
   // ── 인라인 ────────────────────────────────────────────────────────────
   if (inline) {
@@ -462,7 +476,7 @@ export function CalendarView({ nodes, inline }: ViewProps & { inline?: boolean }
               selectedDay={selectedDay}
             />
           )}
-          {view === 'agenda' && <AgendaView events={events} />}
+          {view === 'agenda' && <AgendaView events={events} onDelete={handleDelete} />}
 
           {events.length === 0 && (
             <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--ou-text-disabled)', fontSize: 13 }}>
@@ -483,13 +497,7 @@ export function CalendarView({ nodes, inline }: ViewProps & { inline?: boolean }
               <div className={styles.dayPanelEmpty}>일정 없음</div>
             ) : (
               panelEvents.map(e => (
-                <div key={e.id} className={styles.eventRow}>
-                  <div className={styles.eventTime}>{e.time || '종일'}</div>
-                  <div>
-                    <div className={styles.eventTitle}>{e.title}</div>
-                    {e.location && <div className={styles.eventLocation}>📍 {e.location}</div>}
-                  </div>
-                </div>
+                <AgendaEventRow key={e.id} e={e} onDelete={handleDelete} />
               ))
             )}
           </div>
@@ -506,11 +514,3 @@ export function CalendarView({ nodes, inline }: ViewProps & { inline?: boolean }
   );
 }
 
-const navBtnStyle: React.CSSProperties = {
-  width: 28, height: 28, borderRadius: 6,
-  border: 'none', background: 'rgba(0,0,0,0.05)',
-  color: 'var(--ou-text-muted)',
-  cursor: 'pointer',
-  display: 'flex', alignItems: 'center', justifyContent: 'center',
-  transition: '150ms',
-};

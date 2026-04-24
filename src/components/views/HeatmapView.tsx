@@ -1,9 +1,10 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import dayjs from 'dayjs';
 import 'dayjs/locale/ko';
 import type { ViewProps } from './registry';
+import { useDeleteNode } from './_shared/useDeleteNode';
 import styles from './HeatmapView.module.css';
 
 dayjs.locale('ko');
@@ -23,6 +24,7 @@ interface HabitSummary {
   thisWeek: number;
   lastChecked: string | null;
   doneToday: boolean;
+  todayNodeIds: string[]; // 오늘 체크인된 노드ID들
 }
 
 function parseHabits(nodes: ViewProps['nodes']): HabitSummary[] {
@@ -32,26 +34,22 @@ function parseHabits(nodes: ViewProps['nodes']): HabitSummary[] {
     if (n.domain !== 'habit') continue;
     const date = n.domain_data?.date ?? (n.created_at ? n.created_at.slice(0, 10) : null);
     if (!date) continue;
-    // 습관명: domain_data.title / domain_data.name / raw 앞 20자
-    const name: string =
-      n.domain_data?.title || n.domain_data?.name ||
-      (n.raw ?? '').replace(/습관|했다|함|완료|체크/g, '').trim().slice(0, 20) || '습관';
+    // domain_data.title / domain_data.name 우선, raw는 폴백
+    const rawName = (n.raw ?? '').replace(/습관|했다|함|완료|체크|오늘|매일/g, '').trim().slice(0, 20);
+    const name: string = (n.domain_data?.title || n.domain_data?.name || rawName || '습관') as string;
     if (!byName.has(name)) byName.set(name, []);
     byName.get(name)!.push({ habitName: name, date, nodeId: n.id });
   }
 
-  // 습관명이 없으면 전체를 '전체 활동'으로 묶기
   if (byName.size === 0) return [];
 
   const today = dayjs().format('YYYY-MM-DD');
   const weekAgo = dayjs().subtract(6, 'day').format('YYYY-MM-DD');
 
   return Array.from(byName.entries()).map(([name, records]) => {
-    // 연속 스트릭 계산
     const dateSet = new Set(records.map(r => r.date));
     let streak = 0;
     let d = dayjs();
-    // 오늘 기록이 없으면 어제부터 시작
     if (!dateSet.has(today)) d = d.subtract(1, 'day');
     while (dateSet.has(d.format('YYYY-MM-DD'))) {
       streak++;
@@ -60,6 +58,7 @@ function parseHabits(nodes: ViewProps['nodes']): HabitSummary[] {
 
     const thisWeek = records.filter(r => r.date >= weekAgo && r.date <= today).length;
     const sorted = [...records].sort((a, b) => b.date.localeCompare(a.date));
+    const todayNodeIds = records.filter(r => r.date === today).map(r => r.nodeId);
 
     return {
       name,
@@ -69,12 +68,21 @@ function parseHabits(nodes: ViewProps['nodes']): HabitSummary[] {
       thisWeek,
       lastChecked: sorted[0]?.date ?? null,
       doneToday: dateSet.has(today),
+      todayNodeIds,
     };
   }).sort((a, b) => {
-    // 오늘 안한 것 먼저, 스트릭 높은 것 먼저
     if (a.doneToday !== b.doneToday) return a.doneToday ? 1 : -1;
     return b.streak - a.streak;
   });
+}
+
+// ── streak 강도 (monochrome) ───────────────────────────────────────────────
+function streakOpacity(streak: number): string {
+  if (streak >= 30) return 'rgba(0,0,0,0.90)';
+  if (streak >= 14) return 'rgba(0,0,0,0.72)';
+  if (streak >= 7)  return 'rgba(0,0,0,0.55)';
+  if (streak >= 3)  return 'rgba(0,0,0,0.40)';
+  return 'rgba(0,0,0,0.22)';
 }
 
 // ── 미니 7일 막대 ─────────────────────────────────────────────────────────
@@ -94,7 +102,7 @@ function WeekBar({ records }: { records: HabitRecord[] }) {
               width: 8, height: done ? 16 : 6,
               borderRadius: 2,
               background: done
-                ? (isToday ? 'rgba(120,220,140,0.9)' : 'rgba(0,0,0,0.25)')
+                ? (isToday ? 'rgba(0,0,0,0.85)' : 'rgba(0,0,0,0.28)')
                 : 'rgba(0,0,0,0.07)',
               transition: '200ms ease',
             }}
@@ -105,7 +113,7 @@ function WeekBar({ records }: { records: HabitRecord[] }) {
   );
 }
 
-// ── 52주 히트맵 ───────────────────────────────────────────────────────────
+// ── 26주 히트맵 ───────────────────────────────────────────────────────────
 function MiniHeatmap({ records }: { records: HabitRecord[] }) {
   const WEEKS = 26;
   const today = dayjs();
@@ -126,9 +134,9 @@ function MiniHeatmap({ records }: { records: HabitRecord[] }) {
               <rect key={key}
                 x={w * 11} y={d * 11}
                 width={9} height={9} rx={2}
-                fill={done ? 'rgba(120,220,140,0.7)' : 'rgba(0,0,0,0.05)'}
-                stroke={isToday ? 'rgba(0,0,0,0.25)' : 'none'}
-                strokeWidth={isToday ? 1 : 0}
+                fill={done ? 'rgba(0,0,0,0.60)' : 'rgba(0,0,0,0.05)'}
+                stroke={isToday ? 'rgba(0,0,0,0.35)' : 'none'}
+                strokeWidth={isToday ? 1.5 : 0}
               >
                 <title>{`${key}: ${done ? '✓' : '—'}`}</title>
               </rect>
@@ -141,18 +149,15 @@ function MiniHeatmap({ records }: { records: HabitRecord[] }) {
 }
 
 // ── 습관 카드 ─────────────────────────────────────────────────────────────
-function HabitCard({ habit, expanded, onToggle }: {
+function HabitCard({ habit, expanded, onExpand, onCheckIn, onDelete, isCheckingIn }: {
   habit: HabitSummary;
   expanded: boolean;
-  onToggle: () => void;
+  onExpand: () => void;
+  onCheckIn: () => void;
+  onDelete: (nodeId: string) => void;
+  isCheckingIn: boolean;
 }) {
   const [hovered, setHovered] = useState(false);
-
-  const streakColor = habit.streak >= 30 ? '#FFD700'
-    : habit.streak >= 14 ? '#FF9F40'
-    : habit.streak >= 7  ? '#7AFFB8'
-    : habit.streak >= 3  ? 'rgba(0,0,0,0.55)'
-    : 'rgba(0,0,0,0.22)';
 
   return (
     <div
@@ -161,88 +166,97 @@ function HabitCard({ habit, expanded, onToggle }: {
       style={{
         background: hovered ? 'rgba(0,0,0,0.05)' : 'rgba(0,0,0,0.03)',
         borderRadius: 14,
-        padding: '14px 16px',
         border: '1px solid rgba(0,0,0,0.07)',
         transition: '150ms',
-        cursor: 'pointer',
       }}
-      onClick={onToggle}
     >
-      {/* 상단: 이름 + 오늘 상태 */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          {/* 오늘 체크 인디케이터 */}
-          <div style={{
-            width: 10, height: 10, borderRadius: '50%', flexShrink: 0,
-            background: habit.doneToday ? 'rgba(120,220,140,0.9)' : 'rgba(0,0,0,0.12)',
-            boxShadow: habit.doneToday ? '0 0 6px rgba(120,220,140,0.5)' : 'none',
-          }} />
-          <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ou-text-heading)' }}>
+      {/* 상단 행: 체크 + 이름 + 스트릭 */}
+      <div
+        style={{
+          display: 'flex', alignItems: 'center', gap: 10,
+          padding: '14px 16px',
+          cursor: 'pointer',
+        }}
+      >
+        {/* 오늘 체크 버튼 — 카드 expand와 분리 */}
+        <button
+          onClick={(e) => { e.stopPropagation(); onCheckIn(); }}
+          disabled={isCheckingIn}
+          title={habit.doneToday ? '체크 해제' : '오늘 완료'}
+          style={{
+            width: 22, height: 22,
+            borderRadius: '50%',
+            border: `2px solid ${habit.doneToday ? 'rgba(0,0,0,0.70)' : 'rgba(0,0,0,0.20)'}`,
+            background: habit.doneToday ? 'rgba(0,0,0,0.80)' : 'transparent',
+            flexShrink: 0, cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            transition: '150ms',
+          }}
+        >
+          {habit.doneToday && (
+            <span style={{ color: '#fff', fontSize: 11, lineHeight: 1 }}>✓</span>
+          )}
+        </button>
+
+        {/* 이름 + 스트릭 */}
+        <div
+          onClick={onExpand}
+          style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+        >
+          <span style={{
+            fontSize: 14, fontWeight: 600,
+            color: habit.doneToday ? 'var(--ou-text-secondary)' : 'var(--ou-text-heading)',
+            textDecoration: habit.doneToday ? 'line-through' : 'none',
+          }}>
             {habit.name}
           </span>
-        </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          {/* 스트릭 */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-            <span style={{ fontSize: 13 }}>🔥</span>
-            <span style={{ fontSize: 13, fontWeight: 700, color: streakColor }}>
-              {habit.streak}일
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
+            <span style={{
+              fontSize: 13, fontWeight: 700,
+              color: streakOpacity(habit.streak),
+            }}>
+              {habit.streak > 0 ? `${habit.streak}일` : '—'}
             </span>
+            <span style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>
+              주 {habit.thisWeek}/7
+            </span>
+            {/* expand chevron */}
+            <span style={{
+              fontSize: 10, color: 'var(--ou-text-disabled)',
+              transition: '150ms', transform: expanded ? 'rotate(180deg)' : 'none',
+            }}>▾</span>
           </div>
-          {/* 이번 주 */}
-          <span style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>
-            이번 주 {habit.thisWeek}/7
-          </span>
         </div>
       </div>
 
       {/* 7일 막대 */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div style={{ padding: '0 16px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <WeekBar records={habit.records} />
-        <span style={{ fontSize: 10, color: 'var(--ou-text-disabled)', marginLeft: 8 }}>
-          총 {habit.totalDays}일
-        </span>
+        <span style={{ fontSize: 10, color: 'var(--ou-text-disabled)', marginLeft: 8 }}>총 {habit.totalDays}일</span>
       </div>
 
-      {/* 펼침: 26주 히트맵 */}
+      {/* 펼침: 26주 히트맵 + 삭제 */}
       {expanded && (
-        <div style={{ marginTop: 14, paddingTop: 12, borderTop: '1px solid rgba(0,0,0,0.07)' }}>
-          <div style={{ fontSize: 11, color: 'var(--ou-text-muted)', marginBottom: 6 }}>
-            지난 26주
-          </div>
+        <div style={{ padding: '12px 16px 14px', borderTop: '1px solid rgba(0,0,0,0.07)' }}>
+          <div style={{ fontSize: 11, color: 'var(--ou-text-muted)', marginBottom: 6 }}>지난 26주</div>
           <MiniHeatmap records={habit.records} />
+          {/* 오늘 기록 삭제 */}
+          {habit.todayNodeIds.length > 0 && (
+            <button
+              onClick={() => onDelete(habit.todayNodeIds[0])}
+              style={{
+                marginTop: 12, padding: '4px 10px',
+                fontSize: 11, color: 'var(--ou-text-muted)',
+                background: 'none', border: '1px solid rgba(0,0,0,0.12)',
+                borderRadius: 6, cursor: 'pointer',
+              }}
+            >
+              오늘 기록 삭제
+            </button>
+          )}
         </div>
       )}
-    </div>
-  );
-}
-
-// ── 상단 통계 ─────────────────────────────────────────────────────────────
-function GlobalStats({ habits }: { habits: HabitSummary[] }) {
-  const todayDone  = habits.filter(h => h.doneToday).length;
-  const totalHabits = habits.length;
-  const bestStreak = Math.max(...habits.map(h => h.streak), 0);
-  const pct = totalHabits > 0 ? Math.round((todayDone / totalHabits) * 100) : 0;
-
-  return (
-    <div style={{
-      display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
-      gap: 10, marginBottom: 20,
-    }}>
-      {[
-        { label: '오늘 완료', value: `${todayDone}/${totalHabits}`, sub: `${pct}%` },
-        { label: '최장 스트릭', value: `${bestStreak}일`, sub: '연속' },
-        { label: '총 습관', value: String(totalHabits), sub: '개' },
-      ].map(s => (
-        <div key={s.label} style={{
-          background: 'rgba(0,0,0,0.04)',
-          borderRadius: 12, padding: '12px 14px', textAlign: 'center',
-        }}>
-          <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--ou-text-heading)' }}>{s.value}</div>
-          <div style={{ fontSize: 10, color: 'var(--ou-text-disabled)', marginTop: 2 }}>{s.label}</div>
-        </div>
-      ))}
     </div>
   );
 }
@@ -262,7 +276,7 @@ function TodayRing({ done, total }: { done: number; total: number }) {
         <circle cx={size/2} cy={size/2} r={r} fill="none"
           stroke="rgba(0,0,0,0.07)" strokeWidth={stroke} />
         <circle cx={size/2} cy={size/2} r={r} fill="none"
-          stroke="rgba(120,220,140,0.8)" strokeWidth={stroke}
+          stroke="rgba(0,0,0,0.80)" strokeWidth={stroke}
           strokeDasharray={`${pct * circ} ${circ}`}
           strokeLinecap="round"
           style={{ transition: '500ms ease' }}
@@ -285,8 +299,38 @@ function TodayRing({ done, total }: { done: number; total: number }) {
 // ── 메인 ──────────────────────────────────────────────────────────────────
 export function HeatmapView({ nodes }: ViewProps) {
   const [expandedHabit, setExpandedHabit] = useState<string | null>(null);
+  const [checkingIn, setCheckingIn] = useState<Set<string>>(new Set());
+  const deleteNode = useDeleteNode();
 
   const habits = useMemo(() => parseHabits(nodes), [nodes]);
+
+  const handleCheckIn = useCallback(async (habit: HabitSummary) => {
+    if (checkingIn.has(habit.name)) return;
+    setCheckingIn(prev => new Set(prev).add(habit.name));
+    try {
+      if (!habit.doneToday) {
+        await fetch('/api/quick', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: `${habit.name} 완료`, domainHint: 'habit' }),
+        });
+      } else {
+        await Promise.all(
+          habit.todayNodeIds.map(id => fetch(`/api/quick?nodeId=${id}`, { method: 'DELETE' }))
+        );
+      }
+      window.dispatchEvent(new CustomEvent('ou-node-created', { detail: { domain: 'habit' } }));
+    } catch {
+      // silent — Realtime이 없을 경우 manual refresh 필요
+    } finally {
+      setCheckingIn(prev => { const n = new Set(prev); n.delete(habit.name); return n; });
+    }
+  }, [checkingIn]);
+
+  const handleDelete = useCallback(async (nodeId: string, habitName: string) => {
+    const ok = await deleteNode(nodeId, `${habitName} 오늘 기록`);
+    if (ok) window.dispatchEvent(new CustomEvent('ou-node-created', { detail: { domain: 'habit' } }));
+  }, [deleteNode]);
 
   if (nodes.length === 0 || habits.length === 0) {
     return (
@@ -306,8 +350,6 @@ export function HeatmapView({ nodes }: ViewProps) {
   const todayDone  = habits.filter(h => h.doneToday).length;
   const bestStreak = Math.max(...habits.map(h => h.streak), 0);
   const todayPct   = habits.length > 0 ? Math.round((todayDone / habits.length) * 100) : 0;
-
-  // 전체 히트맵용: 모든 습관 레코드를 합산
   const allRecords = useMemo(() => habits.flatMap(h => h.records), [habits]);
 
   return (
@@ -352,7 +394,10 @@ export function HeatmapView({ nodes }: ViewProps) {
                   <HabitCard
                     key={h.name} habit={h}
                     expanded={expandedHabit === h.name}
-                    onToggle={() => setExpandedHabit(expandedHabit === h.name ? null : h.name)}
+                    onExpand={() => setExpandedHabit(expandedHabit === h.name ? null : h.name)}
+                    onCheckIn={() => handleCheckIn(h)}
+                    onDelete={(nodeId) => handleDelete(nodeId, h.name)}
+                    isCheckingIn={checkingIn.has(h.name)}
                   />
                 ))}
               </div>
@@ -360,13 +405,16 @@ export function HeatmapView({ nodes }: ViewProps) {
           )}
           {habits.filter(h => h.doneToday).length > 0 && (
             <>
-              <SectionLabel label={`오늘 완료 · ${habits.filter(h => h.doneToday).length}개`} color="rgba(22,163,74,0.6)" />
+              <SectionLabel label={`오늘 완료 · ${habits.filter(h => h.doneToday).length}개`} />
               <div className={styles.habitList}>
                 {habits.filter(h => h.doneToday).map(h => (
                   <HabitCard
                     key={h.name} habit={h}
                     expanded={expandedHabit === h.name}
-                    onToggle={() => setExpandedHabit(expandedHabit === h.name ? null : h.name)}
+                    onExpand={() => setExpandedHabit(expandedHabit === h.name ? null : h.name)}
+                    onCheckIn={() => handleCheckIn(h)}
+                    onDelete={(nodeId) => handleDelete(nodeId, h.name)}
+                    isCheckingIn={checkingIn.has(h.name)}
                   />
                 ))}
               </div>
@@ -394,11 +442,11 @@ export function HeatmapView({ nodes }: ViewProps) {
   );
 }
 
-function SectionLabel({ label, color }: { label: string; color?: string }) {
+function SectionLabel({ label }: { label: string }) {
   return (
     <div style={{
       fontSize: 10, fontWeight: 700,
-      color: color || 'var(--ou-text-disabled)',
+      color: 'var(--ou-text-disabled)',
       letterSpacing: '0.08em', textTransform: 'uppercase',
       padding: '4px 4px 2px',
     }}>
