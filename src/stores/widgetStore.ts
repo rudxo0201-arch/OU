@@ -22,18 +22,13 @@ export const GRID_PRESETS = [
 
 const DEFAULT_LAYOUT: WidgetInstance[] = [
   { id: 'default-qsbar',    type: 'qsbar',         x: 4,  y: 0, w: 8, h: 2 },
-  { id: 'default-schedule', type: 'today-schedule', x: 0,  y: 2, w: 5, h: 4 },
-  { id: 'default-task',     type: 'today-tasks',    x: 5,  y: 2, w: 5, h: 4 },
-  { id: 'default-finance',  type: 'today-finance',  x: 10, y: 2, w: 6, h: 4 },
-  { id: 'default-habit',    type: 'habit-log',      x: 0,  y: 6, w: 4, h: 3 },
-  { id: 'default-note',     type: 'recent-notes',   x: 4,  y: 6, w: 6, h: 3 },
-  { id: 'default-idea',     type: 'idea-notes',     x: 10, y: 6, w: 6, h: 3 },
+  { id: 'default-schedule', type: 'today-schedule', x: 2,  y: 2, w: 12, h: 7 },
 ];
 const DEFAULT_PAGE2_LAYOUT: WidgetInstance[] = [];
 const ADMIN_LAYOUT: WidgetInstance[] = [];
 const ADMIN_PAGE2_LAYOUT: WidgetInstance[] = [];
 
-const LAYOUT_VERSION = 9;
+const LAYOUT_VERSION = 10;
 
 export interface WidgetPage {
   id: string;
