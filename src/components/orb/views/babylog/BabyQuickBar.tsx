@@ -123,6 +123,18 @@ export function BabyQuickBar() {
           ))}
         </div>
 
+        {/* 안내 문구 */}
+        {!activeSubjectName && (
+          <p style={{ fontSize: 12, color: 'var(--ou-text-muted)', marginBottom: 8, marginTop: -2 }}>
+            이름을 꼭 말해주세요 —{' '}
+            <span style={{ color: 'var(--ou-text-secondary)' }}>
+              {subjects.slice(0, 2).map((s, i) => (
+                <span key={s.name}>{i > 0 && ' · '}{s.name} 120ml</span>
+              ))}
+            </span>
+          </p>
+        )}
+
         {/* 입력창 */}
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           {activeSubjectName && (
