@@ -7,6 +7,7 @@ import { WidgetGrid } from '@/components/widgets/WidgetGrid';
 import { ViewPickerPanel } from '@/components/widgets/ViewPickerPanel';
 import '@/components/widgets/views/register';
 
+const NAV_HEIGHT  = 56;
 const DOCK_HEIGHT = 80;
 
 export default function HomePage() {
@@ -49,7 +50,7 @@ export default function HomePage() {
         {/* ── 위젯 그리드 ── */}
         <div style={{
           position: 'absolute',
-          top: 0, bottom: DOCK_HEIGHT, left: 0, right: 0,
+          top: NAV_HEIGHT, bottom: DOCK_HEIGHT, left: 0, right: 0,
         }}>
           <WidgetGrid />
         </div>
