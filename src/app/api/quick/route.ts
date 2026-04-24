@@ -53,6 +53,8 @@ export async function POST(req: NextRequest) {
       nodeId: result?.node?.id ?? null,
       domain: result?.domain ?? null,
       title: (dd?.title ?? dd?.what ?? dd?.text ?? null) as string | null,
+      // care 도메인: LLM이 추출한 subject_name 반환 → 클라이언트에서 신규 등록 여부 판단
+      subjectName: result?.domain === 'care' ? (dd?.subject_name ?? null) : null,
     });
   } catch (e) {
     console.error('[Quick] error:', e);
