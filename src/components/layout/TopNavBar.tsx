@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { CSSProperties, useState } from 'react';
-import { GlassAvatar } from '@/components/ds';
+import { GlassAvatar, OuLogo } from '@/components/ds';
 import { useAuthStore } from '@/stores/authStore';
 import { createClient } from '@/lib/supabase/client';
 import { useEffect } from 'react';
@@ -53,15 +53,7 @@ export function TopNavBar() {
     <nav style={navStyle}>
       {/* 로고 */}
       <Link href="/home" style={{ marginRight: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span style={{
-          fontFamily: 'var(--ou-font-logo)',
-          fontSize: 14,
-          fontWeight: 700,
-          color: 'rgba(0,0,0,0.88)',
-          letterSpacing: '0.06em',
-        }}>
-          OU
-        </span>
+        <OuLogo width={36} color="rgba(0,0,0,0.88)" />
         <span style={{
           width: 1,
           height: 14,

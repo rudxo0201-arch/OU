@@ -1,5 +1,6 @@
 'use client';
 import { CSSProperties, ReactNode } from 'react';
+import { OuLogo } from './OuLogo';
 
 interface NeuAuthLayoutProps {
   children: ReactNode;
@@ -52,18 +53,7 @@ export function NeuAuthLayout({ children, title, maxWidth = 420, style }: NeuAut
               zIndex: 1,
             }} />
           </div>
-          <div style={{
-            fontFamily: 'var(--ou-font-logo)', fontSize: 22, fontWeight: 700,
-            color: 'var(--ou-text-bright)', letterSpacing: '0.18em',
-          }}>
-            OU
-          </div>
-          <div style={{
-            fontFamily: 'var(--ou-font-logo)', fontSize: 9, fontWeight: 500,
-            color: 'var(--ou-text-dimmed)', letterSpacing: '0.35em', textTransform: 'uppercase',
-          }}>
-            OWN UNIVERSE
-          </div>
+          <OuLogo width={56} color="var(--ou-text-bright)" />
         </div>
 
         {title && (

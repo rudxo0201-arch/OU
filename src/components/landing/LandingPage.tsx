@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
+import { OuLogo } from '@/components/ds';
 
 const DotSphere = dynamic(() => import('./DotSphere').then(m => ({ default: m.DotSphere })), { ssr: false });
 
@@ -47,15 +48,13 @@ export function LandingPage() {
         }}>
           {/* 로고 + 브랜드 그룹 */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-            <img
-              src="/logo-ou.svg"
-              alt="OU"
-              style={{ height: 60 }}
-            />
+            <OuLogo width={120} color="var(--ou-text-heading)" />
             <span style={{
-              fontFamily: "var(--font-orbitron, 'Orbitron')",
-              fontSize: 13, color: 'var(--ou-text-secondary)',
-              letterSpacing: 5,
+              fontSize: 11,
+              fontFamily: 'var(--ou-font-body)',
+              color: 'var(--ou-text-muted)',
+              letterSpacing: '0.25em',
+              textTransform: 'uppercase',
             }}>
               own universe
             </span>
@@ -118,13 +117,10 @@ export function LandingPage() {
           display: 'flex', flexDirection: 'column',
           alignItems: 'center', justifyContent: 'center', gap: 24,
         }}>
-          <img
-            src="/logo-ou.svg"
-            alt="OU"
-            style={{
-              height: 48,
-              animation: 'pulse 1.5s ease-in-out infinite',
-            }}
+          <OuLogo
+            width={96}
+            color="var(--ou-text-heading)"
+            style={{ animation: 'pulse 1.5s ease-in-out infinite' }}
           />
         </div>
       )}

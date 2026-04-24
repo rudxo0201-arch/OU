@@ -1,5 +1,6 @@
 import { CSSProperties, ReactNode } from 'react';
 import { AmbientBackground } from './AmbientBackground';
+import { OuLogo } from './OuLogo';
 
 interface AuthLayoutProps {
   children: ReactNode;
@@ -26,16 +27,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
         marginBottom: 40,
         textAlign: 'center',
       }}>
-        <span style={{
-          fontFamily: 'var(--ou-font-logo)',
-          fontSize: 28,
-          fontWeight: 700,
-          color: 'var(--ou-text-heading)',
-          letterSpacing: '-0.02em',
-          textShadow: 'var(--ou-accent-glow)',
-        }}>
-          OU
-        </span>
+        <OuLogo width={72} color="var(--ou-text-heading)" />
       </div>
 
       {/* 콘텐츠 */}

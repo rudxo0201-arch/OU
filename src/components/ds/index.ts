@@ -1,4 +1,6 @@
 // ── Ou* (현행 단일 계통) ───────────────────────────────────
+export { OuLogo }        from './OuLogo';
+
 export { OuButton }      from './OuButton';
 export type { OuButtonProps, OuButtonVariant, OuButtonSize } from './OuButton';
 
