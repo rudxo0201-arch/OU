@@ -59,28 +59,32 @@ export async function POST(req: NextRequest) {
     }
 
     // relation 도메인 DataNode 자동 생성 → People Orb에서 관계도로 연결됨
-    const relationshipLabel = subject_type === 'child' ? '자녀'
-      : subject_type === 'pet' ? '반려동물'
-      : subject_type === 'elder' ? '가족'
-      : '돌봄 대상';
+    try {
+      const relationshipLabel = subject_type === 'child' ? '자녀'
+        : subject_type === 'pet' ? '반려동물'
+        : subject_type === 'elder' ? '가족'
+        : '돌봄 대상';
 
-    const adminSupabase = createAdminClient();
-    void adminSupabase.from('data_nodes').insert({
-      user_id: user.id,
-      domain: 'relation',
-      raw: `${name} (${relationshipLabel})`,
-      source_type: 'app',
-      confidence: 'high',
-      resolution: 'resolved',
-      visibility: 'private',
-      domain_data: {
-        name,
-        relationship_to_user: relationshipLabel,
-        subject_type,
-        care_subject_id: data?.id,
-        birthday: birthday ?? null,
-      },
-    });
+      const adminSupabase = createAdminClient();
+      void adminSupabase.from('data_nodes').insert({
+        user_id: user.id,
+        domain: 'relation',
+        raw: `${name} (${relationshipLabel})`,
+        source_type: 'app',
+        confidence: 'high',
+        resolution: 'resolved',
+        visibility: 'private',
+        domain_data: {
+          name,
+          relationship_to_user: relationshipLabel,
+          subject_type,
+          care_subject_id: data?.id,
+          birthday: birthday ?? null,
+        },
+      });
+    } catch (e) {
+      console.error('[care/subjects] relation node skipped:', e);
+    }
 
     return NextResponse.json({ subject: data });
   } catch (e) {
