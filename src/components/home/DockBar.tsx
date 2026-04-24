@@ -195,12 +195,6 @@ export function DockBar() {
   ) : (
     /* ── 일반 모드 pill ── */
     <>
-      {DEFAULT_DOCK.map((slug) => (
-        <DockItem key={slug} slug={slug} />
-      ))}
-
-      <DockDivider />
-
       {/* Deep Talk */}
       <div
         onClick={() => router.push('/orb/deep-talk')}
@@ -210,14 +204,14 @@ export function DockBar() {
         onMouseUp={() => setDtPressed(false)}
         title="Deep Talk"
         style={{
-          width: 44, height: 44, borderRadius: '50%',
+          width: 36, height: 36, borderRadius: '50%',
           background: dtPressed ? 'rgba(0,0,0,0.10)' : dtHovered ? 'rgba(0,0,0,0.06)' : 'transparent',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 20,
+          fontSize: 18,
           color: dtHovered ? 'var(--ou-text-heading)' : 'var(--ou-text-secondary)',
           cursor: 'pointer',
           transition: 'all 120ms ease',
-          transform: dtPressed ? 'scale(0.88)' : dtHovered ? 'translateY(-4px) scale(1.10)' : 'none',
+          transform: dtPressed ? 'scale(0.88)' : dtHovered ? 'translateY(-2px)' : 'none',
           userSelect: 'none', WebkitUserSelect: 'none', flexShrink: 0,
         }}
       >

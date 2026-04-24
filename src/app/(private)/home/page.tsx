@@ -2,13 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { PageLayout } from '@/components/ds';
-import { OrbGrid } from '@/components/home/OrbGrid';
 import { DockBar } from '@/components/home/DockBar';
 import { WidgetGrid } from '@/components/widgets/WidgetGrid';
 import { ViewPickerPanel } from '@/components/widgets/ViewPickerPanel';
 import '@/components/widgets/views/register';
 
-const ORB_ROW_HEIGHT = 64;
 const DOCK_HEIGHT = 80;
 
 export default function HomePage() {
@@ -48,21 +46,10 @@ export default function HomePage() {
     <PageLayout>
       <div style={{ position: 'relative', height: '100vh', overflow: 'hidden' }}>
 
-        {/* ── Orb 아이콘 행 ── */}
-        <div style={{
-          position: 'absolute',
-          top: 0, left: 0, right: 0,
-          height: ORB_ROW_HEIGHT,
-          display: 'flex', alignItems: 'center',
-          paddingLeft: 24, zIndex: 10,
-        }}>
-          <OrbGrid />
-        </div>
-
         {/* ── 위젯 그리드 ── */}
         <div style={{
           position: 'absolute',
-          top: ORB_ROW_HEIGHT, bottom: DOCK_HEIGHT, left: 0, right: 0,
+          top: 0, bottom: DOCK_HEIGHT, left: 0, right: 0,
         }}>
           <WidgetGrid />
         </div>

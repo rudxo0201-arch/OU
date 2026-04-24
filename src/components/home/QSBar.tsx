@@ -11,8 +11,8 @@ import type { SearchResult } from './SearchPanel';
 type QSTab = 'Q' | 'S';
 
 const PLACEHOLDERS: Record<QSTab, string> = {
-  Q: '오늘 뭐했어... 어디 갔어... 뭐 먹었어...',
-  S: '내 데이터에서 검색...',
+  Q: '그냥 말해봐.',
+  S: '내 기억에서 찾아봐.',
 };
 
 /* ── 탭 버튼 ── */
