@@ -106,7 +106,7 @@ export function DockBar({ onAddWidget, onUniverse, universeActive }: Props) {
     switch (id) {
       case 'settings': router.push('/settings'); break;
       case 'universe': onUniverse?.(); break;
-      case 'orb': router.push('/orb'); break;
+      case 'orb': router.push('/home'); break;
       case 'add': onAddWidget?.() ?? window.dispatchEvent(new CustomEvent('dock-add-widget')); break;
     }
   }, [onAddWidget, onUniverse, router]);

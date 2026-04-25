@@ -34,7 +34,7 @@ const ITEMS: SideItem[] = [
 
 const BOTTOM_ITEMS: SideItem[] = [
   {
-    href: '/orb/settings',
+    href: '/settings',
     icon: '⚙',
     label: 'Settings',
     match: (p) => p.startsWith('/settings'),

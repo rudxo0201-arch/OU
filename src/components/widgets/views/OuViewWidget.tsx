@@ -15,7 +15,7 @@ export function OuViewWidget() {
     if (text) {
       useChatStore.getState().setPendingMessage(text);
     }
-    router.push('/orb');
+    router.push('/orb/deep-talk');
   }, [router]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {

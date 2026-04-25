@@ -81,7 +81,7 @@ export function HabitWidget() {
           <div style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>불러오는 중...</div>
         ) : habits.length === 0 ? (
           <button
-            onClick={() => router.push('/orb')}
+            onClick={() => router.push('/orb/habit')}
             style={{
               background: 'none', border: 'none', cursor: 'pointer',
               textAlign: 'left', padding: 0,

@@ -65,7 +65,7 @@ export function NoteWidget() {
           <div style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>불러오는 중...</div>
         ) : notes.length === 0 ? (
           <button
-            onClick={() => router.push('/orb')}
+            onClick={() => router.push('/orb/note')}
             style={{
               background: 'none', border: 'none', cursor: 'pointer',
               textAlign: 'left', padding: 0,

@@ -82,7 +82,7 @@ export function TaskWidget() {
           <div style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>불러오는 중...</div>
         ) : tasks.length === 0 ? (
           <button
-            onClick={() => router.push('/orb')}
+            onClick={() => router.push('/orb/task')}
             style={{
               background: 'none', border: 'none', cursor: 'pointer',
               textAlign: 'left', padding: 0,
