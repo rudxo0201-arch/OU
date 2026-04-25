@@ -1,17 +1,18 @@
 'use client';
 
-/**
- * IdeaCardView — 아이디어 카드
- */
-
 import React from 'react';
 import { ViewProps } from '../registry';
 import { InlineCard, TYPE, extractData } from './base';
 
-export function IdeaCardView({ nodes }: ViewProps) {
+interface GenericNoteCardViewProps extends ViewProps {
+  domainLabel?: string;
+}
+
+export function GenericNoteCardView({ nodes, filters }: GenericNoteCardViewProps) {
+  const domainLabel = (filters?.domainLabel as string) ?? 'NOTE';
   const data = extractData(nodes);
-  const title = data.title || data.idea || nodes[0]?.title || '';
-  const description = data.description || data.detail || data.content;
+  const title = data.title || data.idea || data.name || data.subject || nodes[0]?.title || '';
+  const note = data.note || data.description || data.content || data.detail || data.summary || data.body || '';
   const tags = data.tags || data.category;
 
   if (!title) return null;
@@ -19,12 +20,12 @@ export function IdeaCardView({ nodes }: ViewProps) {
   const tagList: string[] = Array.isArray(tags) ? tags : typeof tags === 'string' ? [tags] : [];
 
   return (
-    <InlineCard label="IDEA">
+    <InlineCard label={domainLabel.toUpperCase()}>
       <div style={{ ...TYPE.emphasisMd, marginBottom: '8px', lineHeight: 1.3 }}>{title}</div>
 
-      {description && (
+      {note && (
         <div style={{ ...TYPE.sub, marginBottom: tagList.length ? '12px' : 0 }}>
-          {description}
+          {note}
         </div>
       )}
 
