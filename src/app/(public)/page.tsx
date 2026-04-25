@@ -54,80 +54,95 @@ export default function LandingPage() {
       }}>
         {/* 로고 */}
         <div>
-          <span style={{
-            fontFamily: 'var(--ou-font-logo)',
-            fontSize: 'clamp(48px, 6vw, 80px)',
-            fontWeight: 700,
-            color: 'rgba(255,255,255,0.95)',
-            letterSpacing: '-0.04em',
-            lineHeight: 1,
-            display: 'block',
-          }}>
-            OU
-          </span>
+          <div style={{ marginBottom: 8 }}>
+            <img src="/assets/ou-logo.svg" alt="OU" style={{ height: 56, display: 'block' }}
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+                (e.currentTarget.nextElementSibling as HTMLElement).style.display = 'block';
+              }}
+            />
+            <span style={{
+              display: 'none',
+              fontFamily: 'var(--ou-font-logo)',
+              fontSize: 52,
+              fontWeight: 700,
+              color: 'rgba(255,255,255,0.95)',
+              letterSpacing: '-0.04em',
+              lineHeight: 1,
+            }}>OU</span>
+          </div>
           <span style={{
             fontSize: 11,
-            fontWeight: 500,
+            fontWeight: 400,
             color: 'rgba(255,255,255,0.28)',
-            letterSpacing: '0.18em',
-            textTransform: 'uppercase',
+            letterSpacing: '0.14em',
+            textTransform: 'lowercase',
             display: 'block',
-            marginTop: 6,
           }}>
-            Own Universe
+            own universe
           </span>
         </div>
 
         {/* 카피 */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           <h1 style={{
-            fontSize: 'clamp(22px, 3vw, 34px)',
-            fontWeight: 600,
-            color: 'rgba(255,255,255,0.88)',
+            fontSize: 'clamp(28px, 3.5vw, 42px)',
+            fontWeight: 700,
+            color: 'rgba(255,255,255,0.95)',
             letterSpacing: '-0.03em',
-            lineHeight: 1.25,
+            lineHeight: 1.1,
+            fontFamily: 'var(--ou-font-display)',
           }}>
-            말하면 OU가<br />알아서 정리합니다.
+            Just talk.
           </h1>
           <p style={{
-            fontSize: 'clamp(13px, 1.6vw, 16px)',
-            color: 'rgba(255,255,255,0.42)',
-            lineHeight: 1.65,
-            maxWidth: 340,
+            fontSize: 'clamp(13px, 1.5vw, 15px)',
+            color: 'rgba(255,255,255,0.40)',
+            lineHeight: 1.5,
           }}>
-            일정, 할일, 습관, 일기를<br />
-            따로 관리할 필요 없습니다.<br />
-            대화 한 줄이 데이터가 됩니다.
+            대화로 만드는 나만의 우주
           </p>
         </div>
 
         {/* CTA */}
-        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+          <Link href="/login">
+            <button style={{
+              height: 40,
+              padding: '0 22px',
+              background: 'none',
+              color: 'rgba(255,255,255,0.75)',
+              border: '1px solid rgba(255,255,255,0.25)',
+              borderRadius: 8,
+              fontSize: 13,
+              fontWeight: 500,
+              cursor: 'pointer',
+              transition: 'all 160ms ease',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.55)'; e.currentTarget.style.color = '#fff'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.25)'; e.currentTarget.style.color = 'rgba(255,255,255,0.75)'; }}
+            >
+              Log in
+            </button>
+          </Link>
           <Link href="/login?tab=signup">
             <button style={{
-              height: 44,
-              padding: '0 28px',
+              height: 40,
+              padding: '0 22px',
               background: 'rgba(255,255,255,0.95)',
               color: '#0a0a0f',
               border: 'none',
-              borderRadius: 10,
-              fontSize: 14,
+              borderRadius: 8,
+              fontSize: 13,
               fontWeight: 600,
               cursor: 'pointer',
-              letterSpacing: '-0.01em',
               transition: 'all 160ms ease',
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.boxShadow = '0 0 20px rgba(255,255,255,0.25)'; }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.boxShadow = '0 0 16px rgba(255,255,255,0.2)'; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.95)'; e.currentTarget.style.boxShadow = 'none'; }}
             >
-              시작하기
+              sign up
             </button>
-          </Link>
-          <Link href="/login" style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', transition: 'color 140ms ease' }}
-            onMouseEnter={(e: any) => { e.currentTarget.style.color = 'rgba(255,255,255,0.65)'; }}
-            onMouseLeave={(e: any) => { e.currentTarget.style.color = 'rgba(255,255,255,0.35)'; }}
-          >
-            로그인 →
           </Link>
         </div>
 
