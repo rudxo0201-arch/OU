@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Plus, CaretRight, CaretDown, Trash, SidebarSimple, MagnifyingGlass, Graph } from '@phosphor-icons/react';
+import { Plus, CaretRight, CaretDown, Trash, SidebarSimple, MagnifyingGlass } from '@phosphor-icons/react';
 import { useNoteStore, type NoteMeta } from '@/stores/noteStore';
 
 type NoteNodeType = NoteMeta & { children: NoteNodeType[] };
@@ -233,28 +233,6 @@ export function NoteSidebar({ activeNoteId }: { activeNoteId?: string }) {
 
       {/* 하단 액션 */}
       <div style={{ padding: '8px 10px 0', borderTop: '1px solid var(--ou-glass-border)', display: 'flex', flexDirection: 'column', gap: 2 }}>
-        <button
-          onClick={() => router.push('/note/graph')}
-          style={{
-            width: '100%', padding: '7px 12px',
-            display: 'flex', alignItems: 'center', gap: 8,
-            border: 'none', borderRadius: 'var(--ou-radius-sm)',
-            background: 'transparent', cursor: 'pointer',
-            fontSize: 12, color: 'var(--ou-text-muted)',
-            transition: 'all var(--ou-transition-fast)',
-          }}
-          onMouseEnter={e => {
-            e.currentTarget.style.background = 'var(--ou-glass)';
-            e.currentTarget.style.color = 'var(--ou-text-body)';
-          }}
-          onMouseLeave={e => {
-            e.currentTarget.style.background = 'transparent';
-            e.currentTarget.style.color = 'var(--ou-text-muted)';
-          }}
-        >
-          <Graph size={13} />
-          그래프 보기
-        </button>
         <button
           onClick={handleNew}
           style={{

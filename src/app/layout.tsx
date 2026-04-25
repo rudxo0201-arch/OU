@@ -2,6 +2,7 @@ import './globals.css';
 
 import { Orbitron, DM_Sans } from 'next/font/google';
 import { AuthProvider } from '@/components/ui/AuthProvider';
+import { ToastProvider } from '@/components/ds';
 
 const orbitron = Orbitron({
   subsets: ['latin'],
@@ -45,7 +46,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <AuthProvider>
-          {children}
+          <ToastProvider>
+            {children}
+          </ToastProvider>
         </AuthProvider>
       </body>
     </html>

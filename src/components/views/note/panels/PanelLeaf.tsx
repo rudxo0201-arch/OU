@@ -11,8 +11,8 @@ import { NotePanel } from './NotePanel';
 import { PDFReader } from './PDFReader';
 import type { LeafPanel, PanelContent } from './types';
 
-const NoteGraphView = dynamic(
-  () => import('../NoteGraphView').then(m => m.NoteGraphView),
+const GraphView = dynamic(
+  () => import('@/components/graph/GraphView').then(m => m.GraphView),
   { ssr: false },
 );
 
@@ -173,7 +173,7 @@ export function PanelLeaf({ panel, focused, canClose, onFocus, onSplit, onClose,
         )}
         {content.kind === 'graph' && (
           <div style={{ width: '100%', height: '100%' }}>
-            <NoteGraphView />
+            <NoteGraphPanel />
           </div>
         )}
         {content.kind === 'empty' && (
@@ -182,6 +182,52 @@ export function PanelLeaf({ panel, focused, canClose, onFocus, onSplit, onClose,
       </div>
     </div>
   );
+}
+
+// ── 노트 그래프 패널 (/api/graph에서 노트 도메인만 필터) ───────
+
+type GraphItem = { id: string; domain: string; raw?: string };
+type GraphLink = { source: string; target: string; weight?: number };
+
+function NoteGraphPanel() {
+  const [data, setData] = useState<{ nodes: GraphItem[]; links: GraphLink[] } | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/graph')
+      .then(r => (r.ok ? r.json() : { nodes: [], edges: [] }))
+      .then(json => {
+        if (cancelled) return;
+        const noteNodes: GraphItem[] = (json.nodes ?? [])
+          .filter((n: { domain?: string }) => n.domain === 'note')
+          .map((n: { id: string; domain: string; label?: string; raw?: string }) => ({
+            id: n.id, domain: n.domain, raw: n.label ?? n.raw ?? '',
+          }));
+        const noteIds = new Set(noteNodes.map(n => n.id));
+        const noteLinks: GraphLink[] = (json.edges ?? [])
+          .filter((e: { source: string; target: string; relationType?: string }) =>
+            e.relationType === 'page_link' && noteIds.has(e.source) && noteIds.has(e.target))
+          .map((e: { source: string; target: string; weight?: number }) => ({
+            source: e.source, target: e.target, weight: e.weight,
+          }));
+        setData({ nodes: noteNodes, links: noteLinks });
+      })
+      .catch(() => { if (!cancelled) setData({ nodes: [], links: [] }); });
+    return () => { cancelled = true; };
+  }, []);
+
+  if (!data) {
+    return (
+      <div style={{
+        height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+        color: 'var(--ou-text-disabled)', fontSize: 13,
+      }}>
+        그래프 로딩 중...
+      </div>
+    );
+  }
+
+  return <GraphView nodes={data.nodes} links={data.links} />;
 }
 
 // ── 노트 제목 추출 (fetches metadata) ────────────────────────

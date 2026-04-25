@@ -1,9 +1,9 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import { KnowledgeGraph, type GraphNode, type GraphEdge } from './KnowledgeGraph';
 
-interface DataNode {
+export interface Item {
   id: string;
   domain: string;
   raw?: string;
@@ -12,11 +12,24 @@ interface DataNode {
   y?: number;
 }
 
+type Link = { source: string; target: string; weight?: number };
+
+// nodes는 any[]로 받음 — registry(ViewProps) 호환을 위해. 내부에서 Item 형태로 사용한다.
 interface GraphViewProps {
-  nodes: DataNode[];
-  links?: { source: string; target: string; weight?: number }[];
+  nodes: any[];
+  /** 명시적으로 넘기면 그대로 사용. 없으면 /api/graph에서 fetch */
+  links?: Link[];
   height?: number;
   onNodeClick?: (node: { id: string }) => void;
+  /** 강조할 노드 id — KnowledgeGraph로 통과 */
+  activeNodeId?: string;
+  /** activeNodeId의 1-hop 이웃만 표시 */
+  localMode?: boolean;
+  /** ViewProps 호환 — graph 뷰에서 의미는 없지만 시그니처 맞춤용 */
+  filters?: Record<string, unknown>;
+  onSave?: () => void;
+  layoutConfig?: unknown;
+  inline?: boolean;
 }
 
 const DOMAIN_COLORS: Record<string, string> = {
@@ -30,11 +43,32 @@ const DOMAIN_COLORS: Record<string, string> = {
   habit:     '#737373',
 };
 
-export function GraphView({ nodes, links = [], height, onNodeClick }: GraphViewProps) {
+export function GraphView({ nodes, links, height, onNodeClick, activeNodeId, localMode }: GraphViewProps) {
+  const linksProvided = links !== undefined;
+  const [fetchedLinks, setFetchedLinks] = useState<Link[] | null>(null);
+
+  useEffect(() => {
+    if (linksProvided) return;
+    let cancelled = false;
+    fetch('/api/graph')
+      .then(r => (r.ok ? r.json() : { edges: [] }))
+      .then(json => {
+        if (cancelled) return;
+        const edges: Link[] = (json.edges ?? []).map((e: { source: string; target: string; weight?: number }) => ({
+          source: e.source, target: e.target, weight: e.weight,
+        }));
+        setFetchedLinks(edges);
+      })
+      .catch(() => { if (!cancelled) setFetchedLinks([]); });
+    return () => { cancelled = true; };
+  }, [linksProvided]);
+
+  const effectiveLinks: Link[] = links ?? fetchedLinks ?? [];
+
   const graphNodes: GraphNode[] = useMemo(() =>
-    nodes.map(n => ({
+    (nodes as Item[]).map(n => ({
       id: n.id,
-      label: (n.raw ?? '').slice(0, 20) || n.domain,
+      label: (n.raw ?? '').slice(0, 20) || n.domain || '',
       category: n.domain,
       importance: n.importance ?? 1,
       color: DOMAIN_COLORS[n.domain] ?? '#737373',
@@ -45,16 +79,16 @@ export function GraphView({ nodes, links = [], height, onNodeClick }: GraphViewP
   );
 
   const graphEdges: GraphEdge[] = useMemo(() =>
-    links.map(l => ({
+    effectiveLinks.map(l => ({
       source: l.source,
       target: l.target,
       weight: l.weight,
     })),
-    [links]
+    [effectiveLinks]
   );
 
   const handleNodeClick = (gn: GraphNode) => {
-    const original = nodes.find(n => n.id === gn.id);
+    const original = (nodes as Item[]).find(n => n.id === gn.id);
     if (original) onNodeClick?.(original);
   };
 
@@ -64,6 +98,8 @@ export function GraphView({ nodes, links = [], height, onNodeClick }: GraphViewP
         nodes={graphNodes}
         edges={graphEdges}
         onNodeClick={onNodeClick ? handleNodeClick : undefined}
+        activeNodeId={activeNodeId}
+        localMode={localMode}
       />
     </div>
   );

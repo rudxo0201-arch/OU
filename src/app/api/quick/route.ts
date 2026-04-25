@@ -53,14 +53,13 @@ export async function POST(req: NextRequest) {
           source_type: 'quick',
           confidence: 'medium',
           resolution: 'resolved',
-          visibility: 'visible',
           domain_data: { ...(context ?? {}), ...regexData },
         }).select('id, domain_data').single()
       : { data: null, error: null };
 
     if (error) {
       console.error('[Quick] insert error:', error);
-      return NextResponse.json({ error: 'failed' }, { status: 500 });
+      return NextResponse.json({ error: 'failed', _debug: error }, { status: 500 });
     }
 
     // Phase 2: LLM으로 domain_data 보정 (백그라운드, 같은 레코드 update)
@@ -86,6 +85,6 @@ export async function POST(req: NextRequest) {
     });
   } catch (e) {
     console.error('[Quick] error:', e);
-    return NextResponse.json({ error: 'failed' }, { status: 500 });
+    return NextResponse.json({ error: 'failed', _debug: String(e) }, { status: 500 });
   }
 }

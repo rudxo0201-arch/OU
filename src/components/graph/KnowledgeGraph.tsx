@@ -73,6 +73,10 @@ interface KnowledgeGraphProps {
   settingsOpen?: boolean;
   /** Callback when external settings toggle is needed */
   onSettingsToggle?: () => void;
+  /** 강조할 노드 — 흰색 + 글로우로 표시 */
+  activeNodeId?: string;
+  /** activeNodeId의 1-hop 이웃만 표시 (activeNodeId 없으면 무시) */
+  localMode?: boolean;
 }
 
 /**
@@ -83,7 +87,7 @@ interface KnowledgeGraphProps {
  * - Physics: d3-force in Web Worker (off main thread)
  * - This is a GAME ENGINE. Treat it as such.
  */
-export function KnowledgeGraph({ nodes, edges, onNodeClick, hideSettingsButton, settingsOpen: externalSettingsOpen, onSettingsToggle }: KnowledgeGraphProps) {
+export function KnowledgeGraph({ nodes, edges, onNodeClick, hideSettingsButton, settingsOpen: externalSettingsOpen, onSettingsToggle, activeNodeId, localMode = false }: KnowledgeGraphProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const pixiAppRef = useRef<any>(null);
   const worldRef = useRef<any>(null);
@@ -106,6 +110,9 @@ export function KnowledgeGraph({ nodes, edges, onNodeClick, hideSettingsButton, 
   const editAnimFrameRef = useRef<number>(0);
   const selectedAttractorIdRef = useRef<string | null>(null);
   const overlayGfxRef = useRef<any>(null);
+  const activeNodeIdRef = useRef<string | undefined>(undefined);
+  const localModeRef = useRef(false);
+  const localSetRef = useRef<Set<string> | null>(null);
 
   const [isDark, setIsDark] = useState(() =>
     typeof document !== 'undefined' ? document.documentElement.dataset.theme !== 'light' : true
@@ -172,6 +179,25 @@ export function KnowledgeGraph({ nodes, edges, onNodeClick, hideSettingsButton, 
     }
     renderFrame();
   }, [searchQuery]);
+
+  // activeNodeId / localMode → 1-hop 이웃 집합 갱신 + 재렌더
+  useEffect(() => {
+    activeNodeIdRef.current = activeNodeId;
+    localModeRef.current = localMode;
+    if (localMode && activeNodeId) {
+      const set = new Set<string>([activeNodeId]);
+      for (const e of edges) {
+        const s = typeof e.source === 'string' ? e.source : e.source.id;
+        const t = typeof e.target === 'string' ? e.target : e.target.id;
+        if (s === activeNodeId) set.add(t);
+        if (t === activeNodeId) set.add(s);
+      }
+      localSetRef.current = set;
+    } else {
+      localSetRef.current = null;
+    }
+    renderFrame();
+  }, [activeNodeId, localMode, edges]);
 
   // Update PixiJS background when dark mode toggles & re-render on control changes
   useEffect(() => {
@@ -249,7 +275,11 @@ export function KnowledgeGraph({ nodes, edges, onNodeClick, hideSettingsButton, 
       colorHex = parseInt(rawColor.slice(1), 16);
     }
 
+    const localSet = localSetRef.current;
+    const actId = activeNodeIdRef.current;
+
     for (const [id, { index }] of nodeMap) {
+      if (localSet && !localSet.has(id)) continue;
       const nx = positions[index * 2], ny = positions[index * 2 + 1];
       if (nx < vx0 - pad || nx > vx1 + pad || ny < vy0 - pad || ny > vy1 + pad) continue;
 
@@ -259,8 +289,19 @@ export function KnowledgeGraph({ nodes, edges, onNodeClick, hideSettingsButton, 
       } else if (hasSearch && !matches.has(id)) {
         alpha = 0.08;
       }
-      ng.circle(nx, ny, r);
-      ng.fill({ color: colorHex, alpha });
+
+      if (id === actId) {
+        // active 노드: 외곽 글로우 2겹 + 흰색 코어
+        ng.circle(nx, ny, r + 5);
+        ng.fill({ color: 0xffffff, alpha: 0.15 });
+        ng.circle(nx, ny, r + 2);
+        ng.fill({ color: 0xffffff, alpha: 0.5 });
+        ng.circle(nx, ny, r);
+        ng.fill({ color: dark ? 0xffffff : 0x222222, alpha });
+      } else {
+        ng.circle(nx, ny, r);
+        ng.fill({ color: colorHex, alpha });
+      }
     }
 
     // Glow on hovered
@@ -378,6 +419,7 @@ export function KnowledgeGraph({ nodes, edges, onNodeClick, hideSettingsButton, 
             }
             let hc = 0;
             for (const [id, { index, node }] of nodeMap) {
+              if (localSet && !localSet.has(id)) continue;
               if (hov && id === hov.id) continue;
               const nx = positions[index * 2], ny = positions[index * 2 + 1];
               if (nx < vx0 - pad || nx > vx1 + pad || ny < vy0 - pad || ny > vy1 + pad) continue;
@@ -393,7 +435,8 @@ export function KnowledgeGraph({ nodes, edges, onNodeClick, hideSettingsButton, 
             }
           } else if (k > zoomThreshold) {
             let lc2 = 0;
-            for (const [, { index, node }] of nodeMap) {
+            for (const [id, { index, node }] of nodeMap) {
+              if (localSet && !localSet.has(id)) continue;
               if (lc2 >= MAX_LABELS) break;
               const nx = positions[index * 2], ny = positions[index * 2 + 1];
               if (nx < vx0 - pad || nx > vx1 + pad || ny < vy0 - pad || ny > vy1 + pad) continue;

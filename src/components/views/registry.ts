@@ -97,6 +97,9 @@ export const VIEW_REGISTRY: Record<string, ComponentType<ViewProps>> = {
 
   // ── Wave 11: 주간 시간표 ──
   'edu-timetable': dynamic(() => import('./EduTimetableView').then(m => ({ default: m.EduTimetableView }))),
+
+  // ── Wave 12: 지식 그래프 (PixiJS + Web Worker, 풀스크린 카탈로그 진입) ──
+  'knowledge_graph': dynamic(() => import('@/components/graph/GraphView').then(m => ({ default: m.GraphView })), { ssr: false }),
 };
 
 export const VIEW_META: Record<string, ViewMeta> = {
@@ -149,6 +152,7 @@ export const VIEW_META: Record<string, ViewMeta> = {
   'dict-char':         { previewOnClick: false, category: 'inline' },
   'edu-assignment':    { previewOnClick: false, category: 'inline' },
   'edu-timetable':     { previewOnClick: false, category: 'full' },
+  'knowledge_graph':   { previewOnClick: false, category: 'full' },
 };
 
 /** 도메인 → 기본 뷰 매핑 */
@@ -217,4 +221,5 @@ export const VIEW_LABELS: Record<string, string> = {
   'dict-char':       '한자 카드',
   'edu-assignment':  '과제 마감',
   'edu-timetable':   '주간 시간표',
+  'knowledge_graph': '지식 그래프',
 };

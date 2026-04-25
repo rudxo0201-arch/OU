@@ -22,7 +22,7 @@ const DOMAIN_LABEL: Record<string, string> = {
 export function OrbInputBar({ domain, placeholder }: OrbInputBarProps) {
   const [value, setValue] = useState('');
   const [focused, setFocused] = useState(false);
-  const [loading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { show } = useToast();
 
   async function handleSubmit(e: FormEvent) {
@@ -30,14 +30,26 @@ export function OrbInputBar({ domain, placeholder }: OrbInputBarProps) {
     if (!value.trim() || loading) return;
     const text = value.trim();
     setValue('');
-    show(`${DOMAIN_LABEL[domain] ?? '기록'}에 기록됨`, 'success', { duration: 3000 });
-    window.dispatchEvent(new CustomEvent('ou-node-created', { detail: { domain } }));
-
-    fetch('/api/quick', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text, domainHint: domain }),
-    }).catch(() => show('저장 실패', 'error'));
+    setLoading(true);
+    try {
+      const res = await fetch('/api/quick', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, domainHint: domain }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.ok) {
+        const detail = json?._debug?.message ?? json?._debug ?? json?.error ?? '알 수 없는 오류';
+        show(`저장 실패: ${typeof detail === 'string' ? detail : JSON.stringify(detail).slice(0, 120)}`, 'error', { duration: 8000 });
+        return;
+      }
+      show(`${DOMAIN_LABEL[domain] ?? '기록'}에 기록됨`, 'success', { duration: 3000 });
+      window.dispatchEvent(new CustomEvent('ou-node-created', { detail: { domain } }));
+    } catch {
+      show('네트워크 오류', 'error');
+    } finally {
+      setLoading(false);
+    }
   }
 
   const containerStyle: CSSProperties = {

@@ -1,5 +1,5 @@
 import { registerWidget } from '../registry';
-import { OuViewWidget } from './OuViewWidget';
+import { OuViewWidget } from './OuLLM';
 import { ClockWidget } from './ClockWidget';
 import { TodaySummaryWidget } from './TodaySummaryWidget';
 import { RecentNodesWidget } from './RecentNodesWidget';
@@ -16,11 +16,9 @@ import { HabitWidget } from './HabitWidget';
 import { IdeaWidget } from './IdeaWidget';
 import { FinanceWidget } from './FinanceWidget';
 import { NoteWidget } from './NoteWidget';
-import { QSBarWidget } from './QSBarWidget';
-
 registerWidget({
-  type: 'ou-view',
-  label: 'OU뷰',
+  type: 'oullm',
+  label: 'OU LLM',
   component: OuViewWidget,
   scrollable: 'none',
   minSize: [4, 2],
@@ -249,16 +247,6 @@ registerWidget({
   needsCard: false,
 });
 
-registerWidget({
-  type: 'qsbar',
-  label: 'Quick / Search',
-  component: QSBarWidget,
-  scrollable: 'none',
-  minSize: [5, 2],
-  defaultSize: [7, 2],
-  removable: false,
-  needsCard: false,
-});
 
 registerWidget({
   type: 'today-finance',
