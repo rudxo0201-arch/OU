@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import dayjs from 'dayjs';
 import 'dayjs/locale/ko';
 import { OrbShell } from '@/components/orb/OrbShell';
-import { OrbChat } from '@/components/orb/OrbChat';
+import { OrbAssistant } from '@/components/orb/OrbAssistant';
 import { OrbView } from '@/components/orb/OrbView';
 import { getOrbDef } from '@/components/orb/registry';
 
@@ -42,7 +42,7 @@ export default function OrbPage() {
     <OrbShell slug={orb.slug} title={orb.title} icon={orb.icon} subtitle={subtitle}>
       {orb.viewType
         ? <OrbView domain={orb.domain} viewType={orb.viewType} orbSlug={orb.slug} placeholder={orb.placeholder} />
-        : <OrbChat placeholder={orb.placeholder} />
+        : <OrbAssistant placeholder={orb.placeholder} />
       }
     </OrbShell>
   );

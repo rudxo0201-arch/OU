@@ -44,9 +44,3 @@ export { AuthLayout }        from './AuthLayout';
 export { OuPageLayout }      from './OuPageLayout';
 export { OuAuthLayout }      from './OuAuthLayout';
 
-// ── Orb 입력 모듈 ─────────────────────────────────────────────
-export { OrbChat }    from './OrbChat';
-export { OrbComment } from './OrbComment';
-export { OrbPost }    from './OrbPost';
-export { OrbQuick }   from './OrbQuick';
-export { OrbSearch }  from './OrbSearch';

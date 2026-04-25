@@ -10,12 +10,12 @@ interface ChatMessage {
   streaming?: boolean;
 }
 
-interface OrbChatProps {
+interface OrbAssistantProps {
   domainHint?: string;
   placeholder?: string;
 }
 
-export function OrbChat({ domainHint, placeholder = '말해보세요...' }: OrbChatProps) {
+export function OrbAssistant({ domainHint, placeholder = '말해보세요...' }: OrbAssistantProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
