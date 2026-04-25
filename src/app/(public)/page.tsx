@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
+import { OuLogo } from '@/components/ds';
 
 const GraphCanvas = dynamic(
   () => import('@/components/landing/GraphCanvas').then(m => ({ default: m.GraphCanvas })),
@@ -53,31 +54,14 @@ export default function LandingPage() {
         minHeight: '100vh',
       }}>
         {/* 로고 */}
-        <div>
-          <div style={{ marginBottom: 8 }}>
-            <img src="/assets/ou-logo.svg" alt="OU" style={{ height: 56, display: 'block' }}
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-                (e.currentTarget.nextElementSibling as HTMLElement).style.display = 'block';
-              }}
-            />
-            <span style={{
-              display: 'none',
-              fontFamily: 'var(--ou-font-logo)',
-              fontSize: 52,
-              fontWeight: 700,
-              color: 'rgba(255,255,255,0.95)',
-              letterSpacing: '-0.04em',
-              lineHeight: 1,
-            }}>OU</span>
-          </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <OuLogo width={96} color="rgba(255,255,255,0.95)" />
           <span style={{
             fontSize: 11,
             fontWeight: 400,
             color: 'rgba(255,255,255,0.28)',
             letterSpacing: '0.14em',
             textTransform: 'lowercase',
-            display: 'block',
           }}>
             own universe
           </span>
@@ -122,7 +106,7 @@ export default function LandingPage() {
             onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.55)'; e.currentTarget.style.color = '#fff'; }}
             onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.25)'; e.currentTarget.style.color = 'rgba(255,255,255,0.75)'; }}
             >
-              Log in
+              로그인
             </button>
           </Link>
           <Link href="/login?tab=signup">
@@ -141,7 +125,7 @@ export default function LandingPage() {
             onMouseEnter={(e) => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.boxShadow = '0 0 16px rgba(255,255,255,0.2)'; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.95)'; e.currentTarget.style.boxShadow = 'none'; }}
             >
-              sign up
+              회원가입
             </button>
           </Link>
         </div>
