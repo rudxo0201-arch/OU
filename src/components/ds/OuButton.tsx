@@ -15,8 +15,8 @@ export interface OuButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const SIZE_MAP: Record<OuButtonSize, { height: string; padding: string; fontSize: string }> = {
   sm: { height: '32px', padding: '0 14px', fontSize: 'var(--ou-text-xs)' },
-  md: { height: '40px', padding: '0 20px', fontSize: 'var(--ou-text-sm)' },
-  lg: { height: '48px', padding: '0 28px', fontSize: 'var(--ou-text-base)' },
+  md: { height: '38px', padding: '0 20px', fontSize: 'var(--ou-text-sm)' },
+  lg: { height: '46px', padding: '0 28px', fontSize: 'var(--ou-text-base)' },
 };
 
 export function OuButton({
@@ -36,36 +36,41 @@ export function OuButton({
   const sz = SIZE_MAP[size];
 
   const variantStyle: CSSProperties = (() => {
+    // solid white — 화이트 테두리 + 화이트 배경, 블랙 텍스트
     if (variant === 'accent') {
       return {
-        background: hovered && !isDisabled ? 'var(--ou-accent-hover)' : 'var(--ou-accent)',
-        border: '1px solid transparent',
-        color: '#fff',
-        boxShadow: 'none',
+        background: hovered && !isDisabled ? 'rgba(255,255,255,0.90)' : '#ffffff',
+        border: '1px solid #ffffff',
+        color: '#000000',
+        boxShadow: hovered && !isDisabled ? 'var(--ou-glow-sm)' : 'none',
+        fontWeight: 600,
       };
     }
     if (variant === 'danger') {
       return {
-        background: hovered && !isDisabled ? 'rgba(220,38,38,0.12)' : 'rgba(220,38,38,0.07)',
-        border: `1px solid ${hovered && !isDisabled ? 'rgba(220,38,38,0.35)' : 'rgba(220,38,38,0.18)'}`,
+        background: hovered && !isDisabled ? 'rgba(170,80,80,0.14)' : 'transparent',
+        border: `1px solid ${hovered && !isDisabled ? 'rgba(170,80,80,0.60)' : 'rgba(170,80,80,0.35)'}`,
         color: 'var(--ou-error)',
         boxShadow: 'none',
+        fontWeight: 500,
       };
     }
     if (variant === 'ghost') {
       return {
-        background: hovered && !isDisabled ? 'rgba(0,0,0,0.04)' : 'transparent',
+        background: hovered && !isDisabled ? 'rgba(255,255,255,0.06)' : 'transparent',
         border: '1px solid transparent',
-        color: 'var(--ou-text-secondary)',
+        color: hovered && !isDisabled ? 'var(--ou-text-strong)' : 'var(--ou-text-secondary)',
         boxShadow: 'none',
+        fontWeight: 500,
       };
     }
-    // default
+    // default — outlined: 더 하얀 테두리, 투명 배경
     return {
-      background: hovered && !isDisabled ? 'var(--ou-glass-hover)' : 'var(--ou-surface)',
-      border: `1px solid ${hovered && !isDisabled ? 'var(--ou-glass-border-hover)' : 'var(--ou-glass-border)'}`,
-      color: 'var(--ou-text-strong)',
-      boxShadow: hovered && !isDisabled ? 'var(--ou-shadow-md)' : 'var(--ou-shadow-sm)',
+      background: hovered && !isDisabled ? 'rgba(255,255,255,0.06)' : 'transparent',
+      border: `1px solid ${hovered && !isDisabled ? 'rgba(255,255,255,0.80)' : 'rgba(255,255,255,0.55)'}`,
+      color: hovered && !isDisabled ? '#ffffff' : 'rgba(255,255,255,0.90)',
+      boxShadow: hovered && !isDisabled ? 'var(--ou-glow-sm)' : 'none',
+      fontWeight: 500,
     };
   })();
 
@@ -82,12 +87,12 @@ export function OuButton({
         padding: sz.padding,
         fontSize: sz.fontSize,
         fontFamily: 'var(--ou-font-body)',
-        fontWeight: 500,
+        letterSpacing: '0.01em',
         borderRadius: 'var(--ou-radius-pill)',
         cursor: isDisabled ? 'not-allowed' : 'pointer',
-        opacity: isDisabled ? 0.45 : 1,
-        transition: 'background var(--ou-transition-fast), border-color var(--ou-transition-fast), box-shadow var(--ou-transition-fast), transform var(--ou-transition-fast)',
-        transform: pressed && !isDisabled ? 'scale(0.97)' : 'scale(1)',
+        opacity: isDisabled ? 0.38 : 1,
+        transition: 'background var(--ou-transition-fast), border-color var(--ou-transition-fast), box-shadow var(--ou-transition-fast), color var(--ou-transition-fast), transform var(--ou-transition-fast)',
+        transform: pressed && !isDisabled ? 'scale(0.96)' : 'scale(1)',
         userSelect: 'none',
         WebkitUserSelect: 'none',
         width: fullWidth ? '100%' : undefined,
@@ -103,10 +108,10 @@ export function OuButton({
       {loading ? (
         <span
           style={{
-            width: 14,
-            height: 14,
-            border: '2px solid rgba(0,0,0,0.12)',
-            borderTopColor: variant === 'accent' ? '#fff' : 'var(--ou-accent)',
+            width: 13,
+            height: 13,
+            border: `1.5px solid ${variant === 'accent' ? 'rgba(0,0,0,0.20)' : 'rgba(255,255,255,0.20)'}`,
+            borderTopColor: variant === 'accent' ? '#000000' : '#ffffff',
             borderRadius: '50%',
             animation: 'ou-spin 0.7s linear infinite',
             display: 'inline-block',

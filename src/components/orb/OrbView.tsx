@@ -10,16 +10,12 @@ interface OrbViewProps {
   viewType: string;
   orbSlug: string;
   placeholder?: string;
+  initialNodes?: any[];
 }
 
-/**
- * 각 Orb의 메인 뷰.
- * /api/nodes에서 해당 도메인 데이터를 가져와 ViewRenderer로 렌더링.
- * Supabase Realtime으로 data_nodes 변경 시 자동 갱신.
- */
-export function OrbView({ domain, viewType, orbSlug, placeholder }: OrbViewProps) {
-  const [nodes, setNodes] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+export function OrbView({ domain, viewType, orbSlug, placeholder, initialNodes }: OrbViewProps) {
+  const [nodes, setNodes] = useState<any[]>(initialNodes ?? []);
+  const [loading, setLoading] = useState(initialNodes === undefined && !!domain);
 
   const fetchNodes = useCallback(async () => {
     if (!domain) {
@@ -38,11 +34,22 @@ export function OrbView({ domain, viewType, orbSlug, placeholder }: OrbViewProps
     }
   }, [domain]);
 
+  // initialNodes가 없을 때만 첫 fetch
   useEffect(() => {
-    fetchNodes();
-  }, [fetchNodes]);
+    if (initialNodes === undefined) fetchNodes();
+  }, [fetchNodes, initialNodes]);
 
-  // Supabase Realtime: data_nodes 변경 시 자동 갱신
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (!domain || !detail?.domain || detail.domain === domain) {
+        fetchNodes();
+      }
+    };
+    window.addEventListener('ou-node-created', handler);
+    return () => window.removeEventListener('ou-node-created', handler);
+  }, [domain, fetchNodes]);
+
   useEffect(() => {
     if (!domain) return;
 
@@ -58,16 +65,11 @@ export function OrbView({ domain, viewType, orbSlug, placeholder }: OrbViewProps
           table: 'data_nodes',
           filter: `domain=eq.${domain}`,
         },
-        () => {
-          // INSERT / UPDATE / DELETE 모두 전체 재조회 (목록 정합성 보장)
-          fetchNodes();
-        }
+        () => { fetchNodes(); }
       )
       .subscribe();
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    return () => { supabase.removeChannel(channel); };
   }, [domain, orbSlug, fetchNodes]);
 
   if (loading) {
@@ -91,7 +93,6 @@ export function OrbView({ domain, viewType, orbSlug, placeholder }: OrbViewProps
         overflow: 'auto',
         paddingBottom: domain ? 96 : 0,
       }}>
-        {/* allowEmpty=true: 뷰가 직접 빈 상태/스켈레톤을 렌더링 */}
         <ViewRenderer viewType={viewType} nodes={nodes} allowEmpty />
       </div>
       {domain && (

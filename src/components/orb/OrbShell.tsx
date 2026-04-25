@@ -24,7 +24,7 @@ export function OrbShell({ slug, title, icon, subtitle, children }: OrbShellProp
     <div style={{
       position: 'relative',
       minHeight: '100vh',
-      background: 'var(--ou-space)',
+      background: '#0a0a0f',
     }}>
       <AmbientBackground />
 

@@ -43,10 +43,8 @@ function checkOrb(slug) {
   E(`orb/registry.ts 등록`, has('src/components/orb/registry.ts', `slug: '${slug}'`),
     `orb/registry.ts ORB_REGISTRY 에 '${slug}' 추가`);
   if (!SYS_ORBS.has(slug)) {
-    W(`OrbGrid DEFAULT_ORBS`, has('src/components/home/OrbGrid.tsx', `'${slug}'`),
-      `OrbGrid.tsx DEFAULT_ORBS 에 추가`);
-    W(`DockBar ORB_ICONS/LABELS`, has('src/components/home/DockBar.tsx', `${slug}:`),
-      `DockBar.tsx ORB_ICONS, ORB_LABELS 에 추가`);
+    W(`RightOrbBar ORBS`, has('src/components/layout/RightOrbBar.tsx', `slug: '${slug}'`),
+      `RightOrbBar.tsx ORBS 에 추가`);
   }
   if (!CHAT_ORBS.has(slug)) {
     const standalone = has('src/app/(apps)/orb/[slug]/page.tsx', `${slug}:`);

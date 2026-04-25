@@ -42,6 +42,7 @@ export function HabitWidget() {
   }, []);
 
   useEffect(() => { fetchHabits(); }, [fetchHabits]);
+  useEffect(() => { router.prefetch('/orb/habit'); }, [router]);
 
   useEffect(() => {
     const supabase = createClient();

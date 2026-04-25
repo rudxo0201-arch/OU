@@ -31,6 +31,7 @@ export function IdeaWidget() {
   }, []);
 
   useEffect(() => { fetchIdeas(); }, [fetchIdeas]);
+  useEffect(() => { router.prefetch('/orb/idea'); }, [router]);
 
   useEffect(() => {
     const supabase = createClient();

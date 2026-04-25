@@ -41,6 +41,7 @@ export function TaskWidget() {
   }, []);
 
   useEffect(() => { fetchTasks(); }, [fetchTasks]);
+  useEffect(() => { router.prefetch('/orb/task'); }, [router]);
 
   useEffect(() => {
     const supabase = createClient();

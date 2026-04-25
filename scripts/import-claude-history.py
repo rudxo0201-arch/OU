@@ -18,7 +18,7 @@ import glob
 import requests
 
 HISTORY_DIR = os.path.expanduser(
-    "~/.claude/projects/-Users-kt-Desktop-claude-OU-Real-ou-web"
+    "~/.claude/projects/-Users-kt-Desktop-claude-ou-web"
 )
 API_URL = "https://ouuniverse.com/api/ingest/conversation"
 API_KEY = "ou_sk_64e351668a9dc6c25cd285634bde531d532cac735543de6ae98867172af27fe1"
@@ -106,7 +106,7 @@ def send_to_ou(turns, session_id, dry_run=False):
             "metadata": {
                 "source": "claude_code_history",
                 "session_id": session_id,
-                "working_directory": "/Users/kt/Desktop/claude/OU_Real/ou-web",
+                "working_directory": "/Users/kt/Desktop/claude/ou-web",
             },
         }
 

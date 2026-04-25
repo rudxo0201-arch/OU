@@ -1,7 +1,7 @@
 /**
  * POST /api/quick/image
  *
- * preview: 이미지 → R2 보존 + OCR → 텍스트 반환 (DB 저장 없음)
+ * preview: 이미지 → OCR 먼저 실행 → R2 보존 (실패해도 OCR 결과 반환)
  * confirm: OCR 텍스트 → saveMessageAsync → 기존 파이프라인이 도메인 분류/추출
  */
 
@@ -53,26 +53,34 @@ async function handlePreview(req: NextRequest, userId: string): Promise<NextResp
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
 
-  // 원본 이미지 R2 보존
-  const ext = file.name.split('.').pop() ?? 'jpg';
-  const r2Key = buildR2Key(userId, `quick-image.${ext}`);
-  await uploadToR2(r2Key, buffer, file.type);
-
+  // OCR 먼저 실행 — R2와 독립적으로 동작
   let ocrText: string;
   try { ocrText = await runOCR(buffer, file.type); }
   catch (e) { return NextResponse.json({ error: (e as Error).message }, { status: 422 }); }
 
-  return NextResponse.json({ imageUrl: r2Key, ocrText });
+  // R2 원본 보존 — 실패해도 OCR 결과는 반환
+  const ext = file.name.split('.').pop() ?? 'jpg';
+  const r2Key = buildR2Key(userId, `quick-image.${ext}`);
+  let imageUrl: string | null = null;
+  try {
+    await uploadToR2(r2Key, buffer, file.type);
+    imageUrl = r2Key;
+  } catch (e) {
+    console.warn('[quick/image] R2 upload failed (OCR still returned):', (e as Error).message);
+  }
+
+  return NextResponse.json({ imageUrl, ocrText });
 }
 
 async function handleConfirm(req: NextRequest, userId: string): Promise<NextResponse> {
-  const { ocrText } = await req.json() as { ocrText: string };
+  const { ocrText, imageUrl } = await req.json() as { ocrText: string; imageUrl?: string | null };
   if (!ocrText?.trim()) return NextResponse.json({ error: 'No text' }, { status: 400 });
 
   const result = await saveMessageAsync({
     userId,
     userMessage: ocrText.trim(),
     assistantMessage: '',
+    context: imageUrl ? { source_image: imageUrl } : undefined,
   });
 
   const dd = result?.node?.domain_data as Record<string, unknown> | undefined;

@@ -19,78 +19,84 @@ export interface ViewMeta {
 /**
  * Wave 1: 가장 익숙한 기본 내장 뷰
  * 추가 시 이 파일에만 등록. 기존 코드 수정 금지.
+ *
+ * ssr: false는 진짜 브라우저 전용 API가 필요한 경우만.
+ * - MapView: Kakao Maps SDK (window.kakao)
+ * - TimeView: requestAnimationFrame + 매초 갱신 (hydration mismatch 위험)
+ * - CalendarView: 팝오버 위치 계산이 mount 후 보정 (보수적 유지)
+ * 나머지는 ssr 기본값(true) — 서버 HTML preload link 자동 삽입으로 직렬 청크 다운로드 제거.
  */
 export const VIEW_REGISTRY: Record<string, ComponentType<ViewProps>> = {
   // ── Admin ──
-  admin:      dynamic(() => import('./AdminView').then(m => m.AdminView), { ssr: false }),
+  admin:      dynamic(() => import('./AdminView').then(m => m.AdminView)),
 
   // ── Wave 1: 기본 내장 ──
-  note:       dynamic(() => import('./NoteView').then(m => m.NoteView), { ssr: false }),
+  note:       dynamic(() => import('./NoteView').then(m => m.NoteView)),
   time:       dynamic(() => import('./TimeView').then(m => m.TimeView), { ssr: false }),
-  todo:       dynamic(() => import('./TodoView').then(m => m.TodoView), { ssr: false }),
+  todo:       dynamic(() => import('./TodoView').then(m => m.TodoView)),
   calendar:   dynamic(() => import('./CalendarView').then(m => m.CalendarView), { ssr: false }),
-  table:      dynamic(() => import('./TableView').then(m => m.TableView), { ssr: false }),
-  task:       dynamic(() => import('./KanbanView').then(m => m.KanbanView), { ssr: false }),
-  dictionary: dynamic(() => import('./DictionaryView').then(m => m.DictionaryView), { ssr: false }),
+  table:      dynamic(() => import('./TableView').then(m => m.TableView)),
+  task:       dynamic(() => import('./KanbanView').then(m => m.KanbanView)),
+  dictionary: dynamic(() => import('./DictionaryView').then(m => m.DictionaryView)),
 
   // ── Wave 2: 학습 ──
-  flashcard:  dynamic(() => import('./FlashcardView').then(m => m.FlashcardView), { ssr: false }),
-  timeline:   dynamic(() => import('./TimelineView').then(m => m.TimelineView), { ssr: false }),
+  flashcard:  dynamic(() => import('./FlashcardView').then(m => m.FlashcardView)),
+  timeline:   dynamic(() => import('./TimelineView').then(m => m.TimelineView)),
 
   // ── Wave 3: 개인 관리 ──
-  chart:      dynamic(() => import('./ChartView').then(m => m.ChartView), { ssr: false }),
-  heatmap:    dynamic(() => import('./HeatmapView').then(m => m.HeatmapView), { ssr: false }),
-  journal:    dynamic(() => import('./JournalView').then(m => m.JournalView), { ssr: false }),
-  profile:    dynamic(() => import('./ProfileView').then(m => m.ProfileView), { ssr: false }),
+  chart:      dynamic(() => import('./ChartView').then(m => m.ChartView)),
+  heatmap:    dynamic(() => import('./HeatmapView').then(m => m.HeatmapView)),
+  journal:    dynamic(() => import('./JournalView').then(m => m.JournalView)),
+  profile:    dynamic(() => import('./ProfileView').then(m => m.ProfileView)),
 
   // ── Wave 4: 학습/수집 ──
-  shanghanlun: dynamic(() => import('./ShanghanlunView').then(m => m.ShanghanlunView), { ssr: false }),
-  boncho:     dynamic(() => import('./BonchoView').then(m => m.BonchoView), { ssr: false }),
-  idea:       dynamic(() => import('./IdeaView').then(m => m.IdeaView), { ssr: false }),
-  curriculum: dynamic(() => import('./CurriculumView').then(m => m.CurriculumView), { ssr: false }),
-  lecture:    dynamic(() => import('./LectureView').then(m => m.LectureView), { ssr: false }),
-  scrap:      dynamic(() => import('./ScrapView').then(m => m.ScrapView), { ssr: false }),
+  shanghanlun: dynamic(() => import('./ShanghanlunView').then(m => m.ShanghanlunView)),
+  boncho:     dynamic(() => import('./BonchoView').then(m => m.BonchoView)),
+  idea:       dynamic(() => import('./IdeaView').then(m => m.IdeaView)),
+  curriculum: dynamic(() => import('./CurriculumView').then(m => m.CurriculumView)),
+  lecture:    dynamic(() => import('./LectureView').then(m => m.LectureView)),
+  scrap:      dynamic(() => import('./ScrapView').then(m => m.ScrapView)),
 
   // ── Wave 5: 미디어 ──
-  youtube:    dynamic(() => import('./YoutubeView').then(m => m.YoutubeView), { ssr: false }),
+  youtube:    dynamic(() => import('./YoutubeView').then(m => m.YoutubeView)),
 
   // ── Wave 6: 위치 ──
   map:        dynamic(() => import('./MapView').then(m => m.MapView), { ssr: false }),
 
   // ── Wave 7: 인라인 — 일정 ──
-  'schedule-time':  dynamic(() => import('./inline/ScheduleTimeView').then(m => m.ScheduleTimeView), { ssr: false }),
-  'schedule-date':  dynamic(() => import('./inline/ScheduleDateView').then(m => m.ScheduleDateView), { ssr: false }),
-  'schedule-range': dynamic(() => import('./inline/ScheduleRangeView').then(m => m.ScheduleRangeView), { ssr: false }),
-  'schedule-week':  dynamic(() => import('./inline/ScheduleWeekView').then(m => m.ScheduleWeekView), { ssr: false }),
-  'schedule-list':  dynamic(() => import('./inline/ScheduleListView').then(m => m.ScheduleListView), { ssr: false }),
+  'schedule-time':  dynamic(() => import('./inline/ScheduleTimeView').then(m => m.ScheduleTimeView)),
+  'schedule-date':  dynamic(() => import('./inline/ScheduleDateView').then(m => m.ScheduleDateView)),
+  'schedule-range': dynamic(() => import('./inline/ScheduleRangeView').then(m => m.ScheduleRangeView)),
+  'schedule-week':  dynamic(() => import('./inline/ScheduleWeekView').then(m => m.ScheduleWeekView)),
+  'schedule-list':  dynamic(() => import('./inline/ScheduleListView').then(m => m.ScheduleListView)),
 
   // ── Wave 8: 인라인 — 가계부 ──
-  'finance-amount':   dynamic(() => import('./inline/FinanceAmountView').then(m => m.FinanceAmountView), { ssr: false }),
-  'finance-today':    dynamic(() => import('./inline/FinanceTodayView').then(m => m.FinanceTodayView), { ssr: false }),
-  'finance-week':     dynamic(() => import('./inline/FinanceWeekView').then(m => m.FinanceWeekView), { ssr: false }),
-  'finance-compare':  dynamic(() => import('./inline/FinanceCompareView').then(m => m.FinanceCompareView), { ssr: false }),
-  'finance-category': dynamic(() => import('./inline/FinanceCategoryView').then(m => m.FinanceCategoryView), { ssr: false }),
+  'finance-amount':   dynamic(() => import('./inline/FinanceAmountView').then(m => m.FinanceAmountView)),
+  'finance-today':    dynamic(() => import('./inline/FinanceTodayView').then(m => m.FinanceTodayView)),
+  'finance-week':     dynamic(() => import('./inline/FinanceWeekView').then(m => m.FinanceWeekView)),
+  'finance-compare':  dynamic(() => import('./inline/FinanceCompareView').then(m => m.FinanceCompareView)),
+  'finance-category': dynamic(() => import('./inline/FinanceCategoryView').then(m => m.FinanceCategoryView)),
 
   // ── Wave 9: 인라인 — 할 일 ──
-  'task-check': dynamic(() => import('./inline/TaskCheckView').then(m => m.TaskCheckView), { ssr: false }),
-  'task-list':  dynamic(() => import('./inline/TaskListView').then(m => m.TaskListView), { ssr: false }),
+  'task-check': dynamic(() => import('./inline/TaskCheckView').then(m => m.TaskCheckView)),
+  'task-list':  dynamic(() => import('./inline/TaskListView').then(m => m.TaskListView)),
 
   // ── Wave 10: 인라인 — 기타 도메인 ──
-  'note-card':       dynamic(() => import('./inline/GenericNoteCardView').then(m => m.GenericNoteCardView), { ssr: false }),
-  'relation-card':   dynamic(() => import('./inline/RelationCardView').then(m => m.RelationCardView), { ssr: false }),
-  'habit-log':       dynamic(() => import('./inline/HabitLogView').then(m => m.HabitLogView), { ssr: false }),
-  'habit-streak':    dynamic(() => import('./inline/HabitStreakView').then(m => m.HabitStreakView), { ssr: false }),
-  'media-rating':    dynamic(() => import('./inline/MediaRatingView').then(m => m.MediaRatingView), { ssr: false }),
-  'location-pin':    dynamic(() => import('./inline/LocationPinView').then(m => m.LocationPinView), { ssr: false }),
-  'youtube-timestamp': dynamic(() => import('./inline/YoutubeTimestampView').then(m => m.YoutubeTimestampView), { ssr: false }),
-  'health-log':      dynamic(() => import('./inline/HealthLogView').then(m => m.HealthLogView), { ssr: false }),
-  'health-med':      dynamic(() => import('./inline/HealthMedView').then(m => m.HealthMedView), { ssr: false }),
-  'boncho-herb':     dynamic(() => import('./inline/BonchoHerbView').then(m => m.BonchoHerbView), { ssr: false }),
-  'dict-char':       dynamic(() => import('./inline/DictCharView').then(m => m.DictCharView), { ssr: false }),
-  'edu-assignment':  dynamic(() => import('./inline/EduAssignmentView').then(m => m.EduAssignmentView), { ssr: false }),
+  'note-card':       dynamic(() => import('./inline/GenericNoteCardView').then(m => m.GenericNoteCardView)),
+  'relation-card':   dynamic(() => import('./inline/RelationCardView').then(m => m.RelationCardView)),
+  'habit-log':       dynamic(() => import('./inline/HabitLogView').then(m => m.HabitLogView)),
+  'habit-streak':    dynamic(() => import('./inline/HabitStreakView').then(m => m.HabitStreakView)),
+  'media-rating':    dynamic(() => import('./inline/MediaRatingView').then(m => m.MediaRatingView)),
+  'location-pin':    dynamic(() => import('./inline/LocationPinView').then(m => m.LocationPinView)),
+  'youtube-timestamp': dynamic(() => import('./inline/YoutubeTimestampView').then(m => m.YoutubeTimestampView)),
+  'health-log':      dynamic(() => import('./inline/HealthLogView').then(m => m.HealthLogView)),
+  'health-med':      dynamic(() => import('./inline/HealthMedView').then(m => m.HealthMedView)),
+  'boncho-herb':     dynamic(() => import('./inline/BonchoHerbView').then(m => m.BonchoHerbView)),
+  'dict-char':       dynamic(() => import('./inline/DictCharView').then(m => m.DictCharView)),
+  'edu-assignment':  dynamic(() => import('./inline/EduAssignmentView').then(m => m.EduAssignmentView)),
 
   // ── Wave 11: 주간 시간표 ──
-  'edu-timetable': dynamic(() => import('./EduTimetableView').then(m => ({ default: m.EduTimetableView })), { ssr: false }),
+  'edu-timetable': dynamic(() => import('./EduTimetableView').then(m => ({ default: m.EduTimetableView }))),
 };
 
 export const VIEW_META: Record<string, ViewMeta> = {

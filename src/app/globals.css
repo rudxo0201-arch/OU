@@ -1,80 +1,106 @@
 /* ──────────────────────────────────────────
-   OU Design System — Light Industrial Monochrome
-   "Own Universe" — 라이트 실버 배경, 순수 흑백, 프로페셔널 도구 미감
+   OU Design System — Cosmos Dark
+   "Own Universe" — 순수 블랙, 화이트 글로우, B&W+Silver
    ────────────────────────────────────────── */
 
 /* ── 1. CSS 토큰 ── */
 :root {
-  /* Space (배경) */
-  --ou-space:              #e4e4ea;
-  --ou-space-subtle:       #dcdce2;
-  --ou-space-gradient:     linear-gradient(145deg, #e4e4ea 0%, #eaeaef 50%, #e0e0e6 100%);
+  /* ─── Background ─── */
+  --ou-bg:              #000000;
+  --ou-bg-raised:       #0d0d0d;
+  --ou-bg-elevated:     #111111;
 
-  /* Surface (화이트 카드) — 불투명 white on grey bg */
-  --ou-glass:              rgba(255, 255, 255, 0.97);
-  --ou-glass-hover:        rgba(255, 255, 255, 1.0);
-  --ou-glass-active:       rgba(255, 255, 255, 1.0);
-  --ou-glass-elevated:     rgba(255, 255, 255, 1.0);
-  --ou-glass-strong:       rgba(255, 255, 255, 1.0);
+  /* ─── Surface ─── */
+  --ou-surface:         rgba(255, 255, 255, 0.04);
+  --ou-surface-dark:    #111111;
+  --ou-surface-light:   #ebebeb;
 
-  /* Border */
-  --ou-glass-border:       rgba(0, 0, 0, 0.07);
-  --ou-glass-border-hover: rgba(0, 0, 0, 0.14);
-  --ou-glass-border-focus: rgba(0, 0, 0, 0.25);
+  /* ─── Border (6단계 + controls) ─── */
+  --ou-border-faint:    rgba(255, 255, 255, 0.06);
+  --ou-border:          rgba(255, 255, 255, 0.10);   /* = subtle */
+  --ou-border-subtle:   rgba(255, 255, 255, 0.10);
+  --ou-border-muted:    rgba(255, 255, 255, 0.14);
+  --ou-border-medium:   rgba(255, 255, 255, 0.18);
+  --ou-border-hover:    rgba(255, 255, 255, 0.25);
+  --ou-border-strong:   rgba(255, 255, 255, 0.30);
+  --ou-border-mid:      rgba(255, 255, 255, 0.40);   /* 컨트롤 전용 (toggle/checkbox/input) */
+  --ou-border-focus:    rgba(255, 255, 255, 0.45);
 
-  /* Blur (제거) */
-  --ou-blur:               none;
-  --ou-blur-light:         none;
+  /* ─── Surface (반투명 오버레이 4단계) ─── */
+  --ou-surface-faint:   rgba(255, 255, 255, 0.015);
+  --ou-surface-subtle:  rgba(255, 255, 255, 0.03);
+  --ou-surface-muted:   rgba(255, 255, 255, 0.05);
+  --ou-surface-hover:   rgba(255, 255, 255, 0.08);
 
-  /* Text (6단계, 다크 on 라이트) */
-  --ou-text-heading:       rgba(0, 0, 0, 0.90);
-  --ou-text-strong:        rgba(0, 0, 0, 0.78);
-  --ou-text-body:          rgba(0, 0, 0, 0.62);
-  --ou-text-secondary:     rgba(0, 0, 0, 0.42);
-  --ou-text-muted:         rgba(0, 0, 0, 0.26);
-  --ou-text-disabled:      rgba(0, 0, 0, 0.14);
+  /* ─── Text (8단계) ─── */
+  --ou-text-heading:    #ffffff;
+  --ou-text-bright:     rgba(255, 255, 255, 0.95);
+  --ou-text-strong:     rgba(255, 255, 255, 0.85);
+  --ou-text-body:       rgba(255, 255, 255, 0.70);
+  --ou-text-secondary:  rgba(255, 255, 255, 0.55);
+  --ou-text-dimmed:     rgba(255, 255, 255, 0.40);
+  --ou-text-muted:      rgba(255, 255, 255, 0.25);
+  --ou-text-faint:      rgba(255, 255, 255, 0.15);
+  --ou-text-disabled:   rgba(255, 255, 255, 0.18);
 
-  /* Accent — 모노크롬 */
-  --ou-accent:             #1a1a1f;
-  --ou-accent-hover:       #333338;
-  --ou-accent-rgb:         26, 26, 31;
-  --ou-accent-glow:        none;
-  --ou-accent-glow-lg:     none;
+  /* ─── Glow (8단계 + aura 3단계) ─── */
+  --ou-glow-xs:    0 0 8px 0 rgba(255, 255, 255, 0.06);
+  --ou-glow-sm:    0 0 12px 1px rgba(255, 255, 255, 0.10), 0 0 24px rgba(255, 255, 255, 0.04);
+  --ou-glow-md:    0 0 20px 2px rgba(255, 255, 255, 0.14), 0 0 48px rgba(255, 255, 255, 0.06);
+  --ou-glow-lg:    0 0 32px 4px rgba(255, 255, 255, 0.18), 0 0 80px rgba(255, 255, 255, 0.08);
+  --ou-glow-hover: 0 0 24px 3px rgba(255, 255, 255, 0.16);
+  --ou-glow-important: 0 0 24px 6px rgba(255, 255, 255, 0.22);
+  /* Aura — Ref-C 키노트 카드 halo */
+  --ou-glow-aura-sm: 0 0 24px 4px rgba(255, 255, 255, 0.12),
+                     0 0 48px 8px rgba(255, 255, 255, 0.06);
+  --ou-glow-aura-md: 0 0 40px 8px rgba(255, 255, 255, 0.20),
+                     0 0 80px 16px rgba(255, 255, 255, 0.08);
+  --ou-glow-aura-lg: 0 0 60px 12px rgba(255, 255, 255, 0.28),
+                     0 0 120px 24px rgba(255, 255, 255, 0.10);
+  /* Orb — 순수 발광체 */
+  --ou-glow-orb:     0 0 40px 6px rgba(255, 255, 255, 0.32),
+                     0 0 80px 16px rgba(255, 255, 255, 0.18),
+                     0 0 160px 32px rgba(255, 255, 255, 0.08);
 
-  /* Semantic */
-  --ou-success:            #16a34a;
-  --ou-warning:            #ca8a04;
-  --ou-error:              #dc2626;
-  --ou-info:               #2563eb;
+  /* ─── Blur (floating overlay 전용) ─── */
+  --ou-blur-sm: blur(8px);
+  --ou-blur-md: blur(16px);
+  --ou-blur-lg: blur(24px);
 
-  /* Dark Card (강조 카드용) */
-  --ou-card-dark:          #1a1a1f;
-  --ou-card-dark-hover:    #252528;
-  --ou-card-dark-text:     rgba(255, 255, 255, 0.92);
-  --ou-card-dark-sub:      rgba(255, 255, 255, 0.55);
+  /* ─── Shadow ─── */
+  --ou-shadow-sm:         0 1px 3px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3);
+  --ou-shadow-md:         0 2px 6px rgba(0, 0, 0, 0.6), 0 8px 24px rgba(0, 0, 0, 0.4);
+  --ou-shadow-lg:         0 4px 12px rgba(0, 0, 0, 0.7), 0 16px 48px rgba(0, 0, 0, 0.5);
+  --ou-shadow-card:       0 0 0 1px rgba(255, 255, 255, 0.08),
+                          0 4px 24px rgba(0, 0, 0, 0.5);
+  --ou-shadow-card-hover: 0 0 0 1px rgba(255, 255, 255, 0.18),
+                          0 8px 40px rgba(0, 0, 0, 0.7),
+                          0 0 30px rgba(255, 255, 255, 0.04);
 
-  /* Shadow — 레퍼런스 수준 가시적 깊이감 */
-  --ou-shadow-sm:          0 1px 2px rgba(0, 0, 0, 0.05), 0 2px 8px rgba(0, 0, 0, 0.07);
-  --ou-shadow-md:          0 2px 4px rgba(0, 0, 0, 0.07), 0 8px 24px rgba(0, 0, 0, 0.11);
-  --ou-shadow-lg:          0 4px 8px rgba(0, 0, 0, 0.09), 0 16px 48px rgba(0, 0, 0, 0.15);
-  /* 위젯 카드 전용 — ambient + edge highlight */
-  --ou-shadow-card:        0 1px 0 rgba(255,255,255,0.8) inset,
-                           0 1px 3px rgba(0, 0, 0, 0.07),
-                           0 8px 32px rgba(0, 0, 0, 0.09);
-  --ou-shadow-card-hover:  0 1px 0 rgba(255,255,255,0.8) inset,
-                           0 2px 6px rgba(0, 0, 0, 0.09),
-                           0 20px 60px rgba(0, 0, 0, 0.16);
+  /* ─── Accent (모노크롬 — 화이트) ─── */
+  --ou-accent:          #ffffff;
+  --ou-accent-hover:    rgba(255, 255, 255, 0.88);
+  --ou-accent-rgb:      255, 255, 255;
+  --ou-accent-glow:     var(--ou-glow-sm);
+  --ou-accent-glow-lg:  var(--ou-glow-lg);
 
-  /* Border Radius */
-  --ou-radius-xs:          4px;
-  --ou-radius-sm:          6px;
-  --ou-radius-md:          10px;
-  --ou-radius-card:        14px;
-  --ou-radius-lg:          16px;
-  --ou-radius-xl:          20px;
-  --ou-radius-pill:        999px;
+  /* ─── Semantic (코스모스 뮤트 — 채도 낮춤, 은빛 베이스) ─── */
+  --ou-success:         #7aaa88;
+  --ou-warning:         #aaa070;
+  --ou-error:           #aa7070;
+  --ou-info:            #7088aa;
 
-  /* Spacing (8px 베이스) */
+  /* ─── Border Radius ─── */
+  --ou-radius-xs:    4px;
+  --ou-radius-sm:    8px;
+  --ou-radius-md:    12px;
+  --ou-radius-card:  16px;
+  --ou-radius-lg:    20px;
+  --ou-radius-xl:    24px;
+  --ou-radius-chat:  24px;
+  --ou-radius-pill:  999px;
+
+  /* ─── Spacing (8px 그리드) ─── */
   --ou-space-1:   4px;
   --ou-space-2:   8px;
   --ou-space-3:   12px;
@@ -87,164 +113,179 @@
   --ou-space-16:  64px;
   --ou-space-20:  80px;
 
-  /* Max Width */
+  /* ─── Max Width ─── */
   --ou-max-sm:    640px;
   --ou-max-md:    768px;
   --ou-max-lg:    1024px;
   --ou-max-xl:    1280px;
 
-  /* Typography */
-  --ou-font-logo:    'Orbitron', sans-serif;
-  --ou-font-display: 'DM Sans', sans-serif;
+  /* ─── Typography ─── */
+  --ou-font-logo:    var(--font-orbitron, 'Orbitron'), sans-serif;
+  --ou-font-display: var(--font-dm-sans, 'DM Sans'), sans-serif;
   --ou-font-body:    'Pretendard Variable', -apple-system, BlinkMacSystemFont, sans-serif;
   --ou-font-mono:    'JetBrains Mono', monospace;
 
-  /* Font Size */
-  --ou-text-micro: 10px;  /* 마이크로 레이블 (카테고리 uppercase) */
-  --ou-text-xs:   12px;
-  --ou-text-sm:   14px;
-  --ou-text-base: 16px;
-  --ou-text-lg:   18px;
-  --ou-text-xl:   24px;
-  --ou-text-2xl:  32px;
-  --ou-text-3xl:  48px;
-  --ou-text-hero: 64px;
+  --ou-text-micro:      10px;
+  --ou-text-xs:         12px;
+  --ou-text-sm:         14px;
+  --ou-text-base:       16px;
+  --ou-text-lg:         18px;
+  --ou-text-xl:         24px;
+  --ou-text-2xl:        32px;
+  --ou-text-3xl:        48px;
+  --ou-text-hero:       64px;
+  --ou-text-display:    48px;
+  --ou-text-display-lg: 72px;
 
-  /* Letter Spacing */
-  --ou-tracking-tight:  -0.02em;  /* 타이틀 */
+  --ou-tracking-tight:  -0.02em;
   --ou-tracking-normal:  0em;
-  --ou-tracking-wide:    0.05em;  /* 레이블 */
-  --ou-tracking-wider:   0.08em;  /* 마이크로 uppercase */
+  --ou-tracking-wide:    0.05em;
+  --ou-tracking-wider:   0.08em;
 
-  /* Line Height */
   --ou-leading-tight:  1.15;
   --ou-leading-snug:   1.35;
   --ou-leading-normal: 1.5;
 
-  /* Widget row heights */
+  /* ─── Widget Row Heights ─── */
   --ou-row-sm:   32px;
   --ou-row-md:   36px;
   --ou-row-lg:   44px;
 
-  /* Transition */
+  /* ─── Transition ─── */
   --ou-transition-fast:   120ms ease-out;
   --ou-transition:        200ms ease;
   --ou-transition-slow:   400ms cubic-bezier(0.16, 1, 0.3, 1);
   --ou-transition-spring: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
 
-  /* Display Typography */
-  --ou-text-display:      48px;
-  --ou-text-display-lg:   72px;
+  /* ─── Hairline Dividers ─── */
+  --ou-hairline:         rgba(255, 255, 255, 0.06);
+  --ou-hairline-strong:  rgba(255, 255, 255, 0.11);
 
-  /* Hairline Dividers */
-  --ou-hairline:          rgba(0, 0, 0, 0.06);
-  --ou-hairline-strong:   rgba(0, 0, 0, 0.10);
+  /* ─── 레거시 호환 alias (기존 뷰 컴포넌트 호환) ─── */
+  --ou-space:              var(--ou-bg);
+  --ou-space-subtle:       rgba(255, 255, 255, 0.02);
+  --ou-space-gradient:     linear-gradient(145deg, #000000 0%, #0d0d0d 50%, #000000 100%);
+  --ou-glass:              var(--ou-surface);
+  --ou-glass-hover:        rgba(255, 255, 255, 0.06);
+  --ou-glass-active:       rgba(255, 255, 255, 0.08);
+  --ou-glass-elevated:     rgba(255, 255, 255, 0.07);
+  --ou-glass-strong:       rgba(255, 255, 255, 0.10);
+  --ou-glass-border:       var(--ou-border);
+  --ou-glass-border-hover: var(--ou-border-hover);
+  --ou-glass-border-focus: var(--ou-border-focus);
+  --ou-hover-bg:           rgba(255, 255, 255, 0.05);
+  --ou-bg-raised:          var(--ou-bg-elevated);
+  --ou-text:               var(--ou-text-heading);
+  --ou-text-dimmed:        var(--ou-text-muted);
+  --ou-text-error:         var(--ou-error);
+  --ou-text-bright:        var(--ou-text-heading);
+  --ou-accent-primary:     var(--ou-accent);
+  --ou-card-dark:          var(--ou-surface-dark);
+  --ou-card-dark-hover:    #1a1a1a;
+  --ou-card-dark-text:     rgba(255, 255, 255, 0.92);
+  --ou-card-dark-sub:      rgba(255, 255, 255, 0.50);
+  --ou-border-subtle:      rgba(255, 255, 255, 0.06);
+  --ou-border-faint:       rgba(255, 255, 255, 0.04);
+  --ou-surface-faint:      rgba(255, 255, 255, 0.02);
+  --ou-blur:               none;
+  --ou-blur-light:         none;
+  --ou-neu-raised-xs:      var(--ou-shadow-sm);
+  --ou-neu-raised-sm:      var(--ou-shadow-sm);
+  --ou-neu-raised-md:      var(--ou-shadow-md);
+  --ou-neu-raised-lg:      var(--ou-shadow-lg);
+  --ou-neu-pressed-xs:     inset 0 1px 3px rgba(0, 0, 0, 0.6);
+  --ou-neu-pressed-sm:     inset 0 1px 3px rgba(0, 0, 0, 0.6);
+  --ou-neu-pressed-md:     inset 0 2px 6px rgba(0, 0, 0, 0.7);
+  --ou-neu-pressed-lg:     inset 0 2px 8px rgba(0, 0, 0, 0.8);
 }
 
-/* ── 다크/라이트 테마 — [data-theme] 스위칭 ── */
+/* ── 팔레트 (모노크롬 — 모두 동일한 화이트 계통) ── */
+[data-palette="cosmos"], :root { --ou-accent: #ffffff; --ou-accent-hover: rgba(255,255,255,0.88); --ou-accent-rgb: 255,255,255; }
+[data-palette="nebula"]        { --ou-accent: #e8e8f0; --ou-accent-hover: rgba(232,232,240,0.88); --ou-accent-rgb: 232,232,240; }
+[data-palette="aurora"]        { --ou-accent: #e8f0e8; --ou-accent-hover: rgba(232,240,232,0.88); --ou-accent-rgb: 232,240,232; }
+[data-palette="solar"]         { --ou-accent: #f0ede8; --ou-accent-hover: rgba(240,237,232,0.88); --ou-accent-rgb: 240,237,232; }
 
-/* 기본값 (라이트) */
-:root {
-  --ou-bg:         #f0f0f5;
-  --ou-surface:    rgba(0, 0, 0, 0.03);
-  --ou-border:     rgba(0, 0, 0, 0.12);
-  --ou-text:       #0a0a0f;
-  --ou-text-muted: rgba(0, 0, 0, 0.45);
-  --ou-glow-sm:    0 0 6px rgba(0, 0, 0, 0.10);
-  --ou-glow-md:    0 0 12px rgba(0, 0, 0, 0.15);
-  --ou-glow-lg:    0 0 24px rgba(0, 0, 0, 0.20);
+/* ── [data-theme] 스위칭 (다크 퍼스트, 라이트는 폴백) ── */
+[data-theme="dark"] {
+  /* 기본값과 동일 — 명시적 오버라이드 */
+  --ou-bg:             #000000;
+  --ou-text-heading:   #ffffff;
+  --ou-border:         rgba(255, 255, 255, 0.10);
 }
 
 [data-theme="light"] {
-  --ou-bg:         #f0f0f5;
-  --ou-surface:    rgba(0, 0, 0, 0.03);
-  --ou-border:     rgba(0, 0, 0, 0.12);
-  --ou-text:       #0a0a0f;
-  --ou-text-muted: rgba(0, 0, 0, 0.45);
-  --ou-glow-sm:    0 0 6px rgba(0, 0, 0, 0.10);
-  --ou-glow-md:    0 0 12px rgba(0, 0, 0, 0.15);
-  --ou-glow-lg:    0 0 24px rgba(0, 0, 0, 0.20);
+  --ou-bg:              #f2f2f2;
+  --ou-bg-raised:       #e8e8e8;
+  --ou-bg-elevated:     #ffffff;
+  --ou-surface:         rgba(0, 0, 0, 0.04);
+  --ou-surface-dark:    #1a1a1a;
+  --ou-surface-light:   #ffffff;
+  --ou-border:          rgba(0, 0, 0, 0.10);
+  --ou-border-mid:      rgba(0, 0, 0, 0.38);
+  --ou-border-hover:    rgba(0, 0, 0, 0.20);
+  --ou-border-focus:    rgba(0, 0, 0, 0.40);
+  --ou-text-heading:    #000000;
+  --ou-text-strong:     rgba(0, 0, 0, 0.88);
+  --ou-text-body:       rgba(0, 0, 0, 0.72);
+  --ou-text-secondary:  rgba(0, 0, 0, 0.48);
+  --ou-text-muted:      rgba(0, 0, 0, 0.32);
+  --ou-text-disabled:   rgba(0, 0, 0, 0.18);
+  --ou-accent:          #000000;
+  --ou-accent-hover:    rgba(0, 0, 0, 0.80);
+  --ou-accent-rgb:      0, 0, 0;
+  --ou-glow-sm:    0 0 8px rgba(0, 0, 0, 0.08);
+  --ou-glow-md:    0 0 16px rgba(0, 0, 0, 0.12);
+  --ou-glow-lg:    0 0 32px rgba(0, 0, 0, 0.16);
+  --ou-hairline:         rgba(0, 0, 0, 0.06);
+  --ou-hairline-strong:  rgba(0, 0, 0, 0.11);
+  --ou-glass:            rgba(255, 255, 255, 0.97);
+  --ou-glass-border:     rgba(0, 0, 0, 0.08);
+  --ou-glass-border-hover: rgba(0, 0, 0, 0.16);
+  --ou-glass-border-focus: rgba(0, 0, 0, 0.30);
+  --ou-shadow-sm:        0 1px 2px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.08);
+  --ou-shadow-md:        0 2px 4px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.11);
+  --ou-shadow-lg:        0 4px 8px rgba(0,0,0,0.10), 0 16px 48px rgba(0,0,0,0.15);
+  --ou-shadow-card:      0 0 0 1px rgba(0,0,0,0.07), 0 4px 24px rgba(0,0,0,0.10);
+  --ou-shadow-card-hover: 0 0 0 1px rgba(0,0,0,0.13), 0 8px 40px rgba(0,0,0,0.18);
+  --ou-space:            #f2f2f2;
+  --ou-hover-bg:         rgba(0, 0, 0, 0.04);
+  --ou-text:             #000000;
+  --ou-success:          #4a7a58;
+  --ou-warning:          #7a7040;
+  --ou-error:            #7a4a4a;
+  --ou-info:             #4a587a;
+  /* border */
+  --ou-border-faint:     rgba(0, 0, 0, 0.05);
+  --ou-border-subtle:    rgba(0, 0, 0, 0.10);
+  --ou-border-muted:     rgba(0, 0, 0, 0.14);
+  --ou-border-medium:    rgba(0, 0, 0, 0.18);
+  --ou-border-hover:     rgba(0, 0, 0, 0.25);
+  --ou-border-strong:    rgba(0, 0, 0, 0.30);
+  --ou-border-mid:       rgba(0, 0, 0, 0.38);
+  --ou-border-focus:     rgba(0, 0, 0, 0.45);
+  /* surface */
+  --ou-surface-faint:    rgba(0, 0, 0, 0.01);
+  --ou-surface-subtle:   rgba(0, 0, 0, 0.03);
+  --ou-surface-muted:    rgba(0, 0, 0, 0.05);
+  --ou-surface-hover:    rgba(0, 0, 0, 0.07);
+  /* text */
+  --ou-text-bright:      rgba(0, 0, 0, 0.98);
+  --ou-text-strong:      rgba(0, 0, 0, 0.85);
+  --ou-text-body:        rgba(0, 0, 0, 0.70);
+  --ou-text-secondary:   rgba(0, 0, 0, 0.55);
+  --ou-text-dimmed:      rgba(0, 0, 0, 0.40);
+  --ou-text-muted:       rgba(0, 0, 0, 0.28);
+  --ou-text-faint:       rgba(0, 0, 0, 0.15);
+  /* glow → shadow (light에서는 glow가 그림자) */
+  --ou-glow-xs:          0 0 8px rgba(0, 0, 0, 0.04);
+  --ou-glow-sm:          0 0 12px rgba(0, 0, 0, 0.07);
+  --ou-glow-md:          0 0 20px rgba(0, 0, 0, 0.10);
+  --ou-glow-lg:          0 0 32px rgba(0, 0, 0, 0.13);
+  --ou-glow-aura-sm:     0 0 24px 4px rgba(0, 0, 0, 0.08), 0 0 48px rgba(0, 0, 0, 0.04);
+  --ou-glow-aura-md:     0 0 40px 8px rgba(0, 0, 0, 0.12), 0 0 80px rgba(0, 0, 0, 0.06);
+  --ou-glow-aura-lg:     0 0 60px 12px rgba(0, 0, 0, 0.16), 0 0 120px rgba(0, 0, 0, 0.08);
+  --ou-glow-orb:         0 0 40px 6px rgba(0, 0, 0, 0.18), 0 0 80px rgba(0, 0, 0, 0.10);
 }
-
-[data-theme="dark"] {
-  --ou-bg:         #0a0a0f;
-  --ou-surface:    rgba(255, 255, 255, 0.04);
-  --ou-border:     rgba(255, 255, 255, 0.15);
-  --ou-text:       #ffffff;
-  --ou-text-muted: rgba(255, 255, 255, 0.45);
-  --ou-glow-sm:    0 0 6px rgba(255, 255, 255, 0.20);
-  --ou-glow-md:    0 0 12px rgba(255, 255, 255, 0.30);
-  --ou-glow-lg:    0 0 24px rgba(255, 255, 255, 0.40);
-  /* 다크모드 공간 오버라이드 */
-  --ou-space:      #0a0a0f;
-  --ou-glass:      rgba(255, 255, 255, 0.05);
-  --ou-glass-border: rgba(255, 255, 255, 0.12);
-  --ou-text-body:  rgba(255, 255, 255, 0.75);
-  --ou-text-heading: rgba(255, 255, 255, 0.95);
-  --ou-text-secondary: rgba(255, 255, 255, 0.50);
-  --ou-accent:     rgba(255, 255, 255, 0.90);
-}
-
-[data-theme="dark"] body {
-  background: #0a0a0f;
-  color: rgba(255, 255, 255, 0.85);
-}
-
-[data-theme="dark"] {
-  /* 위젯 내부 텍스트 토큰 */
-  --ou-text-strong:      rgba(255, 255, 255, 0.88);
-  --ou-text-secondary:   rgba(255, 255, 255, 0.50);
-  --ou-text-disabled:    rgba(255, 255, 255, 0.22);
-  /* 구분선 */
-  --ou-hairline:         rgba(255, 255, 255, 0.06);
-  --ou-hairline-strong:  rgba(255, 255, 255, 0.10);
-  /* 배경 */
-  --ou-bg-raised:        rgba(255, 255, 255, 0.06);
-  --ou-space-subtle:     rgba(255, 255, 255, 0.04);
-  /* 호버 */
-  --ou-hover-bg:         rgba(255, 255, 255, 0.06);
-}
-
-[data-theme="dark"] {
-  --ou-shadow-sm:        0 1px 3px rgba(0,0,0,0.4), 0 2px 8px rgba(0,0,0,0.3);
-  --ou-shadow-md:        0 2px 6px rgba(0,0,0,0.5), 0 8px 24px rgba(0,0,0,0.4);
-  --ou-shadow-lg:        0 4px 12px rgba(0,0,0,0.6), 0 16px 48px rgba(0,0,0,0.5);
-  --ou-shadow-card:      0 0 0 1px rgba(255,255,255,0.07),
-                         0 4px 24px rgba(0,0,0,0.35);
-  --ou-shadow-card-hover: 0 0 0 1px rgba(255,255,255,0.14),
-                           0 8px 40px rgba(0,0,0,0.5),
-                           0 0 20px rgba(255,255,255,0.04);
-  --ou-border-hover:     rgba(255,255,255,0.28);
-}
-
-/* ── 레거시 변수 → 폴백 (기존 뷰 호환) ── */
-:root {
-  --ou-neu-raised-sm:   var(--ou-shadow-sm);
-  --ou-neu-raised-md:   var(--ou-shadow-md);
-  --ou-neu-raised-lg:   var(--ou-shadow-lg);
-  --ou-neu-pressed-sm:  inset 0 1px 3px rgba(0, 0, 0, 0.06);
-  --ou-neu-pressed-md:  inset 0 2px 6px rgba(0, 0, 0, 0.08);
-  --ou-border-subtle:   rgba(0, 0, 0, 0.08);
-  --ou-border-faint:    rgba(0, 0, 0, 0.04);
-  --ou-bg:              var(--ou-space);
-  --ou-surface:         var(--ou-glass);
-  --ou-text-dimmed:     var(--ou-text-muted);
-  --ou-text-error:      var(--ou-error);
-  --ou-accent-primary:  var(--ou-accent);
-  /* 누락 토큰 보완 */
-  --ou-surface-faint:   rgba(0, 0, 0, 0.03);
-  --ou-bg-raised:       rgba(255, 255, 255, 0.85);
-  --ou-text-bright:     var(--ou-text-heading);
-  --ou-neu-raised-xs:   var(--ou-shadow-sm);
-  --ou-neu-pressed-xs:  inset 0 1px 2px rgba(0, 0, 0, 0.04);
-  --ou-neu-pressed-lg:  inset 0 2px 8px rgba(0, 0, 0, 0.10);
-}
-
-/* ── 팔레트 시스템 (모노크롬) ── */
-[data-palette="cosmos"], :root { --ou-accent: #1a1a1f; --ou-accent-hover: #333338; --ou-accent-rgb: 26, 26, 31; }
-[data-palette="nebula"]        { --ou-accent: #2a2a30; --ou-accent-hover: #3a3a40; --ou-accent-rgb: 42, 42, 48; }
-[data-palette="aurora"]        { --ou-accent: #1f2520; --ou-accent-hover: #2f3530; --ou-accent-rgb: 31, 37, 32; }
-[data-palette="solar"]         { --ou-accent: #252520; --ou-accent-hover: #353530; --ou-accent-rgb: 37, 37, 32; }
 
 /* ── 2. CSS 리셋 ── */
 *, *::before, *::after {
@@ -264,7 +305,7 @@ body {
   font-size: var(--ou-text-base);
   line-height: 1.5;
   color: var(--ou-text-body);
-  background: var(--ou-space);
+  background: var(--ou-bg);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -323,8 +364,8 @@ img, video {
 }
 
 @keyframes ou-glow-pulse {
-  0%, 100% { transform: scale(1); }
-  50%       { transform: scale(1.02); }
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.7; }
 }
 
 @keyframes ou-shimmer {
@@ -346,24 +387,21 @@ img, video {
 }
 
 @keyframes ou-widget-min-hit {
-  0%   { transform: translateX(0);    box-shadow: var(--ou-shadow-card); }
-  15%  { transform: translateX(-5px); box-shadow: 0 0 0 2px rgba(0,0,0,0.50); }
-  30%  { transform: translateX(5px);  box-shadow: 0 0 0 2px rgba(0,0,0,0.45); }
-  45%  { transform: translateX(-4px); box-shadow: 0 0 0 2px rgba(0,0,0,0.35); }
-  60%  { transform: translateX(4px);  box-shadow: 0 0 0 1px rgba(0,0,0,0.20); }
+  0%   { transform: translateX(0); }
+  15%  { transform: translateX(-5px); }
+  30%  { transform: translateX(5px); }
+  45%  { transform: translateX(-4px); }
+  60%  { transform: translateX(4px); }
   75%  { transform: translateX(-2px); }
-  90%  { transform: translateX(2px);  }
-  100% { transform: translateX(0);    box-shadow: var(--ou-shadow-card); }
+  90%  { transform: translateX(2px); }
+  100% { transform: translateX(0); }
 }
 
 /* ── 4. 유틸 클래스 ── */
-
-/* 페이지 진입 */
 .ou-fade-in {
   animation: ou-fade-in 200ms ease-out both;
 }
 
-/* stagger 자식 요소 */
 .ou-stagger > * {
   animation: ou-fade-in 200ms ease-out both;
 }
@@ -374,7 +412,6 @@ img, video {
 .ou-stagger > *:nth-child(5) { animation-delay: 200ms; }
 .ou-stagger > *:nth-child(6) { animation-delay: 250ms; }
 
-/* 스크롤 숨기기 */
 .ou-scroll {
   overflow: auto;
   scrollbar-width: none;
@@ -382,38 +419,69 @@ img, video {
 }
 .ou-scroll::-webkit-scrollbar { display: none; }
 
-/* 글로우 펄스 */
 .ou-glow-pulse {
-  animation: ou-glow-pulse 2s ease-in-out infinite;
+  animation: ou-glow-pulse 2.5s ease-in-out infinite;
 }
 
-/* 스피너 */
 .ou-spinner {
   width: 20px;
   height: 20px;
-  border: 2px solid rgba(var(--ou-accent-rgb), 0.2);
-  border-top-color: var(--ou-accent);
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  border-top-color: #ffffff;
   border-radius: 50%;
   animation: ou-spin 0.7s linear infinite;
 }
 
-/* 텍스트 생략 */
 .ou-ellipsis {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-/* 선택 불가 */
 .ou-no-select {
   user-select: none;
   -webkit-user-select: none;
 }
 
-/* 에디토리얼 display 타이포 */
 .ou-display {
   font-family: var(--ou-font-display);
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: var(--ou-tracking-tight);
   line-height: 1;
+}
+
+/* ─── Cosmos 유틸 ─── */
+
+/* 카드 내부 발광 highlight (Ref-C 라이트 카드 좌상단 빛 효과) */
+.ou-luminous {
+  position: relative;
+  overflow: hidden;
+}
+.ou-luminous::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.30), transparent 60%);
+  pointer-events: none;
+  border-radius: inherit;
+  z-index: 0;
+}
+.ou-luminous > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* 라이트 카드 위에서는 highlight 반전 */
+[data-theme="light"] .ou-luminous::before {
+  background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.60), transparent 60%);
+}
+
+/* Halftone 도트 패턴 (Ref-C 다크 카드 행성 표면) */
+.ou-halftone-bg {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.14) 1px, transparent 1.5px);
+  background-size: 6px 6px;
+}
+
+[data-theme="light"] .ou-halftone-bg {
+  background-image: radial-gradient(rgba(0, 0, 0, 0.12) 1px, transparent 1.5px);
 }

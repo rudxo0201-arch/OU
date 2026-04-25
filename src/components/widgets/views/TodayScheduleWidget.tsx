@@ -346,6 +346,7 @@ export function TodayScheduleWidget() {
   }, []);
 
   useEffect(() => { fetchEvents(); }, [fetchEvents]);
+  useEffect(() => { router.prefetch('/orb/schedule'); }, [router]);
 
   useEffect(() => {
     const supabase = createClient();
@@ -372,7 +373,7 @@ export function TodayScheduleWidget() {
     <>
       <div
         ref={rootRef}
-        onClick={() => router.push('/orb/calendar')}
+        onClick={() => router.push('/orb/schedule')}
         style={{
           height: '100%',
           display: 'flex',

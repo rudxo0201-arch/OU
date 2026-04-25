@@ -30,6 +30,7 @@ export function NoteWidget() {
   }, []);
 
   useEffect(() => { fetchNodes(); }, [fetchNodes]);
+  useEffect(() => { router.prefetch('/orb/note'); }, [router]);
 
   useEffect(() => {
     const supabase = createClient();

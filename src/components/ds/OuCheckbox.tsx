@@ -12,23 +12,26 @@ interface OuCheckboxProps {
 
 export function OuCheckbox({ checked, onChange, label, disabled = false, size = 'md', style }: OuCheckboxProps) {
   const sizeVal = size === 'sm' ? 18 : 22;
-  const fontSize = size === 'sm' ? 10 : 13;
+  const fontSize = size === 'sm' ? 11 : 13;
 
   const boxStyle: CSSProperties = {
     width: sizeVal,
     height: sizeVal,
     borderRadius: 4,
-    background: 'var(--ou-bg)',
-    boxShadow: checked ? 'var(--ou-neu-pressed-sm)' : 'var(--ou-neu-raised-sm)',
+    background: checked ? 'var(--ou-text-heading)' : 'transparent',
+    border: `1.5px solid ${checked ? 'var(--ou-text-heading)' : 'var(--ou-border-mid)'}`,
+    boxShadow: checked ? 'var(--ou-glow-sm)' : 'none',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     fontSize,
-    color: checked ? 'var(--ou-accent)' : 'transparent',
+    // checked: bg color text (contrast). unchecked: transparent
+    color: checked ? 'var(--ou-bg)' : 'transparent',
     cursor: disabled ? 'not-allowed' : 'pointer',
     opacity: disabled ? 0.4 : 1,
-    transition: 'all var(--ou-transition)',
+    transition: 'background 150ms ease, border-color 150ms ease, box-shadow 150ms ease',
     flexShrink: 0,
+    lineHeight: 1,
   };
 
   const labelStyle: CSSProperties = {
@@ -36,6 +39,8 @@ export function OuCheckbox({ checked, onChange, label, disabled = false, size = 
     color: checked ? 'var(--ou-text-muted)' : 'var(--ou-text-body)',
     textDecoration: checked ? 'line-through' : 'none',
     cursor: disabled ? 'not-allowed' : 'pointer',
+    userSelect: 'none',
+    transition: 'color 150ms ease',
   };
 
   return (
@@ -43,7 +48,7 @@ export function OuCheckbox({ checked, onChange, label, disabled = false, size = 
       style={{ display: 'flex', alignItems: 'center', gap: size === 'sm' ? 8 : 10, ...style }}
       onClick={() => !disabled && onChange?.(!checked)}
     >
-      <div style={boxStyle}>{'\u2713'}</div>
+      <div style={boxStyle}>✓</div>
       {label && <span style={labelStyle}>{label}</span>}
     </div>
   );

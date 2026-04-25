@@ -1,49 +1,32 @@
-'use client';
-
-import { useParams, useRouter } from 'next/navigation';
-import { useEffect } from 'react';
-import dayjs from 'dayjs';
-import 'dayjs/locale/ko';
-import { OrbShell } from '@/components/orb/OrbShell';
-import { OrbAssistant } from '@/components/orb/OrbAssistant';
-import { OrbView } from '@/components/orb/OrbView';
+import { redirect } from 'next/navigation';
+import { createClient } from '@/lib/supabase/server';
 import { getOrbDef } from '@/components/orb/registry';
+import { OrbPageClient } from './OrbPageClient';
 
-dayjs.locale('ko');
-
-/** 독립 앱 Orb — OrbShell 없이 자체 레이아웃으로 라우팅 */
 const STANDALONE_ORBS: Record<string, string> = {
-  note: '/note',
-  babylog: '/babylog',
+  settings: '/settings',
 };
 
-export default function OrbPage() {
-  const params = useParams();
-  const router = useRouter();
-  const slug = params.slug as string;
-  const orb = getOrbDef(slug);
+export default async function OrbPage({ params }: { params: { slug: string } }) {
+  const orb = getOrbDef(params.slug);
+  if (!orb) redirect('/home');
+  if (STANDALONE_ORBS[params.slug]) redirect(STANDALONE_ORBS[params.slug]);
 
-  useEffect(() => {
-    if (!orb) { router.replace('/home'); return; }
-    // 독립 앱 Orb는 해당 앱 라우트로 redirect
-    if (STANDALONE_ORBS[slug]) {
-      router.replace(STANDALONE_ORBS[slug]);
-    }
-  }, [orb, slug, router]);
+  let initialNodes: any[] = [];
+  if (orb.domain) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) redirect('/login');
 
-  if (!orb) return null;
-  if (STANDALONE_ORBS[slug]) return null; // redirect 중
+    const { data } = await supabase
+      .from('data_nodes')
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('domain', orb.domain)
+      .order('created_at', { ascending: false })
+      .limit(200);
+    initialNodes = data ?? [];
+  }
 
-  const subtitle = slug === 'calendar'
-    ? dayjs().format('MMMM YYYY')
-    : undefined;
-
-  return (
-    <OrbShell slug={orb.slug} title={orb.title} icon={orb.icon} subtitle={subtitle}>
-      {orb.viewType
-        ? <OrbView domain={orb.domain} viewType={orb.viewType} orbSlug={orb.slug} placeholder={orb.placeholder} />
-        : <OrbAssistant placeholder={orb.placeholder} />
-      }
-    </OrbShell>
-  );
+  return <OrbPageClient orb={orb} initialNodes={initialNodes} />;
 }

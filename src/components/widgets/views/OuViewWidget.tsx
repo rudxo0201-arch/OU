@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useChatStore } from '@/stores/chatStore';
 import { useTutorialStore } from '@/stores/tutorialStore';
@@ -10,6 +10,8 @@ export function OuViewWidget() {
   const [input, setInput] = useState('');
   const ghostText = useTutorialStore(s => s.currentGhostText());
   const router = useRouter();
+
+  useEffect(() => { router.prefetch('/orb/deep-talk'); }, [router]);
 
   const openOrb = useCallback((text?: string) => {
     if (text) {

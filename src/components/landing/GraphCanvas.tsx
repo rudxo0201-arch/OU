@@ -98,15 +98,15 @@ export function GraphCanvas() {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, w, h);
 
-      if (!dragRef.current.active) autoRotateRef.current += 0.003;
+      if (!dragRef.current.active) autoRotateRef.current += 0.0015;
 
       const totalRotY = rotationRef.current.y + autoRotateRef.current;
       const totalRotX = rotationRef.current.x;
 
       const isMobile = window.innerWidth < 768;
-      const cx = w / 2;
-      const cy = isMobile ? h * 0.6 : h * 0.48;
-      const sphereRadius = Math.min(w, h) * 0.42;
+      const cx = isMobile ? w / 2 : w * 0.40;
+      const cy = isMobile ? h * 0.6 : h * 0.52;
+      const sphereRadius = Math.min(w, h) * 0.18;
       const perspective = 1200;
 
       const projected: { x: number; y: number; z: number; size: number; alpha: number }[] = [];

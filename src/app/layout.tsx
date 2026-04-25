@@ -1,6 +1,6 @@
 import './globals.css';
 
-import { Orbitron } from 'next/font/google';
+import { Orbitron, DM_Sans } from 'next/font/google';
 import { AuthProvider } from '@/components/ui/AuthProvider';
 
 const orbitron = Orbitron({
@@ -10,6 +10,13 @@ const orbitron = Orbitron({
   variable: '--font-orbitron',
 });
 
+const dmSans = DM_Sans({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  display: 'swap',
+  variable: '--font-dm-sans',
+});
+
 export const metadata = {
   title: 'OU — Just talk.',
   description: '대화하는 족족 데이터가 됩니다.',
@@ -17,7 +24,7 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ko" className={orbitron.variable} data-palette="cosmos" suppressHydrationWarning>
+    <html lang="ko" className={`${orbitron.variable} ${dmSans.variable}`} data-palette="cosmos" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: `
           try{
@@ -30,7 +37,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         `}} />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" sizes="any" />
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#e4e4ea" />
+        <meta name="theme-color" content="#000000" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />

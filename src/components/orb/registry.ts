@@ -8,22 +8,25 @@ export interface OrbDef {
   placeholder?: string;
 }
 
+/**
+ * Phase 1 Orb 카탈로그 (CLAUDE.md §3 정합).
+ *
+ * 4 도메인 Orb: schedule / task / habit / journal — 모두 시간축 위 행위.
+ * 2 시스템 Orb: settings / admin — 설정·운영.
+ * 1 입력 모달리티: deep-talk — 자유 LLM 대화창.
+ *
+ * Phase 2+에 추가될 슬러그(note, finance, idea, youtube, map, people, time, babylog 등)는
+ * 들어올 때 이 파일에 추가한다. 위젯 레벨 inline 뷰 정리는 §14 별도 작업.
+ */
 export const ORB_REGISTRY: Record<string, OrbDef> = {
-  note:     { slug: 'note',     title: '노트',     icon: '✎', domain: 'note',     viewType: 'note',     placeholder: '기록하고 싶은 내용을 말해보세요...' },
-  calendar: { slug: 'calendar', title: '캘린더',   icon: '◫', domain: 'schedule', viewType: 'calendar', placeholder: '일정을 알려주세요...' },
-  task:     { slug: 'task',     title: '할 일',    icon: '✓', domain: 'task',     viewType: 'todo',     placeholder: '해야 할 일을 말해보세요...' },
-  finance:  { slug: 'finance',  title: '가계부',   icon: '◈', domain: 'finance',  viewType: 'chart',    placeholder: '오늘 지출 내역을 말해보세요...' },
-  habit:    { slug: 'habit',    title: '습관',     icon: '⟳', domain: 'habit',    viewType: 'heatmap',  placeholder: '습관이나 루틴을 말해보세요...' },
-  idea:     { slug: 'idea',     title: '아이디어', icon: '✦', domain: 'idea',     viewType: 'idea',     placeholder: '떠오르는 아이디어를 말해보세요...' },
-  youtube:  { slug: 'youtube',  title: 'YouTube', icon: '▶', domain: 'media',    viewType: 'youtube',  placeholder: 'YouTube 영상을 기록해보세요...' },
-  map:      { slug: 'map',      title: '지도',     icon: '◎', domain: 'location', viewType: 'map',      placeholder: '장소를 기록해보세요...' },
-  people:   { slug: 'people',   title: '피플',     icon: '◯', domain: 'relation', viewType: 'profile',  placeholder: '사람이나 관계를 기록해보세요...' },
-  time:     { slug: 'time',     title: '시계',     icon: '◷', viewType: 'time',    placeholder: '' },
-  babylog:  { slug: 'babylog',  title: '베이비로그', icon: '◐', domain: 'care',   placeholder: '수유, 기저귀, 잠 기록을 말해보세요...' },
-  /** Deep Talk: viewType 없음 = LLM 대화창 */
+  schedule: { slug: 'schedule', title: '일정', icon: '◫', domain: 'schedule', viewType: 'calendar', placeholder: '일정을 알려주세요...' },
+  task:     { slug: 'task',     title: '할 일', icon: '✓', domain: 'task',    viewType: 'todo',     placeholder: '해야 할 일을 말해보세요...' },
+  habit:    { slug: 'habit',    title: '습관', icon: '⟳', domain: 'habit',    viewType: 'heatmap',  placeholder: '습관이나 루틴을 말해보세요...' },
+  journal:  { slug: 'journal',  title: '일기', icon: '✎', domain: 'journal',  viewType: 'note',     placeholder: '오늘 있었던 일을 적어보세요...' },
+  settings: { slug: 'settings', title: '설정', icon: '⚙' },
+  admin:    { slug: 'admin',    title: '관리자', icon: '⚙', viewType: 'admin' },
+  /** Deep Talk: viewType 없음 = LLM 자유 대화창. 도메인이 아니라 입력 모달리티 */
   'deep-talk': { slug: 'deep-talk', title: 'Deep Talk', icon: '◉', placeholder: '무엇이든 깊이 이야기해보세요...' },
-  /** 관리자 Orb: DS 문서, 노드·멤버 관리 등 */
-  admin: { slug: 'admin', title: '관리자', icon: '⚙', viewType: 'admin' },
 };
 
 export function getOrbDef(slug: string): OrbDef | null {

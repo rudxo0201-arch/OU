@@ -19,19 +19,25 @@ export const OuInput = forwardRef<HTMLInputElement, OuInputProps>(
   ({ label, error, prefix, suffix, size = 'md', containerStyle, style, onFocus, onBlur, ...rest }, ref) => {
     const [focused, setFocused] = useState(false);
 
+    const borderColor = error
+      ? 'rgba(239,68,68,0.50)'
+      : focused
+        ? 'rgba(255,255,255,0.45)'
+        : 'rgba(255,255,255,0.12)';
+
     const fieldStyle: CSSProperties = {
       display: 'flex',
       alignItems: 'center',
       gap: 'var(--ou-space-2)',
       height: HEIGHT_MAP[size],
       padding: PAD_MAP[size],
-      background: 'var(--ou-surface)',
-      border: `1px solid ${error ? 'rgba(220,38,38,0.4)' : focused ? 'var(--ou-glass-border-focus)' : 'var(--ou-glass-border)'}`,
+      background: focused ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.02)',
+      border: `1px solid ${borderColor}`,
       borderRadius: 'var(--ou-radius-sm)',
       boxShadow: focused
-        ? `var(--ou-neu-pressed-md), 0 0 0 3px rgba(var(--ou-accent-rgb), 0.08)`
-        : 'var(--ou-neu-pressed-md)',
-      transition: 'border-color var(--ou-transition-fast), box-shadow var(--ou-transition-fast)',
+        ? `0 0 0 3px rgba(255,255,255,0.06), var(--ou-glow-sm)`
+        : 'none',
+      transition: 'border-color var(--ou-transition-fast), box-shadow var(--ou-transition-fast), background var(--ou-transition-fast)',
     };
 
     const inputStyle: CSSProperties = {
@@ -42,13 +48,19 @@ export const OuInput = forwardRef<HTMLInputElement, OuInputProps>(
       color: 'var(--ou-text-heading)',
       fontSize: FONT_MAP[size],
       fontFamily: 'var(--ou-font-body)',
+      caretColor: '#ffffff',
       ...style,
     };
 
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--ou-space-2)', ...containerStyle }}>
         {label && (
-          <label style={{ fontSize: 'var(--ou-text-xs)', fontWeight: 600, color: 'var(--ou-text-secondary)', letterSpacing: 'var(--ou-tracking-wide)' }}>
+          <label style={{
+            fontSize: 'var(--ou-text-xs)',
+            fontWeight: 500,
+            color: 'var(--ou-text-secondary)',
+            letterSpacing: 'var(--ou-tracking-wide)',
+          }}>
             {label}
           </label>
         )}

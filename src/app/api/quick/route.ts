@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
           source_type: 'quick',
           confidence: 'medium',
           resolution: 'resolved',
-          visibility: 'private',
+          visibility: 'visible',
           domain_data: { ...(context ?? {}), ...regexData },
         }).select('id, domain_data').single()
       : { data: null, error: null };
