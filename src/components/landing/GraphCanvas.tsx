@@ -104,9 +104,9 @@ export function GraphCanvas() {
       const totalRotX = rotationRef.current.x;
 
       const isMobile = window.innerWidth < 768;
-      const cx = isMobile ? w / 2 : w * 0.40;
+      const cx = isMobile ? w / 2 : w * 0.55;
       const cy = isMobile ? h * 0.6 : h * 0.52;
-      const sphereRadius = Math.min(w, h) * 0.18;
+      const sphereRadius = Math.min(w, h) * 0.36;
       const perspective = 1200;
 
       const projected: { x: number; y: number; z: number; size: number; alpha: number }[] = [];

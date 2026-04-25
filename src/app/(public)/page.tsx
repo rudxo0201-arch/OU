@@ -38,17 +38,17 @@ export default function LandingPage() {
         alignItems: 'center',
         justifyContent: 'center',
         padding: '0 40px',
-        gap: 16,
+        gap: 20,
         minHeight: '100vh',
       }}>
         {/* 로고 */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 7 }}>
-          <OuLogo width={58} color="rgba(255,255,255,0.95)" />
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
+          <OuLogo width={120} color="rgba(255,255,255,0.95)" />
           <span style={{
-            fontSize: 10,
+            fontSize: 14,
             fontWeight: 400,
             color: 'rgba(255,255,255,0.28)',
-            letterSpacing: '0.14em',
+            letterSpacing: '0.16em',
             textTransform: 'lowercase',
           }}>
             own universe
@@ -56,9 +56,9 @@ export default function LandingPage() {
         </div>
 
         {/* 카피 */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, marginTop: 4 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, marginTop: 8 }}>
           <h1 style={{
-            fontSize: 'clamp(18px, 2vw, 26px)',
+            fontSize: 'clamp(28px, 3vw, 40px)',
             fontWeight: 700,
             color: 'rgba(255,255,255,0.95)',
             letterSpacing: '-0.02em',
@@ -69,7 +69,7 @@ export default function LandingPage() {
             Just talk.
           </h1>
           <p style={{
-            fontSize: 'clamp(9px, 1vw, 11px)',
+            fontSize: 'clamp(12px, 1.4vw, 15px)',
             color: 'rgba(255,255,255,0.40)',
             lineHeight: 1.5,
             textAlign: 'center',
@@ -79,16 +79,16 @@ export default function LandingPage() {
         </div>
 
         {/* CTA */}
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 4 }}>
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginTop: 8 }}>
           <Link href="/login">
             <button style={{
-              height: 30,
-              padding: '0 18px',
+              height: 44,
+              padding: '0 26px',
               background: 'rgba(255,255,255,0.95)',
               color: '#0a0a0f',
               border: 'none',
-              borderRadius: 15,
-              fontSize: 11,
+              borderRadius: 22,
+              fontSize: 14,
               fontWeight: 700,
               fontFamily: 'var(--ou-font-logo)',
               cursor: 'pointer',
@@ -103,13 +103,13 @@ export default function LandingPage() {
           </Link>
           <Link href="/login?tab=signup">
             <button style={{
-              height: 30,
-              padding: '0 18px',
+              height: 44,
+              padding: '0 26px',
               background: 'transparent',
               color: 'rgba(255,255,255,0.85)',
               border: '1.5px solid rgba(255,255,255,0.35)',
-              borderRadius: 15,
-              fontSize: 11,
+              borderRadius: 22,
+              fontSize: 14,
               fontWeight: 700,
               fontFamily: 'var(--ou-font-logo)',
               cursor: 'pointer',

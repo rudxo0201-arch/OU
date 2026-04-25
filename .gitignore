@@ -11,6 +11,11 @@
 e2e/.results/
 e2e/.report/
 e2e/.auth/
+test-results/
+
+# claude code runtime
+.claude/scheduled_tasks.lock
+.claude/.claude/
 
 # next.js
 /.next/
