@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { OuAuthLayout, OuInput, OuButton } from '@/components/ds';
+import { ROUTES } from '@/lib/ou-registry';
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -28,7 +29,7 @@ export default function ResetPasswordPage() {
     if (error) {
       setError('비밀번호 변경에 실패했어요. 다시 시도해주세요.');
     } else {
-      router.push('/home');
+      router.push(ROUTES.HOME);
     }
     setLoading(false);
   }

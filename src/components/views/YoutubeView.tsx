@@ -1,4 +1,5 @@
 'use client';
+import { DOMAINS } from '@/lib/ou-registry';
 
 /**
  * YoutubeView
@@ -32,7 +33,7 @@ export function YoutubeView({ nodes }: ViewProps) {
   const youtubeNodes = useMemo(() =>
     nodes.filter(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (n: any) => n.source_type === 'youtube' || n.domain_data?.video_id
+      (n: any) => n.source_type === DOMAINS.YOUTUBE || n.domain_data?.video_id
     ),
     [nodes]
   );

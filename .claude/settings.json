@@ -57,7 +57,9 @@
       "Bash(echo \"PID: $!\")",
       "Read(//tmp/**)",
       "Bash(curl -s -X POST http://localhost:3000/api/quick -H 'Content-Type: application/json' -d '{\"text\":\"내일 오전 10시 회의\"}')",
-      "Bash(git checkout *)"
+      "Bash(git checkout *)",
+      "Bash(pnpm test:e2e e2e/orb-input-flow.spec.ts)",
+      "Read(//Users/kt/.claude/**)"
     ],
     "additionalDirectories": [
       "/Users/kt/Desktop/claude/ou-web/.git",

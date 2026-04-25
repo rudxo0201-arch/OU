@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { CSSProperties, useState } from 'react';
+import { ROUTES } from '@/lib/ou-registry';
 import { OuAvatar, OuLogo } from '@/components/ds';
 import { useAuthStore } from '@/stores/authStore';
 import { createClient } from '@/lib/supabase/client';
@@ -26,7 +27,7 @@ export function TopNavBar() {
   async function handleSignOut() {
     const supabase = createClient();
     await supabase.auth.signOut();
-    router.push('/');
+    router.push(ROUTES.ROOT);
   }
 
   const navStyle: CSSProperties = {
@@ -46,7 +47,7 @@ export function TopNavBar() {
   return (
     <nav style={navStyle}>
       {/* 로고 */}
-      <Link href="/home" style={{ marginRight: 12, display: 'flex', alignItems: 'center' }}>
+      <Link href={ROUTES.HOME} style={{ marginRight: 12, display: 'flex', alignItems: 'center' }}>
         <OuLogo width={36} color="var(--ou-text)" />
       </Link>
 

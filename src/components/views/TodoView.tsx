@@ -1,4 +1,5 @@
 'use client';
+import { DOMAINS } from '@/lib/ou-registry';
 
 import { useState, useMemo, useCallback } from 'react';
 import dayjs from 'dayjs';
@@ -29,7 +30,7 @@ interface TodoItem {
 // ── 파서 ──────────────────────────────────────────────────────────────────
 function parseTodos(nodes: ViewProps['nodes']): TodoItem[] {
   return nodes
-    .filter(n => n.domain === 'task')
+    .filter(n => n.domain === DOMAINS.TASK)
     .map(n => ({
       nodeId: n.id,
       id: n.id,

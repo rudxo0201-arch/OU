@@ -1,3 +1,4 @@
+import { DOMAINS } from '@/lib/ou-registry';
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { isAdminEmail } from '@/lib/auth/roles';
@@ -60,7 +61,7 @@ export async function GET(req: NextRequest) {
 
     // 날짜 필터: schedule은 domain_data->>'date', 나머지는 created_at::date 기준
     if (dateFrom || dateTo) {
-      if (domain === 'schedule') {
+      if (domain === DOMAINS.SCHEDULE) {
         if (dateFrom) query = query.gte('domain_data->>date', dateFrom);
         if (dateTo)   query = query.lte('domain_data->>date', dateTo);
       } else {

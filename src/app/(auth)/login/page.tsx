@@ -3,6 +3,7 @@
 import { CSSProperties, FormEvent, Suspense, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { ROUTES } from '@/lib/ou-registry';
 import { AuthLayout, OuCard, OuButton, OuInput, OuTabs } from '@/components/ds';
 
 type Tab = 'login' | 'signup';
@@ -49,7 +50,7 @@ function LoginForm() {
       if (tab === 'login') {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        router.push('/home');
+        router.push(ROUTES.HOME);
       } else {
         const { error } = await supabase.auth.signUp({ email, password });
         if (error) throw error;

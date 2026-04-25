@@ -1,4 +1,5 @@
 'use client';
+import { DOMAINS } from '@/lib/ou-registry';
 
 import { useMemo } from 'react';
 import dayjs from 'dayjs';
@@ -32,7 +33,7 @@ const DOMAIN_ICONS: Record<string, string> = {
 export function ProfileView({ nodes }: ViewProps) {
   const people = useMemo(() =>
     nodes
-      .filter(n => n.domain === 'relation')
+      .filter(n => n.domain === DOMAINS.RELATION)
       .map(n => ({
         id: n.id,
         name: (n.domain_data?.name as string) || (n.raw ?? '').slice(0, 20) || '인물',

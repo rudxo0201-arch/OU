@@ -1,3 +1,4 @@
+import { DOMAINS } from '@/lib/ou-registry';
 /**
  * 도메인 분류기 — LLM 기반 복합 도메인 분류
  *
@@ -13,7 +14,10 @@ const VIEW_HINT_MAP: Record<string, string> = {
   finance: 'chart',
   knowledge: 'knowledge_graph',
   idea: 'mindmap',
+  // emotion = stealth(§5). journal = 회원이 직접 적는 1급 도메인(§3).
+  // 둘 다 journal 뷰로 매핑되지만 분류 의미는 다르다.
   emotion: 'journal',
+  journal: 'journal',
   habit: 'heatmap',
   relation: 'relation',
   media: 'scrap',
@@ -41,7 +45,8 @@ export async function classifyDomain(text: string) {
 도메인 목록:
 - schedule: 일정, 약속, 날짜/시간이 포함된 것
 - finance: 돈, 금액, 수입/지출, 매출
-- emotion: 감정, 기분, 심리 상태
+- emotion: 감정, 기분, 심리 상태 (감정 단어 자체)
+- journal: 일기, 회고, 한 일 기록 ("오늘 ~했다", "다녀왔다", "먹었다" 등 사건 서술)
 - task: 할 일, 해야 할 것, 마감
 - knowledge: 지식, 학습, 정보, 공부 (학업 포함)
 - idea: 아이디어, 기획, 구상, 창업

@@ -1,4 +1,5 @@
 'use client';
+import { DOMAINS } from '@/lib/ou-registry';
 
 import { useState, useCallback, useMemo } from 'react';
 import { Circle } from '@phosphor-icons/react';
@@ -19,7 +20,7 @@ function getPriorityOpacity(priority?: number | string): number {
 }
 
 export function KanbanView({ nodes, inline }: ViewProps & { inline?: boolean }) {
-  const tasks = nodes.filter(n => n.domain === 'task');
+  const tasks = nodes.filter(n => n.domain === DOMAINS.TASK);
 
   // 인라인: 체크리스트 카드
   if (inline) {

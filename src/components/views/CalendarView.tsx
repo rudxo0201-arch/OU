@@ -1,4 +1,5 @@
 'use client';
+import { DOMAINS } from '@/lib/ou-registry';
 
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { useDeleteNode } from './_shared/useDeleteNode';
@@ -29,7 +30,7 @@ interface CalEvent {
 
 function parseEvents(nodes: ViewProps['nodes']): CalEvent[] {
   return nodes
-    .filter(n => n.domain === 'schedule' && n.domain_data?.date)
+    .filter(n => n.domain === DOMAINS.SCHEDULE && n.domain_data?.date)
     .map(n => ({
       id: n.id,
       title: n.domain_data.title ?? (n.raw ?? '').slice(0, 30) ?? '일정',

@@ -77,6 +77,8 @@ interface KnowledgeGraphProps {
   activeNodeId?: string;
   /** activeNodeId의 1-hop 이웃만 표시 (activeNodeId 없으면 무시) */
   localMode?: boolean;
+  /** true면 PixiJS 배경 투명 + 캔버스 radius 제거 — /home 우주 위에 바로 렌더할 때 사용 */
+  transparent?: boolean;
 }
 
 /**
@@ -87,7 +89,7 @@ interface KnowledgeGraphProps {
  * - Physics: d3-force in Web Worker (off main thread)
  * - This is a GAME ENGINE. Treat it as such.
  */
-export function KnowledgeGraph({ nodes, edges, onNodeClick, hideSettingsButton, settingsOpen: externalSettingsOpen, onSettingsToggle, activeNodeId, localMode = false }: KnowledgeGraphProps) {
+export function KnowledgeGraph({ nodes, edges, onNodeClick, hideSettingsButton, settingsOpen: externalSettingsOpen, onSettingsToggle, activeNodeId, localMode = false, transparent = false }: KnowledgeGraphProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const pixiAppRef = useRef<any>(null);
   const worldRef = useRef<any>(null);
@@ -113,6 +115,8 @@ export function KnowledgeGraph({ nodes, edges, onNodeClick, hideSettingsButton, 
   const activeNodeIdRef = useRef<string | undefined>(undefined);
   const localModeRef = useRef(false);
   const localSetRef = useRef<Set<string> | null>(null);
+  const transparentRef = useRef(transparent);
+  transparentRef.current = transparent;
 
   const [isDark, setIsDark] = useState(() =>
     typeof document !== 'undefined' ? document.documentElement.dataset.theme !== 'light' : true
@@ -203,10 +207,11 @@ export function KnowledgeGraph({ nodes, edges, onNodeClick, hideSettingsButton, 
   useEffect(() => {
     const app = pixiAppRef.current;
     if (app?.renderer) {
-      app.renderer.background.color = isDark ? 0x060810 : 0xfafafa;
+      if (!transparentRef.current) {
+        app.renderer.background.color = isDark ? 0x060810 : 0xfafafa;
+        app.render();
+      }
       renderFrame();
-      // Explicit render to flush background color change to WebGL
-      app.render();
     } else {
       renderFrame();
     }
@@ -477,20 +482,23 @@ export function KnowledgeGraph({ nodes, edges, onNodeClick, hideSettingsButton, 
         antialias: true,
         resolution: window.devicePixelRatio || 1,
         autoDensity: true,
-        background: isDarkRef.current ? 0x060810 : 0xfafafa,
+        background: transparent ? 0x000000 : (isDarkRef.current ? 0x060810 : 0xfafafa),
+        backgroundAlpha: transparent ? 0 : 1,
         canvas: undefined,
       });
 
       if (destroyed) { app.destroy(); return; }
 
       container.appendChild(app.canvas);
-      app.canvas.style.borderRadius = '8px';
+      if (!transparent) app.canvas.style.borderRadius = '8px';
       app.canvas.style.cursor = 'grab';
       app.canvas.style.touchAction = 'none';
       pixiAppRef.current = app;
 
-      // Force-sync background with current color scheme (handles race with Mantine hydration)
-      app.renderer.background.color = isDarkRef.current ? 0x060810 : 0xfafafa;
+      // Force-sync background (transparent 모드에서는 스킵)
+      if (!transparent) {
+        app.renderer.background.color = isDarkRef.current ? 0x060810 : 0xfafafa;
+      }
 
       // World container (for zoom/pan)
       const world = new PIXI.Container();

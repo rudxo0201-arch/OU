@@ -1,4 +1,5 @@
 'use client';
+import { DOMAINS } from '@/lib/ou-registry';
 
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { CaretLeft, CaretRight } from '@phosphor-icons/react';
@@ -50,7 +51,7 @@ function fmtMin(m: number) {
 
 function parseEvents(nodes: ViewProps['nodes']): Ev[] {
   return nodes
-    .filter(n => n.domain === 'schedule' && n.domain_data?.date && n.domain_data?.time)
+    .filter(n => n.domain === DOMAINS.SCHEDULE && n.domain_data?.date && n.domain_data?.time)
     .map(n => {
       const d  = n.domain_data as Record<string, unknown>;
       const s  = toMin(d.time as string);

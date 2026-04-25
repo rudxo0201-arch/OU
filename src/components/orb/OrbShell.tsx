@@ -3,6 +3,7 @@
 import { CSSProperties, ReactNode, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, X } from '@phosphor-icons/react';
+import { ROUTES } from '@/lib/ou-registry';
 import { AmbientBackground } from '@/components/ds';
 
 interface OrbShellProps {
@@ -43,7 +44,7 @@ export function OrbShell({ slug, title, icon, subtitle, children }: OrbShellProp
       }}>
         {/* 뒤로가기 */}
         <button
-          onClick={() => router.push('/home')}
+          onClick={() => router.push(ROUTES.HOME)}
           onMouseEnter={() => setBackHovered(true)}
           onMouseLeave={() => setBackHovered(false)}
           style={{
@@ -94,7 +95,7 @@ export function OrbShell({ slug, title, icon, subtitle, children }: OrbShellProp
 
         {/* 닫기 */}
         <button
-          onClick={() => router.push('/home')}
+          onClick={() => router.push(ROUTES.HOME)}
           onMouseEnter={() => setCloseHovered(true)}
           onMouseLeave={() => setCloseHovered(false)}
           style={{

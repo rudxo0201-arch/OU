@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { CSSProperties, useState } from 'react';
+import { ROUTES } from '@/lib/ou-registry';
 
 interface SideItem {
   href: string;
@@ -13,10 +14,10 @@ interface SideItem {
 
 const ITEMS: SideItem[] = [
   {
-    href: '/home',
+    href: ROUTES.HOME,
     icon: '⌂',
     label: 'Home',
-    match: (p) => p === '/home',
+    match: (p) => p === ROUTES.HOME,
   },
   {
     href: '/universe',

@@ -1,3 +1,4 @@
+import { DOMAINS } from '@/lib/ou-registry';
 import { createClient } from '@/lib/supabase/server';
 
 const UNRESOLVED_PATTERNS = [
@@ -64,7 +65,7 @@ export async function detectUnresolved(input: DetectInput) {
   }
 
   // 3. 모호한 날짜 감지 — 다음주/이번주 단독 (요일 미지정)
-  if (input.domain === 'schedule' && input.domainData?._dateAmbiguous) {
+  if (input.domain === DOMAINS.SCHEDULE && input.domainData?._dateAmbiguous) {
     found.push({
       raw: `[${input.domainData._dateHint || '날짜'} — 정확한 시작일]`,
       type: 'ambiguous_date',

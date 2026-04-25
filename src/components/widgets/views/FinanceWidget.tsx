@@ -1,4 +1,5 @@
 'use client';
+import { DOMAINS } from '@/lib/ou-registry';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { createClient } from '@/lib/supabase/client';
@@ -64,7 +65,7 @@ export function FinanceWidget() {
 
   useEffect(() => {
     const handler = (e: Event) => {
-      if ((e as CustomEvent).detail?.domain === 'finance') fetchNodes();
+      if ((e as CustomEvent).detail?.domain === DOMAINS.FINANCE) fetchNodes();
     };
     window.addEventListener('ou-node-created', handler);
     return () => window.removeEventListener('ou-node-created', handler);

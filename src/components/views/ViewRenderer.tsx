@@ -1,4 +1,5 @@
 'use client';
+import { DOMAINS } from '@/lib/ou-registry';
 
 import { Component, type ReactNode } from 'react';
 import { WarningCircle } from '@phosphor-icons/react';
@@ -41,7 +42,7 @@ class ViewErrorBoundary extends Component<
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', minHeight: 200, gap: 8, padding: 24 }}>
           <WarningCircle size={32} color="var(--ou-text-error, #e03131)" />
           <span style={{ fontSize: '13px', color: 'var(--ou-text-dimmed)', textAlign: 'center' }}>뷰를 표시할 수 없습니다</span>
-          {process.env.NODE_ENV === 'development' && this.state.error && (
+          {process.env.NODE_ENV === DOMAINS.DEVELOPMENT && this.state.error && (
             <span style={{ fontSize: 10, color: 'var(--ou-text-error, #e03131)', textAlign: 'center', maxWidth: 400, fontFamily: 'monospace' }}>
               {this.state.error}
             </span>
@@ -69,7 +70,7 @@ export function ViewRenderer({ viewType, nodes, filters, onSave, inline, layoutC
   if (safeNodes.length === 0 && !allowEmpty) return null;
 
   if (!View) {
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === DOMAINS.DEVELOPMENT) {
       console.warn(`[ViewRenderer] 등록되지 않은 뷰 타입: ${viewType}`);
     }
     return null;

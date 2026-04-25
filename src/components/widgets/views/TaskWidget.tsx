@@ -1,4 +1,5 @@
 'use client';
+import { ROUTES, ORB_SLUGS, DOMAINS } from '@/lib/ou-registry';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
@@ -41,7 +42,7 @@ export function TaskWidget() {
   }, []);
 
   useEffect(() => { fetchTasks(); }, [fetchTasks]);
-  useEffect(() => { router.prefetch('/orb/task'); }, [router]);
+  useEffect(() => { router.prefetch(ROUTES.ORB(ORB_SLUGS.TASK)); }, [router]);
 
   useEffect(() => {
     const supabase = createClient();
@@ -54,7 +55,7 @@ export function TaskWidget() {
 
   useEffect(() => {
     const handler = (e: Event) => {
-      if ((e as CustomEvent).detail?.domain === 'task') fetchTasks();
+      if ((e as CustomEvent).detail?.domain === DOMAINS.TASK) fetchTasks();
     };
     window.addEventListener('ou-node-created', handler);
     return () => window.removeEventListener('ou-node-created', handler);
@@ -83,7 +84,7 @@ export function TaskWidget() {
           <div style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>불러오는 중...</div>
         ) : tasks.length === 0 ? (
           <button
-            onClick={() => router.push('/orb/task')}
+            onClick={() => router.push(ROUTES.ORB(ORB_SLUGS.TASK))}
             style={{
               background: 'none', border: 'none', cursor: 'pointer',
               textAlign: 'left', padding: 0,

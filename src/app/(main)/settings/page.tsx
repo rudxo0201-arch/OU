@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
+import { ROUTES } from '@/lib/ou-registry';
 import { GeneralTab } from './GeneralTab';
 import { DisplayTab } from './DisplayTab';
 import { TutorialTab } from './TutorialTab';
@@ -50,7 +51,7 @@ export default function SettingsPage() {
   }, [isLoading]);
 
   useEffect(() => {
-    if (timedOut && isLoading) router.push('/login');
+    if (timedOut && isLoading) router.push(ROUTES.LOGIN);
   }, [timedOut, isLoading, router]);
 
   if (isLoading) {
@@ -62,7 +63,7 @@ export default function SettingsPage() {
     );
   }
 
-  if (!user) { router.push('/login'); return null; }
+  if (!user) { router.push(ROUTES.LOGIN); return null; }
 
   const visibleTabs = TABS.filter(t => !t.adminOnly || isAdmin);
 

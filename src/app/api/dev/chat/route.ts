@@ -1,3 +1,4 @@
+import { DOMAINS } from '@/lib/ou-registry';
 import { NextRequest } from 'next/server';
 import { isAdmin } from '@/lib/auth/roles';
 import { createClient } from '@/lib/supabase/server';
@@ -120,7 +121,7 @@ export async function POST(req: NextRequest) {
     try {
       const devNodes = await searchUserData(supabase, user.id, lastUserMessage, 5, true);
       ragResults = devNodes
-        .filter(n => n.domain === 'development')
+        .filter(n => n.domain === DOMAINS.DEVELOPMENT)
         .map(n => {
           const date = new Date(n.created_at).toLocaleDateString('ko-KR');
           return `[${date}] ${n.raw?.slice(0, 300)}`;

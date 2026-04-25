@@ -1,4 +1,5 @@
 'use client';
+import { DOMAINS } from '@/lib/ou-registry';
 
 import { useState, useMemo } from 'react';
 import type { ViewProps } from './registry';
@@ -29,7 +30,7 @@ interface Chapter {
 function buildCurriculum(nodes: ViewProps['nodes']): Chapter[] {
   // 교육/미디어 도메인 노드를 챕터별로 그룹핑
   const eduNodes = nodes.filter(n =>
-    n.domain === 'education' || n.domain === 'media' || n.domain === 'knowledge'
+    n.domain === DOMAINS.EDUCATION || n.domain === DOMAINS.MEDIA || n.domain === DOMAINS.KNOWLEDGE
   );
 
   if (eduNodes.length === 0) return [];
@@ -40,7 +41,7 @@ function buildCurriculum(nodes: ViewProps['nodes']): Chapter[] {
   for (const node of eduNodes) {
     const chapter = node.domain_data?.chapter
       || node.domain_data?.category
-      || node.domain === 'media' ? '영상 자료' : '학습 자료';
+      || node.domain === DOMAINS.MEDIA ? '영상 자료' : '학습 자료';
 
     if (!grouped.has(chapter)) grouped.set(chapter, []);
 

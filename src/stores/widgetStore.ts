@@ -1,4 +1,5 @@
 import { createSafeStore } from '@/lib/createSafeStore';
+import { WIDGET_TYPES } from '@/lib/ou-registry';
 
 // ── 타입 (위젯 컴포넌트 재구축 전 임시 인라인) ──
 export interface WidgetInstance {
@@ -20,11 +21,11 @@ export const GRID_PRESETS = [
   { label: '촘촘히', cols: 20, rows: 12 },
 ] as const;
 
-// 16col × 9row 기준: 위젯은 좌상단부터 배치, QSBar는 하단 중앙
+// 16col × 9row 기준: 위젯은 좌상단부터 배치, OuLLM(입력창)은 하단 중앙
 const DEFAULT_LAYOUT: WidgetInstance[] = [
-  { id: 'default-schedule', type: 'today-schedule', x: 1,  y: 0, w: 4, h: 4 },
-  { id: 'default-tasks',    type: 'today-tasks',    x: 6,  y: 0, w: 4, h: 4 },
-  { id: 'default-qsbar',    type: 'qsbar',          x: 4,  y: 7, w: 7, h: 2 },
+  { id: 'default-schedule',  type: WIDGET_TYPES.SCHEDULE,  x: 1, y: 0, w: 4, h: 4 },
+  { id: 'default-tasks',     type: WIDGET_TYPES.TASKS,     x: 6, y: 0, w: 4, h: 4 },
+  { id: 'default-input-bar', type: WIDGET_TYPES.INPUT_BAR, x: 4, y: 7, w: 7, h: 2 },
 ];
 const DEFAULT_PAGE2_LAYOUT: WidgetInstance[] = [];
 const ADMIN_LAYOUT: WidgetInstance[] = [];

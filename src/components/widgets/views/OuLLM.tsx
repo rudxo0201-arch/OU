@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useChatStore } from '@/stores/chatStore';
 import { useTutorialStore } from '@/stores/tutorialStore';
+import { ROUTES, ORB_SLUGS } from '@/lib/ou-registry';
 
 
 export { OuLLM as OuViewWidget };
@@ -13,13 +14,13 @@ export function OuLLM() {
   const ghostText = useTutorialStore(s => s.currentGhostText());
   const router = useRouter();
 
-  useEffect(() => { router.prefetch('/orb/deep-talk'); }, [router]);
+  useEffect(() => { router.prefetch(ROUTES.ORB(ORB_SLUGS.DEEP_TALK)); }, [router]);
 
   const openOrb = useCallback((text?: string) => {
     if (text) {
       useChatStore.getState().setPendingMessage(text);
     }
-    router.push('/orb/deep-talk');
+    router.push(ROUTES.ORB(ORB_SLUGS.DEEP_TALK));
   }, [router]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {

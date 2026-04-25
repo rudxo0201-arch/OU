@@ -1,4 +1,5 @@
 'use client';
+import { DOMAINS } from '@/lib/ou-registry';
 
 import { useState, useMemo } from 'react';
 import type { ViewProps } from './registry';
@@ -31,7 +32,7 @@ export function IdeaView({ nodes }: ViewProps) {
 
   const ideas = useMemo(() =>
     nodes
-      .filter(n => n.domain === 'idea')
+      .filter(n => n.domain === DOMAINS.IDEA)
       .map(n => {
         const update = localUpdates[n.id];
         return {

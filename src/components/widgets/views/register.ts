@@ -1,5 +1,6 @@
 import { registerWidget } from '../registry';
 import { OuViewWidget } from './OuLLM';
+import { WIDGET_TYPES } from '@/lib/ou-registry';
 import { ClockWidget } from './ClockWidget';
 import { TodaySummaryWidget } from './TodaySummaryWidget';
 import { RecentNodesWidget } from './RecentNodesWidget';
@@ -17,7 +18,7 @@ import { IdeaWidget } from './IdeaWidget';
 import { FinanceWidget } from './FinanceWidget';
 import { NoteWidget } from './NoteWidget';
 registerWidget({
-  type: 'oullm',
+  type: WIDGET_TYPES.INPUT_BAR,
   label: 'OU LLM',
   component: OuViewWidget,
   scrollable: 'none',
@@ -26,6 +27,7 @@ registerWidget({
   removable: false,
   needsCard: false,
 });
+
 
 registerWidget({
   type: 'clock',

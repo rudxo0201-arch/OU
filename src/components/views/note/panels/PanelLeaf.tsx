@@ -1,4 +1,5 @@
 'use client';
+import { DOMAINS } from '@/lib/ou-registry';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import dynamic from 'next/dynamic';
@@ -49,7 +50,7 @@ export function PanelLeaf({ panel, focused, canClose, onFocus, onSplit, onClose,
   const changeType = (kind: PanelContent['kind']) => {
     setShowTypeMenu(false);
     if (kind === content.kind) return;
-    if (kind === 'note')  onContent({ kind: 'note' });
+    if (kind === DOMAINS.NOTE)  onContent({ kind: 'note' });
     if (kind === 'pdf')   onContent({ kind: 'pdf' });
     if (kind === 'graph') onContent({ kind: 'graph' });
     if (kind === 'empty') onContent({ kind: 'empty' });
@@ -131,7 +132,7 @@ export function PanelLeaf({ panel, focused, canClose, onFocus, onSplit, onClose,
         </div>
 
         {/* 노트 제목 */}
-        {content.kind === 'note' && content.noteId && (
+        {content.kind === DOMAINS.NOTE && content.noteId && (
           <span style={{
             flex: 1, fontSize: 12, color: 'var(--ou-text-muted)',
             overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
@@ -139,7 +140,7 @@ export function PanelLeaf({ panel, focused, canClose, onFocus, onSplit, onClose,
             {noteTitle || '...'}
           </span>
         )}
-        {!(content.kind === 'note' && content.noteId) && (
+        {!(content.kind === DOMAINS.NOTE && content.noteId) && (
           <span style={{ flex: 1 }} />
         )}
 
@@ -161,7 +162,7 @@ export function PanelLeaf({ panel, focused, canClose, onFocus, onSplit, onClose,
 
       {/* ── 패널 콘텐츠 ──────────────────────────────────────── */}
       <div style={{ flex: 1, overflow: 'auto', minHeight: 0, position: 'relative' }}>
-        {content.kind === 'note' && (
+        {content.kind === DOMAINS.NOTE && (
           <NoteTitle noteId={content.noteId} onTitle={setNoteTitle}>
             <NotePanel noteId={content.noteId} />
           </NoteTitle>

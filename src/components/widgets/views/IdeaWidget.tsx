@@ -1,4 +1,5 @@
 'use client';
+import { ROUTES, ORB_SLUGS, DOMAINS } from '@/lib/ou-registry';
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
@@ -31,7 +32,7 @@ export function IdeaWidget() {
   }, []);
 
   useEffect(() => { fetchIdeas(); }, [fetchIdeas]);
-  useEffect(() => { router.prefetch('/orb/idea'); }, [router]);
+  useEffect(() => { router.prefetch(ROUTES.ORB(ORB_SLUGS.IDEA)); }, [router]);
 
   useEffect(() => {
     const supabase = createClient();
@@ -44,7 +45,7 @@ export function IdeaWidget() {
 
   useEffect(() => {
     const handler = (e: Event) => {
-      if ((e as CustomEvent).detail?.domain === 'idea') fetchIdeas();
+      if ((e as CustomEvent).detail?.domain === DOMAINS.IDEA) fetchIdeas();
     };
     window.addEventListener('ou-node-created', handler);
     return () => window.removeEventListener('ou-node-created', handler);
@@ -71,7 +72,7 @@ export function IdeaWidget() {
           <div style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>불러오는 중...</div>
         ) : ideas.length === 0 ? (
           <button
-            onClick={() => router.push('/orb/idea')}
+            onClick={() => router.push(ROUTES.ORB(ORB_SLUGS.IDEA))}
             style={{
               background: 'none', border: 'none', cursor: 'pointer',
               textAlign: 'left', padding: 0,

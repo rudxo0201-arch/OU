@@ -1,3 +1,4 @@
+import { DOMAINS } from '@/lib/ou-registry';
 import { NextResponse } from 'next/server';
 import { COPY } from '@/lib/copy';
 
@@ -12,7 +13,7 @@ export function safeErrorResponse(
   userMessage?: string,
 ): NextResponse {
   // 서버 로그에는 전체 에러 기록
-  if (process.env.NODE_ENV === 'development') {
+  if (process.env.NODE_ENV === DOMAINS.DEVELOPMENT) {
     console.error('[API Error]', error);
   }
 

@@ -3,6 +3,7 @@
 import { memo } from 'react';
 import type { ScrollPolicy } from './types';
 import { getWidgetDef } from './registry';
+import { WIDGET_TYPES } from '@/lib/ou-registry';
 import styles from './WidgetGrid.module.css';
 
 interface Props {
@@ -25,8 +26,8 @@ export const WidgetCard = memo(function WidgetCard({ widgetId, type, removable, 
     scrollable === 'both'       ? { overflow: 'auto' } :
                                   { overflow: 'hidden' };
 
-  // Orb widget: always transparent card. Others: neumorphism raised.
-  const isTransparent = type === 'ou-view' || type === 'qsbar';
+  // 입력창 위젯: 카드 없음(투명). 나머지: neumorphism raised.
+  const isTransparent = type === 'ou-view' || type === WIDGET_TYPES.INPUT_BAR;
   const cardClassName = editMode ? styles.cardEdit : (isTransparent ? styles.cardless : styles.cardNormal);
 
   const animation = isShaking

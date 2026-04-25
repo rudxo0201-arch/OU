@@ -1,4 +1,5 @@
 'use client';
+import { ROUTES, ORB_SLUGS, DOMAINS } from '@/lib/ou-registry';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
@@ -30,7 +31,7 @@ export function NoteWidget() {
   }, []);
 
   useEffect(() => { fetchNodes(); }, [fetchNodes]);
-  useEffect(() => { router.prefetch('/orb/note'); }, [router]);
+  useEffect(() => { router.prefetch(ROUTES.ORB(ORB_SLUGS.NOTE)); }, [router]);
 
   useEffect(() => {
     const supabase = createClient();
@@ -43,7 +44,7 @@ export function NoteWidget() {
 
   useEffect(() => {
     const handler = (e: Event) => {
-      if ((e as CustomEvent).detail?.domain === 'note') fetchNodes();
+      if ((e as CustomEvent).detail?.domain === DOMAINS.NOTE) fetchNodes();
     };
     window.addEventListener('ou-node-created', handler);
     return () => window.removeEventListener('ou-node-created', handler);
@@ -66,7 +67,7 @@ export function NoteWidget() {
           <div style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>불러오는 중...</div>
         ) : notes.length === 0 ? (
           <button
-            onClick={() => router.push('/orb/note')}
+            onClick={() => router.push(ROUTES.ORB(ORB_SLUGS.NOTE))}
             style={{
               background: 'none', border: 'none', cursor: 'pointer',
               textAlign: 'left', padding: 0,

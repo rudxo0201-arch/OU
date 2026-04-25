@@ -1,4 +1,5 @@
 'use client';
+import { DOMAINS } from '@/lib/ou-registry';
 
 import { useState, useMemo, useCallback } from 'react';
 import type { ViewProps } from './registry';
@@ -47,7 +48,7 @@ interface Formula {
 
 function parseHerbs(nodes: ViewProps['nodes']): Herb[] {
   return nodes
-    .filter(n => n.domain === 'knowledge' && n.domain_data?.herb_id)
+    .filter(n => n.domain === DOMAINS.KNOWLEDGE && n.domain_data?.herb_id)
     .map(n => ({
       id: n.id,
       name: n.domain_data.name_korean || n.domain_data.herb_id,

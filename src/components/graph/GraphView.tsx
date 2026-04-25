@@ -25,6 +25,8 @@ interface GraphViewProps {
   activeNodeId?: string;
   /** activeNodeId의 1-hop 이웃만 표시 */
   localMode?: boolean;
+  /** PixiJS 배경 투명 + 캔버스 radius 제거 — /home 우주 위에 바로 렌더할 때 */
+  transparent?: boolean;
   /** ViewProps 호환 — graph 뷰에서 의미는 없지만 시그니처 맞춤용 */
   filters?: Record<string, unknown>;
   onSave?: () => void;
@@ -43,7 +45,7 @@ const DOMAIN_COLORS: Record<string, string> = {
   habit:     '#737373',
 };
 
-export function GraphView({ nodes, links, height, onNodeClick, activeNodeId, localMode }: GraphViewProps) {
+export function GraphView({ nodes, links, height, onNodeClick, activeNodeId, localMode, transparent }: GraphViewProps) {
   const linksProvided = links !== undefined;
   const [fetchedLinks, setFetchedLinks] = useState<Link[] | null>(null);
 
@@ -100,6 +102,7 @@ export function GraphView({ nodes, links, height, onNodeClick, activeNodeId, loc
         onNodeClick={onNodeClick ? handleNodeClick : undefined}
         activeNodeId={activeNodeId}
         localMode={localMode}
+        transparent={transparent}
       />
     </div>
   );

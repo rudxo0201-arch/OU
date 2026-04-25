@@ -1,4 +1,5 @@
 'use client';
+import { ROUTES, ORB_SLUGS, DOMAINS } from '@/lib/ou-registry';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
@@ -346,7 +347,7 @@ export function TodayScheduleWidget() {
   }, []);
 
   useEffect(() => { fetchEvents(); }, [fetchEvents]);
-  useEffect(() => { router.prefetch('/orb/schedule'); }, [router]);
+  useEffect(() => { router.prefetch(ROUTES.ORB(ORB_SLUGS.SCHEDULE)); }, [router]);
 
   useEffect(() => {
     const supabase = createClient();
@@ -359,7 +360,7 @@ export function TodayScheduleWidget() {
 
   useEffect(() => {
     const handler = (e: Event) => {
-      if ((e as CustomEvent).detail?.domain === 'schedule') fetchEvents();
+      if ((e as CustomEvent).detail?.domain === DOMAINS.SCHEDULE) fetchEvents();
     };
     window.addEventListener('ou-node-created', handler);
     return () => window.removeEventListener('ou-node-created', handler);
@@ -373,7 +374,7 @@ export function TodayScheduleWidget() {
     <>
       <div
         ref={rootRef}
-        onClick={() => router.push('/orb/schedule')}
+        onClick={() => router.push(ROUTES.ORB(ORB_SLUGS.SCHEDULE))}
         style={{
           height: '100%',
           display: 'flex',

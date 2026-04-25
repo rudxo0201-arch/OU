@@ -11,6 +11,7 @@ import { config as developmentConfig } from './domains/development';
 import { config as mediaConfig } from './domains/media';
 import { config as careConfig } from './domains/care';
 import { config as noteConfig } from './domains/note';
+import { config as journalConfig } from './domains/journal';
 import { config as defaultConfig } from './domains/_default';
 
 export const EXTRACTION_REGISTRY: Record<string, DomainExtractionConfig> = {
@@ -29,6 +30,7 @@ export const EXTRACTION_REGISTRY: Record<string, DomainExtractionConfig> = {
   media: mediaConfig,
   care: careConfig,
   note: noteConfig,
+  journal: journalConfig,
 };
 
 export const DEFAULT_EXTRACTION_CONFIG = defaultConfig;

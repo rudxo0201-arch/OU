@@ -1,3 +1,4 @@
+import { DOMAINS } from '@/lib/ou-registry';
 /**
  * Recommendation Agent
  *
@@ -30,7 +31,7 @@ type PatternDetector = (nodes: DataNodeSummary[]) => ViewRecommendation | null;
 const detectors: PatternDetector[] = [
   // Many schedule nodes → calendar view
   (nodes) => {
-    const scheduleNodes = nodes.filter((n) => n.domain === 'schedule');
+    const scheduleNodes = nodes.filter((n) => n.domain === DOMAINS.SCHEDULE);
     if (scheduleNodes.length >= 3) {
       return {
         viewType: 'calendar',
@@ -45,7 +46,7 @@ const detectors: PatternDetector[] = [
 
   // Many finance nodes → chart view
   (nodes) => {
-    const financeNodes = nodes.filter((n) => n.domain === 'finance');
+    const financeNodes = nodes.filter((n) => n.domain === DOMAINS.FINANCE);
     if (financeNodes.length >= 3) {
       return {
         viewType: 'chart',
@@ -60,7 +61,7 @@ const detectors: PatternDetector[] = [
 
   // Knowledge-heavy → graph view
   (nodes) => {
-    const knowledgeNodes = nodes.filter((n) => n.domain === 'knowledge');
+    const knowledgeNodes = nodes.filter((n) => n.domain === DOMAINS.KNOWLEDGE);
     if (knowledgeNodes.length >= 5) {
       return {
         viewType: 'graph',
@@ -75,7 +76,7 @@ const detectors: PatternDetector[] = [
 
   // Many relation nodes → network view
   (nodes) => {
-    const relationNodes = nodes.filter((n) => n.domain === 'relation');
+    const relationNodes = nodes.filter((n) => n.domain === DOMAINS.RELATION);
     if (relationNodes.length >= 3) {
       return {
         viewType: 'network',
@@ -90,7 +91,7 @@ const detectors: PatternDetector[] = [
 
   // Habit domain → streak/tracker view
   (nodes) => {
-    const habitNodes = nodes.filter((n) => n.domain === 'habit');
+    const habitNodes = nodes.filter((n) => n.domain === DOMAINS.HABIT);
     if (habitNodes.length >= 3) {
       return {
         viewType: 'tracker',
@@ -105,7 +106,7 @@ const detectors: PatternDetector[] = [
 
   // Task domain → kanban/list view
   (nodes) => {
-    const taskNodes = nodes.filter((n) => n.domain === 'task');
+    const taskNodes = nodes.filter((n) => n.domain === DOMAINS.TASK);
     if (taskNodes.length >= 2) {
       return {
         viewType: 'kanban',
@@ -172,7 +173,7 @@ const detectors: PatternDetector[] = [
 
   // Emotion/journal nodes → journal view
   (nodes) => {
-    const emotionNodes = nodes.filter((n) => n.domain === 'emotion');
+    const emotionNodes = nodes.filter((n) => n.domain === DOMAINS.EMOTION);
     if (emotionNodes.length >= 3) {
       return {
         viewType: 'journal',
@@ -187,7 +188,7 @@ const detectors: PatternDetector[] = [
 
   // Many idea nodes → mindmap view
   (nodes) => {
-    const ideaNodes = nodes.filter((n) => n.domain === 'idea');
+    const ideaNodes = nodes.filter((n) => n.domain === DOMAINS.IDEA);
     if (ideaNodes.length >= 4) {
       return {
         viewType: 'mindmap',
@@ -202,8 +203,8 @@ const detectors: PatternDetector[] = [
 
   // Task + schedule mix → gantt view
   (nodes) => {
-    const taskNodes = nodes.filter((n) => n.domain === 'task');
-    const scheduleNodes = nodes.filter((n) => n.domain === 'schedule');
+    const taskNodes = nodes.filter((n) => n.domain === DOMAINS.TASK);
+    const scheduleNodes = nodes.filter((n) => n.domain === DOMAINS.SCHEDULE);
     const total = taskNodes.length + scheduleNodes.length;
     if (total >= 5 && taskNodes.length >= 2 && scheduleNodes.length >= 2) {
       return {
@@ -218,7 +219,7 @@ const detectors: PatternDetector[] = [
 
   // Task nodes with priority → matrix view
   (nodes) => {
-    const taskNodes = nodes.filter((n) => n.domain === 'task');
+    const taskNodes = nodes.filter((n) => n.domain === DOMAINS.TASK);
     if (taskNodes.length >= 4) {
       return {
         viewType: 'matrix',
@@ -233,7 +234,7 @@ const detectors: PatternDetector[] = [
 
   // Knowledge nodes → flashcard/quiz for study
   (nodes) => {
-    const knowledgeNodes = nodes.filter((n) => n.domain === 'knowledge');
+    const knowledgeNodes = nodes.filter((n) => n.domain === DOMAINS.KNOWLEDGE);
     if (knowledgeNodes.length >= 5) {
       return {
         viewType: 'flashcard',

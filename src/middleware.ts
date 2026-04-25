@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
+import { ROUTES } from '@/lib/ou-registry';
 
 const PUBLIC_ROUTES = ['/', '/login', '/signup', '/forgot-password', '/auth/confirm', '/auth/callback', '/ds', '/invite'];
 const GUEST_ALLOWED: string[] = [];
@@ -49,7 +50,7 @@ export async function middleware(request: NextRequest) {
 
   // 로그인 상태로 /login, /signup, / 접근 → /home
   if (user && (path === '/login' || path === '/signup' || path === '/')) {
-    return NextResponse.redirect(new URL('/home', request.url));
+    return NextResponse.redirect(new URL(ROUTES.HOME, request.url));
   }
 
   // 관리자 세션 타임아웃 (30분) — 쿠키 기반 활동 추적
@@ -85,7 +86,7 @@ export async function middleware(request: NextRequest) {
 
   // private 라우트: 비로그인 → /login
   if (!user) {
-    const redirectUrl = new URL('/login', request.url);
+    const redirectUrl = new URL(ROUTES.LOGIN, request.url);
     redirectUrl.searchParams.set('next', path);
     return NextResponse.redirect(redirectUrl);
   }
@@ -93,7 +94,7 @@ export async function middleware(request: NextRequest) {
   // 관리자 전용 라우트: 일반 회원 → /home
   const isAdminOnly = ADMIN_ONLY_ROUTES.some(r => path === r || path.startsWith(r + '/'));
   if (isAdminOnly && !isAdminEmail(user.email ?? '')) {
-    return NextResponse.redirect(new URL('/home', request.url));
+    return NextResponse.redirect(new URL(ROUTES.HOME, request.url));
   }
 
   return response;

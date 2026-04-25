@@ -1,4 +1,5 @@
 'use client';
+import { ROUTES, ORB_SLUGS, DOMAINS } from '@/lib/ou-registry';
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
@@ -42,7 +43,7 @@ export function HabitWidget() {
   }, []);
 
   useEffect(() => { fetchHabits(); }, [fetchHabits]);
-  useEffect(() => { router.prefetch('/orb/habit'); }, [router]);
+  useEffect(() => { router.prefetch(ROUTES.ORB(ORB_SLUGS.HABIT)); }, [router]);
 
   useEffect(() => {
     const supabase = createClient();
@@ -55,7 +56,7 @@ export function HabitWidget() {
 
   useEffect(() => {
     const handler = (e: Event) => {
-      if ((e as CustomEvent).detail?.domain === 'habit') fetchHabits();
+      if ((e as CustomEvent).detail?.domain === DOMAINS.HABIT) fetchHabits();
     };
     window.addEventListener('ou-node-created', handler);
     return () => window.removeEventListener('ou-node-created', handler);
@@ -82,7 +83,7 @@ export function HabitWidget() {
           <div style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>불러오는 중...</div>
         ) : habits.length === 0 ? (
           <button
-            onClick={() => router.push('/orb/habit')}
+            onClick={() => router.push(ROUTES.ORB(ORB_SLUGS.HABIT))}
             style={{
               background: 'none', border: 'none', cursor: 'pointer',
               textAlign: 'left', padding: 0,

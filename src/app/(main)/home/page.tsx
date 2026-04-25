@@ -120,9 +120,8 @@ export default function HomePage() {
   return (
     <div style={{ position: 'relative', height: '100vh', overflow: 'hidden' }}>
 
-        {/* ── 메인 콘텐츠 ── */}
+        {/* ── 메인 콘텐츠 (그래프 외) ── */}
         <div style={{ position: 'absolute', top: NAV_HEIGHT, bottom: 0, left: 0, right: 0 }}>
-
           {activeView === 'page' && openedPage ? (
             <div style={{ width: '100%', height: '100%', overflowY: 'auto' }}>
               <PageRenderer
@@ -130,35 +129,43 @@ export default function HomePage() {
                 onClose={() => { setOpenedPage(null); setView('graph'); }}
               />
             </div>
-          ) : activeView === 'graph' ? (
-            <div style={{ width: '100%', height: '100%' }}>
-              {graphLoading ? (
-                <div style={{
-                  height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: 'rgba(255,255,255,0.3)', fontSize: 13,
-                }}>
-                  그래프 로딩 중...
-                </div>
-              ) : (
-                <GraphView
-                  nodes={graphViewNodes}
-                  links={graphEdges}
-                  onNodeClick={handleNodeClick}
-                />
-              )}
-            </div>
-          ) : (
+          ) : activeView === 'graph' ? null : (
             <WidgetGrid />
           )}
         </div>
 
-        {/* ── 노드 클릭 카드 ── */}
+        {/* ── 그래프 — position:fixed inset:0 z:1 → 우주 전체 채움, nav(z200)·아이콘바(z100) 아래 ── */}
+        {activeView === 'graph' && (
+          <div style={{ position: 'fixed', inset: 0, zIndex: 1 }}>
+            {graphLoading ? (
+              <div style={{
+                height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                color: 'rgba(255,255,255,0.3)', fontSize: 13,
+              }}>
+                그래프 로딩 중...
+              </div>
+            ) : (
+              <GraphView
+                nodes={graphViewNodes}
+                links={graphEdges}
+                onNodeClick={handleNodeClick}
+                transparent
+              />
+            )}
+          </div>
+        )}
+
+        {/* ── 노드 클릭 카드 — nav(z200) 위에 ── */}
         {activeView === 'graph' && selectedNode && (
-          <NodeDetailCard
-            node={selectedNode}
-            onClose={() => setSelectedNode(null)}
-            onOpenPage={() => handleOpenPage(selectedNode)}
-          />
+          <div style={{ position: 'fixed', inset: 0, zIndex: 201, pointerEvents: 'none' }}>
+            <div style={{ pointerEvents: 'auto' }}>
+              <NodeDetailCard
+                node={selectedNode}
+                onClose={() => setSelectedNode(null)}
+                onOpenPage={() => handleOpenPage(selectedNode)}
+              />
+            </div>
+          </div>
         )}
 
         {/* ── 폴더 패널 ── */}

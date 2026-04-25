@@ -1,4 +1,5 @@
 'use client';
+import { DOMAINS } from '@/lib/ou-registry';
 
 import { ScheduleDetailView } from './templates/ScheduleDetailView';
 import { TaskDetailView } from './templates/TaskDetailView';
@@ -103,10 +104,10 @@ export function PageRenderer({ node, onClose }: Props) {
 
       {/* domain template */}
       <div style={{ flex: 1 }}>
-        {domain === 'schedule' && <ScheduleDetailView node={node} />}
-        {domain === 'task'     && <TaskDetailView     node={node} />}
-        {domain === 'habit'    && <HabitDetailView    node={node} />}
-        {domain === 'journal'  && <JournalEditorView  node={node} />}
+        {domain === DOMAINS.SCHEDULE && <ScheduleDetailView node={node} />}
+        {domain === DOMAINS.TASK     && <TaskDetailView     node={node} />}
+        {domain === DOMAINS.HABIT    && <HabitDetailView    node={node} />}
+        {domain === DOMAINS.JOURNAL  && <JournalEditorView  node={node} />}
         {domain === 'date'     && <DateDetailView     node={node} />}
 
         {/* fallback for unknown domains */}

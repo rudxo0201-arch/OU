@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useWidgetStore } from '@/stores/widgetStore';
 import { useTutorialStore } from '@/stores/tutorialStore';
+import { ROUTES } from '@/lib/ou-registry';
 import { OuButton } from '@/components/ds';
 import { DOMAIN_WIDGET_MAP } from '@/data/tutorial';
 
@@ -31,7 +32,7 @@ export function AddToHomeButton({ domain }: Props) {
       }
       completeStep();
       window.dispatchEvent(new CustomEvent('orb-close'));
-      router.push('/home');
+      router.push(ROUTES.HOME);
       return;
     }
 

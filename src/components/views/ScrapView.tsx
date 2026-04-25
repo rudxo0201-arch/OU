@@ -1,4 +1,5 @@
 'use client';
+import { DOMAINS } from '@/lib/ou-registry';
 
 import { useState, useMemo } from 'react';
 import type { ViewProps } from './registry';
@@ -20,12 +21,12 @@ export function ScrapView({ nodes }: ViewProps) {
 
   const scraps = useMemo(() =>
     nodes
-      .filter(n => n.domain === 'media' || n.source_type === 'youtube' || n.source_type === 'file' || n.domain === 'education')
+      .filter(n => n.domain === DOMAINS.MEDIA || n.source_type === DOMAINS.YOUTUBE || n.source_type === DOMAINS.FILE || n.domain === DOMAINS.EDUCATION)
       .map(n => ({
         id: n.id,
         title: n.domain_data?.title || (n.raw ?? '').slice(0, 50) || '스크랩',
         type: n.domain_data?.video_id ? 'video' as const
-          : n.source_type === 'file' ? 'file' as const
+          : n.source_type === DOMAINS.FILE ? 'file' as const
           : 'note' as const,
         videoId: n.domain_data?.video_id,
         url: n.domain_data?.url,
@@ -59,8 +60,8 @@ export function ScrapView({ nodes }: ViewProps) {
       <div style={{ display: 'flex', gap: 6, marginBottom: 20 }}>
         <Chip label={`전체 ${scraps.length}`} active={filter === 'all'} onClick={() => setFilter('all')} />
         {typeCounts.video && <Chip label={`영상 ${typeCounts.video}`} active={filter === 'video'} onClick={() => setFilter('video')} />}
-        {typeCounts.file && <Chip label={`파일 ${typeCounts.file}`} active={filter === 'file'} onClick={() => setFilter('file')} />}
-        {typeCounts.note && <Chip label={`노트 ${typeCounts.note}`} active={filter === 'note'} onClick={() => setFilter('note')} />}
+        {typeCounts.file && <Chip label={`파일 ${typeCounts.file}`} active={filter === DOMAINS.FILE} onClick={() => setFilter('file')} />}
+        {typeCounts.note && <Chip label={`노트 ${typeCounts.note}`} active={filter === DOMAINS.NOTE} onClick={() => setFilter('note')} />}
       </div>
 
       {/* Card grid */}
@@ -103,7 +104,7 @@ export function ScrapView({ nodes }: ViewProps) {
                 boxShadow: 'inset var(--ou-neu-pressed-sm)',
                 fontSize: 20, color: 'var(--ou-text-disabled)',
               }}>
-                {scrap.type === 'file' ? '📄' : '📝'}
+                {scrap.type === DOMAINS.FILE ? '📄' : '📝'}
               </div>
             )}
 
@@ -123,7 +124,7 @@ export function ScrapView({ nodes }: ViewProps) {
                   border: '0.5px solid var(--ou-border-faint)',
                   color: 'var(--ou-text-muted)',
                 }}>
-                  {scrap.type === 'video' ? '영상' : scrap.type === 'file' ? '파일' : '노트'}
+                  {scrap.type === 'video' ? '영상' : scrap.type === DOMAINS.FILE ? '파일' : '노트'}
                 </span>
                 {scrap.createdAt && (
                   <span style={{ fontSize: 10, color: 'var(--ou-text-disabled)' }}>

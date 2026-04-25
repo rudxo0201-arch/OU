@@ -1,3 +1,4 @@
+import { DOMAINS } from '@/lib/ou-registry';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { classifyDomain } from './classifier';
 import { detectUnresolved } from './unresolved';

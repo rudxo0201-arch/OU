@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { AuthLayout, OuButton } from '@/components/ds';
+import { ROUTES } from '@/lib/ou-registry';
 
 export default function VerifiedPage() {
   const [countdown, setCountdown] = useState(3);
@@ -10,7 +11,7 @@ export default function VerifiedPage() {
       setCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          window.location.href = '/home';
+          window.location.href = ROUTES.HOME;
           return 0;
         }
         return prev - 1;
@@ -47,7 +48,7 @@ export default function VerifiedPage() {
             {countdown}초 후 이동…
           </span>
         ) : (
-          <OuButton size="sm" onClick={() => { window.location.href = '/home'; }}>
+          <OuButton size="sm" onClick={() => { window.location.href = ROUTES.HOME; }}>
             지금 이동하기
           </OuButton>
         )}
