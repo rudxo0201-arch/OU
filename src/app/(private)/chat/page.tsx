@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ChatPanel, type NodeSelectPayload } from '@/components/chat/ChatPanel';
 import dynamic from 'next/dynamic';
 const UniverseView = dynamic(() => import('@/components/widgets/UniverseView').then(m => m.UniverseView), { ssr: false });
-import { NeuButton, NeuCard, NeuBadge } from '@/components/ds';
+import { OuButton, OuCard, OuBadge } from '@/components/ds';
 
 export default function ChatFullBoardPage() {
   const router = useRouter();
@@ -24,9 +24,9 @@ export default function ChatFullBoardPage() {
         padding: '0 24px', gap: 16,
         borderBottom: '1px solid var(--ou-border-faint)',
       }}>
-        <NeuButton variant="ghost" size="sm" onClick={() => router.push('/my')} style={{ gap: 6 }}>
+        <OuButton variant="ghost" size="sm" onClick={() => router.push('/my')} style={{ gap: 6 }}>
           ← 홈
-        </NeuButton>
+        </OuButton>
         <span style={{
           fontFamily: 'var(--ou-font-logo)',
           fontSize: 15, fontWeight: 600,
@@ -58,7 +58,7 @@ export default function ChatFullBoardPage() {
 
         {/* Right: Node detail panel */}
         {rightPanel && (
-          <NeuCard
+          <OuCard
             variant="raised"
             style={{
               width: '25%', minWidth: 280, maxWidth: 360,
@@ -71,11 +71,11 @@ export default function ChatFullBoardPage() {
                 <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--ou-text-heading)', margin: '0 0 6px' }}>
                   {rightPanel.title}
                 </h3>
-                <NeuBadge>{rightPanel.domain}</NeuBadge>
+                <OuBadge>{rightPanel.domain}</OuBadge>
               </div>
-              <NeuButton variant="ghost" size="sm" onClick={() => setRightPanel(null)} style={{ padding: '2px 6px', minWidth: 0 }}>
+              <OuButton variant="ghost" size="sm" onClick={() => setRightPanel(null)} style={{ padding: '2px 6px', minWidth: 0 }}>
                 ✕
-              </NeuButton>
+              </OuButton>
             </div>
 
             {rightPanel.data && (
@@ -92,7 +92,7 @@ export default function ChatFullBoardPage() {
                   ))}
               </div>
             )}
-          </NeuCard>
+          </OuCard>
         )}
       </div>
     </div>

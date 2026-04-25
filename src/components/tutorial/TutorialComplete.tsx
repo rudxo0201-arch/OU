@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { NeuButton, NeuCard } from '@/components/ds';
+import { OuButton, OuCard } from '@/components/ds';
 import { ProfileQuestionUI } from '@/components/chat/ProfileQuestionUI';
 
 interface Props {
@@ -59,7 +59,7 @@ export function TutorialComplete({ onClose }: Props) {
       <div style={{ width: '100%', maxWidth: 420, padding: '0 20px' }}>
 
         {step === 'celebrate' && (
-          <NeuCard variant="raised" size="md" style={{ textAlign: 'center', animation: 'ou-fade-in 0.4s ease' }}>
+          <OuCard variant="raised" size="md" style={{ textAlign: 'center', animation: 'ou-fade-in 0.4s ease' }}>
             <div style={{
               width: 72, height: 72, borderRadius: '50%',
               background: 'var(--ou-bg)',
@@ -78,24 +78,24 @@ export function TutorialComplete({ onClose }: Props) {
               프로필을 입력하면 <strong style={{ color: 'var(--ou-text-body)' }}>1,000 UNI</strong>를 드려요.
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <NeuButton
+              <OuButton
                 variant="accent"
                 size="md"
                 onClick={() => setStep('profile')}
                 style={{ width: '100%' }}
               >
                 프로필 입력하고 1,000 UNI 받기
-              </NeuButton>
-              <NeuButton
+              </OuButton>
+              <OuButton
                 variant="ghost"
                 size="sm"
                 onClick={onClose}
                 style={{ width: '100%', fontSize: 12, color: 'var(--ou-text-muted)' }}
               >
                 나중에
-              </NeuButton>
+              </OuButton>
             </div>
-          </NeuCard>
+          </OuCard>
         )}
 
         {step === 'profile' && (
@@ -108,7 +108,7 @@ export function TutorialComplete({ onClose }: Props) {
         )}
 
         {step === 'done' && (
-          <NeuCard variant="raised" size="md" style={{ textAlign: 'center', animation: 'ou-fade-in 0.4s ease' }}>
+          <OuCard variant="raised" size="md" style={{ textAlign: 'center', animation: 'ou-fade-in 0.4s ease' }}>
             <div style={{
               width: 72, height: 72, borderRadius: '50%',
               background: 'var(--ou-bg)',
@@ -125,10 +125,10 @@ export function TutorialComplete({ onClose }: Props) {
             <p style={{ fontSize: 14, color: 'var(--ou-text-secondary)', lineHeight: 1.6, margin: '0 0 24px' }}>
               이제 본격적으로 시작해볼까요?
             </p>
-            <NeuButton variant="default" size="md" onClick={onClose} style={{ width: '100%' }}>
+            <OuButton variant="default" size="md" onClick={onClose} style={{ width: '100%' }}>
               시작하기
-            </NeuButton>
-          </NeuCard>
+            </OuButton>
+          </OuCard>
         )}
 
       </div>

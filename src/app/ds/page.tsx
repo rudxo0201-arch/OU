@@ -4,9 +4,9 @@ import { useState } from 'react';
 import {
   OuButton, OuCard, OuInput, OuModal, OuAvatar, OuDivider, OuTabs,
   ToastProvider, useToast,
-  NeuBadge, NeuCheckbox, NeuProgress, NeuSearchBar, NeuSelect,
-  NeuSlider, NeuTable, NeuTag, NeuTextarea, NeuToggle, NeuNavItem,
-  NeuSectionTitle, NeuNotificationBadge, NeuCircleDisplay,
+  OuBadge, OuCheckbox, OuProgress, OuSearchBar, OuSelect,
+  OuSlider, OuTable, OuTag, OuTextarea, OuToggle, OuNavItem,
+  OuSectionTitle, OuNotificationBadge, OuCircleDisplay,
 } from '@/components/ds';
 
 // ── 팔레트 목록 ────────────────────────────────────────────
@@ -283,25 +283,25 @@ function BadgeSection() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
       <div>
-        <p style={{ fontSize: 12, color: 'var(--ou-text-muted)', marginBottom: 12 }}>NeuBadge / OuBadge</p>
+        <p style={{ fontSize: 12, color: 'var(--ou-text-muted)', marginBottom: 12 }}>OuBadge / OuBadge</p>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          <NeuBadge>기본</NeuBadge>
-          <NeuBadge>일정</NeuBadge>
-          <NeuBadge>할일</NeuBadge>
-          <NeuBadge>지출</NeuBadge>
+          <OuBadge>기본</OuBadge>
+          <OuBadge>일정</OuBadge>
+          <OuBadge>할일</OuBadge>
+          <OuBadge>지출</OuBadge>
         </div>
       </div>
       <div>
-        <p style={{ fontSize: 12, color: 'var(--ou-text-muted)', marginBottom: 12 }}>NeuTag / OuTag</p>
+        <p style={{ fontSize: 12, color: 'var(--ou-text-muted)', marginBottom: 12 }}>OuTag / OuTag</p>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          <NeuTag>태그1</NeuTag>
-          <NeuTag>태그2</NeuTag>
-          <NeuTag>태그3</NeuTag>
+          <OuTag>태그1</OuTag>
+          <OuTag>태그2</OuTag>
+          <OuTag>태그3</OuTag>
         </div>
       </div>
       <div>
-        <p style={{ fontSize: 12, color: 'var(--ou-text-muted)', marginBottom: 12 }}>NeuProgress / OuProgress</p>
-        <NeuProgress value={65} />
+        <p style={{ fontSize: 12, color: 'var(--ou-text-muted)', marginBottom: 12 }}>OuProgress / OuProgress</p>
+        <OuProgress value={65} />
       </div>
     </div>
   );
@@ -316,16 +316,16 @@ function MiscSection() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
       <div>
-        <p style={{ fontSize: 12, color: 'var(--ou-text-muted)', marginBottom: 12 }}>NeuCheckbox / OuCheckbox</p>
-        <NeuCheckbox checked={checked} onChange={setChecked} label="체크박스" />
+        <p style={{ fontSize: 12, color: 'var(--ou-text-muted)', marginBottom: 12 }}>OuCheckbox / OuCheckbox</p>
+        <OuCheckbox checked={checked} onChange={setChecked} label="체크박스" />
       </div>
       <div>
-        <p style={{ fontSize: 12, color: 'var(--ou-text-muted)', marginBottom: 12 }}>NeuToggle / OuToggle</p>
-        <NeuToggle checked={toggled} onChange={setToggled} label="토글" />
+        <p style={{ fontSize: 12, color: 'var(--ou-text-muted)', marginBottom: 12 }}>OuToggle / OuToggle</p>
+        <OuToggle checked={toggled} onChange={setToggled} label="토글" />
       </div>
       <div>
-        <p style={{ fontSize: 12, color: 'var(--ou-text-muted)', marginBottom: 12 }}>NeuTextarea / OuTextarea</p>
-        <NeuTextarea value={text} onChange={e => setText(e.target.value)} placeholder="텍스트를 입력하세요..." rows={3} style={{ width: 320 }} />
+        <p style={{ fontSize: 12, color: 'var(--ou-text-muted)', marginBottom: 12 }}>OuTextarea / OuTextarea</p>
+        <OuTextarea value={text} onChange={e => setText(e.target.value)} placeholder="텍스트를 입력하세요..." rows={3} style={{ width: 320 }} />
       </div>
       <div>
         <p style={{ fontSize: 12, color: 'var(--ou-text-muted)', marginBottom: 12 }}>useToast</p>
@@ -338,8 +338,8 @@ function MiscSection() {
         </div>
       </div>
       <div>
-        <p style={{ fontSize: 12, color: 'var(--ou-text-muted)', marginBottom: 12 }}>NeuSectionTitle / OuSectionTitle</p>
-        <NeuSectionTitle>섹션 제목</NeuSectionTitle>
+        <p style={{ fontSize: 12, color: 'var(--ou-text-muted)', marginBottom: 12 }}>OuSectionTitle / OuSectionTitle</p>
+        <OuSectionTitle>섹션 제목</OuSectionTitle>
       </div>
     </div>
   );

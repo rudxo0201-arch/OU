@@ -1,12 +1,12 @@
 'use client';
 import { CSSProperties, ReactNode } from 'react';
 
-interface NeuSectionTitleProps {
+interface OuSectionTitleProps {
   children: ReactNode;
   style?: CSSProperties;
 }
 
-export function NeuSectionTitle({ children, style }: NeuSectionTitleProps) {
+export function OuSectionTitle({ children, style }: OuSectionTitleProps) {
   return (
     <div style={{
       fontSize: 10,

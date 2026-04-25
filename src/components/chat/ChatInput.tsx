@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { useChatStore } from '@/stores/chatStore';
-import { NeuButton, NeuModal } from '@/components/ds';
+import { OuButton, OuModal } from '@/components/ds';
 import { stripLLMMeta } from '@/lib/utils/stripLLMMeta';
 
 interface ChatInputProps {
@@ -406,14 +406,14 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
           </div>
           <div style={{ padding: '8px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <span style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>엔터를 누르면 영상을 분석합니다</span>
-            <NeuButton
+            <OuButton
               variant="ghost"
               size="sm"
               onClick={() => { setYtPreview(null); setInput(input.replace(YOUTUBE_REGEX, '').trim()); }}
               style={{ padding: '2px 6px', fontSize: 11 }}
             >
               ✕
-            </NeuButton>
+            </OuButton>
           </div>
         </div>
       )}
@@ -428,7 +428,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
       />
 
       {/* Long text editor modal */}
-      <NeuModal
+      <OuModal
         open={longTextEditorOpen}
         onClose={() => setLongTextEditorOpen(false)}
         title={`입력 내용 수정 · ${input.length.toLocaleString()}자`}
@@ -455,18 +455,18 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
           }}
         />
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 12 }}>
-          <NeuButton
+          <OuButton
             variant="ghost"
             size="sm"
             onClick={() => { setInput(''); setLongTextCollapsed(false); setLongTextEditorOpen(false); }}
           >
             삭제
-          </NeuButton>
-          <NeuButton variant="default" size="sm" onClick={() => setLongTextEditorOpen(false)}>
+          </OuButton>
+          <OuButton variant="default" size="sm" onClick={() => setLongTextEditorOpen(false)}>
             확인
-          </NeuButton>
+          </OuButton>
         </div>
-      </NeuModal>
+      </OuModal>
 
       {/* Input bar */}
       <div

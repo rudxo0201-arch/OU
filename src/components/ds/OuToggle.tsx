@@ -1,14 +1,14 @@
 'use client';
 import { CSSProperties } from 'react';
 
-interface NeuToggleProps {
+interface OuToggleProps {
   checked: boolean;
   onChange?: (checked: boolean) => void;
   label?: string;
   disabled?: boolean;
 }
 
-export function NeuToggle({ checked, onChange, label, disabled = false }: NeuToggleProps) {
+export function OuToggle({ checked, onChange, label, disabled = false }: OuToggleProps) {
   const trackStyle: CSSProperties = {
     width: 50,
     height: 26,

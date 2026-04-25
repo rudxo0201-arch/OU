@@ -2,7 +2,7 @@
 import { CSSProperties, ReactNode } from 'react';
 import { OuLogo } from './OuLogo';
 
-interface NeuAuthLayoutProps {
+interface OuAuthLayoutProps {
   children: ReactNode;
   title?: string;
   subtitle?: string;
@@ -10,7 +10,7 @@ interface NeuAuthLayoutProps {
   style?: CSSProperties;
 }
 
-export function NeuAuthLayout({ children, title, maxWidth = 420, style }: NeuAuthLayoutProps) {
+export function OuAuthLayout({ children, title, maxWidth = 420, style }: OuAuthLayoutProps) {
   return (
     <div style={{
       minHeight: '100dvh',

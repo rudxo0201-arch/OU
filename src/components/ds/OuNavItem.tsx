@@ -1,14 +1,14 @@
 'use client';
 import { CSSProperties, ReactNode } from 'react';
 
-interface NeuNavItemProps {
+interface OuNavItemProps {
   children: ReactNode;
   active?: boolean;
   icon?: ReactNode;
   onClick?: () => void;
 }
 
-export function NeuNavItem({ children, active = false, icon, onClick }: NeuNavItemProps) {
+export function OuNavItem({ children, active = false, icon, onClick }: OuNavItemProps) {
   const itemStyle: CSSProperties = {
     padding: '10px 14px',
     borderRadius: 'var(--ou-radius-sm)',

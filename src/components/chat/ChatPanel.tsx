@@ -5,7 +5,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useChatStore, type ChatMessage, type Suggestion, type SuggestionItem } from '@/stores/chatStore';
 import { ChatInput, type ChatInputHandle } from './ChatInput';
-import { NeuButton, NeuBadge, NeuModal } from '@/components/ds';
+import { OuButton, OuBadge, OuModal } from '@/components/ds';
 import { AddToHomeButton } from './AddToHomeButton';
 import { stripLLMMeta } from '@/lib/utils/stripLLMMeta';
 import { VIEW_REGISTRY, DOMAIN_VIEW_MAP } from '@/components/views/registry';
@@ -234,19 +234,19 @@ function MessageBubble({
         {/* 더보기/접기 */}
         {isLong && !message.streaming && (
           <div style={{ marginTop: 8, display: 'flex', gap: 6 }}>
-            <NeuButton variant="ghost" size="sm" onClick={() => setExpanded(!expanded)} style={{ fontSize: 11, padding: '3px 10px' }}>
+            <OuButton variant="ghost" size="sm" onClick={() => setExpanded(!expanded)} style={{ fontSize: 11, padding: '3px 10px' }}>
               {expanded ? '접기' : '더보기'}
-            </NeuButton>
+            </OuButton>
             {expanded && (
-              <NeuButton variant="ghost" size="sm" onClick={() => setViewerOpen(true)} style={{ fontSize: 11, padding: '3px 10px' }}>
+              <OuButton variant="ghost" size="sm" onClick={() => setViewerOpen(true)} style={{ fontSize: 11, padding: '3px 10px' }}>
                 새 창으로
-              </NeuButton>
+              </OuButton>
             )}
           </div>
         )}
 
         {/* 소형 뷰어 모달 */}
-        <NeuModal
+        <OuModal
           open={viewerOpen}
           onClose={() => setViewerOpen(false)}
           title={`전체 내용 · ${message.content.length.toLocaleString()}자`}
@@ -273,7 +273,7 @@ function MessageBubble({
                 </ReactMarkdown>
             }
           </div>
-        </NeuModal>
+        </OuModal>
 
         {/* Node created badges (primary + additional) */}
         {message.nodeCreated && !message.streaming && (
@@ -287,7 +287,7 @@ function MessageBubble({
               })}
               style={{ cursor: onNodeSelect ? 'pointer' : 'default' }}
             >
-              <NeuBadge>{getDomainLabel(message.nodeCreated.domain)} 기록됨</NeuBadge>
+              <OuBadge>{getDomainLabel(message.nodeCreated.domain)} 기록됨</OuBadge>
             </div>
             {message.nodeCreated.additionalNodes?.map((n) => (
               <div
@@ -300,7 +300,7 @@ function MessageBubble({
                 })}
                 style={{ cursor: onNodeSelect ? 'pointer' : 'default' }}
               >
-                <NeuBadge>{getDomainLabel(n.domain)} 기록됨</NeuBadge>
+                <OuBadge>{getDomainLabel(n.domain)} 기록됨</OuBadge>
               </div>
             ))}
           </div>
@@ -406,14 +406,14 @@ function CreateViewButton({
 
   return (
     <div style={{ marginTop: 10, display: 'flex', gap: 6 }}>
-      <NeuButton
+      <OuButton
         variant="ghost"
         size="sm"
         onClick={handleCreate}
         style={{ fontSize: 11, padding: '3px 10px', opacity: loading ? 0.5 : 1 }}
       >
         {loading ? '생성 중...' : '뷰 생성하기'}
-      </NeuButton>
+      </OuButton>
     </div>
   );
 }
@@ -516,7 +516,7 @@ function SuggestionsUI({
         </span>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
           {item.options.map((opt, i) => (
-            <NeuButton
+            <OuButton
               key={i}
               size="sm"
               variant="ghost"
@@ -530,7 +530,7 @@ function SuggestionsUI({
               }}
             >
               {opt}
-            </NeuButton>
+            </OuButton>
           ))}
         </div>
         {!isDone && (
@@ -554,9 +554,9 @@ function SuggestionsUI({
               }}
             />
             {customInput.trim() && (
-              <NeuButton variant="ghost" size="sm" onClick={handleCustomSend} style={{ padding: '5px 10px' }}>
+              <OuButton variant="ghost" size="sm" onClick={handleCustomSend} style={{ padding: '5px 10px' }}>
                 →
-              </NeuButton>
+              </OuButton>
             )}
           </div>
         )}
@@ -570,7 +570,7 @@ function SuggestionsUI({
     <div style={{ marginTop: 14, display: 'flex', flexDirection: 'column', gap: 8 }}>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
         {strSuggestions.map((s, i) => (
-          <NeuButton
+          <OuButton
             key={i}
             size="sm"
             variant="ghost"
@@ -584,7 +584,7 @@ function SuggestionsUI({
             }}
           >
             {s}
-          </NeuButton>
+          </OuButton>
         ))}
       </div>
       {!isDone && (
@@ -608,9 +608,9 @@ function SuggestionsUI({
             }}
           />
           {customInput.trim() && (
-            <NeuButton variant="ghost" size="sm" onClick={handleCustomSend} style={{ padding: '5px 10px' }}>
+            <OuButton variant="ghost" size="sm" onClick={handleCustomSend} style={{ padding: '5px 10px' }}>
               →
-            </NeuButton>
+            </OuButton>
           )}
         </div>
       )}
@@ -730,7 +730,7 @@ function HanjaDetail({ hanja, onClose }: { hanja: HanjaResult; onClose: () => vo
             </div>
           </div>
         </div>
-        <NeuButton variant="ghost" size="sm" onClick={onClose} style={{ padding: '4px 8px', minWidth: 0 }}>×</NeuButton>
+        <OuButton variant="ghost" size="sm" onClick={onClose} style={{ padding: '4px 8px', minWidth: 0 }}>×</OuButton>
       </div>
       {hanja.meaning && (
         <div style={{ marginTop: 10, fontSize: 12, color: 'var(--ou-text-secondary)', lineHeight: 1.6 }}>

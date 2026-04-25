@@ -1,6 +1,6 @@
 'use client';
 
-import { NeuButton } from '@/components/ds';
+import { OuButton } from '@/components/ds';
 import type { ProtocolEvent } from '@/lib/protocol/engine';
 
 interface Props {
@@ -63,12 +63,12 @@ export function AnnouncementModal({ event, onAccept, onDismiss }: Props) {
           gap: 8,
           marginTop: 8,
         }}>
-          <NeuButton variant="ghost" size="sm" onClick={onDismiss}>
+          <OuButton variant="ghost" size="sm" onClick={onDismiss}>
             나중에
-          </NeuButton>
-          <NeuButton variant="accent" size="sm" onClick={onAccept}>
+          </OuButton>
+          <OuButton variant="accent" size="sm" onClick={onAccept}>
             {event.cta}
-          </NeuButton>
+          </OuButton>
         </div>
       </div>
     </div>

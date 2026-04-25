@@ -1,11 +1,11 @@
 'use client';
 import { CSSProperties, TextareaHTMLAttributes, forwardRef } from 'react';
 
-interface NeuTextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
+interface OuTextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   label?: string;
 }
 
-export const NeuTextarea = forwardRef<HTMLTextAreaElement, NeuTextareaProps>(
+export const OuTextarea = forwardRef<HTMLTextAreaElement, OuTextareaProps>(
   ({ label, style, className, ...props }, ref) => {
     const textareaStyle: CSSProperties = {
       background: 'var(--ou-bg)',
@@ -37,4 +37,4 @@ export const NeuTextarea = forwardRef<HTMLTextAreaElement, NeuTextareaProps>(
     );
   }
 );
-NeuTextarea.displayName = 'NeuTextarea';
+OuTextarea.displayName = 'OuTextarea';

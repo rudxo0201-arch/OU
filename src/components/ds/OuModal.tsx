@@ -10,7 +10,7 @@ export interface OuModalProps {
   title?: string;
   /** panel width — number (px) or CSS string */
   width?: number | string;
-  /** alias for width (backward compat with NeuModal) */
+  /** alias for width (backward compat with OuModal) */
   maxWidth?: number | string;
   showClose?: boolean;
   style?: CSSProperties;

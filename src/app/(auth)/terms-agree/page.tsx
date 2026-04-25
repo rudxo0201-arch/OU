@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { NeuAuthLayout, NeuCard, NeuCheckbox, NeuButton } from '@/components/ds';
+import { OuAuthLayout, OuCard, OuCheckbox, OuButton } from '@/components/ds';
 
 const TERMS_TEXT = `OU 서비스를 이용해 주셔서 감사합니다. 본 서비스는 사용자의 대화 데이터를 구조화하여 개인화된 지식 그래프를 생성합니다. 수집된 데이터는 서비스 개선 목적으로만 사용됩니다.
 
@@ -14,9 +14,9 @@ export default function TermsAgreePage() {
   const [agreed, setAgreed] = useState(false);
 
   return (
-    <NeuAuthLayout title="이용약관" maxWidth={480}>
+    <OuAuthLayout title="이용약관" maxWidth={480}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-        <NeuCard
+        <OuCard
           variant="pressed"
           style={{
             maxHeight: 200,
@@ -28,23 +28,23 @@ export default function TermsAgreePage() {
           }}
         >
           {TERMS_TEXT}
-        </NeuCard>
+        </OuCard>
 
-        <NeuCheckbox
+        <OuCheckbox
           checked={agreed}
           onChange={setAgreed}
           label="위 약관에 동의합니다"
         />
 
-        <NeuButton
+        <OuButton
           variant={agreed ? 'default' : 'ghost'}
           fullWidth
           onClick={() => agreed && router.push('/login')}
           style={{ opacity: agreed ? 1 : 0.5 }}
         >
           동의하고 계속하기
-        </NeuButton>
+        </OuButton>
       </div>
-    </NeuAuthLayout>
+    </OuAuthLayout>
   );
 }

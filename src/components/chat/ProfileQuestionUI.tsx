@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { NeuButton, NeuCard } from '@/components/ds';
+import { OuButton, OuCard } from '@/components/ds';
 import { useTutorialStore } from '@/stores/tutorialStore';
 
 const JOBS = ['학생', '직장인', '자영업', '프리랜서'];
@@ -43,7 +43,7 @@ export function ProfileQuestionUI({ initialGuess, onSubmit, onSkip }: Props) {
   };
 
   return (
-    <NeuCard variant="pressed" size="sm" style={{ marginTop: 16, animation: 'ou-fade-in 0.4s ease' }}>
+    <OuCard variant="pressed" size="sm" style={{ marginTop: 16, animation: 'ou-fade-in 0.4s ease' }}>
       <div style={{ fontSize: 10, color: 'var(--ou-text-muted)', letterSpacing: 1, marginBottom: 16 }}>PROFILE</div>
 
       {/* 직업 */}
@@ -51,7 +51,7 @@ export function ProfileQuestionUI({ initialGuess, onSubmit, onSkip }: Props) {
         <div style={{ fontSize: 13, color: 'var(--ou-text-secondary)', marginBottom: 8 }}>직업이 뭐예요?</div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
           {[...JOBS, '기타'].map(j => (
-            <NeuButton
+            <OuButton
               key={j}
               size="sm"
               variant={job === j ? 'ghost' : 'default'}
@@ -62,7 +62,7 @@ export function ProfileQuestionUI({ initialGuess, onSubmit, onSkip }: Props) {
               }}
             >
               {j}
-            </NeuButton>
+            </OuButton>
           ))}
         </div>
         {job === '기타' && (
@@ -86,7 +86,7 @@ export function ProfileQuestionUI({ initialGuess, onSubmit, onSkip }: Props) {
         <div style={{ fontSize: 13, color: 'var(--ou-text-secondary)', marginBottom: 8 }}>관심사는? (복수 선택)</div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
           {INTERESTS.map(i => (
-            <NeuButton
+            <OuButton
               key={i}
               size="sm"
               variant={interests.includes(i) ? 'ghost' : 'default'}
@@ -97,7 +97,7 @@ export function ProfileQuestionUI({ initialGuess, onSubmit, onSkip }: Props) {
               }}
             >
               {i}
-            </NeuButton>
+            </OuButton>
           ))}
         </div>
       </div>
@@ -107,7 +107,7 @@ export function ProfileQuestionUI({ initialGuess, onSubmit, onSkip }: Props) {
         <div style={{ fontSize: 13, color: 'var(--ou-text-secondary)', marginBottom: 8 }}>OU를 주로 어디에 쓰고 싶어요? (복수 선택)</div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
           {PURPOSES.map(p => (
-            <NeuButton
+            <OuButton
               key={p}
               size="sm"
               variant={purposes.includes(p) ? 'ghost' : 'default'}
@@ -118,7 +118,7 @@ export function ProfileQuestionUI({ initialGuess, onSubmit, onSkip }: Props) {
               }}
             >
               {p}
-            </NeuButton>
+            </OuButton>
           ))}
         </div>
       </div>
@@ -130,10 +130,10 @@ export function ProfileQuestionUI({ initialGuess, onSubmit, onSkip }: Props) {
         >
           건너뛰기
         </button>
-        <NeuButton size="sm" onClick={handleSubmit}>
+        <OuButton size="sm" onClick={handleSubmit}>
           완료
-        </NeuButton>
+        </OuButton>
       </div>
-    </NeuCard>
+    </OuCard>
   );
 }

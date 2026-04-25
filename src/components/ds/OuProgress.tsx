@@ -1,14 +1,14 @@
 'use client';
 import { CSSProperties } from 'react';
 
-interface NeuProgressProps {
+interface OuProgressProps {
   value: number; // 0-100
   size?: 'sm' | 'md' | 'lg';
   showLabel?: boolean;
   style?: CSSProperties;
 }
 
-export function NeuProgress({ value, size = 'md', showLabel = false, style }: NeuProgressProps) {
+export function OuProgress({ value, size = 'md', showLabel = false, style }: OuProgressProps) {
   const heightMap = { sm: 4, md: 6, lg: 10 };
 
   const trackStyle: CSSProperties = {

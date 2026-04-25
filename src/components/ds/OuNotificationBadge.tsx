@@ -1,12 +1,12 @@
 'use client';
 import { CSSProperties } from 'react';
 
-interface NeuNotificationBadgeProps {
+interface OuNotificationBadgeProps {
   count: number;
   style?: CSSProperties;
 }
 
-export function NeuNotificationBadge({ count, style }: NeuNotificationBadgeProps) {
+export function OuNotificationBadge({ count, style }: OuNotificationBadgeProps) {
   if (count <= 0) return null;
 
   return (

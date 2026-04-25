@@ -1,8 +1,8 @@
 'use client';
 import { CSSProperties, ReactNode } from 'react';
-import { OuButton as NeuButton } from './OuButton';
+import { OuButton as OuButton } from './OuButton';
 
-interface NeuPageLayoutProps {
+interface OuPageLayoutProps {
   children: ReactNode;
   // 상단 바 설정
   title?: string;
@@ -16,7 +16,7 @@ interface NeuPageLayoutProps {
   headerStyle?: CSSProperties;
 }
 
-export function NeuPageLayout({
+export function OuPageLayout({
   children,
   title,
   onBack,
@@ -26,7 +26,7 @@ export function NeuPageLayout({
   noPadding = false,
   style,
   headerStyle,
-}: NeuPageLayoutProps) {
+}: OuPageLayoutProps) {
   const hasHeader = title || onBack || trailing;
 
   return (
@@ -56,12 +56,12 @@ export function NeuPageLayout({
           }}
         >
           {onBack && (
-            <NeuButton variant="ghost" size="sm" onClick={onBack} style={{ padding: '6px 10px', minWidth: 0 }}>
+            <OuButton variant="ghost" size="sm" onClick={onBack} style={{ padding: '6px 10px', minWidth: 0 }}>
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                 <path d="M10 3L5 8L10 13" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
               {backLabel && <span style={{ fontSize: 13 }}>{backLabel}</span>}
-            </NeuButton>
+            </OuButton>
           )}
           {title && (
             <h1

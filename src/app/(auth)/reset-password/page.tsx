@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import { NeuAuthLayout, NeuInput, NeuButton } from '@/components/ds';
+import { OuAuthLayout, OuInput, OuButton } from '@/components/ds';
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -34,9 +34,9 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <NeuAuthLayout title="새 비밀번호 설정">
+    <OuAuthLayout title="새 비밀번호 설정">
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-        <NeuInput
+        <OuInput
           label="새 비밀번호"
           type="password"
           placeholder="6자 이상"
@@ -45,7 +45,7 @@ export default function ResetPasswordPage() {
           required
           minLength={6}
         />
-        <NeuInput
+        <OuInput
           label="비밀번호 확인"
           type="password"
           placeholder="한번 더 입력"
@@ -57,10 +57,10 @@ export default function ResetPasswordPage() {
         {error && (
           <p style={{ margin: 0, fontSize: 12, color: 'var(--ou-accent)', textAlign: 'center' }}>{error}</p>
         )}
-        <NeuButton type="submit" variant="default" fullWidth disabled={loading || !password || !confirm}>
+        <OuButton type="submit" variant="default" fullWidth disabled={loading || !password || !confirm}>
           {loading ? '변경 중…' : '비밀번호 변경'}
-        </NeuButton>
+        </OuButton>
       </form>
-    </NeuAuthLayout>
+    </OuAuthLayout>
   );
 }

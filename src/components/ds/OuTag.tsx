@@ -1,12 +1,12 @@
 'use client';
 import { CSSProperties, ReactNode } from 'react';
 
-interface NeuTagProps {
+interface OuTagProps {
   children: ReactNode;
   style?: CSSProperties;
 }
 
-export function NeuTag({ children, style }: NeuTagProps) {
+export function OuTag({ children, style }: OuTagProps) {
   return (
     <span style={{
       display: 'inline-flex',

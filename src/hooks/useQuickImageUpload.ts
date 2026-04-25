@@ -3,8 +3,9 @@
 import { useRef, useState, useCallback, DragEvent, ClipboardEvent } from 'react';
 
 export interface ImagePreviewData {
-  imageUrl: string;
+  imageUrl: string | null;  // R2 key (R2 실패 시 null)
   ocrText: string;
+  previewUrl: string;       // 로컬 blob URL — 이미지 표시용
 }
 
 interface UseQuickImageUploadOptions {
@@ -27,6 +28,7 @@ export function useQuickImageUpload({ onPreviewReady, onError }: UseQuickImageUp
       return;
     }
 
+    const previewUrl = URL.createObjectURL(file);
     setIsUploading(true);
     try {
       const form = new FormData();
@@ -35,11 +37,12 @@ export function useQuickImageUpload({ onPreviewReady, onError }: UseQuickImageUp
       const res = await fetch('/api/quick/image', { method: 'POST', body: form });
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
+        URL.revokeObjectURL(previewUrl);
         throw new Error((err as { error?: string }).error ?? '인식 실패');
       }
 
-      const data = await res.json() as ImagePreviewData;
-      onPreviewReady(data);
+      const data = await res.json() as { imageUrl: string | null; ocrText: string };
+      onPreviewReady({ ...data, previewUrl });
     } catch (e) {
       onError?.((e as Error).message ?? '오류가 발생했어요.');
     } finally {

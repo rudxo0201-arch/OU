@@ -1,13 +1,13 @@
 'use client';
 import { CSSProperties, useEffect, useRef, useState } from 'react';
 
-interface NeuSelectOption {
+interface OuSelectOption {
   value: string;
   label: string;
 }
 
-interface NeuSelectProps {
-  options: NeuSelectOption[];
+interface OuSelectProps {
+  options: OuSelectOption[];
   value: string;
   onChange: (value: string) => void;
   label?: string;
@@ -16,7 +16,7 @@ interface NeuSelectProps {
   style?: CSSProperties;
 }
 
-export function NeuSelect({ options, value, onChange, label, placeholder = '선택하세요', disabled = false, style }: NeuSelectProps) {
+export function OuSelect({ options, value, onChange, label, placeholder = '선택하세요', disabled = false, style }: OuSelectProps) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 

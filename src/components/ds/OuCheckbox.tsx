@@ -1,7 +1,7 @@
 'use client';
 import { CSSProperties } from 'react';
 
-interface NeuCheckboxProps {
+interface OuCheckboxProps {
   checked: boolean;
   onChange?: (checked: boolean) => void;
   label?: string;
@@ -10,7 +10,7 @@ interface NeuCheckboxProps {
   style?: CSSProperties;
 }
 
-export function NeuCheckbox({ checked, onChange, label, disabled = false, size = 'md', style }: NeuCheckboxProps) {
+export function OuCheckbox({ checked, onChange, label, disabled = false, size = 'md', style }: OuCheckboxProps) {
   const sizeVal = size === 'sm' ? 18 : 22;
   const fontSize = size === 'sm' ? 10 : 13;
 

@@ -1,12 +1,12 @@
 'use client';
 import { CSSProperties, InputHTMLAttributes, forwardRef, ReactNode } from 'react';
 
-interface NeuSearchBarProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
+interface OuSearchBarProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
   icon?: ReactNode;
   trailing?: ReactNode;
 }
 
-export const NeuSearchBar = forwardRef<HTMLInputElement, NeuSearchBarProps>(
+export const OuSearchBar = forwardRef<HTMLInputElement, OuSearchBarProps>(
   ({ icon, trailing, style, className, ...props }, ref) => {
     const barStyle: CSSProperties = {
       background: 'var(--ou-bg)',
@@ -41,4 +41,4 @@ export const NeuSearchBar = forwardRef<HTMLInputElement, NeuSearchBarProps>(
     );
   }
 );
-NeuSearchBar.displayName = 'NeuSearchBar';
+OuSearchBar.displayName = 'OuSearchBar';

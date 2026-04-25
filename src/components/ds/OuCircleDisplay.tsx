@@ -1,7 +1,7 @@
 'use client';
 import { CSSProperties, ReactNode } from 'react';
 
-interface NeuCircleDisplayProps {
+interface OuCircleDisplayProps {
   value: ReactNode;
   label?: string;
   size?: 'sm' | 'md' | 'lg';
@@ -9,7 +9,7 @@ interface NeuCircleDisplayProps {
   style?: CSSProperties;
 }
 
-export function NeuCircleDisplay({ value, label, size = 'md', accentGlow = true, style }: NeuCircleDisplayProps) {
+export function OuCircleDisplay({ value, label, size = 'md', accentGlow = true, style }: OuCircleDisplayProps) {
   const sizeMap = { sm: 100, md: 140, lg: 180 };
   const fontMap = { sm: 24, md: 36, lg: 48 };
 

@@ -128,7 +128,9 @@ export function QSBar() {
 
       {preview && (
         <ImagePreviewModal
+          previewUrl={preview.previewUrl}
           ocrText={preview.ocrText}
+          imageUrl={preview.imageUrl}
           onClose={() => setPreview(null)}
           onSaved={(nodeId, domain) => {
             setPreview(null);

@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useWidgetStore } from '@/stores/widgetStore';
 import { useTutorialStore } from '@/stores/tutorialStore';
-import { NeuButton } from '@/components/ds';
+import { OuButton } from '@/components/ds';
 import { DOMAIN_WIDGET_MAP } from '@/data/tutorial';
 
 interface Props {
@@ -46,12 +46,12 @@ export function AddToHomeButton({ domain }: Props) {
   if (alreadyAdded && !isActive()) return null;
 
   return (
-    <NeuButton
+    <OuButton
       size="sm"
       onClick={handleAdd}
       style={{ marginTop: 10, fontSize: 13, width: '100%' }}
     >
       {alreadyAdded ? '배치 조정하기' : '홈 화면에 추가하기'}
-    </NeuButton>
+    </OuButton>
   );
 }

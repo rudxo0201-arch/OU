@@ -2,20 +2,20 @@
 
 import React from 'react';
 
-export interface NeuTableColumn {
+export interface OuTableColumn {
   key: string;
   label: string;
   width?: number | string;
   render?: (value: unknown, row: Record<string, unknown>) => React.ReactNode;
 }
 
-interface NeuTableProps {
-  columns: NeuTableColumn[];
+interface OuTableProps {
+  columns: OuTableColumn[];
   rows: Record<string, unknown>[];
   style?: React.CSSProperties;
 }
 
-export function NeuTable({ columns, rows, style }: NeuTableProps) {
+export function OuTable({ columns, rows, style }: OuTableProps) {
   return (
     <div style={{ overflowX: 'auto', ...style }}>
       <table style={{

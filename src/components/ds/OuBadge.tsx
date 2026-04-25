@@ -1,13 +1,13 @@
 'use client';
 import { CSSProperties, ReactNode } from 'react';
 
-interface NeuBadgeProps {
+interface OuBadgeProps {
   children: ReactNode;
   accent?: boolean;
   style?: CSSProperties;
 }
 
-export function NeuBadge({ children, accent = false, style }: NeuBadgeProps) {
+export function OuBadge({ children, accent = false, style }: OuBadgeProps) {
   const badgeStyle: CSSProperties = {
     display: 'inline-flex',
     alignItems: 'center',

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useChatStore } from '@/stores/chatStore';
-import { NeuButton } from '@/components/ds';
+import { OuButton } from '@/components/ds';
 import { VIEW_LABELS } from '@/components/views/registry';
 
 interface ViewOptionsChipsProps {
@@ -82,7 +82,7 @@ export function ViewOptionsChips({ messageId }: ViewOptionsChipsProps) {
           );
         })}
       </div>
-      <NeuButton
+      <OuButton
         variant="accent"
         size="sm"
         onClick={confirm}
@@ -90,7 +90,7 @@ export function ViewOptionsChips({ messageId }: ViewOptionsChipsProps) {
         style={{ marginTop: 4 }}
       >
         확인
-      </NeuButton>
+      </OuButton>
     </div>
   );
 }

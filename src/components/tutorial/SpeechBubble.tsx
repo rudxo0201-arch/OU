@@ -1,6 +1,6 @@
 'use client';
 
-import { NeuButton } from '@/components/ds';
+import { OuButton } from '@/components/ds';
 import styles from './SpeechBubble.module.css';
 
 interface Props {
@@ -28,9 +28,9 @@ export function SpeechBubble({ message, tail = 'bottom', style, onSkip, confirmL
           </button>
         )}
         {confirmLabel && onConfirm && (
-          <NeuButton size="sm" onClick={onConfirm} style={{ marginLeft: 'auto' }}>
+          <OuButton size="sm" onClick={onConfirm} style={{ marginLeft: 'auto' }}>
             {confirmLabel}
-          </NeuButton>
+          </OuButton>
         )}
       </div>
     </div>

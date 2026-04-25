@@ -1,13 +1,13 @@
 'use client';
 import { CSSProperties } from 'react';
 
-interface NeuSliderProps {
+interface OuSliderProps {
   value: number; // 0-100
   onChange?: (value: number) => void;
   style?: CSSProperties;
 }
 
-export function NeuSlider({ value, onChange, style }: NeuSliderProps) {
+export function OuSlider({ value, onChange, style }: OuSliderProps) {
   const trackStyle: CSSProperties = {
     width: '100%',
     height: 6,
