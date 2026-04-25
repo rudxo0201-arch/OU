@@ -65,14 +65,18 @@
       "Bash(git -C /Users/kt/Desktop/claude/ou-web diff)",
       "Bash(git -C /Users/kt/Desktop/claude/ou-web log --oneline -5)",
       "Bash(git -C /Users/kt/Desktop/claude/ou-web add src/app/\\\\\\(public\\\\\\)/page.tsx src/app/globals.css src/components/chat/ChatInput.tsx src/lib/ou-registry.ts .claude/settings.json)",
-      "Bash(git -C /Users/kt/Desktop/claude/ou-web commit -m ' *)"
+      "Bash(git -C /Users/kt/Desktop/claude/ou-web commit -m ' *)",
+      "Bash(git -C /Users/kt/Desktop/claude/ou-web push)",
+      "Bash(git -C /Users/kt/Desktop/claude/ou-web diff --stat)",
+      "Bash(git -C /Users/kt/Desktop/claude/ou-web diff .claude/settings.json)"
     ],
     "additionalDirectories": [
       "/Users/kt/Desktop/claude/ou-web/.git",
       "/Users/kt/.claude/projects/-Users-kt-Desktop-claude-ou-web/memory",
       "/Users/kt/Desktop/claude/ou-web/.claude",
       "/tmp",
-      "/Users/kt/Desktop/claude/ou-web/.claude/.claude"
+      "/Users/kt/Desktop/claude/ou-web/.claude/.claude",
+      "/Users/kt/Desktop/claude/ou-web/src/components/ds"
     ]
   }
 }

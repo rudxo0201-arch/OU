@@ -1,10 +1,13 @@
 // OU Design System — 단일 Ou* 계통
 // Glass*/Neu* 이름은 모두 폐기됨. Ou*만 사용.
+// 신규 컴포넌트 추가 절차: src/components/ds/GOVERNANCE.md 참조.
 
 // ── 기본 프리미티브 ───────────────────────────────────────────
 export { OuLogo }        from './OuLogo';
 export { OuButton }      from './OuButton';
 export type { OuButtonProps, OuButtonVariant, OuButtonSize } from './OuButton';
+export { OuIconButton }  from './OuIconButton';
+export type { OuIconButtonProps } from './OuIconButton';
 export { OuCard }        from './OuCard';
 export type { OuCardProps, OuCardVariant, OuCardSize } from './OuCard';
 export { OuInput }       from './OuInput';
