@@ -86,20 +86,13 @@ export { OrbSearch }  from './OrbSearch';
 export { AmbientBackground } from './AmbientBackground';
 export { PageLayout }        from './PageLayout';
 export { AuthLayout }        from './AuthLayout';
-export { GlassSkeleton }     from './GlassSkeleton';
+export { OuSkeleton } from './OuSkeleton';
 
-// ── 호환 alias (기존 Glass*/Neu* import → Ou*) ──────────────
-export { OuButton  as GlassButton }  from './OuButton';
-export { OuButton  as NeuButton }    from './OuButton';
-export { OuCard    as GlassCard }    from './OuCard';
-export { OuCard    as NeuCard }      from './OuCard';
-export { OuInput   as GlassInput }   from './OuInput';
-export { OuInput   as NeuInput }     from './OuInput';
-export { OuModal   as GlassModal }   from './OuModal';
-export { OuModal   as NeuModal }     from './OuModal';
-export { OuAvatar  as GlassAvatar }  from './OuAvatar';
-export { OuAvatar  as NeuAvatar }    from './OuAvatar';
-export { OuDivider as GlassDivider } from './OuDivider';
-export { OuDivider as NeuDivider }   from './OuDivider';
-export { OuTabs    as GlassTabs }    from './OuTabs';
-export { OuTabs    as NeuTabs }      from './OuTabs';
+// ── 임시 호환 alias: Neu* → Ou* (C3 완료 후 제거) ───────────
+export { OuButton  as NeuButton }  from './OuButton';
+export { OuCard    as NeuCard }    from './OuCard';
+export { OuInput   as NeuInput }   from './OuInput';
+export { OuModal   as NeuModal }   from './OuModal';
+export { OuAvatar  as NeuAvatar }  from './OuAvatar';
+export { OuDivider as NeuDivider } from './OuDivider';
+export { OuTabs    as NeuTabs }    from './OuTabs';

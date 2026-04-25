@@ -1,7 +1,7 @@
 'use client';
 
 import { CSSProperties, FormEvent, useCallback, useEffect, useRef, useState } from 'react';
-import { GlassCard } from '@/components/ds';
+import { OuCard } from '@/components/ds';
 
 interface ChatMessage {
   id: string;

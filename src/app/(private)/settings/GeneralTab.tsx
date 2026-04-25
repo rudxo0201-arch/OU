@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { GlassButton, GlassInput } from '@/components/ds';
+import { OuButton, OuInput } from '@/components/ds';
 import { createClient } from '@/lib/supabase/client';
 import { Section, Row, Field } from './_shared';
 
@@ -66,14 +66,14 @@ export function GeneralTab({ user }: { user: { id: string; email?: string; creat
     <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
       <Section title="프로필" sub="· 어시스턴트가 당신을 부를 이름">
         <Field label="이름">
-          <GlassInput
+          <OuInput
             value={profile.display_name}
             onChange={e => setProfile(p => ({ ...p, display_name: e.target.value }))}
             placeholder="이름을 입력하세요"
           />
         </Field>
         <Field label="핸들">
-          <GlassInput value={profile.handle} onChange={e => setProfile(p => ({ ...p, handle: e.target.value }))} placeholder="@handle" />
+          <OuInput value={profile.handle} onChange={e => setProfile(p => ({ ...p, handle: e.target.value }))} placeholder="@handle" />
         </Field>
         <Field label="소개">
           <textarea
@@ -89,9 +89,9 @@ export function GeneralTab({ user }: { user: { id: string; email?: string; creat
             }}
           />
         </Field>
-        <GlassButton variant="accent" onClick={saveProfile} style={{ marginTop: 4 }}>
+        <OuButton variant="accent" onClick={saveProfile} style={{ marginTop: 4 }}>
           {saving ? '저장 중...' : saved ? '저장됨' : '프로필 저장'}
-        </GlassButton>
+        </OuButton>
       </Section>
 
       <Section title="계정">
@@ -115,20 +115,20 @@ export function GeneralTab({ user }: { user: { id: string; email?: string; creat
                 {llmKeys[provider] ? (
                   <>
                     <span style={{ flex: 1, fontSize: 12, color: 'var(--ou-text-muted)' }}>등록됨</span>
-                    <GlassButton variant="ghost" size="sm" onClick={() => deleteLlmKey(provider)} style={{ color: 'var(--ou-accent)' }}>삭제</GlassButton>
+                    <OuButton variant="ghost" size="sm" onClick={() => deleteLlmKey(provider)} style={{ color: 'var(--ou-accent)' }}>삭제</OuButton>
                   </>
                 ) : (
                   <>
-                    <GlassInput
+                    <OuInput
                       type="password"
                       placeholder={meta.placeholder}
                       value={keyInputs[provider] || ''}
                       onChange={e => setKeyInputs(p => ({ ...p, [provider]: e.target.value }))}
                       style={{ flex: 1, fontSize: 12, padding: '8px 14px' }}
                     />
-                    <GlassButton variant="accent" size="sm" onClick={() => saveLlmKey(provider)}>
+                    <OuButton variant="accent" size="sm" onClick={() => saveLlmKey(provider)}>
                       {keySaving[provider] ? '...' : '등록'}
-                    </GlassButton>
+                    </OuButton>
                   </>
                 )}
               </div>
@@ -194,7 +194,7 @@ function ApiKeySection() {
             <code style={{ flex: 1, fontSize: 11, padding: '6px 0', color: 'var(--ou-text-body)', wordBreak: 'break-all', borderBottom: '1px solid var(--ou-border-subtle)' }}>
               {newPlainKey}
             </code>
-            <GlassButton variant="accent" size="sm" onClick={copyKey}>{copied ? '복사됨' : '복사'}</GlassButton>
+            <OuButton variant="accent" size="sm" onClick={copyKey}>{copied ? '복사됨' : '복사'}</OuButton>
           </div>
         </div>
       )}
@@ -206,19 +206,19 @@ function ApiKeySection() {
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             {k.last_used_at && <span style={{ fontSize: 10, color: 'var(--ou-text-disabled)' }}>최근: {new Date(k.last_used_at).toLocaleDateString('ko-KR')}</span>}
-            <GlassButton variant="ghost" size="sm" onClick={() => revokeKey(k.id)} style={{ color: 'var(--ou-accent)' }}>삭제</GlassButton>
+            <OuButton variant="ghost" size="sm" onClick={() => revokeKey(k.id)} style={{ color: 'var(--ou-accent)' }}>삭제</OuButton>
           </div>
         </div>
       ))}
       <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
-        <GlassInput
+        <OuInput
           value={newName}
           onChange={e => setNewName(e.target.value)}
           placeholder="키 이름 (예: claude-code)"
           onKeyDown={e => e.key === 'Enter' && createKey()}
           style={{ flex: 1, fontSize: 12 }}
         />
-        <GlassButton variant="accent" size="sm" onClick={createKey}>{creating ? '...' : '생성'}</GlassButton>
+        <OuButton variant="accent" size="sm" onClick={createKey}>{creating ? '...' : '생성'}</OuButton>
       </div>
     </Section>
   );

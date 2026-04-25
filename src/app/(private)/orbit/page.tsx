@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { VIEW_LABELS, VIEW_REGISTRY } from '@/components/views/registry';
 import { getSampleNodes, NO_THUMBNAIL_TYPES } from '@/lib/utils/sampleNodes';
-import { PageLayout, GlassModal } from '@/components/ds';
+import { PageLayout, OuModal } from '@/components/ds';
 import { useWidgetStore } from '@/stores/widgetStore';
 import { getWidgetTypeForView, getWidgetDefaultSize } from '@/lib/utils/viewToWidget';
 import {
@@ -463,7 +463,7 @@ export default function OrbitPage() {
 
       {/* 설치 완료 → 홈 위젯 배치 프롬프트 */}
       {justInstalled && (
-        <GlassModal open onClose={() => setJustInstalled(null)} title="설치 완료">
+        <OuModal open onClose={() => setJustInstalled(null)} title="설치 완료">
           <div style={{ textAlign: 'center', padding: '8px 0 16px' }}>
             <div style={{ fontSize: 36, marginBottom: 12 }}>✓</div>
             <div style={{ fontSize: 14, color: 'var(--ou-text-body)', marginBottom: 6 }}>
@@ -514,7 +514,7 @@ export default function OrbitPage() {
               </button>
             </div>
           </div>
-        </GlassModal>
+        </OuModal>
       )}
     </PageLayout>
   );
@@ -881,7 +881,7 @@ function PresetDetailModal({ preset, installed, installing, uninstalling, onClos
   const categoryLabel = preset.category === 'inline' ? '인라인' : preset.category === 'cross' ? '복합' : '풀뷰';
 
   return (
-    <GlassModal open onClose={onClose} title={preset.name}>
+    <OuModal open onClose={onClose} title={preset.name}>
       {/* 실제 뷰 미리보기 */}
       <ViewPreviewPane viewType={preset.view_type} domain={preset.domain} />
 
@@ -974,7 +974,7 @@ function PresetDetailModal({ preset, installed, installing, uninstalling, onClos
           </button>
         )}
       </div>
-    </GlassModal>
+    </OuModal>
   );
 }
 

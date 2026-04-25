@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { AuthLayout, GlassButton } from '@/components/ds';
+import { AuthLayout, OuButton } from '@/components/ds';
 
 export default function VerifiedPage() {
   const [countdown, setCountdown] = useState(3);
@@ -47,9 +47,9 @@ export default function VerifiedPage() {
             {countdown}초 후 이동…
           </span>
         ) : (
-          <GlassButton size="sm" onClick={() => { window.location.href = '/home'; }}>
+          <OuButton size="sm" onClick={() => { window.location.href = '/home'; }}>
             지금 이동하기
-          </GlassButton>
+          </OuButton>
         )}
       </div>
     </AuthLayout>

@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { VIEW_REGISTRY, VIEW_LABELS } from '@/components/views/registry';
-import { GlassButton, GlassCard, GlassModal } from '@/components/ds';
+import { OuButton, OuCard, OuModal } from '@/components/ds';
 import { useWidgetStore } from '@/stores/widgetStore';
 import { getWidgetTypeForView, getWidgetDefaultSize } from '@/lib/utils/viewToWidget';
 
@@ -106,21 +106,21 @@ export default function ViewPage() {
         borderBottom: '1px solid var(--ou-border-subtle)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <GlassButton variant="ghost" size="sm" onClick={() => router.back()} style={{ padding: '4px 8px' }}>
+          <OuButton variant="ghost" size="sm" onClick={() => router.back()} style={{ padding: '4px 8px' }}>
             ←
-          </GlassButton>
+          </OuButton>
           <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ou-text-heading)' }}>
             {viewIcon} {viewLabel}
           </span>
         </div>
 
         <div style={{ position: 'relative' }}>
-          <GlassButton variant="ghost" size="sm" onClick={() => setShowShare(!showShare)} style={{ padding: '4px 10px' }}>
+          <OuButton variant="ghost" size="sm" onClick={() => setShowShare(!showShare)} style={{ padding: '4px 10px' }}>
             ⋯
-          </GlassButton>
+          </OuButton>
 
           {showShare && (
-            <GlassCard style={{
+            <OuCard style={{
               position: 'absolute', top: 40, right: 0,
               width: 180, padding: 4, zIndex: 100,
             }}>
@@ -134,7 +134,7 @@ export default function ViewPage() {
                 navigator.share?.({ title: viewLabel, url: window.location.href });
                 setShowShare(false);
               }} />
-            </GlassCard>
+            </OuCard>
           )}
         </div>
       </div>
@@ -159,7 +159,7 @@ export default function ViewPage() {
       </div>
 
       {/* 위젯 추가 완료 모달 */}
-      <GlassModal open={addedToHome} onClose={() => setAddedToHome(false)} title="홈에 추가됨">
+      <OuModal open={addedToHome} onClose={() => setAddedToHome(false)} title="홈에 추가됨">
         <div style={{ textAlign: 'center', padding: '8px 0 16px' }}>
           <div style={{ fontSize: 40, marginBottom: 12 }}>🏠</div>
           <div style={{ fontSize: 14, color: 'var(--ou-text-body)', marginBottom: 20 }}>
@@ -179,7 +179,7 @@ export default function ViewPage() {
             홈으로 이동 →
           </button>
         </div>
-      </GlassModal>
+      </OuModal>
 
       {/* Click outside to close share menu */}
       {showShare && (
@@ -191,7 +191,7 @@ export default function ViewPage() {
 
 function ShareOption({ label, icon, onClick }: { label: string; icon: string; onClick: () => void }) {
   return (
-    <GlassButton
+    <OuButton
       variant="ghost"
       size="sm"
       onClick={onClick}
@@ -199,7 +199,7 @@ function ShareOption({ label, icon, onClick }: { label: string; icon: string; on
     >
       <span>{icon}</span>
       {label}
-    </GlassButton>
+    </OuButton>
   );
 }
 

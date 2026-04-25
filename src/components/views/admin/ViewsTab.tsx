@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { GlassButton } from '@/components/ds';
+import { OuButton } from '@/components/ds';
 
 interface SavedView {
   id: string;
@@ -49,7 +49,7 @@ export function ViewsTab() {
         <span style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>
           {loading ? '로딩 중...' : `${views.length}개 뷰`}
         </span>
-        <GlassButton variant="ghost" size="sm" onClick={fetchViews}>새로고침</GlassButton>
+        <OuButton variant="ghost" size="sm" onClick={fetchViews}>새로고침</OuButton>
       </div>
 
       {!loading && (
@@ -69,14 +69,14 @@ export function ViewsTab() {
                   {v.created_at && ` · ${new Date(v.created_at).toLocaleDateString('ko-KR')}`}
                 </div>
               </div>
-              <GlassButton
+              <OuButton
                 variant="danger"
                 size="sm"
                 onClick={() => deleteView(v.id)}
                 disabled={deleting === v.id}
               >
                 {deleting === v.id ? '...' : '삭제'}
-              </GlassButton>
+              </OuButton>
             </div>
           ))}
           {views.length === 0 && (

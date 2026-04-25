@@ -1,18 +1,18 @@
 import { CSSProperties } from 'react';
 
-interface GlassSkeletonProps {
+interface OuSkeletonProps {
   width?: number | string;
   height?: number | string;
   borderRadius?: number | string;
   style?: CSSProperties;
 }
 
-export function GlassSkeleton({
+export function OuSkeleton({
   width = '100%',
   height = 16,
   borderRadius = 'var(--ou-radius-xs)',
   style,
-}: GlassSkeletonProps) {
+}: OuSkeletonProps) {
   return (
     <div
       style={{

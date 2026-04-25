@@ -3,7 +3,7 @@
 import { CSSProperties, FormEvent, Suspense, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import { AuthLayout, GlassCard, GlassButton, GlassInput, GlassTabs } from '@/components/ds';
+import { AuthLayout, OuCard, OuButton, OuInput, OuTabs } from '@/components/ds';
 
 type Tab = 'login' | 'signup';
 
@@ -63,10 +63,10 @@ function LoginForm() {
   }
 
   return (
-    <GlassCard elevated style={{ animation: 'ou-scale-in 200ms cubic-bezier(0.16,1,0.3,1)' }}>
+    <OuCard elevated style={{ animation: 'ou-scale-in 200ms cubic-bezier(0.16,1,0.3,1)' }}>
         {/* 탭 */}
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 32 }}>
-          <GlassTabs
+          <OuTabs
             tabs={[
               { key: 'login', label: '로그인' },
               { key: 'signup', label: '회원가입' },
@@ -86,7 +86,7 @@ function LoginForm() {
           </div>
         ) : (
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <GlassInput
+            <OuInput
               label="이메일"
               type="email"
               placeholder="you@example.com"
@@ -95,7 +95,7 @@ function LoginForm() {
               required
               autoComplete="email"
             />
-            <GlassInput
+            <OuInput
               label="비밀번호"
               type="password"
               placeholder={tab === 'signup' ? '8자 이상' : '••••••••'}
@@ -106,7 +106,7 @@ function LoginForm() {
               error={error || undefined}
             />
 
-            <GlassButton
+            <OuButton
               type="submit"
               variant="accent"
               size="lg"
@@ -115,7 +115,7 @@ function LoginForm() {
               style={{ marginTop: 8 }}
             >
               {tab === 'login' ? '로그인' : '회원가입'}
-            </GlassButton>
+            </OuButton>
 
             {/* 구분선 */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '4px 0' }}>
@@ -178,7 +178,7 @@ function LoginForm() {
             )}
           </form>
         )}
-      </GlassCard>
+      </OuCard>
   );
 }
 

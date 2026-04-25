@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { GlassButton, GlassInput } from '@/components/ds';
+import { OuButton, OuInput } from '@/components/ds';
 import { Section } from './_shared';
 
 export function AdminTab() {
@@ -74,8 +74,8 @@ function DbViewer() {
       {selectedTable && (
         <>
           <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-            <GlassInput value={search} onChange={e => setSearch(e.target.value)} onKeyDown={e => e.key === 'Enter' && doSearch()} placeholder="검색..." containerStyle={{ flex: 1 }} style={{ fontSize: 12 }} />
-            <GlassButton variant="accent" size="sm" onClick={doSearch}>검색</GlassButton>
+            <OuInput value={search} onChange={e => setSearch(e.target.value)} onKeyDown={e => e.key === 'Enter' && doSearch()} placeholder="검색..." containerStyle={{ flex: 1 }} style={{ fontSize: 12 }} />
+            <OuButton variant="accent" size="sm" onClick={doSearch}>검색</OuButton>
           </div>
           {loading ? (
             <p style={{ fontSize: 12, color: 'var(--ou-text-muted)' }}>로딩 중...</p>
@@ -107,9 +107,9 @@ function DbViewer() {
           )}
           {totalPages > 1 && (
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 12 }}>
-              <GlassButton variant="accent" size="sm" onClick={() => setPage(p => Math.max(1, p - 1))}>이전</GlassButton>
+              <OuButton variant="accent" size="sm" onClick={() => setPage(p => Math.max(1, p - 1))}>이전</OuButton>
               <span style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>{page} / {totalPages} ({total}건)</span>
-              <GlassButton variant="accent" size="sm" onClick={() => setPage(p => Math.min(totalPages, p + 1))}>다음</GlassButton>
+              <OuButton variant="accent" size="sm" onClick={() => setPage(p => Math.min(totalPages, p + 1))}>다음</OuButton>
             </div>
           )}
         </>
@@ -137,7 +137,7 @@ function SeedButton({ type, label }: { type: string; label: string }) {
       <span style={{ fontSize: 14, color: 'var(--ou-text-body)' }}>{label}</span>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         {result && <span style={{ fontSize: 11, color: status === 'error' ? 'var(--ou-accent)' : 'var(--ou-text-muted)' }}>{result}</span>}
-        <GlassButton variant="accent" size="sm" onClick={run}>{status === 'loading' ? '...' : '실행'}</GlassButton>
+        <OuButton variant="accent" size="sm" onClick={run}>{status === 'loading' ? '...' : '실행'}</OuButton>
       </div>
     </div>
   );

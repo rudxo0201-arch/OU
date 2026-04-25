@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { GlassButton, GlassInput } from '@/components/ds';
+import { OuButton, OuInput } from '@/components/ds';
 
 const DOMAIN_OPTIONS = [
   '', 'schedule', 'task', 'finance', 'habit', 'idea', 'note',
@@ -55,7 +55,7 @@ export function NodesTab() {
           {DOMAIN_OPTIONS.filter(Boolean).map(d => <option key={d} value={d}>{d}</option>)}
         </select>
 
-        <GlassInput
+        <OuInput
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="내용 검색..."
@@ -63,9 +63,9 @@ export function NodesTab() {
           style={{ fontSize: 12 }}
         />
 
-        <GlassButton variant="accent" size="sm" onClick={() => fetchNodes(domain)}>
+        <OuButton variant="accent" size="sm" onClick={() => fetchNodes(domain)}>
           새로고침
-        </GlassButton>
+        </OuButton>
       </div>
 
       {/* 요약 */}

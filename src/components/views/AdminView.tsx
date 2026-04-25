@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import type { ViewProps } from './registry';
-import { GlassTabs } from '@/components/ds';
+import { OuTabs } from '@/components/ds';
 import { DSTab } from './admin/DSTab';
 import { NodesTab } from './admin/NodesTab';
 import { ViewsTab } from './admin/ViewsTab';
@@ -20,7 +20,7 @@ export function AdminView(_props: ViewProps) {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
       {/* 탭 바 */}
       <div style={{ padding: '16px 24px 0', flexShrink: 0 }}>
-        <GlassTabs
+        <OuTabs
           tabs={ADMIN_TABS}
           activeKey={tab}
           onChange={setTab}

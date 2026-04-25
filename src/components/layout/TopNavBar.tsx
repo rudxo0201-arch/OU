@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { CSSProperties, useState } from 'react';
-import { GlassAvatar, OuLogo } from '@/components/ds';
+import { OuAvatar, OuLogo } from '@/components/ds';
 import { useAuthStore } from '@/stores/authStore';
 import { createClient } from '@/lib/supabase/client';
 import { useEffect } from 'react';
@@ -98,7 +98,7 @@ export function TopNavBar() {
             onClick={() => setShowMenu((v) => !v)}
             style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex' }}
           >
-            <GlassAvatar
+            <OuAvatar
               name={user?.email ?? ''}
               size={32}
               glow={avatarHovered}

@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import {
-  GlassCard, GlassButton, GlassInput, GlassTabs,
-  GlassModal, GlassAvatar, GlassDivider, GlassSkeleton,
+  OuCard, OuButton, OuInput, OuTabs,
+  OuModal, OuAvatar, OuDivider, OuSkeleton,
   useToast,
 } from '@/components/ds';
 
@@ -318,21 +318,21 @@ export function DSTab() {
       {/* ── 6. 컴포넌트 갤러리 ───────────────── */}
       <Section title="Components">
 
-        {/* GlassCard */}
-        <SubTitle>GlassCard</SubTitle>
+        {/* OuCard */}
+        <SubTitle>OuCard</SubTitle>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 16 }}>
-          <GlassCard style={{ padding: 20 }}>
+          <OuCard style={{ padding: 20 }}>
             <div style={{ fontSize: 12, color: 'var(--ou-text-muted)', marginBottom: 4 }}>Default</div>
-            <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--ou-text-heading)' }}>GlassCard</div>
-          </GlassCard>
-          <GlassCard elevated style={{ padding: 20 }}>
+            <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--ou-text-heading)' }}>OuCard</div>
+          </OuCard>
+          <OuCard elevated style={{ padding: 20 }}>
             <div style={{ fontSize: 12, color: 'var(--ou-text-muted)', marginBottom: 4 }}>Elevated</div>
-            <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--ou-text-heading)' }}>GlassCard</div>
-          </GlassCard>
-          <GlassCard hoverable style={{ padding: 20 }}>
+            <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--ou-text-heading)' }}>OuCard</div>
+          </OuCard>
+          <OuCard hoverable style={{ padding: 20 }}>
             <div style={{ fontSize: 12, color: 'var(--ou-text-muted)', marginBottom: 4 }}>Hoverable</div>
             <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--ou-text-heading)' }}>Hover me</div>
-          </GlassCard>
+          </OuCard>
           {/* Dark Card */}
           <div style={{
             padding: 20, borderRadius: 'var(--ou-radius-card)',
@@ -343,78 +343,78 @@ export function DSTab() {
           </div>
         </div>
 
-        {/* GlassButton */}
-        <SubTitle>GlassButton</SubTitle>
+        {/* OuButton */}
+        <SubTitle>OuButton</SubTitle>
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
-          <GlassButton size="sm">Ghost SM</GlassButton>
-          <GlassButton size="md">Ghost MD</GlassButton>
-          <GlassButton size="lg">Ghost LG</GlassButton>
-          <GlassButton variant="accent" size="md">Accent</GlassButton>
-          <GlassButton variant="danger" size="md">Danger</GlassButton>
-          <GlassButton size="md" loading>Loading</GlassButton>
+          <OuButton size="sm">Ghost SM</OuButton>
+          <OuButton size="md">Ghost MD</OuButton>
+          <OuButton size="lg">Ghost LG</OuButton>
+          <OuButton variant="accent" size="md">Accent</OuButton>
+          <OuButton variant="danger" size="md">Danger</OuButton>
+          <OuButton size="md" loading>Loading</OuButton>
         </div>
 
-        {/* GlassInput */}
-        <SubTitle>GlassInput</SubTitle>
+        {/* OuInput */}
+        <SubTitle>OuInput</SubTitle>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, maxWidth: 400 }}>
-          <GlassInput label="기본 입력" placeholder="placeholder..." value={inputVal} onChange={e => setInputVal(e.target.value)} />
-          <GlassInput label="에러 상태" placeholder="이메일 입력..." error="올바른 이메일 주소를 입력하세요" />
-          <GlassInput label="Prefix / Suffix" prefix="🔍" suffix={<span style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>Cmd+K</span>} placeholder="검색..." />
+          <OuInput label="기본 입력" placeholder="placeholder..." value={inputVal} onChange={e => setInputVal(e.target.value)} />
+          <OuInput label="에러 상태" placeholder="이메일 입력..." error="올바른 이메일 주소를 입력하세요" />
+          <OuInput label="Prefix / Suffix" prefix="🔍" suffix={<span style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>Cmd+K</span>} placeholder="검색..." />
         </div>
 
-        {/* GlassTabs */}
-        <SubTitle>GlassTabs</SubTitle>
-        <GlassTabs
+        {/* OuTabs */}
+        <SubTitle>OuTabs</SubTitle>
+        <OuTabs
           tabs={[{ key: 'a', label: '탭 A' }, { key: 'b', label: '탭 B' }, { key: 'c', label: '탭 C' }]}
           activeKey={tabKey}
           onChange={setTabKey}
         />
 
-        {/* GlassModal */}
-        <SubTitle>GlassModal</SubTitle>
+        {/* OuModal */}
+        <SubTitle>OuModal</SubTitle>
         <div style={{ display: 'flex', gap: 10 }}>
-          <GlassButton onClick={() => setModalOpen(true)}>모달 열기</GlassButton>
-          <GlassModal open={modalOpen} onClose={() => setModalOpen(false)} title="모달 타이틀">
+          <OuButton onClick={() => setModalOpen(true)}>모달 열기</OuButton>
+          <OuModal open={modalOpen} onClose={() => setModalOpen(false)} title="모달 타이틀">
             <p style={{ color: 'var(--ou-text-body)', fontSize: 14 }}>
               모달 본문 내용입니다. ESC 또는 배경 클릭으로 닫을 수 있습니다.
             </p>
             <div style={{ marginTop: 20, display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-              <GlassButton size="sm" onClick={() => setModalOpen(false)}>취소</GlassButton>
-              <GlassButton size="sm" variant="accent" onClick={() => setModalOpen(false)}>확인</GlassButton>
+              <OuButton size="sm" onClick={() => setModalOpen(false)}>취소</OuButton>
+              <OuButton size="sm" variant="accent" onClick={() => setModalOpen(false)}>확인</OuButton>
             </div>
-          </GlassModal>
+          </OuModal>
         </div>
 
-        {/* GlassAvatar */}
-        <SubTitle>GlassAvatar</SubTitle>
+        {/* OuAvatar */}
+        <SubTitle>OuAvatar</SubTitle>
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          <GlassAvatar name="Admin User" size={24} />
-          <GlassAvatar name="Admin User" size={32} />
-          <GlassAvatar name="Admin User" size={40} />
-          <GlassAvatar name="Admin User" size={48} glow />
-          <GlassAvatar name="Admin User" size={56} glow />
+          <OuAvatar name="Admin User" size={24} />
+          <OuAvatar name="Admin User" size={32} />
+          <OuAvatar name="Admin User" size={40} />
+          <OuAvatar name="Admin User" size={48} glow />
+          <OuAvatar name="Admin User" size={56} glow />
         </div>
 
-        {/* GlassDivider */}
-        <SubTitle>GlassDivider</SubTitle>
-        <GlassDivider />
+        {/* OuDivider */}
+        <SubTitle>OuDivider</SubTitle>
+        <OuDivider />
         <div style={{ display: 'flex', gap: 20, alignItems: 'center', height: 40, marginTop: 12 }}>
           <span style={{ fontSize: 12, color: 'var(--ou-text-muted)' }}>왼쪽</span>
-          <GlassDivider vertical style={{ height: 24 }} />
+          <OuDivider vertical style={{ height: 24 }} />
           <span style={{ fontSize: 12, color: 'var(--ou-text-muted)' }}>오른쪽</span>
         </div>
 
-        {/* GlassSkeleton */}
-        <SubTitle>GlassSkeleton</SubTitle>
+        {/* OuSkeleton */}
+        <SubTitle>OuSkeleton</SubTitle>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxWidth: 320 }}>
-          <GlassSkeleton height={20} borderRadius="var(--ou-radius-sm)" />
-          <GlassSkeleton height={14} width="70%" borderRadius="var(--ou-radius-sm)" />
-          <GlassSkeleton height={14} width="50%" borderRadius="var(--ou-radius-sm)" />
+          <OuSkeleton height={20} borderRadius="var(--ou-radius-sm)" />
+          <OuSkeleton height={14} width="70%" borderRadius="var(--ou-radius-sm)" />
+          <OuSkeleton height={14} width="50%" borderRadius="var(--ou-radius-sm)" />
           <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
-            <GlassSkeleton width={40} height={40} borderRadius="50%" />
+            <OuSkeleton width={40} height={40} borderRadius="50%" />
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8, justifyContent: 'center' }}>
-              <GlassSkeleton height={12} borderRadius="var(--ou-radius-xs)" />
-              <GlassSkeleton height={12} width="60%" borderRadius="var(--ou-radius-xs)" />
+              <OuSkeleton height={12} borderRadius="var(--ou-radius-xs)" />
+              <OuSkeleton height={12} width="60%" borderRadius="var(--ou-radius-xs)" />
             </div>
           </div>
         </div>
@@ -422,10 +422,10 @@ export function DSTab() {
         {/* Toast */}
         <SubTitle>GlassToast</SubTitle>
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-          <GlassButton size="sm" onClick={() => show('정보 메시지입니다', 'info')}>Info</GlassButton>
-          <GlassButton size="sm" onClick={() => show('성공적으로 저장됐습니다', 'success')}>Success</GlassButton>
-          <GlassButton size="sm" onClick={() => show('주의가 필요합니다', 'warning')}>Warning</GlassButton>
-          <GlassButton size="sm" onClick={() => show('오류가 발생했습니다', 'error')}>Error</GlassButton>
+          <OuButton size="sm" onClick={() => show('정보 메시지입니다', 'info')}>Info</OuButton>
+          <OuButton size="sm" onClick={() => show('성공적으로 저장됐습니다', 'success')}>Success</OuButton>
+          <OuButton size="sm" onClick={() => show('주의가 필요합니다', 'warning')}>Warning</OuButton>
+          <OuButton size="sm" onClick={() => show('오류가 발생했습니다', 'error')}>Error</OuButton>
         </div>
       </Section>
 

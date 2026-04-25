@@ -3,7 +3,7 @@
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useState, useCallback } from 'react';
-import { PageLayout, GlassCard, GlassButton } from '@/components/ds';
+import { PageLayout, OuCard, OuButton } from '@/components/ds';
 
 // DotSphere — PixiJS 파티클 구체 (SSR 불필요)
 const DotSphere = dynamic(
@@ -92,11 +92,11 @@ function DemoSection() {
         </div>
 
         {/* 우: DemoGraph */}
-        <GlassCard style={{ overflow: 'hidden', minHeight: 480, padding: 0 }}>
+        <OuCard style={{ overflow: 'hidden', minHeight: 480, padding: 0 }}>
           <div style={{ width: '100%', height: '100%', minHeight: 480 }}>
             <DemoGraph nodes={nodes} edges={edges} />
           </div>
-        </GlassCard>
+        </OuCard>
       </div>
 
       <p style={{ textAlign: 'center', marginTop: 20, fontSize: 12, color: 'var(--ou-text-disabled)' }}>
@@ -134,7 +134,7 @@ export default function LandingPage() {
           OU
         </span>
         <Link href="/login">
-          <GlassButton size="sm">Log in</GlassButton>
+          <OuButton size="sm">Log in</OuButton>
         </Link>
       </nav>
 
@@ -208,9 +208,9 @@ export default function LandingPage() {
           </p>
 
           <Link href="/login?tab=signup">
-            <GlassButton variant="accent" size="lg">
+            <OuButton variant="accent" size="lg">
               시작하기 →
-            </GlassButton>
+            </OuButton>
           </Link>
         </div>
 
@@ -241,7 +241,7 @@ export default function LandingPage() {
           gap: 16,
         }}>
           {features.map((f) => (
-            <GlassCard key={f.title} hoverable style={{ animationDelay: '0.1s' }}>
+            <OuCard key={f.title} hoverable style={{ animationDelay: '0.1s' }}>
               <div style={{
                 fontSize: 24,
                 marginBottom: 16,
@@ -265,7 +265,7 @@ export default function LandingPage() {
               }}>
                 {f.desc}
               </p>
-            </GlassCard>
+            </OuCard>
           ))}
         </div>
       </section>
