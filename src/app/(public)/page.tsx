@@ -40,6 +40,7 @@ export default function LandingPage() {
         padding: '0 40px',
         gap: 20,
         minHeight: '100vh',
+        transform: 'translateX(-30px)',
       }}>
         {/* 로고 */}
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>

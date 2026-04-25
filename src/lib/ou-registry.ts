@@ -38,6 +38,7 @@ export const ROUTES = {
   LOGIN:    '/login',
   ROOT:     '/',
   SETTINGS: '/settings',
+  DS:       '/ds',
   ORB:      (slug: string) => `/orb/${slug}`,
 } as const;
 

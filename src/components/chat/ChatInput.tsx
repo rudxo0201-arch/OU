@@ -482,11 +482,12 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
           background: 'var(--ou-bg)',
           borderRadius: 'var(--ou-radius-lg)',
           boxShadow: dragOver ? 'var(--ou-neu-pressed-md)' : 'var(--ou-neu-raised-md)',
+          border: dragOver ? '1px dashed rgba(255,255,255,0.5)' : '1px solid rgba(255,255,255,0.25)',
           padding: '16px 20px 12px',
           display: 'flex',
           flexDirection: 'column',
           transition: 'all var(--ou-transition)',
-          outline: dragOver ? '2px dashed var(--ou-border-subtle)' : 'none',
+          outline: 'none',
         }}
       >
         {longTextCollapsed ? (
@@ -527,12 +528,13 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
             }}
             rows={rows}
             placeholder="일정, 할 일, 지출, 습관을 기록해보세요"
+            className="ou-chat-textarea"
             style={{
               width: '100%',
               border: 'none',
               outline: 'none',
               background: 'transparent',
-              color: 'var(--ou-text-strong)',
+              color: '#ffffff',
               fontSize: 16,
               lineHeight: 1.6,
               resize: 'none',
@@ -552,7 +554,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
               height: 32,
               borderRadius: '50%',
               background: 'transparent',
-              border: '1px solid var(--ou-border-subtle)',
+              border: '1px solid rgba(255,255,255,0.5)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -562,7 +564,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
               transition: 'all var(--ou-transition)',
               fontSize: 18,
               fontWeight: 300,
-              color: 'var(--ou-text-secondary)',
+              color: '#ffffff',
             }}
           >
             +
@@ -584,7 +586,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
                 ? 'linear-gradient(135deg, var(--ou-accent), var(--ou-accent-secondary))'
                 : 'transparent',
               boxShadow: input.trim() && !isStreaming ? 'var(--ou-neu-raised-sm)' : 'none',
-              border: input.trim() && !isStreaming ? 'none' : '1px solid var(--ou-border-faint)',
+              border: input.trim() && !isStreaming ? 'none' : '1px solid rgba(255,255,255,0.35)',
               transition: 'all var(--ou-transition)',
               flexShrink: 0,
               cursor: !input.trim() || isStreaming ? 'not-allowed' : 'pointer',
@@ -593,7 +595,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
               <path
                 d="M5 12h14M12 5l7 7-7 7"
-                stroke={input.trim() && !isStreaming ? '#fff' : 'var(--ou-text-disabled)'}
+                stroke={input.trim() && !isStreaming ? '#fff' : 'rgba(255,255,255,0.4)'}
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"

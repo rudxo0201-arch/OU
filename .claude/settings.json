@@ -2,7 +2,6 @@
   "permissions": {
     "allow": [
       "Bash(git commit -m ' *)",
-      "mcp__ou__record_message",
       "Bash(node -e ' *)",
       "Bash(git commit -m 'fix: care/subjects POST — adminClient try-catch 추가 \\(500 방지\\) *)",
       "Bash(git commit -m 'feat: BabyLog 온보딩 + 이름 기반 자동 탭 전환 *)",
@@ -59,7 +58,14 @@
       "Bash(curl -s -X POST http://localhost:3000/api/quick -H 'Content-Type: application/json' -d '{\"text\":\"내일 오전 10시 회의\"}')",
       "Bash(git checkout *)",
       "Bash(pnpm test:e2e e2e/orb-input-flow.spec.ts)",
-      "Read(//Users/kt/.claude/**)"
+      "Read(//Users/kt/.claude/**)",
+      "Bash(awk '{print $9, \"\\(\" $5 \"\\)\"}')",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/ds)",
+      "Bash(git -C /Users/kt/Desktop/claude/ou-web status)",
+      "Bash(git -C /Users/kt/Desktop/claude/ou-web diff)",
+      "Bash(git -C /Users/kt/Desktop/claude/ou-web log --oneline -5)",
+      "Bash(git -C /Users/kt/Desktop/claude/ou-web add src/app/\\\\\\(public\\\\\\)/page.tsx src/app/globals.css src/components/chat/ChatInput.tsx src/lib/ou-registry.ts .claude/settings.json)",
+      "Bash(git -C /Users/kt/Desktop/claude/ou-web commit -m ' *)"
     ],
     "additionalDirectories": [
       "/Users/kt/Desktop/claude/ou-web/.git",

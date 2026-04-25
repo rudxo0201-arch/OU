@@ -485,3 +485,8 @@ img, video {
 [data-theme="light"] .ou-halftone-bg {
   background-image: radial-gradient(rgba(0, 0, 0, 0.12) 1px, transparent 1.5px);
 }
+
+.ou-chat-textarea::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
