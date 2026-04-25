@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { isAdminEmail } from '@/lib/auth/roles';
 import { COPY } from '@/lib/copy';
 
 export async function GET(req: NextRequest) {
@@ -8,6 +9,7 @@ export async function GET(req: NextRequest) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ message: COPY.error.unauthorized }, { status: 401 });
 
+    const userIsAdmin = user.email ? isAdminEmail(user.email) : false;
     const { searchParams } = new URL(req.url);
     const domain = searchParams.get('domain');
     const limitParam = searchParams.get('limit');
@@ -47,6 +49,11 @@ export async function GET(req: NextRequest) {
       .order('created_at', { ascending: false })
       .limit(limit);
 
+    // member: visible만 / admin: 전체
+    if (!userIsAdmin) {
+      query = query.or('visibility.eq.visible,visibility.is.null');
+    }
+
     if (domain) {
       query = query.eq('domain', domain);
     }
@@ -72,6 +79,33 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ nodes: data ?? [] });
   } catch (e) {
     console.error('[Nodes/GET] Unexpected error:', e);
+    return NextResponse.json({ message: COPY.error.generic }, { status: 500 });
+  }
+}
+
+export async function PATCH(req: NextRequest) {
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return NextResponse.json({ message: COPY.error.unauthorized }, { status: 401 });
+
+    const { nodeId, domain_data } = await req.json();
+    if (!nodeId || !domain_data) return NextResponse.json({ error: 'missing fields' }, { status: 400 });
+
+    const { error } = await supabase
+      .from('data_nodes')
+      .update({ domain_data, updated_at: new Date().toISOString() })
+      .eq('id', nodeId)
+      .eq('user_id', user.id);
+
+    if (error) {
+      console.error('[Nodes/PATCH] error:', error.message);
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json({ ok: true });
+  } catch (e) {
+    console.error('[Nodes/PATCH] Unexpected error:', e);
     return NextResponse.json({ message: COPY.error.generic }, { status: 500 });
   }
 }

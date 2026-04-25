@@ -4,11 +4,16 @@ import { ReactNode, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import { TopNavBar } from '@/components/layout/TopNavBar';
-import { SideBar } from '@/components/layout/SideBar';
+import { LeftIconBar } from '@/components/layout/LeftIconBar';
+import { RightOrbBar } from '@/components/layout/RightOrbBar';
+import { StarField } from '@/components/layout/StarField';
+import { usePreferencesSync } from '@/hooks/usePreferencesSync';
+import { useThemeStore } from '@/stores/themeStore';
 
 export default function PrivateLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
   const { user, isLoading } = useAuthStore();
+  usePreferencesSync();
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -16,11 +21,14 @@ export default function PrivateLayout({ children }: { children: ReactNode }) {
     }
   }, [user, isLoading, router]);
 
+  const initTheme = useThemeStore(s => s.init);
+  useEffect(() => { initTheme(); }, [initTheme]);
+
   if (isLoading) {
     return (
       <div style={{
         minHeight: '100vh',
-        background: 'var(--ou-space)',
+        background: '#0a0a0f',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -34,10 +42,12 @@ export default function PrivateLayout({ children }: { children: ReactNode }) {
 
   return (
     <>
+      <StarField />
+      <LeftIconBar />
       <TopNavBar />
-      <SideBar />
-      {/* 사이드바 60px 보정 */}
-      <div style={{ paddingLeft: 60 }}>
+      <RightOrbBar />
+      {/* 좌60px + 우60px 보정 */}
+      <div style={{ paddingLeft: 60, paddingRight: 60 }}>
         {children}
       </div>
     </>

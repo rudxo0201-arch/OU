@@ -20,15 +20,17 @@ export const GRID_PRESETS = [
   { label: '촘촘히', cols: 20, rows: 12 },
 ] as const;
 
+// 16col × 9row 기준: 위젯은 좌상단부터 배치, QSBar는 하단 중앙
 const DEFAULT_LAYOUT: WidgetInstance[] = [
-  { id: 'default-qsbar',    type: 'qsbar',         x: 4,  y: 3, w: 8, h: 2 },
-  { id: 'default-schedule', type: 'today-schedule', x: 11, y: 0, w: 5, h: 6 },
+  { id: 'default-schedule', type: 'today-schedule', x: 1,  y: 0, w: 4, h: 4 },
+  { id: 'default-tasks',    type: 'today-tasks',    x: 6,  y: 0, w: 4, h: 4 },
+  { id: 'default-qsbar',    type: 'qsbar',          x: 4,  y: 7, w: 7, h: 2 },
 ];
 const DEFAULT_PAGE2_LAYOUT: WidgetInstance[] = [];
 const ADMIN_LAYOUT: WidgetInstance[] = [];
 const ADMIN_PAGE2_LAYOUT: WidgetInstance[] = [];
 
-const LAYOUT_VERSION = 11;
+const LAYOUT_VERSION = 13;
 
 export interface WidgetPage {
   id: string;

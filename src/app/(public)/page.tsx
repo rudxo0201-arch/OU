@@ -2,299 +2,144 @@
 
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { useState, useCallback } from 'react';
-import { PageLayout, OuCard, OuButton } from '@/components/ds';
 
-// DotSphere — PixiJS 파티클 구체 (SSR 불필요)
-const DotSphere = dynamic(
-  () => import('@/components/landing/DotSphere').then(m => ({ default: m.DotSphere })),
+const GraphCanvas = dynamic(
+  () => import('@/components/landing/GraphCanvas').then(m => ({ default: m.GraphCanvas })),
   { ssr: false, loading: () => null }
 );
-
-// DemoChat + DemoGraph — 인터랙티브 데모
-const DemoChat = dynamic(
-  () => import('@/components/landing/DemoChat').then(m => ({ default: m.DemoChat })),
-  { ssr: false, loading: () => null }
-);
-const DemoGraph = dynamic(
-  () => import('@/components/landing/DemoGraph').then(m => ({ default: m.DemoGraph })),
-  { ssr: false, loading: () => null }
-);
-
-const features = [
-  {
-    icon: '✦',
-    title: '대화가 곧 입력',
-    desc: '키보드, 마우스, 폼이 아니라 말로 데이터를 만든다. 대충 말해도 알아듣는다.',
-  },
-  {
-    icon: '⬡',
-    title: '구조화는 AI가',
-    desc: 'LLM이 자동으로 도메인을 분류하고 DataNode를 만든다. 당신은 그냥 말하면 된다.',
-  },
-  {
-    icon: '◈',
-    title: '뷰는 무한',
-    desc: '같은 데이터를 캘린더, 그래프, 카드, 차트 등 어떤 형태로든 꺼내 볼 수 있다.',
-  },
-];
-
-// 인터랙티브 데모 섹션 (DemoChat ↔ DemoGraph 상태 브릿지)
-function DemoSection() {
-  const [nodes, setNodes] = useState<{ id: string; label: string; x: number; y: number }[]>([
-    { id: 'me', label: 'me', x: 0.5, y: 0.5 },
-  ]);
-  const [edges, setEdges] = useState<{ from: string; to: string }[]>([]);
-
-  const onNodeCreated = useCallback((node: { id: string; label: string }) => {
-    setNodes(prev => {
-      if (prev.find(n => n.id === node.id)) return prev;
-      return [...prev, { ...node, x: 0.3 + Math.random() * 0.4, y: 0.2 + Math.random() * 0.6 }];
-    });
-  }, []);
-
-  const onEdgeCreated = useCallback((edge: { from: string; to: string }) => {
-    setEdges(prev => {
-      if (prev.find(e => e.from === edge.from && e.to === edge.to)) return prev;
-      return [...prev, edge];
-    });
-  }, []);
-
-  return (
-    <section style={{ padding: '0 24px 96px', maxWidth: 1024, margin: '0 auto' }}>
-      <div style={{
-        textAlign: 'center',
-        marginBottom: 48,
-      }}>
-        <p style={{
-          fontSize: 12, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase',
-          color: 'var(--ou-text-muted)', fontFamily: 'var(--ou-font-logo)', marginBottom: 12,
-        }}>
-          Live Demo
-        </p>
-        <h2 style={{
-          fontSize: 'clamp(24px, 4vw, 36px)', fontWeight: 700,
-          color: 'var(--ou-text-heading)', letterSpacing: '-0.03em', lineHeight: 1.2,
-        }}>
-          말하면 데이터가 된다
-        </h2>
-      </div>
-
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        gap: 16,
-        minHeight: 480,
-      }}>
-        {/* 좌: DemoChat */}
-        <div>
-          <DemoChat onNodeCreated={onNodeCreated} onEdgeCreated={onEdgeCreated} />
-        </div>
-
-        {/* 우: DemoGraph */}
-        <OuCard style={{ overflow: 'hidden', minHeight: 480, padding: 0 }}>
-          <div style={{ width: '100%', height: '100%', minHeight: 480 }}>
-            <DemoGraph nodes={nodes} edges={edges} />
-          </div>
-        </OuCard>
-      </div>
-
-      <p style={{ textAlign: 'center', marginTop: 20, fontSize: 12, color: 'var(--ou-text-disabled)' }}>
-        실제로 돌아가는 데모입니다 — 대화가 그래프 노드로 변환됩니다
-      </p>
-    </section>
-  );
-}
 
 export default function LandingPage() {
   return (
-    <PageLayout>
-      {/* 네비바 */}
-      <nav style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        zIndex: 100,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '0 32px',
-        height: 56,
-        background: 'rgba(228,228,234,0.96)',
-        borderBottom: '1px solid var(--ou-glass-border)',
-      }}>
-        <span style={{
-          fontFamily: 'var(--ou-font-logo)',
-          fontSize: 18,
-          fontWeight: 700,
-          color: 'var(--ou-text-heading)',
-          letterSpacing: '-0.02em',
-        }}>
-          OU
-        </span>
-        <Link href="/login">
-          <OuButton size="sm">Log in</OuButton>
-        </Link>
-      </nav>
+    <div style={{ minHeight: '100vh', background: '#0a0a0f', display: 'flex', overflow: 'hidden' }}>
 
-      {/* 히어로 */}
-      <section style={{
+      {/* 좌측 55% — 회전 도트 구 */}
+      <div style={{
+        flex: '0 0 55%',
         position: 'relative',
-        display: 'flex',
-        alignItems: 'center',
-        minHeight: '100vh',
-        padding: '80px 32px 64px',
-        maxWidth: 1200,
-        margin: '0 auto',
-        overflow: 'hidden',
+        height: '100vh',
       }}>
-        {/* 좌측: 텍스트 */}
-        <div style={{ flex: '0 0 auto', maxWidth: 540, position: 'relative', zIndex: 2 }}>
-          {/* OU 로고 오브 */}
-          <div style={{ position: 'relative', marginBottom: 40, display: 'inline-block' }}>
-            <div style={{
-              width: 96,
-              height: 96,
-              borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(var(--ou-accent-rgb), 0.2) 0%, rgba(var(--ou-accent-rgb), 0.05) 60%, transparent 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              border: '1px solid rgba(var(--ou-accent-rgb), 0.2)',
-            }}>
-              <span style={{
-                fontFamily: 'var(--ou-font-logo)',
-                fontSize: 36,
-                fontWeight: 800,
-                color: 'var(--ou-text-heading)',
-                letterSpacing: '-0.03em',
-              }}>
-                OU
-              </span>
-            </div>
-            <div style={{
-              position: 'absolute',
-              inset: -8,
-              borderRadius: '50%',
-              border: '1px solid rgba(var(--ou-accent-rgb), 0.1)',
-              animation: 'ou-glow-pulse 3s ease-in-out infinite',
-            }} />
-          </div>
-
-          {/* 헤드라인 */}
-          <h1 style={{
-            fontFamily: 'var(--ou-font-logo)',
-            fontSize: 'clamp(40px, 6vw, 72px)',
-            fontWeight: 700,
-            color: 'var(--ou-text-heading)',
-            letterSpacing: '-0.04em',
-            lineHeight: 1.1,
-            marginBottom: 20,
-          }}>
-            Just talk.
-          </h1>
-
-          <p style={{
-            fontSize: 'clamp(16px, 2vw, 20px)',
-            color: 'var(--ou-text-secondary)',
-            lineHeight: 1.6,
-            maxWidth: 420,
-            marginBottom: 40,
-            letterSpacing: '-0.01em',
-          }}>
-            대화로 만드는 나만의 우주.<br />
-            말하는 순간 데이터가 된다.
-          </p>
-
-          <Link href="/login?tab=signup">
-            <OuButton variant="accent" size="lg">
-              시작하기 →
-            </OuButton>
-          </Link>
-        </div>
-
-        {/* 우측: DotSphere */}
+        <GraphCanvas />
+        {/* 우측 그라디언트 페이드 */}
         <div style={{
           position: 'absolute',
-          right: -80,
-          top: '50%',
-          transform: 'translateY(-50%)',
-          width: 640,
-          height: 640,
-          opacity: 0.7,
+          top: 0, right: 0, bottom: 0,
+          width: 160,
+          background: 'linear-gradient(to right, transparent, #0a0a0f)',
           pointerEvents: 'none',
-        }}>
-          <DotSphere />
-        </div>
-      </section>
+        }} />
+      </div>
 
-      {/* Features */}
-      <section style={{
-        padding: '0 24px 96px',
-        maxWidth: 1024,
-        margin: '0 auto',
+      {/* 중앙 그라디언트 구분선 */}
+      <div style={{
+        position: 'absolute',
+        left: '50%',
+        top: 0,
+        bottom: 0,
+        width: 1,
+        background: 'linear-gradient(to bottom, transparent, rgba(255,255,255,0.06) 30%, rgba(255,255,255,0.06) 70%, transparent)',
+        transform: 'translateX(-50%)',
+        pointerEvents: 'none',
+      }} />
+
+      {/* 우측 42% — 로고 + CTA */}
+      <div style={{
+        flex: '0 0 42%',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        justifyContent: 'center',
+        padding: '0 48px 0 40px',
+        gap: 28,
+        minHeight: '100vh',
       }}>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-          gap: 16,
-        }}>
-          {features.map((f) => (
-            <OuCard key={f.title} hoverable style={{ animationDelay: '0.1s' }}>
-              <div style={{
-                fontSize: 24,
-                marginBottom: 16,
-                color: 'var(--ou-accent)',
-              }}>
-                {f.icon}
-              </div>
-              <h3 style={{
-                fontSize: 'var(--ou-text-base)',
-                fontWeight: 600,
-                color: 'var(--ou-text-heading)',
-                marginBottom: 8,
-                letterSpacing: '-0.02em',
-              }}>
-                {f.title}
-              </h3>
-              <p style={{
-                fontSize: 'var(--ou-text-sm)',
-                color: 'var(--ou-text-secondary)',
-                lineHeight: 1.6,
-              }}>
-                {f.desc}
-              </p>
-            </OuCard>
+        {/* 로고 */}
+        <div>
+          <span style={{
+            fontFamily: 'var(--ou-font-logo)',
+            fontSize: 'clamp(48px, 6vw, 80px)',
+            fontWeight: 700,
+            color: 'rgba(255,255,255,0.95)',
+            letterSpacing: '-0.04em',
+            lineHeight: 1,
+            display: 'block',
+          }}>
+            OU
+          </span>
+          <span style={{
+            fontSize: 11,
+            fontWeight: 500,
+            color: 'rgba(255,255,255,0.28)',
+            letterSpacing: '0.18em',
+            textTransform: 'uppercase',
+            display: 'block',
+            marginTop: 6,
+          }}>
+            Own Universe
+          </span>
+        </div>
+
+        {/* 카피 */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <h1 style={{
+            fontSize: 'clamp(22px, 3vw, 34px)',
+            fontWeight: 600,
+            color: 'rgba(255,255,255,0.88)',
+            letterSpacing: '-0.03em',
+            lineHeight: 1.25,
+          }}>
+            말하면 OU가<br />알아서 정리합니다.
+          </h1>
+          <p style={{
+            fontSize: 'clamp(13px, 1.6vw, 16px)',
+            color: 'rgba(255,255,255,0.42)',
+            lineHeight: 1.65,
+            maxWidth: 340,
+          }}>
+            일정, 할일, 습관, 일기를<br />
+            따로 관리할 필요 없습니다.<br />
+            대화 한 줄이 데이터가 됩니다.
+          </p>
+        </div>
+
+        {/* CTA */}
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+          <Link href="/login?tab=signup">
+            <button style={{
+              height: 44,
+              padding: '0 28px',
+              background: 'rgba(255,255,255,0.95)',
+              color: '#0a0a0f',
+              border: 'none',
+              borderRadius: 10,
+              fontSize: 14,
+              fontWeight: 600,
+              cursor: 'pointer',
+              letterSpacing: '-0.01em',
+              transition: 'all 160ms ease',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.boxShadow = '0 0 20px rgba(255,255,255,0.25)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.95)'; e.currentTarget.style.boxShadow = 'none'; }}
+            >
+              시작하기
+            </button>
+          </Link>
+          <Link href="/login" style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', transition: 'color 140ms ease' }}
+            onMouseEnter={(e: any) => { e.currentTarget.style.color = 'rgba(255,255,255,0.65)'; }}
+            onMouseLeave={(e: any) => { e.currentTarget.style.color = 'rgba(255,255,255,0.35)'; }}
+          >
+            로그인 →
+          </Link>
+        </div>
+
+        {/* 하단 링크 */}
+        <div style={{ marginTop: 'auto', paddingTop: 40, display: 'flex', gap: 20 }}>
+          {[{ label: 'Privacy', href: '/privacy' }, { label: 'Terms', href: '/terms' }].map(({ label, href }) => (
+            <Link key={href} href={href} style={{ fontSize: 11, color: 'rgba(255,255,255,0.20)', letterSpacing: '0.06em' }}>
+              {label}
+            </Link>
           ))}
         </div>
-      </section>
-
-      {/* 인터랙티브 데모 */}
-      <DemoSection />
-
-      {/* 푸터 */}
-      <footer style={{
-        textAlign: 'center',
-        padding: '24px',
-        borderTop: '1px solid var(--ou-glass-border)',
-        display: 'flex',
-        gap: 24,
-        justifyContent: 'center',
-      }}>
-        {[
-          { label: 'Privacy', href: '/privacy' },
-          { label: 'Terms', href: '/terms' },
-        ].map(({ label, href }) => (
-          <Link key={href} href={href} style={{
-            fontSize: 'var(--ou-text-sm)',
-            color: 'var(--ou-text-muted)',
-            transition: 'color var(--ou-transition-fast)',
-          }}>
-            {label}
-          </Link>
-        ))}
-      </footer>
-    </PageLayout>
+      </div>
+    </div>
   );
 }

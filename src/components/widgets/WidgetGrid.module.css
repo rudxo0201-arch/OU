@@ -8,22 +8,26 @@
   position: relative;
 }
 
-/* ===== Normal mode — neumorphism raised cards ===== */
+/* ===== Normal mode — glass card ===== */
 .cardNormal {
   position: relative;
   display: flex;
   flex-direction: column;
   height: 100%;
   border-radius: var(--ou-radius-md);
-  background: var(--ou-bg);
-  box-shadow: var(--ou-neu-raised-md);
+  background: var(--ou-surface);
+  border: 1px solid var(--ou-border);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: var(--ou-shadow-card);
   overflow: hidden;
   cursor: default;
-  transition: box-shadow var(--ou-transition);
+  transition: box-shadow 160ms ease, border-color 160ms ease;
 }
 
 .cardNormal:hover {
-  box-shadow: var(--ou-neu-raised-lg);
+  border-color: var(--ou-border-hover, rgba(255,255,255,0.25));
+  box-shadow: var(--ou-shadow-card-hover);
 }
 
 /* ===== Edit mode — dashed border ===== */
@@ -33,12 +37,14 @@
   flex-direction: column;
   height: 100%;
   border-radius: var(--ou-radius-md);
-  border: 1.5px dashed var(--ou-border-hover);
-  background: var(--ou-bg);
-  box-shadow: var(--ou-neu-raised-sm);
+  border: 1.5px dashed var(--ou-border);
+  background: var(--ou-surface);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: none;
   overflow: hidden;
   cursor: grab;
-  transition: box-shadow var(--ou-transition);
+  transition: border-color 160ms ease;
 }
 
 .cardEdit:active {
@@ -46,8 +52,7 @@
 }
 
 .cardEdit:hover {
-  box-shadow: var(--ou-neu-raised-md);
-  border-color: var(--ou-accent);
+  border-color: rgba(255,255,255,0.5);
 }
 
 /* Transparent card — Orb widget 등 배경 불필요한 위젯 */
@@ -78,25 +83,27 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  border: none;
-  font-size: 11px;
-  font-weight: 600;
-  color: #e06060;
-  background: var(--ou-bg);
-  box-shadow: var(--ou-neu-raised-xs);
+  border: 1px solid var(--ou-border);
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 80, 80, 0.85);
+  background: var(--ou-surface);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   opacity: 0;
-  transition: opacity var(--ou-transition), box-shadow var(--ou-transition);
+  transition: opacity 140ms ease;
+  cursor: pointer;
 }
 
-.card:hover .removeBtn,
+.cardNormal:hover .removeBtn,
 .cardless:hover .removeBtn,
 .cardEdit:hover .removeBtn {
   opacity: 1;
 }
 
 .removeBtn:hover {
-  box-shadow: var(--ou-neu-raised-sm);
-  color: #d43030;
+  color: #ff4444;
+  border-color: rgba(255, 68, 68, 0.4);
 }
 
 /* ===== Body ===== */
@@ -115,7 +122,7 @@
 }
 
 .body::-webkit-scrollbar-thumb {
-  background: var(--ou-border-subtle);
+  background: var(--ou-border);
   border-radius: 2px;
 }
 
@@ -130,13 +137,13 @@
     height 200ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* Dragging — neumorphism lifted */
+/* Dragging — lifted glass */
 .gridWrapper :global(.react-grid-item.react-draggable-dragging) {
   will-change: transform;
   transition: box-shadow 150ms ease !important;
   z-index: 10;
-  box-shadow: var(--ou-neu-raised-lg), 0 12px 32px rgba(0, 0, 0, 0.12);
-  opacity: 0.9;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.25), 0 20px 60px rgba(0,0,0,0.5);
+  opacity: 0.92;
 }
 
 /* Resizing */
@@ -146,13 +153,13 @@
   z-index: 10;
 }
 
-/* Placeholder — pressed inset */
+/* Placeholder — subtle inset */
 .gridWrapper :global(.react-grid-item.react-grid-placeholder) {
-  background: var(--ou-bg) !important;
-  box-shadow: var(--ou-neu-pressed-md) !important;
-  border: none !important;
+  background: var(--ou-surface) !important;
+  box-shadow: none !important;
+  border: 1px dashed var(--ou-border) !important;
   border-radius: var(--ou-radius-md);
-  opacity: 1;
+  opacity: 0.5;
   transition: transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -160,7 +167,7 @@
 .gridWrapper :global(.react-grid-item > .react-resizable-handle) {
   position: absolute;
   opacity: 0;
-  transition: opacity var(--ou-transition);
+  transition: opacity 140ms ease;
   z-index: 5;
 }
 
@@ -203,11 +210,11 @@
 /* Edge handle hover indicator */
 .gridWrapper :global(.react-grid-item:hover > .react-resizable-handle-s),
 .gridWrapper :global(.react-grid-item:hover > .react-resizable-handle-n) {
-  background: linear-gradient(to bottom, transparent, var(--ou-border-subtle), transparent);
+  background: linear-gradient(to bottom, transparent, var(--ou-border), transparent);
 }
 .gridWrapper :global(.react-grid-item:hover > .react-resizable-handle-e),
 .gridWrapper :global(.react-grid-item:hover > .react-resizable-handle-w) {
-  background: linear-gradient(to right, transparent, var(--ou-border-subtle), transparent);
+  background: linear-gradient(to right, transparent, var(--ou-border), transparent);
 }
 
 /* ===== Widget choreography ===== */

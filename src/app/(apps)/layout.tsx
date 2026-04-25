@@ -3,15 +3,14 @@
 import { ReactNode, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
+import { useThemeStore } from '@/stores/themeStore';
 
-/**
- * 풀스크린 앱 레이아웃.
- * (private)와 달리 TopNavBar 없음 — 앱이 100vw × 100vh 전체를 차지.
- * 인증 게이트만 포함.
- */
 export default function AppsLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
   const { user, isLoading } = useAuthStore();
+  const initTheme = useThemeStore(s => s.init);
+
+  useEffect(() => { initTheme(); }, [initTheme]);
 
   useEffect(() => {
     if (!isLoading && !user) {

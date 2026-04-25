@@ -23,8 +23,8 @@ registerWidget({
   label: 'OU뷰',
   component: OuViewWidget,
   scrollable: 'none',
-  minSize: [5, 2],
-  defaultSize: [6, 2],
+  minSize: [4, 2],
+  defaultSize: [5, 2],
   removable: false,
   needsCard: false,
 });
@@ -35,7 +35,7 @@ registerWidget({
   component: ClockWidget,
   scrollable: 'none',
   minSize: [2, 2],
-  defaultSize: [3, 2],
+  defaultSize: [2, 2],
   removable: true,
   needsCard: false,
 });
@@ -57,7 +57,7 @@ registerWidget({
   component: RecentNodesWidget,
   scrollable: 'vertical',
   minSize: [2, 2],
-  defaultSize: [6, 5],
+  defaultSize: [4, 3],
   removable: true,
   needsCard: true,
 });
@@ -68,7 +68,7 @@ registerWidget({
   component: QuickMemoWidget,
   scrollable: 'none',
   minSize: [2, 2],
-  defaultSize: [3, 3],
+  defaultSize: [3, 2],
   removable: true,
   needsCard: true,
 });
@@ -78,8 +78,8 @@ registerWidget({
   label: '본초학',
   component: BonchoWidget,
   scrollable: 'both',
-  minSize: [3, 3],
-  defaultSize: [5, 5],
+  minSize: [3, 2],
+  defaultSize: [4, 3],
   removable: true,
   needsCard: true,
 });
@@ -89,8 +89,8 @@ registerWidget({
   label: '한자사전',
   component: DictionaryWidget,
   scrollable: 'both',
-  minSize: [5, 3],
-  defaultSize: [10, 6],
+  minSize: [4, 3],
+  defaultSize: [6, 4],
   removable: true,
   needsCard: true,
 });
@@ -100,8 +100,8 @@ registerWidget({
   label: '투두',
   component: ViewWidget,
   scrollable: 'vertical',
-  minSize: [3, 3],
-  defaultSize: [5, 5],
+  minSize: [2, 2],
+  defaultSize: [4, 3],
   removable: true,
   needsCard: true,
 });
@@ -111,8 +111,8 @@ registerWidget({
   label: '캘린더',
   component: ViewWidget,
   scrollable: 'vertical',
-  minSize: [5, 3],
-  defaultSize: [6, 5],
+  minSize: [4, 2],
+  defaultSize: [5, 3],
   removable: true,
   needsCard: true,
 });
@@ -122,8 +122,8 @@ registerWidget({
   label: '지출 차트',
   component: ViewWidget,
   scrollable: 'vertical',
-  minSize: [3, 3],
-  defaultSize: [5, 5],
+  minSize: [2, 2],
+  defaultSize: [4, 3],
   removable: true,
   needsCard: true,
 });
@@ -134,7 +134,7 @@ registerWidget({
   component: ViewWidget,
   scrollable: 'none',
   minSize: [3, 2],
-  defaultSize: [6, 3],
+  defaultSize: [4, 2],
   removable: true,
   needsCard: true,
 });
@@ -144,8 +144,8 @@ registerWidget({
   label: '관계 카드',
   component: ViewWidget,
   scrollable: 'vertical',
-  minSize: [3, 3],
-  defaultSize: [5, 5],
+  minSize: [2, 2],
+  defaultSize: [4, 3],
   removable: true,
   needsCard: true,
 });
@@ -155,8 +155,8 @@ registerWidget({
   label: '프로필',
   component: ViewWidget,
   scrollable: 'vertical',
-  minSize: [3, 3],
-  defaultSize: [5, 5],
+  minSize: [2, 2],
+  defaultSize: [3, 3],
   removable: true,
   needsCard: true,
 });
@@ -166,8 +166,8 @@ registerWidget({
   label: '지도',
   component: ViewWidget,
   scrollable: 'none',
-  minSize: [5, 3],
-  defaultSize: [6, 5],
+  minSize: [4, 2],
+  defaultSize: [5, 3],
   removable: true,
   needsCard: true,
 });
@@ -177,8 +177,8 @@ registerWidget({
   label: '연속 대화',
   component: StreakWidget,
   scrollable: 'none',
-  minSize: [2, 3],
-  defaultSize: [2, 3],
+  minSize: [2, 2],
+  defaultSize: [2, 2],
   removable: true,
   needsCard: false,
 });
@@ -189,7 +189,7 @@ registerWidget({
   component: TodayScheduleWidget,
   scrollable: 'vertical',
   minSize: [3, 2],
-  defaultSize: [5, 3],
+  defaultSize: [4, 3],
   removable: true,
   needsCard: false,
 });
@@ -200,7 +200,7 @@ registerWidget({
   component: ChatHeatmapWidget,
   scrollable: 'none',
   minSize: [3, 2],
-  defaultSize: [5, 2],
+  defaultSize: [4, 2],
   removable: true,
   needsCard: false,
 });
@@ -210,8 +210,8 @@ registerWidget({
   label: 'API 토큰',
   component: ApiTokenWidget,
   scrollable: 'none',
-  minSize: [3, 2],
-  defaultSize: [3, 3],
+  minSize: [2, 2],
+  defaultSize: [3, 2],
   removable: true,
   needsCard: false,
 });
@@ -222,7 +222,7 @@ registerWidget({
   component: TaskWidget,
   scrollable: 'vertical',
   minSize: [3, 2],
-  defaultSize: [5, 3],
+  defaultSize: [4, 3],
   removable: true,
   needsCard: false,
 });
@@ -233,7 +233,7 @@ registerWidget({
   component: HabitWidget,
   scrollable: 'vertical',
   minSize: [3, 2],
-  defaultSize: [5, 3],
+  defaultSize: [4, 3],
   removable: true,
   needsCard: false,
 });
@@ -243,8 +243,8 @@ registerWidget({
   label: '아이디어',
   component: IdeaWidget,
   scrollable: 'vertical',
-  minSize: [3, 2],
-  defaultSize: [5, 3],
+  minSize: [2, 2],
+  defaultSize: [3, 2],
   removable: true,
   needsCard: false,
 });
@@ -254,8 +254,8 @@ registerWidget({
   label: 'Quick / Search',
   component: QSBarWidget,
   scrollable: 'none',
-  minSize: [6, 2],
-  defaultSize: [8, 2],
+  minSize: [5, 2],
+  defaultSize: [7, 2],
   removable: false,
   needsCard: false,
 });
@@ -266,7 +266,7 @@ registerWidget({
   component: FinanceWidget,
   scrollable: 'vertical',
   minSize: [3, 2],
-  defaultSize: [5, 4],
+  defaultSize: [4, 3],
   removable: true,
   needsCard: false,
 });
@@ -277,7 +277,7 @@ registerWidget({
   component: NoteWidget,
   scrollable: 'vertical',
   minSize: [3, 2],
-  defaultSize: [7, 3],
+  defaultSize: [5, 3],
   removable: true,
   needsCard: false,
 });

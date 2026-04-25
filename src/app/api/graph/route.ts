@@ -7,14 +7,24 @@ export async function GET() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
+    const { isAdminEmail } = await import('@/lib/auth/roles');
+    const userIsAdmin = user.email ? isAdminEmail(user.email) : false;
+
     // Fetch user's own nodes + all admin nodes (non-archived, limit 2000)
-    const { data: nodes, error: nodesErr } = await supabase
+    // member: visible only / admin: all visibility
+    let nodesQuery = supabase
       .from('data_nodes')
       .select('id, domain, raw, confidence, created_at, domain_data, is_admin_node')
       .or(`user_id.eq.${user.id},is_admin_node.eq.true`)
       .or('system_tags.is.null,system_tags.not.cs.{"archived"}')
       .order('created_at', { ascending: false })
       .limit(2000);
+
+    if (!userIsAdmin) {
+      nodesQuery = nodesQuery.or('visibility.eq.visible,visibility.is.null');
+    }
+
+    const { data: nodes, error: nodesErr } = await nodesQuery;
 
     if (nodesErr) {
       console.error('[Graph] Nodes error:', nodesErr.message);

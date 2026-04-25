@@ -391,6 +391,13 @@ export async function saveMessageAsync(input: SaveMessageInput) {
       return null;
     }
 
+    // stealth 도메인은 visibility = 'stealth', 나머지는 'visible'
+    const STEALTH_DOMAINS = new Set(['emotion', 'behavior_pattern']);
+    const nodeVisibility = STEALTH_DOMAINS.has(segmentDomain) ? 'stealth' : 'visible';
+
+    // bundle_paths: 도메인 기준 자동 폴더 등록
+    const bundlePaths = [`/${segmentDomain}`];
+
     const { data: segNode, error: segErr } = await supabase.from('data_nodes').insert({
       user_id: input.userId,
       group_id: input.groupId ?? null,
@@ -400,8 +407,9 @@ export async function saveMessageAsync(input: SaveMessageInput) {
       source_type: 'chat',
       confidence: segExtraction.confidence,
       resolution: 'resolved',
-      visibility: 'private',
+      visibility: nodeVisibility,
       domain_data: segDomainData,
+      bundle_paths: bundlePaths,
     }).select().single();
 
     if (segErr || !segNode) {

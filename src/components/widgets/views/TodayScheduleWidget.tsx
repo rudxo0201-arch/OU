@@ -265,7 +265,7 @@ function EventRow({ e, size, onEdit }: {
         margin: '0 -6px',
         borderRadius: 6,
         cursor: 'pointer',
-        background: hovered ? 'rgba(0,0,0,0.04)' : 'transparent',
+        background: hovered ? 'var(--ou-hover-bg, rgba(0,0,0,0.04))' : 'transparent',
         transition: 'background 150ms',
       }}
     >

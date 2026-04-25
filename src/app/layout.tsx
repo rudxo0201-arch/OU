@@ -21,6 +21,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <script dangerouslySetInnerHTML={{ __html: `
           try{
+            var t=localStorage.getItem('ou-theme')||'dark';
+            if(t==='auto')t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
+            document.documentElement.dataset.theme=t;
             var p=localStorage.getItem('ou-palette');
             if(p)document.documentElement.setAttribute('data-palette',p);
           }catch(e){}
