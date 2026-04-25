@@ -107,7 +107,8 @@ function ToastItemView({ toast, onRemove }: { toast: OuToastItem; onRemove: (id:
     gap: 10,
     padding: '11px 14px 11px 13px',
     // 레퍼런스의 active row — 검정 + inner top highlight
-    background: 'var(--ou-accent)',
+    background: 'rgba(20,20,28,0.96)',
+    border: '1px solid rgba(255,255,255,0.08)',
     boxShadow: [
       'inset 0 1px 0 rgba(255,255,255,0.10)',   // 내부 상단 하이라이트
       '0 4px 16px rgba(0,0,0,0.22)',             // 부유감

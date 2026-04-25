@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import {
   SquaresFour, FilePdf, Graph,
@@ -10,6 +10,8 @@ import React from 'react';
 import { NotePanel } from './NotePanel';
 import { PDFReader } from './PDFReader';
 import type { LeafPanel, PanelContent } from './types';
+
+import { NodeDetailCard } from '@/components/graph/NodeDetailCard';
 
 const GraphView = dynamic(
   () => import('@/components/graph/GraphView').then(m => m.GraphView),
@@ -184,13 +186,15 @@ export function PanelLeaf({ panel, focused, canClose, onFocus, onSplit, onClose,
   );
 }
 
-// ── 노트 그래프 패널 (/api/graph에서 노트 도메인만 필터) ───────
+// ── 그래프 패널 (/api/graph 전체 — 모든 Item이 노드, 도메인 필터 없음) ─
 
 type GraphItem = { id: string; domain: string; raw?: string };
 type GraphLink = { source: string; target: string; weight?: number };
 
 function NoteGraphPanel() {
   const [data, setData] = useState<{ nodes: GraphItem[]; links: GraphLink[] } | null>(null);
+  const rawNodesRef = useRef<Map<string, Record<string, unknown>>>(new Map());
+  const [selectedNode, setSelectedNode] = useState<Record<string, unknown> | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -198,22 +202,32 @@ function NoteGraphPanel() {
       .then(r => (r.ok ? r.json() : { nodes: [], edges: [] }))
       .then(json => {
         if (cancelled) return;
-        const noteNodes: GraphItem[] = (json.nodes ?? [])
-          .filter((n: { domain?: string }) => n.domain === 'note')
-          .map((n: { id: string; domain: string; label?: string; raw?: string }) => ({
-            id: n.id, domain: n.domain, raw: n.label ?? n.raw ?? '',
-          }));
-        const noteIds = new Set(noteNodes.map(n => n.id));
-        const noteLinks: GraphLink[] = (json.edges ?? [])
-          .filter((e: { source: string; target: string; relationType?: string }) =>
-            e.relationType === 'page_link' && noteIds.has(e.source) && noteIds.has(e.target))
-          .map((e: { source: string; target: string; weight?: number }) => ({
+        const rawMap = new Map<string, Record<string, unknown>>();
+        const nodes: GraphItem[] = (json.nodes ?? []).map(
+          (n: Record<string, unknown>) => {
+            rawMap.set(n.id as string, n);
+            return {
+              id: n.id as string,
+              domain: (n.domain as string) ?? '',
+              raw: (n.label as string) ?? (n.raw as string) ?? '',
+            };
+          }
+        );
+        rawNodesRef.current = rawMap;
+        const links: GraphLink[] = (json.edges ?? []).map(
+          (e: { source: string; target: string; weight?: number }) => ({
             source: e.source, target: e.target, weight: e.weight,
-          }));
-        setData({ nodes: noteNodes, links: noteLinks });
+          })
+        );
+        setData({ nodes, links });
       })
       .catch(() => { if (!cancelled) setData({ nodes: [], links: [] }); });
     return () => { cancelled = true; };
+  }, []);
+
+  const handleNodeClick = useCallback((node: { id: string }) => {
+    const raw = rawNodesRef.current.get(node.id);
+    if (raw) setSelectedNode(raw);
   }, []);
 
   if (!data) {
@@ -227,7 +241,17 @@ function NoteGraphPanel() {
     );
   }
 
-  return <GraphView nodes={data.nodes} links={data.links} />;
+  return (
+    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+      <GraphView nodes={data.nodes} links={data.links} onNodeClick={handleNodeClick} />
+      {selectedNode && (
+        <NodeDetailCard
+          node={selectedNode as Parameters<typeof NodeDetailCard>[0]['node']}
+          onClose={() => setSelectedNode(null)}
+        />
+      )}
+    </div>
+  );
 }
 
 // ── 노트 제목 추출 (fetches metadata) ────────────────────────
