@@ -56,6 +56,27 @@ function genId() {
   return Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
 }
 
+/** tree prefs 섹션을 presetStore에 적용. presets 없으면 시드 자동 생성. */
+function applyTreePrefs(treePrefs: any) {
+  const store = usePresetStore.getState();
+  if (store.loaded) return; // 이미 초기화됨
+  if (treePrefs?.presets?.length) {
+    store.setPresets(treePrefs.presets);
+  } else {
+    store.setPresets(makeSeedPresets());
+  }
+  if (treePrefs?.forceParams) store.setForceParams(treePrefs.forceParams);
+  store.markLoaded();
+}
+
+/** presetStore가 아직 미초기화면 시드를 즉시 생성. */
+function ensureTreePresets() {
+  const store = usePresetStore.getState();
+  if (store.loaded) return;
+  store.setPresets(makeSeedPresets());
+  store.markLoaded();
+}
+
 function makeSeedPresets(): Preset[] {
   const now = new Date().toISOString();
   const thisMonth = new Date().toISOString().slice(0, 7);
@@ -102,18 +123,7 @@ function applyPreferences(prefs: ReturnType<typeof collectPreferences>) {
   }
 
   // Tree 프리셋 복원
-  const treePrefs = (prefs as any).tree;
-  if (treePrefs?.presets?.length) {
-    usePresetStore.getState().setPresets(treePrefs.presets);
-  } else {
-    // 처음 로그인 — 시드 4개 생성
-    const seeds = makeSeedPresets();
-    usePresetStore.getState().setPresets(seeds);
-  }
-  if (treePrefs?.forceParams) {
-    usePresetStore.getState().setForceParams(treePrefs.forceParams);
-  }
-  usePresetStore.getState().markLoaded();
+  applyTreePrefs((prefs as any).tree);
 
   // Display 복원
   if (prefs.display) {
@@ -153,11 +163,14 @@ export function usePreferencesSync() {
   const loadFromDB = useCallback(async () => {
     try {
       const res = await fetch('/api/preferences');
-      if (!res.ok) return;
+      if (!res.ok) {
+        // 로드 실패해도 시드는 보장
+        ensureTreePresets();
+        return;
+      }
       const { preferences } = await res.json();
       if (preferences?.widget?.pages?.length) {
         // DB에 실질적인 레이아웃이 있을 때만 적용
-        // (DB가 DEFAULT_PAGES를 가지고 있으면 localStorage를 덮어쓰지 않음)
         const currentPages = useWidgetStore.getState().pages;
         const dbPages = preferences.widget.pages as WidgetPage[];
         const dbHasCustomWidgets = dbPages.some(p =>
@@ -167,18 +180,21 @@ export function usePreferencesSync() {
           p.widgets.some(w => w.type !== 'today' && w.type !== 'streak' && w.type !== 'quick-input')
         );
 
-        // DB가 더 풍부하거나 local이 비어있을 때만 적용
         if (dbHasCustomWidgets || !localHasCustomWidgets) {
           skipNextSaveRef.current = true;
           applyPreferences(preferences);
           setTimeout(() => { skipNextSaveRef.current = false; }, 500);
+        } else {
+          // widget은 로컬이 더 풍부하지만 tree 프리셋은 DB 값 적용
+          applyTreePrefs((preferences as any).tree);
         }
-      } else if (preferences && !preferences.widget?.pages?.length) {
-        // DB가 비어있으면 현재 local 상태를 DB에 저장
+      } else {
+        // DB 비어있음 — local 상태 저장 + tree 시드 보장
+        applyTreePrefs((preferences as any)?.tree);
         setTimeout(saveToDB, 100);
       }
     } catch {
-      // 무시 — localStorage fallback 유지
+      ensureTreePresets();
     }
   }, [saveToDB]);
 
