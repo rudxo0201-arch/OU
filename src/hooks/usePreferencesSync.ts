@@ -12,6 +12,8 @@ import { useAuthStore } from '@/stores/authStore';
 import { useWidgetStore, type WidgetPage } from '@/stores/widgetStore';
 import { useNavigationStore } from '@/stores/navigationStore';
 import { useHomeStore } from '@/stores/homeStore';
+import { usePresetStore } from '@/stores/presetStore';
+import type { Preset } from '@/types';
 
 const SAVE_DEBOUNCE_MS = 800;
 
@@ -43,7 +45,26 @@ function collectPreferences() {
       theme: typeof window !== 'undefined' ? localStorage.getItem('ou-theme') : null,
       palette: typeof window !== 'undefined' ? localStorage.getItem('ou-palette') : null,
     },
+    tree: {
+      presets: usePresetStore.getState().presets,
+      forceParams: usePresetStore.getState().forceParams,
+    },
   };
+}
+
+function genId() {
+  return Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+}
+
+function makeSeedPresets(): Preset[] {
+  const now = new Date().toISOString();
+  const thisMonth = new Date().toISOString().slice(0, 7);
+  return [
+    { id: genId(), label: '전체 그래프', icon: 'Globe',    kind: 'graph', filter: {}, position: 0, isSeed: true, createdAt: now },
+    { id: genId(), label: '도메인별 트리', icon: 'Layers',  kind: 'tree',  filter: {}, axis: 'domain', position: 1, isSeed: true, createdAt: now },
+    { id: genId(), label: '이번달 트리',  icon: 'Calendar', kind: 'tree',  filter: { dateRange: { from: `${thisMonth}-01`, to: `${thisMonth}-31` } }, axis: 'time', position: 2, isSeed: true, createdAt: now },
+    { id: genId(), label: 'Orb별 트리',  icon: 'Boxes',    kind: 'tree',  filter: {}, axis: 'orb', position: 3, isSeed: true, createdAt: now },
+  ];
 }
 
 /** DB에서 가져온 preferences를 각 store에 적용 */
@@ -79,6 +100,20 @@ function applyPreferences(prefs: ReturnType<typeof collectPreferences>) {
     hs.reorderDock((prefs as any).home.dockSlugs ?? []);
     // gridItems는 persist로 이미 복원되므로 필요 시만 적용
   }
+
+  // Tree 프리셋 복원
+  const treePrefs = (prefs as any).tree;
+  if (treePrefs?.presets?.length) {
+    usePresetStore.getState().setPresets(treePrefs.presets);
+  } else {
+    // 처음 로그인 — 시드 4개 생성
+    const seeds = makeSeedPresets();
+    usePresetStore.getState().setPresets(seeds);
+  }
+  if (treePrefs?.forceParams) {
+    usePresetStore.getState().setForceParams(treePrefs.forceParams);
+  }
+  usePresetStore.getState().markLoaded();
 
   // Display 복원
   if (prefs.display) {
@@ -172,6 +207,7 @@ export function usePreferencesSync() {
     const unsubWidget = useWidgetStore.subscribe(scheduleSave);
     const unsubNav = useNavigationStore.subscribe(scheduleSave);
     const unsubHome = useHomeStore.subscribe(scheduleSave);
+    const unsubPreset = usePresetStore.subscribe(scheduleSave);
 
     // theme/palette는 storage event로 감지
     const handleStorage = (e: StorageEvent) => {
@@ -196,6 +232,7 @@ export function usePreferencesSync() {
     return () => {
       unsubWidget();
       unsubNav();
+      unsubPreset();
       unsubHome();
       window.removeEventListener('storage', handleStorage);
       document.removeEventListener('visibilitychange', handleVisibilityChange);

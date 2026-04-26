@@ -1,37 +1,48 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useChatStore } from '@/stores/chatStore';
+import { useState, useCallback } from 'react';
 import { useTutorialStore } from '@/stores/tutorialStore';
-import { ROUTES, ORB_SLUGS } from '@/lib/ou-registry';
-
 
 export { OuLLM as OuViewWidget };
 
 export function OuLLM() {
   const [input, setInput] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [savedMsg, setSavedMsg] = useState('');
   const ghostText = useTutorialStore(s => s.currentGhostText());
-  const router = useRouter();
 
-  useEffect(() => { router.prefetch(ROUTES.ORB(ORB_SLUGS.DEEP_TALK)); }, [router]);
-
-  const openOrb = useCallback((text?: string) => {
-    if (text) {
-      useChatStore.getState().setPendingMessage(text);
+  // §7·D-002: 홈 입력바 = inbox 역할. /api/quick 으로 즉시 저장.
+  // deep-talk Orb로 라우팅하지 않는다.
+  const submitToInbox = useCallback(async (text: string) => {
+    if (!text.trim()) return;
+    setSaving(true);
+    try {
+      const res = await fetch('/api/quick', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ raw: text.trim() }),
+      });
+      if (res.ok) {
+        setSavedMsg('저장됨');
+        setTimeout(() => setSavedMsg(''), 1800);
+      }
+    } catch {
+      // 무시
+    } finally {
+      setSaving(false);
     }
-    router.push(ROUTES.ORB(ORB_SLUGS.DEEP_TALK));
-  }, [router]);
+  }, []);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       if (e.nativeEvent.isComposing) return;
       e.preventDefault();
-      const text = (e.currentTarget.value || input).trim() || ghostText || undefined;
+      const text = (e.currentTarget.value || input).trim() || ghostText || '';
+      if (!text) return;
       setInput('');
-      openOrb(text);
+      submitToInbox(text);
     }
-  }, [input, ghostText, openOrb]);
+  }, [input, ghostText, submitToInbox]);
 
   const showGhost = !input && !!ghostText;
 
@@ -76,12 +87,14 @@ export function OuLLM() {
           value={input}
           onChange={e => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
+          disabled={saving}
           placeholder={showGhost ? '' : '일정, 할 일, 지출, 습관을 기록해보세요'}
           style={{
             width: '100%', border: 'none', outline: 'none',
             background: 'transparent',
             color: 'var(--ou-text-strong)',
             fontSize: 16, fontFamily: 'inherit',
+            opacity: saving ? 0.5 : 1,
           }}
         />
 
@@ -95,10 +108,15 @@ export function OuLLM() {
             cursor: 'pointer',
           }}>+</div>
           <span style={{ flex: 1 }} />
-          <span style={{
-            fontSize: 10, color: 'var(--ou-text-disabled)',
-            fontFamily: 'var(--ou-font-mono)',
-          }}>&#8984;K</span>
+          {savedMsg ? (
+            <span style={{ fontSize: 10, color: 'var(--ou-text-secondary)', fontFamily: 'var(--ou-font-mono)' }}>
+              {savedMsg}
+            </span>
+          ) : (
+            <span style={{ fontSize: 10, color: 'var(--ou-text-disabled)', fontFamily: 'var(--ou-font-mono)' }}>
+              &#8984;K
+            </span>
+          )}
         </div>
       </div>
     </div>

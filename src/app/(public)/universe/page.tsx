@@ -35,9 +35,9 @@ export default function UniversePage() {
   }, []);
 
   return (
-    <div style={{
+    <div data-theme="dark" style={{
       position: 'fixed', inset: 0,
-      background: 'var(--ou-space)',
+      background: '#000000',
       display: 'flex',
       flexDirection: 'column',
     }}>
@@ -46,26 +46,28 @@ export default function UniversePage() {
         position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10,
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: '0 24px', height: 52,
-        background: 'rgba(228,228,234,0.9)',
-        borderBottom: '1px solid var(--ou-glass-border)',
+        background: 'rgba(0,0,0,0.75)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        borderBottom: '1px solid rgba(255,255,255,0.07)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <Link href="/" style={{ fontFamily: 'var(--ou-font-logo)', fontSize: 16, fontWeight: 700, color: 'var(--ou-text-heading)', textDecoration: 'none' }}>
+          <Link href="/" style={{ fontFamily: 'var(--ou-font-logo)', fontSize: 16, fontWeight: 700, color: '#fff', textDecoration: 'none' }}>
             OU
           </Link>
-          <span style={{ fontSize: 13, color: 'var(--ou-text-secondary)' }}>
+          <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>
             Universe
           </span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 11, color: 'var(--ou-text-muted)' }}>
+          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>
             {loading ? '로딩 중...' : `${nodes.length}개 노드`}
           </span>
           <Link href="/home" style={{
             padding: '6px 14px', borderRadius: 8,
-            border: '1px solid var(--ou-glass-border)',
-            background: 'var(--ou-glass)', fontSize: 12,
-            color: 'var(--ou-text-body)', textDecoration: 'none',
+            border: '1px solid rgba(255,255,255,0.12)',
+            background: 'rgba(255,255,255,0.06)', fontSize: 12,
+            color: 'rgba(255,255,255,0.7)', textDecoration: 'none',
           }}>
             홈으로
           </Link>
@@ -109,19 +111,21 @@ export default function UniversePage() {
         <div style={{
           position: 'absolute', top: 52, right: 0, bottom: 0,
           width: 320,
-          background: 'rgba(255,255,255,0.97)',
-          borderLeft: '1px solid var(--ou-glass-border)',
-          boxShadow: 'var(--ou-shadow-lg)',
+          background: 'rgba(6,6,12,0.92)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          borderLeft: '1px solid rgba(255,255,255,0.08)',
           padding: '20px',
           overflowY: 'auto',
-          animation: 'ou-slide-down 200ms ease',
+          animation: 'slide-in-right 220ms ease-out',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
             <span style={{
               fontSize: 10, padding: '3px 10px', borderRadius: 999,
-              background: 'var(--ou-space-subtle)',
-              color: 'var(--ou-text-secondary)', fontWeight: 600,
+              background: 'rgba(255,255,255,0.08)',
+              color: 'rgba(255,255,255,0.5)', fontWeight: 600,
               textTransform: 'uppercase', letterSpacing: '0.08em',
+              border: '1px solid rgba(255,255,255,0.1)',
             }}>
               {selected.domain || 'unknown'}
             </span>
@@ -129,19 +133,19 @@ export default function UniversePage() {
               onClick={() => setSelected(null)}
               style={{
                 background: 'none', border: 'none', cursor: 'pointer',
-                fontSize: 18, color: 'var(--ou-text-muted)', lineHeight: 1,
+                fontSize: 18, color: 'rgba(255,255,255,0.4)', lineHeight: 1,
               }}
             >
               ×
             </button>
           </div>
 
-          <div style={{ fontSize: 13, color: 'var(--ou-text-body)', lineHeight: 1.7, marginBottom: 16 }}>
+          <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', lineHeight: 1.7, marginBottom: 16 }}>
             {selected.raw || '(내용 없음)'}
           </div>
 
           {selected.created_at && (
-            <div style={{ fontSize: 11, color: 'var(--ou-text-disabled)' }}>
+            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)' }}>
               {new Date(selected.created_at).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}
             </div>
           )}
@@ -152,7 +156,7 @@ export default function UniversePage() {
       {!loading && nodes.length > 0 && (
         <div style={{
           position: 'absolute', bottom: 20, right: 20,
-          fontSize: 10, color: 'var(--ou-text-disabled)',
+          fontSize: 10, color: 'rgba(255,255,255,0.2)',
           pointerEvents: 'none',
         }}>
           드래그: 이동 · 스크롤: 줌 · 클릭: 노드 상세

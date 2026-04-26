@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { CSSProperties, useState } from 'react';
+import { Home, Globe, Orbit } from 'lucide-react';
 import { ROUTES } from '@/lib/ou-registry';
 import { OuAvatar, OuLogo } from '@/components/ds';
 import { useAuthStore } from '@/stores/authStore';
@@ -50,6 +51,35 @@ export function TopNavBar() {
       <Link href={ROUTES.HOME} style={{ marginRight: 12, display: 'flex', alignItems: 'center' }}>
         <OuLogo width={36} color="var(--ou-text)" />
       </Link>
+
+      {/* 주 네비 — Home / Universe / Orbit */}
+      <nav style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+        {[
+          { href: ROUTES.HOME,    icon: Home,   label: '홈'      },
+          { href: '/universe',    icon: Globe,  label: '유니버스' },
+          { href: '/orbit',       icon: Orbit,  label: '오빗'    },
+        ].map(({ href, icon: Icon, label }) => {
+          const active = pathname === href || (href !== ROUTES.HOME && pathname.startsWith(href));
+          return (
+            <Link key={href} href={href} title={label}>
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: 6,
+                padding: '4px 10px',
+                borderRadius: 8,
+                fontSize: 12,
+                fontWeight: 500,
+                color: active ? 'var(--ou-text)' : 'var(--ou-text-muted)',
+                background: active ? 'rgba(255,255,255,0.08)' : 'none',
+                transition: 'all 140ms ease',
+                cursor: 'pointer',
+              }}>
+                <Icon size={14} strokeWidth={1.5} />
+                {label}
+              </div>
+            </Link>
+          );
+        })}
+      </nav>
 
       {/* 우측 영역 */}
       <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12 }}>

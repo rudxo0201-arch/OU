@@ -1,12 +1,16 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { Suspense, useEffect, useState, useCallback } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { WidgetGrid } from '@/components/widgets/WidgetGrid';
 import { ViewPickerPanel } from '@/components/widgets/ViewPickerPanel';
 import { GraphView } from '@/components/graph/GraphView';
 import { NodeDetailCard } from '@/components/graph/NodeDetailCard';
 import { FolderPanel } from '@/components/layout/FolderPanel';
 import { PageRenderer, type FullNode } from '@/components/page/PageRenderer';
+import { GraphPresetView } from '@/components/views/GraphPresetView';
+import { TreePresetOverlay } from '@/components/views/TreePresetOverlay';
+import { TreeFullLayer } from '@/components/views/TreeFullLayer';
 import { useHomeViewStore } from '@/stores/homeViewStore';
 import '@/components/widgets/views/register';
 
@@ -23,8 +27,17 @@ interface RawNode {
   [key: string]: unknown;
 }
 
-export default function HomePage() {
+function HomePageInner() {
   const { activeView, setView } = useHomeViewStore();
+  const searchParams = useSearchParams();
+  const urlView = searchParams.get('view');
+
+  // URL searchParams → homeViewStore sync (뒤로가기 포함)
+  useEffect(() => {
+    if (urlView === 'graph') setView('graph');
+    else if (urlView === 'tree-full') setView('page'); // 위젯 그리드 숨김
+    else setView('dashboard');
+  }, [urlView, setView]);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [folderPanelOpen, setFolderPanelOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
@@ -134,38 +147,25 @@ export default function HomePage() {
           )}
         </div>
 
-        {/* ── 그래프 — position:fixed inset:0 z:1 → 우주 전체 채움, nav(z200)·아이콘바(z100) 아래 ── */}
+        {/* ── 그래프 프리셋 뷰 (URL view=graph) ── */}
         {activeView === 'graph' && (
-          <div style={{ position: 'fixed', inset: 0, zIndex: 1 }}>
-            {graphLoading ? (
-              <div style={{
-                height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: 'rgba(255,255,255,0.3)', fontSize: 13,
-              }}>
-                그래프 로딩 중...
-              </div>
-            ) : (
-              <GraphView
-                nodes={graphViewNodes}
-                links={graphEdges}
-                onNodeClick={handleNodeClick}
-                transparent
-              />
-            )}
-          </div>
+          <Suspense>
+            <GraphPresetView />
+          </Suspense>
         )}
 
-        {/* ── 노드 클릭 카드 — nav(z200) 위에 ── */}
-        {activeView === 'graph' && selectedNode && (
-          <div style={{ position: 'fixed', inset: 0, zIndex: 201, pointerEvents: 'none' }}>
-            <div style={{ pointerEvents: 'auto' }}>
-              <NodeDetailCard
-                node={selectedNode}
-                onClose={() => setSelectedNode(null)}
-                onOpenPage={() => handleOpenPage(selectedNode)}
-              />
-            </div>
-          </div>
+        {/* ── 트리 풀레이어 (URL view=tree-full) — 위젯 그리드 자체 대체 ── */}
+        {urlView === 'tree-full' && (
+          <Suspense>
+            <TreeFullLayer />
+          </Suspense>
+        )}
+
+        {/* ── 트리 미리보기 오버레이 (URL view=tree-preview) — 위젯 위에 dim ── */}
+        {urlView === 'tree-preview' && (
+          <Suspense>
+            <TreePresetOverlay />
+          </Suspense>
         )}
 
         {/* ── 폴더 패널 ── */}
@@ -182,5 +182,13 @@ export default function HomePage() {
 
         <ViewPickerPanel open={pickerOpen} onClose={() => setPickerOpen(false)} />
     </div>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <Suspense>
+      <HomePageInner />
+    </Suspense>
   );
 }

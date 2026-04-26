@@ -25,6 +25,7 @@
   --ou-border-strong:   rgba(255, 255, 255, 0.30);
   --ou-border-mid:      rgba(255, 255, 255, 0.40);   /* 컨트롤 전용 (toggle/checkbox/input) */
   --ou-border-focus:    rgba(255, 255, 255, 0.45);
+  --ou-border-card:     rgba(255, 255, 255, 0.60);   /* 카드 전용 — 배경 없는 카드가 눈에 보이도록 */
 
   /* ─── Surface (반투명 오버레이 4단계) ─── */
   --ou-surface-faint:   rgba(255, 255, 255, 0.015);
@@ -121,7 +122,7 @@
 
   /* ─── Typography ─── */
   --ou-font-logo:    var(--font-orbitron, 'Orbitron'), sans-serif;
-  --ou-font-display: var(--font-dm-sans, 'DM Sans'), sans-serif;
+  --ou-font-display: var(--font-orbitron, 'Orbitron'), sans-serif;
   --ou-font-body:    'Pretendard Variable', -apple-system, BlinkMacSystemFont, sans-serif;
   --ou-font-mono:    'JetBrains Mono', monospace;
 
@@ -263,6 +264,7 @@
   --ou-border-strong:    rgba(0, 0, 0, 0.30);
   --ou-border-mid:       rgba(0, 0, 0, 0.38);
   --ou-border-focus:     rgba(0, 0, 0, 0.45);
+  --ou-border-card:      rgba(0, 0, 0, 0.18);
   /* surface */
   --ou-surface-faint:    rgba(0, 0, 0, 0.01);
   --ou-surface-subtle:   rgba(0, 0, 0, 0.03);
@@ -490,3 +492,15 @@ img, video {
   color: rgba(255, 255, 255, 0.4);
 }
 
+
+/* ── 대시보드 복귀 버튼 blink 애니메이션 ── */
+@keyframes blink-soft {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.45; }
+}
+
+/* ── DataCardPanel 슬라이드 인 ── */
+@keyframes slide-in-right {
+  from { transform: translateX(100%); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}

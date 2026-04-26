@@ -198,6 +198,24 @@ export const DS_COMPONENTS: DsComponentMeta[] = [
 
   // ── Display ──────────────────────────────────────────────────────────────
   {
+    id: 'OuFolderTree',
+    name: 'OuFolderTree',
+    group: 'display',
+    description: 'D3 cluster 기반 수평 dendrogram. 흰 원형 노드 + Bezier 곡선. originPoint 지정 시 0.5s 펼침 애니메이션.',
+    status: 'stable',
+    importPath: '@/components/ds',
+  },
+  {
+    id: 'OuOrbIcon',
+    name: 'OuOrbIcon',
+    group: 'display',
+    description: '원형 Orb 아이콘. filled(흰 원+검은 아이콘) / outline(투명+흰 테두리+흰 아이콘) variant. 프리셋 레일·Orb바·트리 노드 공용.',
+    variants: ['filled', 'outline'],
+    sizes: ['28', '32', '40'],
+    status: 'stable',
+    importPath: '@/components/ds',
+  },
+  {
     id: 'OuCard',
     name: 'OuCard',
     group: 'display',
@@ -292,6 +310,66 @@ export const DS_COMPONENTS: DsComponentMeta[] = [
     group: 'overlay',
     description: '모달 다이얼로그. isOpen + onClose 필수. portal 렌더.',
     status: 'stable',
+    importPath: '@/components/ds',
+  },
+
+  // ── Deprecated ────────────────────────────────────────────────────────────
+  {
+    id: 'AuthLayout',
+    name: 'AuthLayout',
+    group: 'layout',
+    description: '(deprecated) 구 인증 페이지 레이아웃. OuAuthLayout으로 대체됨.',
+    status: 'deprecated',
+    importPath: '@/components/ds',
+  },
+  {
+    id: 'PageLayout',
+    name: 'PageLayout',
+    group: 'layout',
+    description: '(deprecated) 구 페이지 레이아웃 래퍼. OuPageLayout으로 대체됨.',
+    status: 'deprecated',
+    importPath: '@/components/ds',
+  },
+
+  // ── Input (Orb 전용 모듈) ─────────────────────────────────────────────────
+  {
+    id: 'OrbChat',
+    name: 'OrbChat',
+    group: 'input',
+    description: 'Orb 채팅 입력 모듈. deep-talk Orb 전용.',
+    status: 'experimental',
+    importPath: '@/components/ds',
+  },
+  {
+    id: 'OrbPost',
+    name: 'OrbPost',
+    group: 'input',
+    description: 'Orb 포스트 입력 모듈.',
+    status: 'experimental',
+    importPath: '@/components/ds',
+  },
+  {
+    id: 'OrbSearch',
+    name: 'OrbSearch',
+    group: 'input',
+    description: 'Orb 검색 입력 모듈.',
+    status: 'experimental',
+    importPath: '@/components/ds',
+  },
+  {
+    id: 'OrbQuick',
+    name: 'OrbQuick',
+    group: 'input',
+    description: 'Orb 빠른 입력 모듈.',
+    status: 'experimental',
+    importPath: '@/components/ds',
+  },
+  {
+    id: 'OrbComment',
+    name: 'OrbComment',
+    group: 'input',
+    description: 'Orb 댓글 입력 모듈.',
+    status: 'experimental',
     importPath: '@/components/ds',
   },
 ];

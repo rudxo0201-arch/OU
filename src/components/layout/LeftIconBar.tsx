@@ -1,38 +1,55 @@
 'use client';
 
-import { useState } from 'react';
-import { FolderOpen, Network, Search } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useRef } from 'react';
+import {
+  Undo2, Globe, Layers, Calendar, Boxes,
+  LucideIcon,
+} from 'lucide-react';
+import { OuOrbIcon } from '@/components/ds';
+import { ROUTES } from '@/lib/ou-registry';
 import { useHomeViewStore } from '@/stores/homeViewStore';
+import { usePresetStore } from '@/stores/presetStore';
+import type { Preset } from '@/types';
 
-function IconBtn({ icon, label, active, onClick }: {
-  icon: React.ReactNode; label: string; active?: boolean; onClick?: () => void;
-}) {
-  const [hovered, setHovered] = useState(false);
+const ICON_MAP: Record<string, LucideIcon> = {
+  Globe, Layers, Calendar, Boxes,
+};
+
+function PresetOrbBtn({ preset }: { preset: Preset }) {
+  const router = useRouter();
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const Icon = ICON_MAP[preset.icon] ?? Globe;
+
+  function handleClick() {
+    const view = preset.kind === 'graph' ? 'graph' : 'tree-preview';
+    let url = `${ROUTES.HOME}?view=${view}&preset=${preset.id}`;
+    if (preset.kind === 'tree' && wrapRef.current) {
+      const rect = wrapRef.current.getBoundingClientRect();
+      url += `&ox=${Math.round(rect.right)}&oy=${Math.round(rect.top + rect.height / 2)}`;
+    }
+    router.push(url);
+  }
+
   return (
-    <button
-      title={label}
-      onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        width: 40, height: 40,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: active ? 'var(--ou-surface)' : 'none',
-        border: active ? '1px solid var(--ou-border)' : '1px solid transparent',
-        borderRadius: 10,
-        cursor: 'pointer',
-        color: active || hovered ? 'var(--ou-text)' : 'var(--ou-text-muted)',
-        transition: 'all 160ms ease',
-        filter: active || hovered ? 'drop-shadow(0 0 6px rgba(255,255,255,0.25))' : 'none',
-      }}
-    >
-      {icon}
-    </button>
+    <div ref={wrapRef}>
+      <OuOrbIcon
+        icon={Icon}
+        variant="filled"
+        size={32}
+        label={preset.label}
+        onClick={handleClick}
+      />
+    </div>
   );
 }
 
 export function LeftIconBar() {
-  const { activeView, toggleView } = useHomeViewStore();
+  const router = useRouter();
+  const { activeView } = useHomeViewStore();
+  const { presets, loaded } = usePresetStore();
+
+  const isDashboard = activeView === 'dashboard';
 
   return (
     <div style={{
@@ -43,27 +60,30 @@ export function LeftIconBar() {
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      justifyContent: 'center',
+      paddingTop: 16,
       gap: 8,
     }}>
-      <IconBtn
-        icon={<FolderOpen size={18} strokeWidth={1.5} />}
-        label="폴더"
-        active={false}
-        onClick={() => window.dispatchEvent(new CustomEvent('left-folder-open'))}
+      {/* 시스템 — 대시보드 복귀 */}
+      <OuOrbIcon
+        icon={Undo2}
+        variant="outline"
+        size={32}
+        label="대시보드로 돌아가기"
+        animate={isDashboard ? undefined : 'blink-soft 1.5s ease-in-out infinite'}
+        onClick={() => router.push(ROUTES.HOME)}
       />
-      <IconBtn
-        icon={<Network size={18} strokeWidth={1.5} />}
-        label="그래프 뷰"
-        active={activeView === 'graph'}
-        onClick={() => toggleView('graph')}
-      />
-      <IconBtn
-        icon={<Search size={18} strokeWidth={1.5} />}
-        label="검색"
-        active={false}
-        onClick={() => window.dispatchEvent(new CustomEvent('left-search-open'))}
-      />
+
+      {/* 구분선 */}
+      <div style={{
+        width: 32, height: 1,
+        background: 'rgba(255,255,255,0.15)',
+        margin: '4px 0', flexShrink: 0,
+      }} />
+
+      {/* 사용자 프리셋 (시드 4 + 추가 프리셋) */}
+      {loaded && presets.map((preset) => (
+        <PresetOrbBtn key={preset.id} preset={preset} />
+      ))}
     </div>
   );
 }

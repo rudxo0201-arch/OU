@@ -1,0 +1,372 @@
+{
+  "meta": {
+    "version": "1.0",
+    "read_order": "CLAUDE.md → DECISIONS.json → (용어·DS 정의 필요 시 ou-registry.ts)",
+    "description": "모든 변경의 원인·결정·상태·문서 수정 여부를 추적. 세션 시작 시 반드시 읽을 것."
+  },
+  "decisions": [
+    {
+      "id": "D-001",
+      "type": "philosophy",
+      "status": "completed",
+      "title": "파싱은 LLM 단독 — 정규식 금지",
+      "description": "초반에 데이터가 적을 때 정규식은 품질 저하와 모호 처리 불가 문제를 일으킨다. LLM이 문맥을 이해하고 clarification을 반환할 수 있다. 비용 최적화는 데이터가 충분히 쌓인 뒤 논의.",
+      "affects": {
+        "registry": false,
+        "claude_md_sections": [
+          "§11"
+        ],
+        "code_files": [
+          "src/app/api/quick/route.ts",
+          "src/lib/pipeline/extract-domain-data.ts"
+        ]
+      },
+      "docs_to_update": [
+        {
+          "file": "CLAUDE.md",
+          "section": "§11",
+          "action": "파싱은 LLM 단독 원칙 추가",
+          "done": true
+        }
+      ],
+      "conflict_check": "기존 §11 확인 — 정규식 사용 금지 명시 없음. 추가 필요.",
+      "created_at": "2026-04-26",
+      "started_at": "2026-04-26",
+      "completed_at": "2026-04-26"
+    },
+    {
+      "id": "D-002",
+      "type": "architecture",
+      "status": "completed",
+      "title": "/home QSBar = inbox, Orb 입력창 = 도메인 전용",
+      "description": "/home QSBar는 도메인 불명확한 빠른 입력을 받아 백그라운드 DB화하는 inbox 역할. 각 /orb/[slug] 입력창은 해당 도메인 전용 프롬프트를 쓰고 LLM 동기 파싱 + clarification 플로우로 처리. 현재 OrbInputBar가 /api/quick을 쓰는 것은 잘못된 배선.",
+      "affects": {
+        "registry": false,
+        "claude_md_sections": [
+          "§7"
+        ],
+        "code_files": [
+          "src/components/orb/OrbInputBar.tsx"
+        ]
+      },
+      "docs_to_update": [
+        {
+          "file": "CLAUDE.md",
+          "section": "§7",
+          "action": "QSBar inbox 역할 + Orb 입력창 도메인 전용 원칙 추가",
+          "done": true
+        }
+      ],
+      "conflict_check": "§7 확인 — 입력바 4벌 문제 언급 있음. 구체적 역할 분리 명시 추가 필요.",
+      "created_at": "2026-04-26",
+      "started_at": "2026-04-26",
+      "completed_at": "2026-04-26"
+    },
+    {
+      "id": "D-003",
+      "type": "architecture",
+      "status": "completed",
+      "title": "DECISIONS.json 기반 문서 관리 파이프라인",
+      "description": "세션 간 결정 리셋 문제 해결. DECISIONS.json이 허브, 레지스트리가 용어 SSOT, CLAUDE.md가 철학 결과물. 각 문서 역할이 겹치지 않아 충돌 불가능한 구조.",
+      "affects": {
+        "registry": false,
+        "claude_md_sections": [
+          "§0 (파일 상단)"
+        ],
+        "code_files": []
+      },
+      "docs_to_update": [
+        {
+          "file": "CLAUDE.md",
+          "section": "파일 상단",
+          "action": "세션 시작 읽기 순서 및 DECISIONS.json 존재 명시",
+          "done": true
+        }
+      ],
+      "conflict_check": "해당 없음 — 신규 시스템",
+      "created_at": "2026-04-26",
+      "started_at": "2026-04-26",
+      "completed_at": "2026-04-26"
+    },
+    {
+      "id": "D-004",
+      "type": "implementation",
+      "status": "completed",
+      "title": "/api/orb-input 신규 — LLM 동기 파싱 + clarification 플로우",
+      "description": "OrbInputBar가 /api/quick 대신 /api/orb-input을 사용. LLM(Haiku) 동기 호출. 명확하면 DB 저장, 모호하면 clarification 질문 반환. Phase 1 정규식 제거.",
+      "affects": {
+        "registry": false,
+        "claude_md_sections": [],
+        "code_files": [
+          "src/app/api/orb-input/route.ts",
+          "src/lib/pipeline/extraction/types.ts",
+          "src/lib/pipeline/extraction/index.ts",
+          "src/components/orb/OrbInputBar.tsx"
+        ]
+      },
+      "docs_to_update": [],
+      "conflict_check": "D-001, D-002와 방향 일치 — 충돌 없음",
+      "created_at": "2026-04-26",
+      "started_at": "2026-04-26",
+      "completed_at": "2026-04-26"
+    },
+    {
+      "id": "D-005",
+      "type": "implementation",
+      "status": "pending",
+      "title": "habit 정의/인스턴스 분리 + lazy on-read 자동 생성",
+      "description": "habit 등록(kind=definition)과 수행 체크인(kind=checkin) 분리. 등록 시점부터 매일 자동 인스턴스 lazy on-read 생성. 수행/미수행 모두 기록.",
+      "affects": {
+        "registry": false,
+        "claude_md_sections": [],
+        "code_files": [
+          "src/components/views/HeatmapView.tsx",
+          "src/app/api/quick/route.ts"
+        ]
+      },
+      "docs_to_update": [],
+      "conflict_check": "해당 없음",
+      "created_at": "2026-04-26",
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "id": "D-006",
+      "type": "implementation",
+      "status": "pending",
+      "title": "journal 뭉텅이 입력 → LLM 분해 파이프라인 (2단계)",
+      "description": "한 텍스트를 여러 도메인 노드로 분해, linked_to 필드로 연결. JournalView는 추정 매칭 대신 명시적 link로 좌우 매핑. 현재 1단계(시간 근접도 추정 매칭)는 완료.",
+      "affects": {
+        "registry": false,
+        "claude_md_sections": [],
+        "code_files": []
+      },
+      "docs_to_update": [],
+      "conflict_check": "해당 없음",
+      "created_at": "2026-04-26",
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "id": "D-007",
+      "type": "refactor",
+      "status": "completed",
+      "title": "mcp__ou__record_* settings.json에서 제거",
+      "description": "대화 내용이 habit 노드로 오염 저장되는 문제. settings.json allow 리스트에서 mcp__ou__record_message, mcp__ou__record_conversation 제거.",
+      "affects": {
+        "registry": false,
+        "claude_md_sections": [],
+        "code_files": [
+          ".claude/settings.json"
+        ]
+      },
+      "docs_to_update": [],
+      "conflict_check": "해당 없음",
+      "created_at": "2026-04-26",
+      "started_at": "2026-04-26",
+      "completed_at": "2026-04-26"
+    },
+    {
+      "id": "D-008",
+      "type": "implementation",
+      "status": "completed",
+      "title": "habit kind='definition'/'checkin' 구분",
+      "description": "OrbInputBar에서 habit 입력 시 kind=definition 자동 설정. HeatmapView 체크인 버튼은 kind=checkin 명시. parseHabits에서 definition 노드는 이름 등록만, 수행 기록 제외.",
+      "affects": {
+        "registry": false,
+        "claude_md_sections": [],
+        "code_files": [
+          "src/app/api/quick/route.ts",
+          "src/components/views/HeatmapView.tsx"
+        ]
+      },
+      "docs_to_update": [],
+      "conflict_check": "해당 없음",
+      "created_at": "2026-04-26",
+      "started_at": "2026-04-26",
+      "completed_at": "2026-04-26"
+    },
+    {
+      "id": "D-009",
+      "type": "implementation",
+      "status": "completed",
+      "title": "JournalView 타임라인+소회 매핑 구조",
+      "description": "좌측 타임라인(schedule/task/habit/emotion), 우측 소회(journal). 시간 근접도(±30분)로 매핑. 매칭 안 된 journal은 우측 맨 아래.",
+      "affects": {
+        "registry": false,
+        "claude_md_sections": [],
+        "code_files": [
+          "src/components/views/JournalView.tsx"
+        ]
+      },
+      "docs_to_update": [],
+      "conflict_check": "해당 없음",
+      "created_at": "2026-04-26",
+      "started_at": "2026-04-26",
+      "completed_at": "2026-04-26"
+    },
+    {
+      "id": "D-010",
+      "type": "implementation",
+      "status": "completed",
+      "title": "journal 도메인 정식화",
+      "description": "classifier.ts에 journal 추가, extraction registry 등록, JournalView 필터에 journal 추가, ORB_REGISTRY viewType 'note' → 'journal'.",
+      "affects": {
+        "registry": false,
+        "claude_md_sections": [],
+        "code_files": [
+          "src/lib/pipeline/classifier.ts",
+          "src/lib/pipeline/extraction/registry.ts",
+          "src/lib/pipeline/extraction/domains/journal.ts",
+          "src/components/views/JournalView.tsx",
+          "src/components/orb/registry.ts"
+        ]
+      },
+      "docs_to_update": [],
+      "conflict_check": "해당 없음",
+      "created_at": "2026-04-26",
+      "started_at": "2026-04-26",
+      "completed_at": "2026-04-26"
+    },
+    {
+      "id": "D-013",
+      "type": "refactor",
+      "status": "completed",
+      "title": "DS Neu* 완전 제거 + registry.ts 완성",
+      "description": "Neu* 컴포넌트 3개 파일(terms-agree, OUChatWindow, OrbFullscreen) Ou*로 이관 완료. Neu*.tsx 16개 삭제. registry.ts에 미등록 7개(AuthLayout·PageLayout deprecated, OrbChat/Post/Search/Quick/Comment experimental) 추가. DS_COMPONENTS 27→34. 기존 빌드 에러(NeuAuthLayout, NeuBadge) 해소.",
+      "affects": {
+        "registry": false,
+        "claude_md_sections": [
+          "§9",
+          "§14"
+        ],
+        "code_files": [
+          "src/app/(auth)/terms-agree/page.tsx",
+          "src/components/chat/OUChatWindow.tsx",
+          "src/components/chat/OrbFullscreen.tsx",
+          "src/components/ds/registry.ts"
+        ]
+      },
+      "docs_to_update": [],
+      "conflict_check": "D-011(세 레지스트리 분리)과 방향 일치. DS registry 완성이 D-011 구조의 코드 정합.",
+      "created_at": "2026-04-26",
+      "started_at": "2026-04-26",
+      "completed_at": "2026-04-26"
+    },
+    {
+      "id": "D-012",
+      "type": "implementation",
+      "status": "completed",
+      "title": "/api/quick LLM 단독 전환 + extract-domain-data.ts 제거",
+      "description": "QSBar inbox 엔드포인트(/api/quick)에서 정규식(TIME_PATTERN, extractDomainData) 제거. 즉시 INSERT는 raw + 최소 메타만, 도메인 분류와 domain_data 추출은 백그라운드 LLM(classifyDomain + extractAll)이 담당. dev/file/route.ts의 단일 사용처도 직접 객체 구성으로 교체. extract-domain-data.ts(471 lines) 및 관련 test-scenarios.ts 삭제. D-001(정규식 금지) 코드 정합 완료.",
+      "affects": {
+        "registry": false,
+        "claude_md_sections": [
+          "§11",
+          "§14"
+        ],
+        "code_files": [
+          "src/app/api/quick/route.ts",
+          "src/app/api/dev/file/route.ts",
+          "src/lib/pipeline/extract-domain-data.ts",
+          "scripts/test-scenarios.ts"
+        ]
+      },
+      "docs_to_update": [
+        {
+          "file": "CLAUDE.md",
+          "section": "§11",
+          "action": "extract-domain-data 잔존 언급 제거",
+          "done": true
+        },
+        {
+          "file": "CLAUDE.md",
+          "section": "§14",
+          "action": "/api/quick LLM 전환 항목 완료 표시",
+          "done": true
+        }
+      ],
+      "conflict_check": "D-001(정규식 금지)·D-002(QSBar inbox)와 방향 일치 — 충돌 없음",
+      "created_at": "2026-04-26",
+      "started_at": "2026-04-26",
+      "completed_at": "2026-04-26"
+    },
+    {
+      "id": "D-011",
+      "type": "philosophy",
+      "status": "completed",
+      "title": "세 레지스트리 SSOT 역할 분리",
+      "description": "DECISIONS.json(변경 기록), ou-registry.ts(용어·식별자), ds/registry.ts(DS 컴포넌트 메타데이터) 세 파일이 각각 독립된 SSOT로 분리된다. 다루는 대상의 종류가 달라 합칠 이유가 없다. DS 변경 시에도 DECISIONS.json에 type:'ds' 항목을 발행하고 ds/registry.ts를 갱신하는 흐름으로 일관성을 유지한다.",
+      "affects": {
+        "registry": false,
+        "claude_md_sections": [
+          "헤더 (세션 읽기 순서 아래)",
+          "§9"
+        ],
+        "code_files": []
+      },
+      "docs_to_update": [
+        {
+          "file": "CLAUDE.md",
+          "section": "헤더",
+          "action": "세 레지스트리 역할 분리 명시",
+          "done": true
+        },
+        {
+          "file": "CLAUDE.md",
+          "section": "§9",
+          "action": "DS 신규 컴포넌트 항목에 registry.ts SSOT 명시",
+          "done": true
+        }
+      ],
+      "conflict_check": "ou-registry.ts와 ds/registry.ts가 중복되지 않는 이유: ou-registry.ts는 자연어 alias 매핑이 목적, ds/registry.ts는 React 식별자 메타데이터가 목적. 대상이 달라 충돌 없음.",
+      "created_at": "2026-04-26",
+      "started_at": "2026-04-26",
+      "completed_at": "2026-04-26"
+    },
+    {
+      "id": "D-014",
+      "type": "architecture",
+      "status": "completed",
+      "title": "좌측 OrbRail(프리셋) + 우측 OrbBar(Orb 진입) 양분 + 그래프/트리 프리셋",
+      "description": "홈 좌·우 사이드 양분. 좌측 = 그래프/트리뷰 프리셋 전용 OrbRail (사실상 Item 탐색). 우측 = ORB_SLUGS 7종 진입용 OrbBar. 그래프 프리셋 클릭 → 위젯 그리드 in-place 대체. 트리 프리셋 클릭 → 0.5s 펼침 + dim 미리보기 → 넓게 펼치기 시 위젯 그리드 in-place 대체. 위젯 레이아웃 영속화 패턴(_preferences) 재사용. 기존 SideBar 이모지·라우트 정합성 회복(§8·§9).",
+      "affects": {
+        "registry": true,
+        "claude_md_sections": [
+          "§6",
+          "§8",
+          "§9"
+        ],
+        "code_files": [
+          "src/components/layout/LeftIconBar.tsx (OrbRail 재정의)",
+          "src/components/layout/RightOrbBar.tsx (OrbBar, 7종)",
+          "src/components/layout/SideBar.tsx (삭제)",
+          "src/components/layout/TopNavBar.tsx (Home/Universe/Orbit 추가)",
+          "src/components/ds/OuOrbIcon.tsx (신규)",
+          "src/lib/ou-registry.ts (ORBS_META 신설)",
+          "src/app/globals.css (blink-soft)",
+          "src/components/views/TreePresetOverlay.tsx (신규)",
+          "src/components/views/TreeFullLayer.tsx (신규)",
+          "src/components/views/DataCardPanel.tsx (신규)",
+          "src/lib/data-finder/useTreeData.ts (신규)",
+          "src/lib/data-finder/build-tree.ts (신규)",
+          "src/stores/presetStore.ts (신규)",
+          "src/components/graph/ForceControlsPanel.tsx (신규)",
+          "src/components/views/GraphPresetView.tsx (신규)",
+          "next.config.mjs (transpilePackages d3)"
+        ]
+      },
+      "docs_to_update": [
+        {
+          "file": "CLAUDE.md",
+          "section": "§6",
+          "action": "프리셋 = 진입점 단락 추가",
+          "done": false
+        }
+      ],
+      "created_at": "2026-04-26",
+      "started_at": "2026-04-26",
+      "completed_at": "2026-04-26"
+    }
+  ]
+}

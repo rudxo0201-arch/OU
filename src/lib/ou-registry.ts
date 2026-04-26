@@ -52,6 +52,17 @@ export const ORB_SLUGS = {
   SETTINGS:  'settings',
 } as const;
 
+/** Orb 메타데이터 — slug·한국어 라벨·Lucide 아이콘 이름 */
+export const ORBS_META = [
+  { slug: ORB_SLUGS.DEEP_TALK, label: '딥토크',  icon: 'MessageCircle' },
+  { slug: ORB_SLUGS.SCHEDULE,  label: '일정',    icon: 'CalendarDays'  },
+  { slug: ORB_SLUGS.TASK,      label: '할일',    icon: 'CheckSquare'   },
+  { slug: ORB_SLUGS.HABIT,     label: '습관',    icon: 'Repeat2'       },
+  { slug: ORB_SLUGS.IDEA,      label: '아이디어', icon: 'Lightbulb'     },
+  { slug: ORB_SLUGS.NOTE,      label: '노트',    icon: 'BookOpen'      },
+  { slug: ORB_SLUGS.SETTINGS,  label: '설정',    icon: 'Settings'      },
+] as const;
+
 // ─────────────────────────────────────────────
 // 도메인 식별자 — DB의 domain 필드값과 1:1 대응
 // CLAUDE.md §3·§4 기준
@@ -147,6 +158,20 @@ export const TERMS = {
     description: 'Item을 노드·엣지로 시각화하는 뷰. 우주 = 풀스크린 그래프뷰.',
     aliases: ['우주', '유니버스', 'universe', 'knowledge graph', '지식 그래프', 'graph'],
     deprecated: ['/universe', '/my'],
+  },
+  QS_BAR: {
+    canonical: 'QSBar',
+    label_ko: 'QS 입력창',
+    description: '/home 상단 빠른 입력창. inbox 역할 — 도메인이 불명확한 입력을 받아 백그라운드로 DB화한다. 도메인 분류·파싱은 나중에 처리. /api/quick 사용.',
+    aliases: ['퀵바', 'quick bar', '빠른 입력', '홈 입력창', 'inbox', '인박스'],
+    deprecated: [],
+  },
+  ORB_INPUT: {
+    canonical: 'Orb 입력창',
+    label_ko: 'Orb 입력창',
+    description: '각 /orb/[slug] 하단 입력창. 도메인 전용 역할 — 도메인이 이미 확정되어 있고 해당 도메인 전용 프롬프트로 LLM이 동기 파싱한다. 모호한 경우 clarification 질문을 반환하고 저장을 보류한다. /api/orb-input 사용.',
+    aliases: ['orb 인풋', 'orb 입력', '도메인 입력창', 'OrbInputBar'],
+    deprecated: [],
   },
 
   // 도메인 한국어 레이블 (UI 표시용)

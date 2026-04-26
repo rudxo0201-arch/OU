@@ -38,6 +38,10 @@ export { OuTable }              from './OuTable';
 export type { OuTableColumn }   from './OuTable';
 export { OuTag }                from './OuTag';
 export { OuTextarea }           from './OuTextarea';
+export { OuOrbIcon }            from './OuOrbIcon';
+export type { OuOrbIconProps }  from './OuOrbIcon';
+export { OuFolderTree }         from './OuFolderTree';
+export type { OuFolderTreeProps } from './OuFolderTree';
 export { OuToggle }             from './OuToggle';
 
 // ── 레이아웃 ─────────────────────────────────────────────────

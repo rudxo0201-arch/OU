@@ -4,6 +4,7 @@ import { useRef, useEffect, useState, useCallback } from 'react';
 import { Settings, Minimize2, ChevronDown, ChevronRight, RotateCcw, Crosshair, Plus, Search } from 'lucide-react';
 import { useGraphSettingsStore, DEFAULT_GRAPH_SETTINGS } from '@/stores/graphSettingsStore';
 import type { Attractor } from '../../lib/workers/graph-physics.types';
+import type { ForceParams } from '@/types';
 
 export interface GraphNode {
   id: string;
@@ -79,6 +80,8 @@ interface KnowledgeGraphProps {
   localMode?: boolean;
   /** true면 PixiJS 배경 투명 + 캔버스 radius 제거 — /home 우주 위에 바로 렌더할 때 사용 */
   transparent?: boolean;
+  /** 외부 ForceControlsPanel이 주입하는 force 파라미터 — 변경 시 worker에 updateForces 메시지 */
+  externalForceParams?: ForceParams;
 }
 
 /**
@@ -89,7 +92,7 @@ interface KnowledgeGraphProps {
  * - Physics: d3-force in Web Worker (off main thread)
  * - This is a GAME ENGINE. Treat it as such.
  */
-export function KnowledgeGraph({ nodes, edges, onNodeClick, hideSettingsButton, settingsOpen: externalSettingsOpen, onSettingsToggle, activeNodeId, localMode = false, transparent = false }: KnowledgeGraphProps) {
+export function KnowledgeGraph({ nodes, edges, onNodeClick, hideSettingsButton, settingsOpen: externalSettingsOpen, onSettingsToggle, activeNodeId, localMode = false, transparent = false, externalForceParams }: KnowledgeGraphProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const pixiAppRef = useRef<any>(null);
   const worldRef = useRef<any>(null);
@@ -183,6 +186,19 @@ export function KnowledgeGraph({ nodes, edges, onNodeClick, hideSettingsButton, 
     }
     renderFrame();
   }, [searchQuery]);
+
+  // 외부 forceParams → worker updateForces
+  useEffect(() => {
+    if (!externalForceParams || !workerRef.current) return;
+    workerRef.current.postMessage({
+      type: 'updateForces',
+      data: {
+        repulsion: Math.abs(externalForceParams.gravity),
+        linkDistance: externalForceParams.linkDistance,
+        linkStrength: externalForceParams.linkStrength,
+      },
+    });
+  }, [externalForceParams]);
 
   // activeNodeId / localMode → 1-hop 이웃 집합 갱신 + 재렌더
   useEffect(() => {
