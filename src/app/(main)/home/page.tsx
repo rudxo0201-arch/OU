@@ -11,6 +11,7 @@ import { PageRenderer, type FullNode } from '@/components/page/PageRenderer';
 import { GraphPresetView } from '@/components/views/GraphPresetView';
 import { TreePresetOverlay } from '@/components/views/TreePresetOverlay';
 import { TreeFullLayer } from '@/components/views/TreeFullLayer';
+import { QSBar } from '@/components/layout/QSBar';
 import { useHomeViewStore } from '@/stores/homeViewStore';
 import '@/components/widgets/views/register';
 
@@ -134,7 +135,8 @@ function HomePageInner() {
     <div style={{ position: 'relative', height: '100vh', overflow: 'hidden' }}>
 
         {/* ── 메인 콘텐츠 (그래프 외) ── */}
-        <div style={{ position: 'absolute', top: NAV_HEIGHT, bottom: 0, left: 0, right: 0 }}>
+        {/* bottom: 100px — QSBar(고정, ~90px) + 하단 여백 확보 */}
+        <div style={{ position: 'absolute', top: NAV_HEIGHT, bottom: 100, left: 0, right: 0 }}>
           {activeView === 'page' && openedPage ? (
             <div style={{ width: '100%', height: '100%', overflowY: 'auto' }}>
               <PageRenderer
@@ -146,6 +148,11 @@ function HomePageInner() {
             <WidgetGrid />
           )}
         </div>
+
+        {/* ── 하단 고정 채팅바 (위젯 그리드 + 그래프뷰 모두에서 표시) ── */}
+        {urlView !== 'tree-full' && urlView !== 'tree-preview' && (
+          <QSBar />
+        )}
 
         {/* ── 그래프 프리셋 뷰 (URL view=graph) ── */}
         {activeView === 'graph' && (

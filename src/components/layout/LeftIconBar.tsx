@@ -1,12 +1,11 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import {
-  Undo2, Globe, Layers, Calendar, Boxes,
+  Undo2, Globe, Layers, Calendar, Boxes, Plus,
   LucideIcon,
 } from 'lucide-react';
-import { OuOrbIcon } from '@/components/ds';
 import { ROUTES } from '@/lib/ou-registry';
 import { useHomeViewStore } from '@/stores/homeViewStore';
 import { usePresetStore } from '@/stores/presetStore';
@@ -15,6 +14,49 @@ import type { Preset } from '@/types';
 const ICON_MAP: Record<string, LucideIcon> = {
   Globe, Layers, Calendar, Boxes,
 };
+
+const ICON_SIZE = 40;
+
+function OrbBtn({
+  icon: Icon,
+  label,
+  variant = 'filled',
+  animate,
+  dashed,
+  onClick,
+}: {
+  icon: LucideIcon;
+  label?: string;
+  variant?: 'filled' | 'outline' | 'ghost';
+  animate?: string;
+  dashed?: boolean;
+  onClick?: () => void;
+}) {
+  const base: React.CSSProperties = {
+    width: ICON_SIZE,
+    height: ICON_SIZE,
+    borderRadius: '50%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    cursor: onClick ? 'pointer' : 'default',
+    flexShrink: 0,
+    padding: 0,
+    transition: 'filter 160ms ease',
+    ...(animate ? { animation: animate } : {}),
+    ...(variant === 'filled'
+      ? { background: '#fff', color: '#111', border: 'none' }
+      : variant === 'outline'
+      ? { background: 'transparent', color: '#fff', border: `1.5px solid rgba(255,255,255,0.8)` }
+      : { background: 'transparent', color: 'rgba(255,255,255,0.5)', border: `1.5px dashed rgba(255,255,255,0.35)` }),
+  };
+
+  return (
+    <button title={label} onClick={onClick} style={base} type="button">
+      <Icon size={18} strokeWidth={1.5} />
+    </button>
+  );
+}
 
 function PresetOrbBtn({ preset }: { preset: Preset }) {
   const router = useRouter();
@@ -33,10 +75,9 @@ function PresetOrbBtn({ preset }: { preset: Preset }) {
 
   return (
     <div ref={wrapRef}>
-      <OuOrbIcon
+      <OrbBtn
         icon={Icon}
         variant="filled"
-        size={32}
         label={preset.label}
         onClick={handleClick}
       />
@@ -60,27 +101,25 @@ export function LeftIconBar() {
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      paddingTop: 16,
-      gap: 8,
+      justifyContent: 'center',
+      gap: 12,
     }}>
-      {/* 시스템 — 대시보드 복귀 */}
-      <OuOrbIcon
+      {/* 프리셋 추가 placeholder (비활성) */}
+      <OrbBtn icon={Plus} variant="ghost" label="프리셋 추가" />
+
+      {/* 구분선 */}
+      <div style={{ width: 24, height: 1, background: 'rgba(255,255,255,0.12)' }} />
+
+      {/* 대시보드 복귀 */}
+      <OrbBtn
         icon={Undo2}
-        variant="outline"
-        size={32}
-        label="대시보드로 돌아가기"
+        variant="filled"
+        label="대시보드로"
         animate={isDashboard ? undefined : 'blink-soft 1.5s ease-in-out infinite'}
         onClick={() => router.push(ROUTES.HOME)}
       />
 
-      {/* 구분선 */}
-      <div style={{
-        width: 32, height: 1,
-        background: 'rgba(255,255,255,0.15)',
-        margin: '4px 0', flexShrink: 0,
-      }} />
-
-      {/* 사용자 프리셋 (시드 4 + 추가 프리셋) */}
+      {/* 사용자 프리셋 */}
       {loaded && presets.map((preset) => (
         <PresetOrbBtn key={preset.id} preset={preset} />
       ))}

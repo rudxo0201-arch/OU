@@ -45,7 +45,8 @@ export default function MainLayout({ children }: { children: ReactNode }) {
       <LeftIconBar />
       <TopNavBar />
       <RightOrbBar />
-      <div style={{ paddingLeft: 60, paddingRight: 60 }}>
+      {/* 피그마 기준: 콘텐츠 폭 1592px (1920 - 164×2). 사이드바 60px 포함. */}
+      <div style={{ paddingLeft: 164, paddingRight: 164 }}>
         {children}
       </div>
     </>

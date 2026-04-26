@@ -21,11 +21,10 @@ export const GRID_PRESETS = [
   { label: '촘촘히', cols: 20, rows: 12 },
 ] as const;
 
-// 16col × 9row 기준: 위젯은 좌상단부터 배치, OuLLM(입력창)은 하단 중앙
+// 16col × 9row 기준. 입력바는 하단 고정 QSBar로 분리됨.
 const DEFAULT_LAYOUT: WidgetInstance[] = [
-  { id: 'default-schedule',  type: WIDGET_TYPES.SCHEDULE,  x: 1, y: 0, w: 4, h: 4 },
-  { id: 'default-tasks',     type: WIDGET_TYPES.TASKS,     x: 6, y: 0, w: 4, h: 4 },
-  { id: 'default-input-bar', type: WIDGET_TYPES.INPUT_BAR, x: 4, y: 7, w: 7, h: 2 },
+  { id: 'default-schedule', type: WIDGET_TYPES.SCHEDULE, x: 1, y: 0, w: 4, h: 4 },
+  { id: 'default-tasks',    type: WIDGET_TYPES.TASKS,    x: 6, y: 0, w: 4, h: 4 },
 ];
 const DEFAULT_PAGE2_LAYOUT: WidgetInstance[] = [];
 const ADMIN_LAYOUT: WidgetInstance[] = [];
