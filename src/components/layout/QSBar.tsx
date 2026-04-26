@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useRef } from 'react';
-import { ArrowUp, Plus } from 'lucide-react';
+import { ArrowUp } from 'lucide-react';
 
 type Mode = 'quick' | 'search';
 
@@ -43,38 +43,39 @@ export function QSBar() {
   return (
     <div style={{
       position: 'fixed',
-      bottom: 28,
+      bottom: 55,
       left: '50%',
       transform: 'translateX(-50%)',
-      width: 'min(560px, calc(100vw - 340px))',
+      /* 키노트 스펙: 620px × 154px */
+      width: 620,
+      height: 154,
       zIndex: 80,
-      borderRadius: 16,
-      border: '1.5px solid rgba(255,255,255,0.55)',
-      background: 'var(--ou-bg)',
-      backdropFilter: 'blur(16px)',
-      WebkitBackdropFilter: 'blur(16px)',
-      padding: '14px 16px 10px',
+      borderRadius: 20,
+      border: '2.5px solid rgba(255,255,255,0.9)',
+      background: '#000',
+      boxShadow: '0 0 0 1px rgba(255,255,255,0.15), 0 0 32px rgba(255,255,255,0.22), 0 0 64px rgba(255,255,255,0.08)',
+      padding: '20px 24px 16px',
       display: 'flex',
       flexDirection: 'column',
-      gap: 10,
-      boxShadow: '0 0 0 1px rgba(255,255,255,0.08), 0 0 24px rgba(255,255,255,0.12), 0 8px 32px rgba(0,0,0,0.5)',
+      justifyContent: 'space-between',
     }}>
-      {/* 입력 */}
+      {/* 텍스트 입력 */}
       <textarea
         ref={inputRef}
         value={input}
         onChange={e => setInput(e.target.value)}
         onKeyDown={handleKeyDown}
         disabled={saving}
-        rows={1}
+        rows={2}
         placeholder="just talk !!"
         style={{
           width: '100%',
+          flex: 1,
           border: 'none',
           outline: 'none',
           background: 'transparent',
-          color: 'var(--ou-text-strong)',
-          fontSize: 15,
+          color: '#fff',
+          fontSize: 16,
           fontFamily: 'inherit',
           resize: 'none',
           lineHeight: 1.5,
@@ -83,70 +84,91 @@ export function QSBar() {
       />
 
       {/* 하단 버튼 행 */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-        {/* 첨부 */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        {/* + 첨부 */}
         <button
           title="첨부"
           style={{
-            width: 28, height: 28, borderRadius: '50%',
-            border: '1px solid rgba(255,255,255,0.15)',
-            background: 'transparent',
-            color: 'rgba(255,255,255,0.5)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            cursor: 'pointer', padding: 0,
+            background: 'none',
+            border: 'none',
+            color: 'rgba(255,255,255,0.7)',
+            fontSize: 24,
+            fontWeight: 300,
+            cursor: 'pointer',
+            padding: '0 4px',
+            lineHeight: 1,
           }}
         >
-          <Plus size={14} strokeWidth={1.5} />
+          +
         </button>
-
-        {/* 모드 토글 */}
-        {(['quick', 'search'] as Mode[]).map((m) => (
-          <button
-            key={m}
-            onClick={() => setMode(m)}
-            style={{
-              padding: '3px 10px',
-              borderRadius: 999,
-              border: `1px solid ${mode === m ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.12)'}`,
-              background: mode === m ? 'rgba(255,255,255,0.1)' : 'transparent',
-              color: mode === m ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.4)',
-              fontSize: 11,
-              fontWeight: 500,
-              cursor: 'pointer',
-              letterSpacing: '0.03em',
-              transition: 'all 140ms ease',
-            }}
-          >
-            {m === 'quick' ? 'Quick' : 'Search'}
-          </button>
-        ))}
 
         <span style={{ flex: 1 }} />
 
-        {/* 저장 완료 메시지 */}
-        {savedMsg && (
-          <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', fontFamily: 'var(--ou-font-mono)' }}>
-            {savedMsg}
-          </span>
-        )}
-
-        {/* 전송 */}
+        {/* Search 버튼 (outline) */}
         <button
-          onClick={() => { submit(input); setInput(''); }}
-          disabled={!input.trim() || saving}
+          onClick={() => setMode('search')}
           style={{
-            width: 28, height: 28, borderRadius: '50%',
-            border: 'none',
-            background: input.trim() ? '#fff' : 'rgba(255,255,255,0.15)',
-            color: input.trim() ? '#111' : 'rgba(255,255,255,0.3)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            cursor: input.trim() ? 'pointer' : 'default',
-            padding: 0,
-            transition: 'all 160ms ease',
+            padding: '6px 20px',
+            borderRadius: 999,
+            border: `1.5px solid ${mode === 'search' ? '#fff' : 'rgba(255,255,255,0.5)'}`,
+            background: mode === 'search' ? 'rgba(255,255,255,0.12)' : 'transparent',
+            color: mode === 'search' ? '#fff' : 'rgba(255,255,255,0.6)',
+            fontSize: 14,
+            fontFamily: 'var(--ou-font-display)',
+            cursor: 'pointer',
+            transition: 'all 140ms ease',
           }}
         >
-          <ArrowUp size={14} strokeWidth={2} />
+          Search
         </button>
+
+        {/* Quick 버튼 (filled = 흰 배경 + 검은 텍스트) */}
+        <button
+          onClick={() => setMode('quick')}
+          style={{
+            padding: '6px 20px',
+            borderRadius: 999,
+            border: 'none',
+            background: mode === 'quick' ? '#fff' : 'transparent',
+            color: mode === 'quick' ? '#000' : 'rgba(255,255,255,0.6)',
+            fontSize: 14,
+            fontFamily: 'var(--ou-font-display)',
+            cursor: 'pointer',
+            transition: 'all 140ms ease',
+            ...(mode !== 'quick' ? { border: '1.5px solid rgba(255,255,255,0.5)' } : {}),
+          }}
+        >
+          Quick
+        </button>
+
+        {/* 전송 버튼 */}
+        {savedMsg ? (
+          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontFamily: 'var(--ou-font-mono)', minWidth: 32, textAlign: 'center' }}>
+            {savedMsg}
+          </span>
+        ) : (
+          <button
+            onClick={() => { submit(input); setInput(''); }}
+            disabled={!input.trim() || saving}
+            style={{
+              width: 36,
+              height: 36,
+              borderRadius: '50%',
+              border: 'none',
+              background: input.trim() ? '#fff' : 'rgba(255,255,255,0.2)',
+              color: input.trim() ? '#000' : 'rgba(255,255,255,0.4)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: input.trim() ? 'pointer' : 'default',
+              padding: 0,
+              transition: 'all 160ms ease',
+              flexShrink: 0,
+            }}
+          >
+            <ArrowUp size={16} strokeWidth={2} />
+          </button>
+        )}
       </div>
     </div>
   );

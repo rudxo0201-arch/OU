@@ -66,12 +66,13 @@ export function TopNavBar() {
             <Link key={href} href={href}>
               <div style={{
                 padding: '4px 16px',
-                fontSize: 13,
-                fontWeight: active ? 600 : 400,
+                fontSize: 18,
+                fontFamily: 'var(--ou-font-display)',
+                fontWeight: active ? 700 : 400,
                 color: active ? 'var(--ou-text)' : 'var(--ou-text-muted)',
                 transition: 'color 140ms ease',
                 cursor: 'pointer',
-                letterSpacing: '0.01em',
+                letterSpacing: '0.02em',
               }}>
                 {label}
               </div>

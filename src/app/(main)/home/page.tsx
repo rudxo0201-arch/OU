@@ -135,8 +135,8 @@ function HomePageInner() {
     <div style={{ position: 'relative', height: '100vh', overflow: 'hidden' }}>
 
         {/* ── 메인 콘텐츠 (그래프 외) ── */}
-        {/* bottom: 100px — QSBar(고정, ~90px) + 하단 여백 확보 */}
-        <div style={{ position: 'absolute', top: NAV_HEIGHT, bottom: 100, left: 0, right: 0 }}>
+        {/* top: NAV+55 / bottom: QSBar(154)+55*2 = 264 — 상하좌우 여백 55px */}
+        <div style={{ position: 'absolute', top: NAV_HEIGHT + 55, bottom: 264, left: 0, right: 0 }}>
           {activeView === 'page' && openedPage ? (
             <div style={{ width: '100%', height: '100%', overflowY: 'auto' }}>
               <PageRenderer

@@ -45,8 +45,8 @@ export default function MainLayout({ children }: { children: ReactNode }) {
       <Suspense><LeftIconBar /></Suspense>
       <TopNavBar />
       <RightOrbBar />
-      {/* 피그마 기준: 콘텐츠 폭 1592px (1920 - 164×2). 사이드바 60px 포함. */}
-      <div style={{ paddingLeft: 164, paddingRight: 164 }}>
+      {/* 상하좌우 여백 55px. 사이드바(60px)는 fixed이므로 좌우: 60+55=115px. */}
+      <div style={{ paddingLeft: 115, paddingRight: 115 }}>
         {children}
       </div>
     </>
