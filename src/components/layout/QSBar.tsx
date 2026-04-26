@@ -49,7 +49,7 @@ export function QSBar() {
       width: 'min(560px, calc(100vw - 340px))',
       zIndex: 80,
       borderRadius: 16,
-      border: '1px solid rgba(255,255,255,0.18)',
+      border: '1.5px solid rgba(255,255,255,0.55)',
       background: 'var(--ou-bg)',
       backdropFilter: 'blur(16px)',
       WebkitBackdropFilter: 'blur(16px)',
@@ -57,7 +57,7 @@ export function QSBar() {
       display: 'flex',
       flexDirection: 'column',
       gap: 10,
-      boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+      boxShadow: '0 0 0 1px rgba(255,255,255,0.08), 0 0 24px rgba(255,255,255,0.12), 0 8px 32px rgba(0,0,0,0.5)',
     }}>
       {/* 입력 */}
       <textarea

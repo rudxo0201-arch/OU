@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { CSSProperties, useState } from 'react';
-import { Home, Globe, Orbit } from 'lucide-react';
 import { ROUTES } from '@/lib/ou-registry';
 import { OuAvatar, OuLogo } from '@/components/ds';
 import { useAuthStore } from '@/stores/authStore';
@@ -48,32 +47,32 @@ export function TopNavBar() {
   return (
     <nav style={navStyle}>
       {/* 로고 */}
-      <Link href={ROUTES.HOME} style={{ marginRight: 12, display: 'flex', alignItems: 'center' }}>
+      <Link href={ROUTES.HOME} style={{ display: 'flex', alignItems: 'center' }}>
         <OuLogo width={36} color="var(--ou-text)" />
       </Link>
 
-      {/* 주 네비 — Home / Universe / Orbit */}
-      <nav style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+      {/* 로고 우측 구분선 */}
+      <div style={{ width: 1, height: 20, background: 'rgba(255,255,255,0.18)', margin: '0 20px' }} />
+
+      {/* 주 네비 — Home / Universe / Orbit (텍스트만, 아이콘 없음) */}
+      <nav style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
         {[
-          { href: ROUTES.HOME,    icon: Home,   label: '홈'      },
-          { href: '/universe',    icon: Globe,  label: '유니버스' },
-          { href: '/orbit',       icon: Orbit,  label: '오빗'    },
-        ].map(({ href, icon: Icon, label }) => {
+          { href: ROUTES.HOME, label: 'Home'     },
+          { href: '/universe', label: 'Universe' },
+          { href: '/orbit',    label: 'orbit'    },
+        ].map(({ href, label }) => {
           const active = pathname === href || (href !== ROUTES.HOME && pathname.startsWith(href));
           return (
-            <Link key={href} href={href} title={label}>
+            <Link key={href} href={href}>
               <div style={{
-                display: 'flex', alignItems: 'center', gap: 6,
-                padding: '4px 10px',
-                borderRadius: 8,
-                fontSize: 12,
-                fontWeight: 500,
+                padding: '4px 16px',
+                fontSize: 13,
+                fontWeight: active ? 600 : 400,
                 color: active ? 'var(--ou-text)' : 'var(--ou-text-muted)',
-                background: active ? 'rgba(255,255,255,0.08)' : 'none',
-                transition: 'all 140ms ease',
+                transition: 'color 140ms ease',
                 cursor: 'pointer',
+                letterSpacing: '0.01em',
               }}>
-                <Icon size={14} strokeWidth={1.5} />
                 {label}
               </div>
             </Link>
