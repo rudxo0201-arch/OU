@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { ROUTES } from '@/lib/ou-registry';
 import { useHomeViewStore } from '@/stores/homeViewStore';
+import { useSearchParams } from 'next/navigation';
 import { usePresetStore } from '@/stores/presetStore';
 import type { Preset } from '@/types';
 
@@ -89,8 +90,11 @@ export function LeftIconBar() {
   const router = useRouter();
   const { activeView } = useHomeViewStore();
   const { presets, loaded } = usePresetStore();
+  const searchParams = useSearchParams();
+  const urlView = searchParams.get('view');
 
-  const isDashboard = activeView === 'dashboard';
+  // 그래프뷰 또는 트리뷰가 활성화된 상태
+  const isNonDashboard = activeView === 'graph' || urlView === 'tree-full' || urlView === 'tree-preview';
 
   return (
     <div style={{
@@ -110,14 +114,16 @@ export function LeftIconBar() {
       {/* 구분선 */}
       <div style={{ width: 24, height: 1, background: 'rgba(255,255,255,0.12)' }} />
 
-      {/* 대시보드 복귀 */}
-      <OrbBtn
-        icon={Undo2}
-        variant="filled"
-        label="대시보드로"
-        animate={isDashboard ? undefined : 'blink-soft 1.5s ease-in-out infinite'}
-        onClick={() => router.push(ROUTES.HOME)}
-      />
+      {/* 대시보드 복귀 — 그래프·트리뷰 활성 시에만 표시 */}
+      {isNonDashboard && (
+        <OrbBtn
+          icon={Undo2}
+          variant="filled"
+          label="대시보드로"
+          animate="blink-soft 1.5s ease-in-out infinite"
+          onClick={() => router.push(ROUTES.HOME)}
+        />
+      )}
 
       {/* 사용자 프리셋 */}
       {loaded && presets.map((preset) => (

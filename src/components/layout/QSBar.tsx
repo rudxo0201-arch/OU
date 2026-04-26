@@ -3,7 +3,7 @@
 import { useState, useCallback, useRef } from 'react';
 import { ArrowUp, Plus } from 'lucide-react';
 
-type Mode = 'quick' | 'chat';
+type Mode = 'quick' | 'search';
 
 export function QSBar() {
   const [input, setInput] = useState('');
@@ -100,7 +100,7 @@ export function QSBar() {
         </button>
 
         {/* 모드 토글 */}
-        {(['quick', 'chat'] as Mode[]).map((m) => (
+        {(['quick', 'search'] as Mode[]).map((m) => (
           <button
             key={m}
             onClick={() => setMode(m)}
@@ -117,7 +117,7 @@ export function QSBar() {
               transition: 'all 140ms ease',
             }}
           >
-            {m === 'quick' ? 'Quick' : 'Chat mode'}
+            {m === 'quick' ? 'Quick' : 'Search'}
           </button>
         ))}
 

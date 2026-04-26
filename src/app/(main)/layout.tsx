@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode, useEffect } from 'react';
+import { ReactNode, Suspense, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import { TopNavBar } from '@/components/layout/TopNavBar';
@@ -42,7 +42,7 @@ export default function MainLayout({ children }: { children: ReactNode }) {
   return (
     <>
       <StarField />
-      <LeftIconBar />
+      <Suspense><LeftIconBar /></Suspense>
       <TopNavBar />
       <RightOrbBar />
       {/* 피그마 기준: 콘텐츠 폭 1592px (1920 - 164×2). 사이드바 60px 포함. */}
