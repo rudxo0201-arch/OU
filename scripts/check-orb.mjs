@@ -76,6 +76,56 @@ function checkGlobals() {
   const os = read('src/components/orb/registry.ts').length;
   E(`orb/registry.ts 비어있지 않음 (${os}B)`, os > 100,
     '린터가 파일을 비웠을 가능성 — 복원 후 재빌드');
+
+  checkNoEmojiIcons();
+}
+
+/**
+ * 이모지 아이콘 사용 금지 하네스 (CLAUDE.md §9)
+ * icon= prop에 이모지 문자가 들어가면 빌드 중단.
+ * 아이콘은 SVG/벡터만 허용.
+ */
+function checkNoEmojiIcons() {
+  import('fs').then(({ readdirSync, statSync, readFileSync }) => {
+    // \p{Emoji} 사용, surrogate-pair 포함하는 이모지 범위
+    const EMOJI_RE = /[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{1F300}-\u{1FAD9}]/u;
+    // icon= 또는 icon={ 뒤에 오는 문자열 리터럴에서 이모지 검출
+    const ICON_PROP_RE = /\bicon=["'`]([^"'`]*)["'`]/g;
+
+    const hits = [];
+
+    function scanDir(dir) {
+      let entries;
+      try { entries = readdirSync(resolve(ROOT, dir)); } catch { return; }
+      for (const entry of entries) {
+        if (entry === 'node_modules' || entry === '.next') continue;
+        const rel = `${dir}/${entry}`;
+        const abs = resolve(ROOT, rel);
+        let st;
+        try { st = statSync(abs); } catch { continue; }
+        if (st.isDirectory()) { scanDir(rel); continue; }
+        if (!entry.endsWith('.tsx') && !entry.endsWith('.ts')) continue;
+        const content = readFileSync(abs, 'utf8');
+        let m;
+        ICON_PROP_RE.lastIndex = 0;
+        while ((m = ICON_PROP_RE.exec(content)) !== null) {
+          if (EMOJI_RE.test(m[1])) {
+            const line = content.slice(0, m.index).split('\n').length;
+            hits.push(`${rel}:${line} — icon="${m[1]}"`);
+          }
+        }
+      }
+    }
+
+    scanDir('src');
+
+    if (hits.length === 0) {
+      process.stdout.write('  ✅  이모지 아이콘 없음 (SVG/벡터만 사용)\n');
+    } else {
+      hits.forEach(h => process.stdout.write(`  ❌  이모지 아이콘 금지 (CLAUDE.md §9): ${h}\n`));
+      errs += hits.length;
+    }
+  });
 }
 
 console.log('\n🔍  Orb 하네스\n' + '─'.repeat(48));

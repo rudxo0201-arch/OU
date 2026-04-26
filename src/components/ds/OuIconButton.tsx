@@ -26,8 +26,10 @@ export function OuIconButton({
 
   const variantStyle: CSSProperties = variant === 'solid'
     ? {
-        background: 'var(--ou-surface-hover)',
-        border: '1px solid var(--ou-border-subtle)',
+        background: 'transparent',
+        border: '1px solid transparent',
+        boxShadow: 'var(--ou-glow-md)',
+        color: 'var(--ou-text-heading)',
       }
     : {
         background: 'transparent',
@@ -56,15 +58,24 @@ export function OuIconButton({
       }}
       onMouseEnter={e => {
         if (!disabled) {
-          (e.currentTarget as HTMLButtonElement).style.background = 'var(--ou-surface-hover)';
-          (e.currentTarget as HTMLButtonElement).style.color = 'var(--ou-text-body)';
+          const el = e.currentTarget as HTMLButtonElement;
+          if (variant === 'solid') {
+            el.style.background = 'transparent';
+            el.style.boxShadow = 'var(--ou-glow-lg)';
+            el.style.color = 'var(--ou-text-heading)';
+          } else {
+            el.style.background = 'var(--ou-surface-hover)';
+            el.style.color = 'var(--ou-text-body)';
+          }
         }
         rest.onMouseEnter?.(e);
       }}
       onMouseLeave={e => {
         if (!disabled) {
-          (e.currentTarget as HTMLButtonElement).style.background = variantStyle.background as string;
-          (e.currentTarget as HTMLButtonElement).style.color = 'var(--ou-text-muted)';
+          const el = e.currentTarget as HTMLButtonElement;
+          el.style.background = variantStyle.background as string;
+          el.style.boxShadow = (variantStyle.boxShadow as string) ?? '';
+          el.style.color = variant === 'solid' ? 'var(--ou-text-heading)' : 'var(--ou-text-muted)';
         }
         rest.onMouseLeave?.(e);
       }}

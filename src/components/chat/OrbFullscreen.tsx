@@ -6,7 +6,7 @@ import { useTutorialStore } from '@/stores/tutorialStore';
 import { TUTORIAL_STEPS, TUTORIAL_STEP_COUNT } from '@/data/tutorial';
 import { ChatPanel, InlineView } from './ChatPanel';
 import { VIEW_REGISTRY, VIEW_LABELS } from '@/components/views/registry';
-import { NeuCard, NeuButton } from '@/components/ds';
+import { OuCard, OuButton } from '@/components/ds';
 
 interface Props {
   open: boolean;
@@ -109,9 +109,9 @@ export function OrbFullscreen({ open, onClose }: Props) {
         >
           ORB
         </span>
-        <NeuButton variant="ghost" size="sm" onClick={onClose} style={{ padding: '5px 8px' }}>
+        <OuButton variant="ghost" size="sm" onClick={onClose} style={{ padding: '5px 8px' }}>
           ✕
-        </NeuButton>
+        </OuButton>
       </div>
 
       {/* 2-panel layout */}
@@ -330,7 +330,7 @@ function ViewPanel({ createdViews }: { createdViews: ChatMessage[] }) {
   }, [requestedViews]);
 
   return (
-    <NeuCard
+    <OuCard
       variant="raised"
       size="sm"
       style={{ flex: 1, minWidth: 280, overflow: 'auto', display: 'flex', flexDirection: 'column', padding: 0 }}
@@ -350,9 +350,9 @@ function ViewPanel({ createdViews }: { createdViews: ChatMessage[] }) {
           View
         </span>
         {requestedViews.length > 0 && (
-          <NeuButton variant="ghost" size="sm" onClick={clearRequestedViews} style={{ padding: '3px 6px', minWidth: 0, fontSize: 11 }}>
+          <OuButton variant="ghost" size="sm" onClick={clearRequestedViews} style={{ padding: '3px 6px', minWidth: 0, fontSize: 11 }}>
             지우기
-          </NeuButton>
+          </OuButton>
         )}
       </div>
 
@@ -396,7 +396,7 @@ function ViewPanel({ createdViews }: { createdViews: ChatMessage[] }) {
           </span>
         </div>
       )}
-    </NeuCard>
+    </OuCard>
   );
 }
 
@@ -488,7 +488,7 @@ export function ViewOptionsChips() {
           );
         })}
       </div>
-      <NeuButton
+      <OuButton
         variant="accent"
         size="sm"
         onClick={confirm}
@@ -496,7 +496,7 @@ export function ViewOptionsChips() {
         style={{ marginTop: 4 }}
       >
         확인
-      </NeuButton>
+      </OuButton>
     </div>
   );
 }

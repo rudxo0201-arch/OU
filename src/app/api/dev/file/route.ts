@@ -100,12 +100,12 @@ export async function POST(req: NextRequest) {
 
         if (user) {
           const { classifyDomain } = await import('@/lib/pipeline/classifier');
-          const { extractDomainData } = await import('@/lib/pipeline/extract-domain-data');
 
           const changeDesc = `파일 수정: ${filePath}`;
           const { domain } = await classifyDomain(changeDesc);
           const domainData = {
-            ...extractDomainData(changeDesc, 'development'),
+            title: changeDesc.slice(0, 50),
+            date: new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Seoul' }).format(new Date()),
             files_changed: [filePath],
             action_type: 'edit',
           };

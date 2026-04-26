@@ -8,7 +8,7 @@ export function Section({ title, children, note }: { title: string; children: Re
       <div style={{
         fontSize: 10,
         fontWeight: 600,
-        color: 'rgba(255,255,255,0.40)',
+        color: 'var(--ou-text-muted)',
         letterSpacing: '3px',
         textTransform: 'uppercase',
         marginBottom: 24,

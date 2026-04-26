@@ -20,10 +20,10 @@ export const OuInput = forwardRef<HTMLInputElement, OuInputProps>(
     const [focused, setFocused] = useState(false);
 
     const borderColor = error
-      ? 'rgba(239,68,68,0.50)'
+      ? 'var(--ou-error)'
       : focused
-        ? 'rgba(255,255,255,0.45)'
-        : 'rgba(255,255,255,0.12)';
+        ? 'var(--ou-border-focus)'
+        : 'var(--ou-border-subtle)';
 
     const fieldStyle: CSSProperties = {
       display: 'flex',
@@ -31,12 +31,10 @@ export const OuInput = forwardRef<HTMLInputElement, OuInputProps>(
       gap: 'var(--ou-space-2)',
       height: HEIGHT_MAP[size],
       padding: PAD_MAP[size],
-      background: focused ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.02)',
+      background: focused ? 'var(--ou-surface-muted)' : 'var(--ou-surface-faint)',
       border: `1px solid ${borderColor}`,
       borderRadius: 'var(--ou-radius-sm)',
-      boxShadow: focused
-        ? `0 0 0 3px rgba(255,255,255,0.06), var(--ou-glow-sm)`
-        : 'none',
+      boxShadow: focused ? `0 0 0 3px var(--ou-surface-subtle), var(--ou-glow-sm)` : 'none',
       transition: 'border-color var(--ou-transition-fast), box-shadow var(--ou-transition-fast), background var(--ou-transition-fast)',
     };
 
@@ -48,7 +46,7 @@ export const OuInput = forwardRef<HTMLInputElement, OuInputProps>(
       color: 'var(--ou-text-heading)',
       fontSize: FONT_MAP[size],
       fontFamily: 'var(--ou-font-body)',
-      caretColor: '#ffffff',
+      caretColor: 'var(--ou-text-heading)',
       ...style,
     };
 

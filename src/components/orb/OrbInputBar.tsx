@@ -12,12 +12,14 @@ const DOMAIN_LABEL: Record<string, string> = {
   schedule: '일정', task: '할 일', finance: '지출',
   habit: '습관', note: '노트', idea: '아이디어',
   knowledge: '지식', media: '미디어', location: '장소',
-  relation: '인물',
+  relation: '인물', journal: '일기',
 };
 
 /**
  * Orb 전용 하단 입력 바.
- * domainHint로 Orb 도메인을 강제 분류하고, context로 출처를 기록한다.
+ *
+ * /api/orb-input 사용 — LLM 동기 파싱 + clarification 플로우.
+ * 모호한 경우 저장하지 않고 질문 카드를 표시한다.
  */
 export function OrbInputBar({ domain, placeholder }: OrbInputBarProps) {
   const [value, setValue] = useState('');
@@ -25,24 +27,40 @@ export function OrbInputBar({ domain, placeholder }: OrbInputBarProps) {
   const [loading, setLoading] = useState(false);
   const { show } = useToast();
 
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault();
-    if (!value.trim() || loading) return;
-    const text = value.trim();
-    setValue('');
+  // clarification 상태
+  const [pendingText, setPendingText] = useState<string | null>(null);
+  const [clarificationQ, setClarificationQ] = useState<string | null>(null);
+
+  async function submit(text: string, clarificationAnswer?: string) {
+    if (!text.trim() || loading) return;
     setLoading(true);
     try {
-      const res = await fetch('/api/quick', {
+      const res = await fetch('/api/orb-input', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, domainHint: domain }),
+        body: JSON.stringify({
+          text,
+          domain,
+          ...(clarificationAnswer ? { clarificationAnswer } : {}),
+        }),
       });
       const json = await res.json();
+
       if (!res.ok || !json.ok) {
-        const detail = json?._debug?.message ?? json?._debug ?? json?.error ?? '알 수 없는 오류';
-        show(`저장 실패: ${typeof detail === 'string' ? detail : JSON.stringify(detail).slice(0, 120)}`, 'error', { duration: 8000 });
+        const detail = json?.error ?? '알 수 없는 오류';
+        show(`저장 실패: ${detail}`, 'error', { duration: 8000 });
         return;
       }
+
+      if (!json.saved && json.clarification) {
+        // clarification 질문 — 저장 보류, 카드 표시
+        setPendingText(text);
+        setClarificationQ(json.clarification);
+        return;
+      }
+
+      // 저장 완료
+      clearClarification();
       show(`${DOMAIN_LABEL[domain] ?? '기록'}에 기록됨`, 'success', { duration: 3000 });
       window.dispatchEvent(new CustomEvent('ou-node-created', { detail: { domain } }));
     } catch {
@@ -50,6 +68,26 @@ export function OrbInputBar({ domain, placeholder }: OrbInputBarProps) {
     } finally {
       setLoading(false);
     }
+  }
+
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    if (!value.trim()) return;
+    const text = value.trim();
+    setValue('');
+    await submit(text);
+  }
+
+  async function handleClarificationReply(answer: string) {
+    if (!pendingText) return;
+    const orig = pendingText;
+    clearClarification();
+    await submit(orig, answer);
+  }
+
+  function clearClarification() {
+    setPendingText(null);
+    setClarificationQ(null);
   }
 
   const containerStyle: CSSProperties = {
@@ -76,7 +114,19 @@ export function OrbInputBar({ domain, placeholder }: OrbInputBarProps) {
       width: 'calc(100% - 32px)',
       maxWidth: 680,
       zIndex: 100,
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 8,
     }}>
+      {/* clarification 카드 */}
+      {clarificationQ && (
+        <ClarificationCard
+          question={clarificationQ}
+          onReply={handleClarificationReply}
+          onDismiss={clearClarification}
+        />
+      )}
+
       <form onSubmit={handleSubmit}>
         <div style={containerStyle}>
           <input
@@ -142,6 +192,101 @@ export function OrbInputBar({ domain, placeholder }: OrbInputBarProps) {
             </kbd>
           )}
         </div>
+      </form>
+    </div>
+  );
+}
+
+interface ClarificationCardProps {
+  question: string;
+  onReply: (answer: string) => void;
+  onDismiss: () => void;
+}
+
+function ClarificationCard({ question, onReply, onDismiss }: ClarificationCardProps) {
+  const [answer, setAnswer] = useState('');
+
+  function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    if (!answer.trim()) return;
+    onReply(answer.trim());
+  }
+
+  return (
+    <div style={{
+      background: 'rgba(255,255,255,0.97)',
+      border: '1px solid rgba(0,0,0,0.10)',
+      borderRadius: 12,
+      padding: '12px 14px',
+      boxShadow: '0 4px 20px rgba(0,0,0,0.10)',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 8,
+    }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
+        <p style={{
+          margin: 0,
+          fontSize: 13,
+          color: 'rgba(0,0,0,0.72)',
+          lineHeight: 1.5,
+          flex: 1,
+        }}>
+          {question}
+        </p>
+        <button
+          onClick={onDismiss}
+          style={{
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            color: 'rgba(0,0,0,0.32)',
+            fontSize: 16,
+            lineHeight: 1,
+            padding: '0 2px',
+            flexShrink: 0,
+          }}
+          aria-label="취소"
+        >
+          ×
+        </button>
+      </div>
+      <form onSubmit={handleSubmit} style={{ display: 'flex', gap: 6 }}>
+        <input
+          autoFocus
+          value={answer}
+          onChange={(e) => setAnswer(e.target.value)}
+          placeholder="답변..."
+          style={{
+            flex: 1,
+            height: 34,
+            padding: '0 10px',
+            border: '1px solid rgba(0,0,0,0.14)',
+            borderRadius: 8,
+            fontSize: 13,
+            color: 'rgba(0,0,0,0.78)',
+            background: 'rgba(0,0,0,0.03)',
+            outline: 'none',
+            fontFamily: 'var(--ou-font-body)',
+          }}
+        />
+        <button
+          type="submit"
+          disabled={!answer.trim()}
+          style={{
+            height: 34,
+            padding: '0 12px',
+            borderRadius: 8,
+            background: answer.trim() ? 'rgba(0,0,0,0.88)' : 'rgba(0,0,0,0.12)',
+            border: 'none',
+            cursor: answer.trim() ? 'pointer' : 'default',
+            color: answer.trim() ? '#fff' : 'rgba(0,0,0,0.32)',
+            fontSize: 13,
+            transition: 'all 120ms ease',
+            flexShrink: 0,
+          }}
+        >
+          저장
+        </button>
       </form>
     </div>
   );

@@ -27,16 +27,27 @@ interface HabitSummary {
   todayNodeIds: string[]; // 오늘 체크인된 노드ID들
 }
 
+function parseName(n: any): string {
+  const rawName = (n.raw ?? '').replace(/습관|했다|함|완료|체크|오늘|매일/g, '').trim().slice(0, 20);
+  return (n.domain_data?.title || n.domain_data?.name || rawName || '습관') as string;
+}
+
 function parseHabits(nodes: ViewProps['nodes']): HabitSummary[] {
   const byName = new Map<string, HabitRecord[]>();
 
   for (const n of nodes) {
     if (n.domain !== 'habit') continue;
+    const name = parseName(n);
+
+    if (n.domain_data?.kind === 'definition') {
+      // 이름만 등록 — 수행 기록 없이 habit 목록에 표시
+      if (!byName.has(name)) byName.set(name, []);
+      continue;
+    }
+
+    // kind='checkin' 또는 kind 없는 기존 노드 → 수행 기록
     const date = n.domain_data?.date ?? (n.created_at ? n.created_at.slice(0, 10) : null);
     if (!date) continue;
-    // domain_data.title / domain_data.name 우선, raw는 폴백
-    const rawName = (n.raw ?? '').replace(/습관|했다|함|완료|체크|오늘|매일/g, '').trim().slice(0, 20);
-    const name: string = (n.domain_data?.title || n.domain_data?.name || rawName || '습관') as string;
     if (!byName.has(name)) byName.set(name, []);
     byName.get(name)!.push({ habitName: name, date, nodeId: n.id });
   }
@@ -312,7 +323,7 @@ export function HeatmapView({ nodes }: ViewProps) {
         await fetch('/api/quick', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: `${habit.name} 완료`, domainHint: 'habit' }),
+          body: JSON.stringify({ text: `${habit.name} 완료`, domainHint: 'habit', kind: 'checkin' }),
         });
       } else {
         await Promise.all(

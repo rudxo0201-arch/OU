@@ -71,7 +71,7 @@ export function OuCard({
       <div
         style={{
           background: 'transparent',
-          border: `1px solid ${hovered && isInteractive ? 'var(--ou-border-hover)' : 'var(--ou-border-subtle)'}`,
+          border: `1px solid ${hovered && isInteractive ? 'var(--ou-border-hover)' : 'var(--ou-border-card)'}`,
           borderRadius: 'var(--ou-radius-card)',
           padding: p,
           boxShadow: hovered && isInteractive
@@ -100,7 +100,7 @@ export function OuCard({
           background: hovered && isInteractive ? 'var(--ou-surface-hover)' : 'var(--ou-surface-faint)',
           backdropFilter: 'var(--ou-blur-md)',
           WebkitBackdropFilter: 'var(--ou-blur-md)',
-          border: `1px solid ${hovered && isInteractive ? 'var(--ou-border-hover)' : 'var(--ou-border-subtle)'}`,
+          border: `1px solid ${hovered && isInteractive ? 'var(--ou-border-hover)' : 'var(--ou-border-card)'}`,
           borderRadius: 'var(--ou-radius-card)',
           padding: p,
           boxShadow: hovered && isInteractive
@@ -166,7 +166,7 @@ export function OuCard({
       <div
         style={{
           background: 'transparent',
-          border: `0.5px solid ${hovered && isInteractive ? 'var(--ou-border-hover)' : 'var(--ou-border-medium)'}`,
+          border: `0.5px solid ${hovered && isInteractive ? 'var(--ou-border-hover)' : 'var(--ou-border-card)'}`,
           borderRadius: 'var(--ou-radius-card)',
           padding: p,
           display: 'flex',
@@ -194,7 +194,7 @@ export function OuCard({
     <div
       style={{
         background: 'transparent',
-        border: `1px solid ${hovered && isInteractive ? 'var(--ou-border-subtle)' : 'var(--ou-border-faint)'}`,
+        border: `1px solid ${hovered && isInteractive ? 'var(--ou-border-card)' : 'var(--ou-border-subtle)'}`,
         borderRadius: 'var(--ou-radius-card)',
         padding: p,
         boxShadow: 'none',

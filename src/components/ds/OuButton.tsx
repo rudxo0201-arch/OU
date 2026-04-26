@@ -36,39 +36,40 @@ export function OuButton({
   const sz = SIZE_MAP[size];
 
   const variantStyle: CSSProperties = (() => {
-    // solid white — 화이트 테두리 + 화이트 배경, 블랙 텍스트
+    // accent: 테마 강조색(다크=흰, 라이트=검정) 배경, 반전 텍스트
     if (variant === 'accent') {
       return {
-        background: hovered && !isDisabled ? 'rgba(255,255,255,0.90)' : '#ffffff',
-        border: '1px solid #ffffff',
-        color: '#000000',
+        background: hovered && !isDisabled ? 'var(--ou-accent-hover)' : 'var(--ou-accent)',
+        border: '1px solid var(--ou-accent)',
+        color: 'var(--ou-bg)',
         boxShadow: hovered && !isDisabled ? 'var(--ou-glow-sm)' : 'none',
         fontWeight: 600,
       };
     }
     if (variant === 'danger') {
       return {
-        background: hovered && !isDisabled ? 'rgba(170,80,80,0.14)' : 'transparent',
-        border: `1px solid ${hovered && !isDisabled ? 'rgba(170,80,80,0.60)' : 'rgba(170,80,80,0.35)'}`,
+        background: hovered && !isDisabled ? 'var(--ou-surface-muted)' : 'transparent',
+        border: `1px solid ${hovered && !isDisabled ? 'var(--ou-error)' : 'var(--ou-error)'}`,
         color: 'var(--ou-error)',
         boxShadow: 'none',
         fontWeight: 500,
+        opacity: hovered ? 1 : 0.7,
       };
     }
     if (variant === 'ghost') {
       return {
-        background: hovered && !isDisabled ? 'rgba(255,255,255,0.06)' : 'transparent',
+        background: hovered && !isDisabled ? 'var(--ou-surface-hover)' : 'transparent',
         border: '1px solid transparent',
         color: hovered && !isDisabled ? 'var(--ou-text-strong)' : 'var(--ou-text-secondary)',
         boxShadow: 'none',
         fontWeight: 500,
       };
     }
-    // default — outlined: 더 하얀 테두리, 투명 배경
+    // default: outlined — 테마 적응형
     return {
-      background: hovered && !isDisabled ? 'rgba(255,255,255,0.06)' : 'transparent',
-      border: `1px solid ${hovered && !isDisabled ? 'rgba(255,255,255,0.80)' : 'rgba(255,255,255,0.55)'}`,
-      color: hovered && !isDisabled ? '#ffffff' : 'rgba(255,255,255,0.90)',
+      background: hovered && !isDisabled ? 'var(--ou-surface-hover)' : 'transparent',
+      border: `1px solid ${hovered && !isDisabled ? 'var(--ou-border-hover)' : 'var(--ou-border-strong)'}`,
+      color: 'var(--ou-text-strong)',
       boxShadow: hovered && !isDisabled ? 'var(--ou-glow-sm)' : 'none',
       fontWeight: 500,
     };
@@ -86,8 +87,8 @@ export function OuButton({
         height: sz.height,
         padding: sz.padding,
         fontSize: sz.fontSize,
-        fontFamily: 'var(--ou-font-body)',
-        letterSpacing: '0.01em',
+        fontFamily: 'var(--ou-font-display)',
+        letterSpacing: '0.04em',
         borderRadius: 'var(--ou-radius-pill)',
         cursor: isDisabled ? 'not-allowed' : 'pointer',
         opacity: isDisabled ? 0.38 : 1,
@@ -110,8 +111,8 @@ export function OuButton({
           style={{
             width: 13,
             height: 13,
-            border: `1.5px solid ${variant === 'accent' ? 'rgba(0,0,0,0.20)' : 'rgba(255,255,255,0.20)'}`,
-            borderTopColor: variant === 'accent' ? '#000000' : '#ffffff',
+            border: `1.5px solid var(--ou-surface-muted)`,
+            borderTopColor: 'var(--ou-text-heading)',
             borderRadius: '50%',
             animation: 'ou-spin 0.7s linear infinite',
             display: 'inline-block',

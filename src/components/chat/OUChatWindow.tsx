@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ChatPanel } from './ChatPanel';
 import { useChatStore } from '@/stores/chatStore';
 import { DOMAIN_VIEW_MAP, VIEW_LABELS } from '@/components/views/registry';
-import { NeuButton, NeuBadge, NeuCard } from '@/components/ds';
+import { OuButton, OuBadge, OuCard } from '@/components/ds';
 
 interface Props {
   open: boolean;
@@ -75,9 +75,9 @@ export function OUChatWindow({ open, onClose }: Props) {
     }}>
       {/* Close button */}
       <div style={{ position: 'absolute', top: 16, right: 20, zIndex: 52 }}>
-        <NeuButton variant="ghost" size="sm" onClick={onClose} style={{ padding: '6px 10px' }}>
+        <OuButton variant="ghost" size="sm" onClick={onClose} style={{ padding: '6px 10px' }}>
           ✕
-        </NeuButton>
+        </OuButton>
       </div>
 
       {/* 3-column layout */}
@@ -182,7 +182,7 @@ function CreatedViewCard({ domain, data, isSelected, onClick }: {
   const sub = (data?.date || data?.when || data?.amount || data?.category || '') as string | number;
 
   return (
-    <NeuCard
+    <OuCard
       variant={isSelected ? 'pressed' : 'raised'}
       size="sm"
       style={{
@@ -193,9 +193,9 @@ function CreatedViewCard({ domain, data, isSelected, onClick }: {
       }}
       onClick={onClick}
     >
-      <NeuBadge accent={isSelected} style={{ fontSize: 9, letterSpacing: 1, textTransform: 'uppercase' }}>
+      <OuBadge accent={isSelected} style={{ fontSize: 9, letterSpacing: 1, textTransform: 'uppercase' }}>
         {DOMAIN_LABELS[domain] || domain}
-      </NeuBadge>
+      </OuBadge>
       {title && (
         <div style={{ fontSize: 12, color: isSelected ? 'var(--ou-text-body)' : 'var(--ou-text-muted)', lineHeight: 1.4 }}>
           {title.slice(0, 30)}{title.length > 30 ? '...' : ''}
@@ -206,7 +206,7 @@ function CreatedViewCard({ domain, data, isSelected, onClick }: {
           {typeof sub === 'number' ? sub.toLocaleString() + '원' : String(sub).slice(0, 20)}
         </div>
       )}
-    </NeuCard>
+    </OuCard>
   );
 }
 
@@ -218,13 +218,13 @@ function ViewPreviewPanel({ domain, data }: { domain: string; data?: Record<stri
     const time = (data?.time || data?.start_time || '') as string;
     const location = (data?.location || data?.place || '') as string;
     return (
-      <NeuCard variant="raised" style={{ padding: '24px 28px' }}>
+      <OuCard variant="raised" style={{ padding: '24px 28px' }}>
         <div style={{ fontSize: 10, color: 'var(--ou-text-disabled)', letterSpacing: 1.5, marginBottom: 16, textTransform: 'uppercase' }}>Schedule</div>
         {date && <div style={{ fontSize: 13, color: 'var(--ou-text-muted)', marginBottom: 8 }}>{date}</div>}
         {time && <div style={{ fontSize: 28, fontWeight: 300, color: 'var(--ou-text-heading)', marginBottom: 8, letterSpacing: -1 }}>{time}</div>}
         {title && <div style={{ fontSize: 16, fontWeight: 500, color: 'var(--ou-text-body)', marginBottom: 6 }}>{title}</div>}
         {location && <div style={{ fontSize: 13, color: 'var(--ou-text-muted)' }}>{location}</div>}
-      </NeuCard>
+      </OuCard>
     );
   }
 
@@ -232,7 +232,7 @@ function ViewPreviewPanel({ domain, data }: { domain: string; data?: Record<stri
     const amount = (data?.amount || '') as string | number;
     const category = (data?.category || '') as string;
     return (
-      <NeuCard variant="raised" style={{ padding: '24px 28px' }}>
+      <OuCard variant="raised" style={{ padding: '24px 28px' }}>
         <div style={{ fontSize: 10, color: 'var(--ou-text-disabled)', letterSpacing: 1.5, marginBottom: 16, textTransform: 'uppercase' }}>Finance</div>
         {amount && (
           <div style={{ fontSize: 32, fontWeight: 300, color: 'var(--ou-text-heading)', letterSpacing: -1 }}>
@@ -240,13 +240,13 @@ function ViewPreviewPanel({ domain, data }: { domain: string; data?: Record<stri
           </div>
         )}
         {category && <div style={{ fontSize: 13, color: 'var(--ou-text-muted)', marginTop: 8 }}>{category}</div>}
-      </NeuCard>
+      </OuCard>
     );
   }
 
   const title = (data?.title || data?.what || data?.name || '') as string;
   return (
-    <NeuCard variant="raised" style={{ padding: '24px 28px' }}>
+    <OuCard variant="raised" style={{ padding: '24px 28px' }}>
       <div style={{ fontSize: 10, color: 'var(--ou-text-disabled)', letterSpacing: 1.5, marginBottom: 16, textTransform: 'uppercase' }}>
         {DOMAIN_LABELS[domain]?.toUpperCase() || domain.toUpperCase()}
       </div>
@@ -254,6 +254,6 @@ function ViewPreviewPanel({ domain, data }: { domain: string; data?: Record<stri
       <div style={{ fontSize: 12, color: 'var(--ou-text-disabled)', marginTop: 16 }}>
         /my 에서 전체 뷰 확인
       </div>
-    </NeuCard>
+    </OuCard>
   );
 }

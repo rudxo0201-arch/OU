@@ -18,6 +18,7 @@ interface OuSelectProps {
 
 export function OuSelect({ options, value, onChange, label, placeholder = '선택하세요', disabled = false, style }: OuSelectProps) {
   const [open, setOpen] = useState(false);
+  const [hovered, setHovered] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const selected = options.find((o) => o.value === value);
@@ -36,23 +37,23 @@ export function OuSelect({ options, value, onChange, label, placeholder = '선�
   return (
     <div ref={containerRef} style={{ position: 'relative', ...style }}>
       {label && (
-        <label
-          style={{
-            display: 'block',
-            fontSize: 11,
-            fontWeight: 600,
-            color: 'var(--ou-text-muted)',
-            letterSpacing: '0.06em',
-            textTransform: 'uppercase',
-            marginBottom: 6,
-          }}
-        >
+        <label style={{
+          display: 'block',
+          fontSize: 11,
+          fontWeight: 600,
+          color: 'var(--ou-text-muted)',
+          letterSpacing: '0.06em',
+          textTransform: 'uppercase',
+          marginBottom: 6,
+        }}>
           {label}
         </label>
       )}
       <button
         type="button"
         onClick={() => !disabled && setOpen((v) => !v)}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
         style={{
           width: '100%',
           display: 'flex',
@@ -61,23 +62,19 @@ export function OuSelect({ options, value, onChange, label, placeholder = '선�
           gap: 8,
           padding: '10px 14px',
           borderRadius: 'var(--ou-radius-md)',
-          border: 'none',
-          background: 'var(--ou-bg)',
-          boxShadow: 'var(--ou-neu-pressed-sm)',
+          border: `1px solid ${open || hovered ? 'var(--ou-border-hover)' : 'var(--ou-border-card)'}`,
+          background: open ? 'var(--ou-surface-subtle)' : 'var(--ou-surface-faint)',
           fontSize: 13,
-          color: selected ? 'var(--ou-text-strong)' : 'var(--ou-text-dimmed)',
+          color: selected ? 'var(--ou-text-strong)' : 'var(--ou-text-secondary)',
           cursor: disabled ? 'not-allowed' : 'pointer',
           opacity: disabled ? 0.5 : 1,
           fontFamily: 'inherit',
-          transition: 'all var(--ou-transition)',
+          transition: 'border-color var(--ou-transition-fast), background var(--ou-transition-fast)',
         }}
       >
         <span>{selected ? selected.label : placeholder}</span>
         <svg
-          width="12"
-          height="12"
-          viewBox="0 0 12 12"
-          fill="none"
+          width="12" height="12" viewBox="0 0 12 12" fill="none"
           style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', flexShrink: 0 }}
         >
           <path d="M2 4L6 8L10 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
@@ -85,20 +82,19 @@ export function OuSelect({ options, value, onChange, label, placeholder = '선�
       </button>
 
       {open && (
-        <div
-          style={{
-            position: 'absolute',
-            top: 'calc(100% + 6px)',
-            left: 0,
-            right: 0,
-            zIndex: 100,
-            background: 'var(--ou-bg)',
-            borderRadius: 'var(--ou-radius-md)',
-            boxShadow: 'var(--ou-neu-raised-lg)',
-            overflow: 'hidden',
-            animation: 'ou-scale-in 0.12s ease',
-          }}
-        >
+        <div style={{
+          position: 'absolute',
+          top: 'calc(100% + 6px)',
+          left: 0,
+          right: 0,
+          zIndex: 100,
+          background: 'var(--ou-bg-elevated)',
+          borderRadius: 'var(--ou-radius-md)',
+          border: '1px solid var(--ou-border-card)',
+          boxShadow: 'var(--ou-glow-md)',
+          overflow: 'hidden',
+          animation: 'ou-scale-in 0.12s ease',
+        }}>
           {options.map((opt) => (
             <button
               key={opt.value}

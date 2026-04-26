@@ -13,6 +13,7 @@
 
 import { useState } from 'react';
 import { StarField } from '@/components/layout/StarField';
+import { OuLogo } from '@/components/ds';
 import { TokensSections } from './sections/Tokens';
 import { TypographySection } from './sections/Typography';
 import { BlocksSections } from './sections/Blocks';
@@ -88,23 +89,14 @@ function ThemeToggle({ theme, onToggle }: { theme: 'dark' | 'light'; onToggle: (
 function PageHeader() {
   return (
     <>
-      <div style={{
-        fontFamily: 'var(--ou-font-logo)',
-        fontSize: 36,
-        fontWeight: 500,
-        color: 'var(--ou-text-bright)',
-        textAlign: 'center',
-        marginBottom: 8,
-        textShadow: '0 0 40px rgba(255,255,255,0.15)',
-        letterSpacing: '0.02em',
-      }}>
-        OU
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
+        <OuLogo width={72} style={{ filter: 'drop-shadow(0 0 20px rgba(255,255,255,0.15))' }} />
       </div>
       <div style={{
-        fontFamily: 'var(--ou-font-logo)',
+        fontFamily: 'var(--ou-font-display)',
         fontSize: 9,
         fontWeight: 400,
-        color: 'rgba(255,255,255,0.35)',
+        color: 'var(--ou-text-muted)',
         letterSpacing: '6px',
         textTransform: 'uppercase',
         textAlign: 'center',
@@ -153,11 +145,8 @@ function Footer() {
       borderTop: '0.5px solid var(--ou-border-faint)',
     }}>
       <p style={{ fontSize: 11, color: 'var(--ou-text-disabled)', margin: 0, lineHeight: 1.7 }}>
-        나머지 48개 섹션(Views, UI 패턴, Layout 등)은 다음 세션에서 React로 이식합니다.<br />
-        명세 원본:{' '}
-        <a href="/design-system-preview.html" target="_blank" style={{ color: 'var(--ou-text-secondary)', fontFamily: 'var(--ou-font-mono)' }}>
-          /design-system-preview.html
-        </a>
+        DS registry: 34 컴포넌트 등록 (stable 27 / experimental 5 / deprecated 2)<br />
+        모든 컴포넌트는 <span style={{ fontFamily: 'var(--ou-font-mono)' }}>src/components/ds/</span> 에서 가져다 쓴다.
       </p>
     </div>
   );
